@@ -33,6 +33,11 @@ jobs:
     - name: Build with Maven
       run: mvn -U -B clean package --file pom.xml
 
+    - name: Publish to GitHub Packages Repo
+      run: mvn deploy
+      env:
+        GITHUB_TOKEN: ${{ github.token }} # GITHUB_TOKEN is the default env for the password
+
     - name: Set up Apache Maven Central (Overwrite settings.xml)
       uses: actions/setup-java@v3
       with: # running setup-java again overwrites the settings.xml
