@@ -2,18 +2,12 @@
 
 A Java wrapper for [Ollama](https://github.com/jmorganca/ollama/blob/main/docs/api.md) APIs.
 
-Prerequisites:
-
-- Docker
-- Java 8+ 
-
-
 Start Ollama Container:
 ```
 docker run -v ~/ollama:/root/.ollama -p 11434:11434 ollama/ollama
 ```
 
-Submit a question to Ollama using Ollama4j:
+Post a question to Ollama using Ollama4j:
 
 ```java
 String host = "http://localhost:11434/";
