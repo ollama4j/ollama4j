@@ -10,19 +10,20 @@ docker run -v ~/ollama:/root/.ollama -p 11434:11434 ollama/ollama
 Post a question to Ollama using Ollama4j:
 
 ```java
-String host = "http://localhost:11434/";
-
-OllamaAPI ollamaAPI = new OllamaAPI(host);
-
-ollamaAPI.pullModel(OllamaModel.LLAMA2);
-
-OllamaAsyncResultCallback ollamaAsyncResultCallback = ollamaAPI.runAsync(OllamaModel.LLAMA2, "Who are you?");
-while (true) {
-    if (ollamaAsyncResultCallback.isComplete()) {
-        System.out.println(ollamaAsyncResultCallback.getResponse());
-        break;
+public class Main {
+    public static void main(String[] args) throws Exception {
+        String host = "http://localhost:11434/";
+        OllamaAPI ollamaAPI = new OllamaAPI(host);
+        ollamaAPI.pullModel(OllamaModel.LLAMA2);
+        OllamaAsyncResultCallback ollamaAsyncResultCallback = ollamaAPI.runAsync(OllamaModel.LLAMA2, "Who are you?");
+        while (true) {
+            if (ollamaAsyncResultCallback.isComplete()) {
+                System.out.println(ollamaAsyncResultCallback.getResponse());
+                break;
+            }
+            Thread.sleep(1000);
+        }
     }
-    Thread.sleep(1000);
 }
 ```
 

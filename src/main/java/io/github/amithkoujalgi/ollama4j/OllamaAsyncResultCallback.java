@@ -1,4 +1,4 @@
-package org.ollama4j;
+package io.github.amithkoujalgi.ollama4j;
 
 import com.google.gson.Gson;
 

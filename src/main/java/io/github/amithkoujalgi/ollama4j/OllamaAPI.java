@@ -1,7 +1,6 @@
-package org.ollama4j;
+package io.github.amithkoujalgi.ollama4j;
 
 import com.google.gson.Gson;
-import org.apache.hc.client5.http.HttpResponseException;
 import org.apache.hc.client5.http.classic.methods.HttpPost;
 import org.apache.hc.client5.http.impl.classic.CloseableHttpClient;
 import org.apache.hc.client5.http.impl.classic.CloseableHttpResponse;

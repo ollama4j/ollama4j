@@ -1,4 +1,4 @@
-package org.ollama4j;
+package io.github.amithkoujalgi.ollama4j;
 
 public enum OllamaModel {
     LLAMA2("llama2"), MISTRAL("mistral"), MEDLLAMA2("medllama2");
