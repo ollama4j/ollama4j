@@ -34,6 +34,6 @@ jobs:
       run: mvn -U -B clean package --file pom.xml
 
     - name: Publish to GitHub Packages Apache Maven
-      run: echo "$GPG_PRIVATE_KEY" | gpg --import && mvn deploy -s $GITHUB_WORKSPACE/settings.xml
+      run: mvn deploy -s $GITHUB_WORKSPACE/settings.xml
       env:
         GITHUB_TOKEN: ${{ github.token }}
