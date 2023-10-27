@@ -49,6 +49,6 @@ jobs:
     - name: Publish to GitHub Packages Apache Maven
       run: cat /home/runner/.m2/settings.xml && mvn deploy -s /home/runner/.m2/settings.xml
       env:
-        OSSRH_USERNAME: ${{ secrets.OSSRH_USERNAME }}
-        OSSRH_TOKEN: ${{ secrets.OSSRH_PASSWORD }}
+        MAVEN_USERNAME: ${{ secrets.OSSRH_USERNAME }}
+        MAVEN_PASSWORD: ${{ secrets.OSSRH_PASSWORD }}
         MAVEN_GPG_PASSPHRASE: ${{ secrets.GPG_PASSPHRASE }}
