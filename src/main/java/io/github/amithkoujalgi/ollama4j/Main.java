@@ -5,14 +5,8 @@ public class Main {
         String host = "http://localhost:11434/";
         OllamaAPI ollamaAPI = new OllamaAPI(host);
         ollamaAPI.pullModel(OllamaModel.LLAMA2);
-        OllamaAsyncResultCallback ollamaAsyncResultCallback = ollamaAPI.runAsync(OllamaModel.LLAMA2, "Who are you?");
-        while (true) {
-            if (ollamaAsyncResultCallback.isComplete()) {
-                System.out.println(ollamaAsyncResultCallback.getResponse());
-                break;
-            }
-            Thread.sleep(1000);
-        }
+        String response = ollamaAPI.runSync(OllamaModel.LLAMA2, "Who are you?");
+        System.out.println(response);
     }
 }
 

@@ -7,7 +7,7 @@ Start Ollama Container:
 docker run -v ~/ollama:/root/.ollama -p 11434:11434 ollama/ollama
 ```
 
-Post a question to Ollama using Ollama4j:
+Pull a model:
 
 ```java
 public class Main {
@@ -15,6 +15,31 @@ public class Main {
         String host = "http://localhost:11434/";
         OllamaAPI ollamaAPI = new OllamaAPI(host);
         ollamaAPI.pullModel(OllamaModel.LLAMA2);
+    }
+}
+```
+Post a question to Ollama using Ollama4j:
+
+Using sync API:
+
+```java
+public class Main {
+    public static void main(String[] args) throws Exception {
+        String host = "http://localhost:11434/";
+        OllamaAPI ollamaAPI = new OllamaAPI(host);
+        String response = ollamaAPI.runSync(OllamaModel.LLAMA2, "Who are you?");
+        System.out.println(response);
+    }
+}
+```
+
+Using async API:
+
+```java
+public class Main {
+    public static void main(String[] args) throws Exception {
+        String host = "http://localhost:11434/";
+        OllamaAPI ollamaAPI = new OllamaAPI(host);
         OllamaAsyncResultCallback ollamaAsyncResultCallback = ollamaAPI.runAsync(OllamaModel.LLAMA2, "Who are you?");
         while (true) {
             if (ollamaAsyncResultCallback.isComplete()) {
