@@ -33,8 +33,7 @@ jobs:
     - name: Build with Maven
       run: mvn -U -B clean package --file pom.xml
 
-
-    - name: Set up Apache Maven Central
+    - name: Set up Apache Maven Central (Overwrite settings.xml)
       uses: actions/setup-java@v3
       with: # running setup-java again overwrites the settings.xml
         java-version: 8
@@ -51,7 +50,7 @@ jobs:
 #      run: mvn deploy -s $GITHUB_WORKSPACE/settings.xml
 #      env:
 #        GITHUB_TOKEN: ${{ github.token }}
-      run: mvn deploy
+      run: echo /home/runner/.m2/settings.xml && mvn deploy -s /home/runner/.m2/settings.xml
       env:
         OSSRH_USERNAME: ${{ secrets.OSSRH_USERNAME }}
         OSSRH_TOKEN: ${{ secrets.OSSRH_PASSWORD }}
