@@ -2,6 +2,16 @@
 
 A Java wrapper for [Ollama](https://github.com/jmorganca/ollama/blob/main/docs/api.md) APIs.
 
+Install:
+
+With Maven from [Nexus](https://s01.oss.sonatype.org/#nexus-search;quick~ollama4j):
+```xml
+<dependency>
+    <groupId>io.github.amithkoujalgi</groupId>
+    <artifactId>ollama4j</artifactId>
+    <version>1.0-SNAPSHOT</version>
+</dependency>
+```
 Start Ollama Container:
 ```
 docker run -v ~/ollama:/root/.ollama -p 11434:11434 ollama/ollama
