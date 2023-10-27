@@ -2,6 +2,8 @@
 
 A Java wrapper for [Ollama](https://github.com/jmorganca/ollama/blob/main/docs/api.md) APIs.
 
+![Build Status](https://github.com/amithkoujalgi/ollama4j/actions/workflows/maven-publish.yml/badge.svg)
+
 Install:
 
 With Maven from [Nexus](https://s01.oss.sonatype.org/#nexus-search;quick~ollama4j):
