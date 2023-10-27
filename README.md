@@ -17,6 +17,24 @@ From [Maven Central](https://s01.oss.sonatype.org/#nexus-search;quick~ollama4j):
     <version>1.0-SNAPSHOT</version>
 </dependency>
 ```
+
+You might want to include the Maven repository to pull the ollama4j library from. Include this in your `pom.xml`:
+
+```xml
+<repositories>
+    <repository>
+        <id>ollama-from-ossrh</id>
+        <url>https://s01.oss.sonatype.org/content/repositories/snapshots</url>
+    </repository>
+</repositories>
+```
+
+Verify if the ollama4j dependencies have been resolved by running:
+
+```xml
+mvn clean install
+```
+
 Start Ollama Container:
 ```
 docker run -v ~/ollama:/root/.ollama -p 11434:11434 ollama/ollama
