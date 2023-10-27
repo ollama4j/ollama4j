@@ -31,7 +31,7 @@ jobs:
         settings-path: ${{ github.workspace }} # location for the settings.xml file
 
     - name: Build with Maven
-      run: mvn -U -B clean package --file pom.xml
+      run: mvn -U -B clean verify package --file pom.xml
 
     - name: Set up Apache Maven Central (Overwrite settings.xml)
       uses: actions/setup-java@v3
