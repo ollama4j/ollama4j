@@ -45,7 +45,6 @@ jobs:
         gpg-private-key: ${{ secrets.GPG_PRIVATE_KEY }}
         gpg-passphrase: ${{ secrets.GPG_PASSPHRASE }}
 
-
     - name: Publish to GitHub Packages Apache Maven
       run: cat /home/runner/.m2/settings.xml && mvn deploy -s /home/runner/.m2/settings.xml
       env:
