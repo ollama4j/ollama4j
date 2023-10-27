@@ -50,7 +50,7 @@ jobs:
 #      run: mvn deploy -s $GITHUB_WORKSPACE/settings.xml
 #      env:
 #        GITHUB_TOKEN: ${{ github.token }}
-      run: echo /home/runner/.m2/settings.xml && mvn deploy -s /home/runner/.m2/settings.xml
+      run: cat /home/runner/.m2/settings.xml && mvn deploy -s /home/runner/.m2/settings.xml
       env:
         OSSRH_USERNAME: ${{ secrets.OSSRH_USERNAME }}
         OSSRH_TOKEN: ${{ secrets.OSSRH_PASSWORD }}
