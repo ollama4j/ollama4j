@@ -8,7 +8,7 @@ A Java wrapper for [Ollama](https://github.com/jmorganca/ollama/blob/main/docs/a
 
 Install:
 
-With Maven from [Nexus](https://s01.oss.sonatype.org/#nexus-search;quick~ollama4j):
+From [Maven Central](https://s01.oss.sonatype.org/#nexus-search;quick~ollama4j):
 
 ```xml
 <dependency>
