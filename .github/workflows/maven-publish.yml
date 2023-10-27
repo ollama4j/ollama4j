@@ -34,9 +34,7 @@ jobs:
       run: mvn -U -B clean package --file pom.xml
 
     - name: Import GPG key
-      run: |
-        echo "$GPG_PRIVATE_KEY" | gpg --import
-        gpg --list-keys
+      run: echo "$GPG_PRIVATE_KEY" > /home/runner/.gnupg/gpg-pvt.key && gpg --import /home/runner/.gnupg/gpg-pvt.key
 
     - name: Publish to GitHub Packages Apache Maven
       run: mvn deploy -s $GITHUB_WORKSPACE/settings.xml
