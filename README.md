@@ -1,6 +1,6 @@
 ### Ollama4j
 
-![](https://raw.githubusercontent.com/amithkoujalgi/ollama4j/163e88bc82b4beb4a52e4d99f9b5d9ef1255ec06/ollama4j.png )
+<img src='https://raw.githubusercontent.com/amithkoujalgi/ollama4j/163e88bc82b4beb4a52e4d99f9b5d9ef1255ec06/ollama4j.png' width='100'>
 
 A Java wrapper for [Ollama](https://github.com/jmorganca/ollama/blob/main/docs/api.md) APIs.
 
@@ -9,6 +9,7 @@ A Java wrapper for [Ollama](https://github.com/jmorganca/ollama/blob/main/docs/a
 Install:
 
 With Maven from [Nexus](https://s01.oss.sonatype.org/#nexus-search;quick~ollama4j):
+
 ```xml
 <dependency>
     <groupId>io.github.amithkoujalgi</groupId>
