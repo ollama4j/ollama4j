@@ -44,8 +44,8 @@ jobs:
       - name: Build with Maven
         run: mvn -U -B clean package --file pom.xml
 
-      - name: Checkout
-        uses: actions/checkout@v3
+      #      - name: Checkout
+      #        uses: actions/checkout@v3
       - name: Setup Pages
         uses: actions/configure-pages@v3
       - name: Upload artifact
