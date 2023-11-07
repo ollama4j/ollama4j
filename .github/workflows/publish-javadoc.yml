@@ -29,9 +29,9 @@ jobs:
       contents: read
       packages: write
 
-    #    environment:
-    #      name: github-pages
-    #      url: ${{ steps.deployment.outputs.page_url }}
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
     steps:
       - uses: actions/checkout@v3
       - name: Set up JDK 8
