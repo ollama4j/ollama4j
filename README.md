@@ -11,6 +11,7 @@ Install:
 From [Maven Central](https://s01.oss.sonatype.org/#nexus-search;quick~ollama4j):
 
 ```xml
+
 <dependency>
     <groupId>io.github.amithkoujalgi</groupId>
     <artifactId>ollama4j</artifactId>
@@ -21,9 +22,10 @@ From [Maven Central](https://s01.oss.sonatype.org/#nexus-search;quick~ollama4j):
 You might want to include the Maven repository to pull the ollama4j library from. Include this in your `pom.xml`:
 
 ```xml
+
 <repositories>
     <repository>
-        <id>ollama-from-ossrh</id>
+        <id>ollama4j-from-ossrh</id>
         <url>https://s01.oss.sonatype.org/content/repositories/snapshots</url>
     </repository>
 </repositories>
@@ -36,6 +38,7 @@ mvn clean install
 ```
 
 Start Ollama Container:
+
 ```
 docker run -v ~/ollama:/root/.ollama -p 11434:11434 ollama/ollama
 ```
@@ -51,6 +54,7 @@ public class Main {
     }
 }
 ```
+
 Post a question to Ollama using Ollama4j:
 
 Using sync API:
@@ -86,6 +90,7 @@ public class Main {
 ```
 
 You'd then get a response from Ollama:
+
 ```
 I am LLaMA, an AI assistant developed by Meta AI that can understand and respond to human input in a conversational manner. I am trained on a massive dataset of text from the internet and can generate human-like responses to a wide range of topics and questions. I can be used to create chatbots, virtual assistants, and other applications that require natural language understanding and generation capabilities.
 ```

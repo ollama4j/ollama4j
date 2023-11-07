@@ -10,7 +10,7 @@ public class Main {
         OllamaAPI ollamaAPI = new OllamaAPI(host);
 
         String prompt1 = SamplePrompts.getSampleDatabasePromptWithQuestion("List all customer names who have bought one or more products");
-        String response1 = ollamaAPI.ask(OllamaModelType.LLAMA2, prompt1);
+        String response1 = ollamaAPI.ask(OllamaModelType.SQLCODER, prompt1);
         System.out.println(response1);
 
         String prompt2 = "Give me a list of world cup cricket teams.";
