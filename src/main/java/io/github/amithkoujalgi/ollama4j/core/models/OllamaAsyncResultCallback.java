@@ -1,6 +1,7 @@
-package io.github.amithkoujalgi.ollama4j;
+package io.github.amithkoujalgi.ollama4j.core.models;
 
 import com.google.gson.Gson;
+import io.github.amithkoujalgi.ollama4j.core.exceptions.OllamaBaseException;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -25,22 +26,26 @@ public class OllamaAsyncResultCallback extends Thread {
         try {
             responseCode = this.connection.getResponseCode();
             if (responseCode == HttpURLConnection.HTTP_OK) {
-                try (BufferedReader in = new BufferedReader(new InputStreamReader(this.connection.getInputStream()))) {
+                try (BufferedReader in =
+                             new BufferedReader(new InputStreamReader(this.connection.getInputStream()))) {
                     String inputLine;
                     StringBuilder response = new StringBuilder();
                     while ((inputLine = in.readLine()) != null) {
-                        OllamaResponseModel ollamaResponseModel = gson.fromJson(inputLine, OllamaResponseModel.class);
+                        OllamaResponseModel ollamaResponseModel =
+                                gson.fromJson(inputLine, OllamaResponseModel.class);
                         if (!ollamaResponseModel.getDone()) {
                             response.append(ollamaResponseModel.getResponse());
                         }
-//                        System.out.println("Streamed response line: " + responseModel.getResponse());
+                        //                        System.out.println("Streamed response line: " +
+                        // responseModel.getResponse());
                     }
                     in.close();
                     this.isDone = true;
                     this.result = response.toString();
                 }
             } else {
-                throw new OllamaBaseException(connection.getResponseCode() + " - " + connection.getResponseMessage());
+                throw new OllamaBaseException(
+                        connection.getResponseCode() + " - " + connection.getResponseMessage());
             }
         } catch (IOException | OllamaBaseException e) {
             this.isDone = true;

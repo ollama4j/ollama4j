@@ -1,5 +1,8 @@
 package io.github.amithkoujalgi.ollama4j;
 
+import io.github.amithkoujalgi.ollama4j.core.OllamaAPI;
+import io.github.amithkoujalgi.ollama4j.core.exceptions.OllamaBaseException;
+import io.github.amithkoujalgi.ollama4j.core.types.OllamaModelType;
 import org.apache.hc.core5.http.ParseException;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
@@ -12,7 +15,7 @@ public class TestMockedAPIs {
     @Test
     public void testMockPullModel() {
         OllamaAPI ollamaAPI = Mockito.mock(OllamaAPI.class);
-        OllamaModel model = OllamaModel.LLAMA2;
+        String model = OllamaModelType.LLAMA2;
         try {
             doNothing().when(ollamaAPI).pullModel(model);
             ollamaAPI.pullModel(model);

@@ -1,0 +1,61 @@
+"""
+Following is the database schema.
+
+DROP TABLE IF EXISTS product_categories;
+CREATE TABLE IF NOT EXISTS product_categories
+(
+    category_id INTEGER PRIMARY KEY, -- Unique ID for each category
+    name        VARCHAR(50),         -- Name of the category
+    parent      INTEGER NULL,        -- Parent category - for hierarchical categories
+    FOREIGN KEY (parent) REFERENCES product_categories (category_id)
+);
+DROP TABLE IF EXISTS products;
+CREATE TABLE IF NOT EXISTS products
+(
+    product_id  INTEGER PRIMARY KEY, -- Unique ID for each product
+    name        VARCHAR(50),         -- Name of the product
+    price       DECIMAL(10, 2),      -- Price of each unit of the product
+    quantity    INTEGER,             -- Current quantity in stock
+    category_id INTEGER,             -- Unique ID for each product
+    FOREIGN KEY (category_id) REFERENCES product_categories (category_id)
+);
+DROP TABLE IF EXISTS customers;
+CREATE TABLE IF NOT EXISTS customers
+(
+    customer_id INTEGER PRIMARY KEY, -- Unique ID for each customer
+    name        VARCHAR(50),         -- Name of the customer
+    address     VARCHAR(100)         -- Mailing address of the customer
+);
+DROP TABLE IF EXISTS salespeople;
+CREATE TABLE IF NOT EXISTS salespeople
+(
+    salesperson_id INTEGER PRIMARY KEY, -- Unique ID for each salesperson
+    name           VARCHAR(50),         -- Name of the salesperson
+    region         VARCHAR(50)          -- Geographic sales region
+);
+DROP TABLE IF EXISTS sales;
+CREATE TABLE IF NOT EXISTS sales
+(
+    sale_id        INTEGER PRIMARY KEY, -- Unique ID for each sale
+    product_id     INTEGER,             -- ID of product sold
+    customer_id    INTEGER,             -- ID of customer who made the purchase
+    salesperson_id INTEGER,             -- ID of salesperson who made the sale
+    sale_date      DATE,                -- Date the sale occurred
+    quantity       INTEGER,             -- Quantity of product sold
+    FOREIGN KEY (product_id) REFERENCES products (product_id),
+    FOREIGN KEY (customer_id) REFERENCES customers (customer_id),
+    FOREIGN KEY (salesperson_id) REFERENCES salespeople (salesperson_id)
+);
+DROP TABLE IF EXISTS product_suppliers;
+CREATE TABLE IF NOT EXISTS product_suppliers
+(
+    supplier_id  INTEGER PRIMARY KEY, -- Unique ID for each supplier
+    product_id   INTEGER,             -- Product ID supplied
+    supply_price DECIMAL(10, 2),      -- Unit price charged by supplier
+    FOREIGN KEY (product_id) REFERENCES products (product_id)
+);
+
+
+Generate only a valid (syntactically correct) executable Postgres SQL query (without any explanation of the query) for the following question:
+`<question>`:
+"""

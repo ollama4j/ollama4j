@@ -1,9 +1,8 @@
-package io.github.amithkoujalgi.ollama4j;
+package io.github.amithkoujalgi.ollama4j.core.models;
 
 import java.util.List;
 
-public
-class OllamaResponseModel {
+public class OllamaResponseModel {
     private String model;
     private String created_at;
     private String response;
