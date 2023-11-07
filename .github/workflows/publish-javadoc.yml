@@ -24,11 +24,24 @@ concurrency:
 jobs:
   # Single deploy job since we're just deploying
   deploy:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
-    runs-on: ubuntu-latest
     steps:
+      - uses: actions/checkout@v3
+      - name: Set up JDK 8
+        uses: actions/setup-java@v3
+        with:
+          java-version: '8'
+          distribution: 'temurin'
+          server-id: github # Value of the distributionManagement/repository/id field of the pom.xml
+          settings-path: ${{ github.workspace }} # location for the settings.xml file
+
       - name: Checkout
         uses: actions/checkout@v3
       - name: Setup Pages
