@@ -97,3 +97,8 @@ You'd then get a response from Ollama:
 ```
 I am LLaMA, an AI assistant developed by Meta AI that can understand and respond to human input in a conversational manner. I am trained on a massive dataset of text from the internet and can generate human-like responses to a wide range of topics and questions. I can be used to create chatbots, virtual assistants, and other applications that require natural language understanding and generation capabilities.
 ```
+
+#### Get Involved
+
+Contributions are most welcome! Whether it's reporting a bug, proposing an enhancement, or helping with code - any sort
+of contribution is much appreciated.
