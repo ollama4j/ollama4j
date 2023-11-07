@@ -33,7 +33,7 @@ You might want to include the Maven repository to pull the ollama4j library from
 
 Verify if the ollama4j dependencies have been resolved by running:
 
-```xml
+```bash
 mvn clean install
 ```
 
@@ -43,11 +43,13 @@ Start Ollama Container:
 docker run -v ~/ollama:/root/.ollama -p 11434:11434 ollama/ollama
 ```
 
+Find the full `Javadoc` (API specifications) [here](https://amithkoujalgi.github.io/ollama4j/).
+
 Pull a model:
 
 ```java
 public class Main {
-    public static void main(String[] args) throws Exception {
+    public static void main(String[] args) {
         String host = "http://localhost:11434/";
         OllamaAPI ollamaAPI = new OllamaAPI(host);
         ollamaAPI.pullModel(OllamaModel.LLAMA2);
@@ -61,7 +63,7 @@ Using sync API:
 
 ```java
 public class Main {
-    public static void main(String[] args) throws Exception {
+    public static void main(String[] args) {
         String host = "http://localhost:11434/";
         OllamaAPI ollamaAPI = new OllamaAPI(host);
         String response = ollamaAPI.runSync(OllamaModel.LLAMA2, "Who are you?");
@@ -74,7 +76,7 @@ Using async API:
 
 ```java
 public class Main {
-    public static void main(String[] args) throws Exception {
+    public static void main(String[] args) {
         String host = "http://localhost:11434/";
         OllamaAPI ollamaAPI = new OllamaAPI(host);
         OllamaAsyncResultCallback ollamaAsyncResultCallback = ollamaAPI.runAsync(OllamaModel.LLAMA2, "Who are you?");
@@ -83,7 +85,8 @@ public class Main {
                 System.out.println(ollamaAsyncResultCallback.getResponse());
                 break;
             }
-            Thread.sleep(1000);
+            // introduce sleep to check for status with a time interval
+            // Thread.sleep(1000);
         }
     }
 }
