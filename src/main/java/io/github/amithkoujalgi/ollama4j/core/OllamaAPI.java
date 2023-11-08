@@ -247,9 +247,9 @@ public class OllamaAPI {
      * Ask a question to a model running on Ollama server and get a callback handle that can be used to check for status and get the response from the model later.
      * This would be a async/non-blocking call.
      *
-     * @param ollamaModelType the ollama model type
-     * @param promptText the prompt text
-     * @return the ollama async result callback
+     * @param ollamaModelType the ollama model to ask the question to
+     * @param promptText the prompt/question text
+     * @return the ollama async result callback handle
      * @throws IOException
      */
     public OllamaAsyncResultCallback askAsync(String ollamaModelType, String promptText) throws IOException {
