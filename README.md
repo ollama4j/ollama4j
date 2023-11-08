@@ -49,7 +49,7 @@ You might want to include the Maven repository to pull the ollama4j library from
 
 Build your project to resolve the dependencies:
 
-```bash
+```shell
 mvn clean install -U
 ```
 
@@ -65,7 +65,7 @@ For simplest way to get started, I prefer to use the Ollama docker setup.
 
 Start the Ollama docker container:
 
-```
+```shell
 docker run -v ~/ollama:/root/.ollama -p 11434:11434 ollama/ollama
 ```
 
@@ -112,7 +112,7 @@ public class Main {
 
 Response:
 
-```bash
+```shell
 llama2:latest
 sqlcoder:latest
 ```
