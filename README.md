@@ -195,6 +195,7 @@ Find the full `Javadoc` (API specifications) [here](https://amithkoujalgi.github
 
 - Use Java-naming conventions for attributes in the request/response models instead of the snake-case conventions. (
   possibly with Jackson-mapper's `@JsonProperty`)
+- Fix deprecated HTTP client code
 - Setup logging
 - Add test cases
 - Handle exceptions better (maybe throw more appropriate exceptions)
