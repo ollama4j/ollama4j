@@ -49,7 +49,7 @@ public class OllamaAPI {
 
     /**
      * Set/unset logging of responses
-     * @param verbose - true/false
+     * @param verbose true/false
      */
     public void setVerbose(boolean verbose) {
         this.verbose = verbose;
