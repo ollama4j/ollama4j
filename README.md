@@ -149,7 +149,7 @@ You'd then get a response from the model:
 > 10. West Indies
 >
 > These teams will compete in the ICC World Cup 2019, which will be held in England and Wales from May 30 to July 14,
-2019.
+> 2019.
 
 #### Try asking for a Database query for your data schema:
 
