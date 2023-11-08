@@ -13,6 +13,8 @@ import org.apache.hc.core5.http.HttpEntity;
 import org.apache.hc.core5.http.ParseException;
 import org.apache.hc.core5.http.io.entity.EntityUtils;
 import org.apache.hc.core5.http.io.entity.StringEntity;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.BufferedReader;
 import java.io.DataOutputStream;
@@ -28,9 +30,9 @@ import java.util.stream.Collectors;
  */
 @SuppressWarnings({"DuplicatedCode", "ExtractMethodRecommender"})
 public class OllamaAPI {
-
-
+    private static final Logger logger = LoggerFactory.getLogger(OllamaAPI.class);
     private final String host;
+    private boolean verbose = false;
 
     /**
      * Instantiates the Ollama API.
@@ -43,6 +45,14 @@ public class OllamaAPI {
         } else {
             this.host = host;
         }
+    }
+
+    /**
+     * Set/unset logging of responses
+     * @param verbose - true/false
+     */
+    public void setVerbose(boolean verbose) {
+        this.verbose = verbose;
     }
 
     /**
@@ -77,15 +87,15 @@ public class OllamaAPI {
     /**
      * Gets model details from the Ollama server.
      *
-     * @param model the model
+     * @param modelName the model
      * @return the model details
      * @throws IOException
      * @throws OllamaBaseException
      * @throws ParseException
      */
-    public ModelDetail getModelDetails(Model model) throws IOException, OllamaBaseException, ParseException {
+    public ModelDetail getModelDetails(String modelName) throws IOException, OllamaBaseException, ParseException {
         String url = this.host + "/api/show";
-        String jsonData = String.format("{\"name\": \"%s\"}", model.getName());
+        String jsonData = String.format("{\"name\": \"%s\"}", modelName);
         final HttpPost httpPost = new HttpPost(url);
         final StringEntity entity = new StringEntity(jsonData);
         httpPost.setEntity(entity);
@@ -143,15 +153,15 @@ public class OllamaAPI {
      * Create a custom model from a model file.
      * Read more about custom model file creation <a href="https://github.com/jmorganca/ollama/blob/main/docs/modelfile.md">here</a>.
      *
-     * @param name the name of the custom model to be created
+     * @param modelName the name of the custom model to be created.
      * @param modelFilePath the path to model file that exists on the Ollama server.
      * @throws IOException
      * @throws ParseException
      * @throws OllamaBaseException
      */
-    public void createModel(String name, String modelFilePath) throws IOException, ParseException, OllamaBaseException {
+    public void createModel(String modelName, String modelFilePath) throws IOException, ParseException, OllamaBaseException {
         String url = this.host + "/api/create";
-        String jsonData = String.format("{\"name\": \"%s\", \"path\": \"%s\"}", name, modelFilePath);
+        String jsonData = String.format("{\"name\": \"%s\", \"path\": \"%s\"}", modelName, modelFilePath);
         final HttpPost httpPost = new HttpPost(url);
         final StringEntity entity = new StringEntity(jsonData);
         httpPost.setEntity(entity);
@@ -163,6 +173,13 @@ public class OllamaAPI {
             String responseString = "";
             if (responseEntity != null) {
                 responseString = EntityUtils.toString(responseEntity, "UTF-8");
+                // FIXME: Ollama API returns HTTP status code 200 for model creation failure cases. Correct this if the issue is fixed in the Ollama API server.
+                if (responseString.contains("error")) {
+                    throw new OllamaBaseException(responseString);
+                }
+                if (verbose) {
+                    logger.info(responseString);
+                }
             }
             if (statusCode != 200) {
                 throw new OllamaBaseException(statusCode + " - " + responseString);
@@ -193,6 +210,9 @@ public class OllamaAPI {
             String responseString = "";
             if (responseEntity != null) {
                 responseString = EntityUtils.toString(responseEntity, "UTF-8");
+                if (verbose) {
+                    logger.info(responseString);
+                }
             }
             if (statusCode == 404 && responseString.contains("model") && responseString.contains("not found")) {
                 return;

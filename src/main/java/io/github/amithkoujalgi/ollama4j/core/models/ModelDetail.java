@@ -1,5 +1,7 @@
 package io.github.amithkoujalgi.ollama4j.core.models;
 
+import com.google.gson.GsonBuilder;
+
 public class ModelDetail {
     private String license, modelfile, parameters, template;
 
@@ -33,5 +35,10 @@ public class ModelDetail {
 
     public void setTemplate(String template) {
         this.template = template;
+    }
+
+    @Override
+    public String toString() {
+        return new GsonBuilder().setPrettyPrinting().create().toJson(this);
     }
 }
