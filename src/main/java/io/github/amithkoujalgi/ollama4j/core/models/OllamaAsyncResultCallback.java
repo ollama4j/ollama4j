@@ -36,8 +36,6 @@ public class OllamaAsyncResultCallback extends Thread {
                         if (!ollamaResponseModel.getDone()) {
                             response.append(ollamaResponseModel.getResponse());
                         }
-                        //                        System.out.println("Streamed response line: " +
-                        // responseModel.getResponse());
                     }
                     in.close();
                     this.isDone = true;
