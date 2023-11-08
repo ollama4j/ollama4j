@@ -23,12 +23,20 @@ import java.net.URL;
 import java.util.List;
 import java.util.stream.Collectors;
 
+/**
+ * The base Ollama API class.
+ */
 @SuppressWarnings({"DuplicatedCode", "ExtractMethodRecommender"})
 public class OllamaAPI {
 
 
     private final String host;
 
+    /**
+     * Instantiates the Ollama API.
+     *
+     * @param host the host address of Ollama server
+     */
     public OllamaAPI(String host) {
         if (host.endsWith("/")) {
             this.host = host.substring(0, host.length() - 1);
@@ -37,6 +45,14 @@ public class OllamaAPI {
         }
     }
 
+    /**
+     * List available models from Ollama server.
+     *
+     * @return the list
+     * @throws IOException
+     * @throws OllamaBaseException
+     * @throws ParseException
+     */
     public List<Model> listModels() throws IOException, OllamaBaseException, ParseException {
         String url = this.host + "/api/tags";
         final HttpGet httpGet = new HttpGet(url);
@@ -58,6 +74,15 @@ public class OllamaAPI {
         }
     }
 
+    /**
+     * Gets model details from the Ollama server.
+     *
+     * @param model the model
+     * @return the model details
+     * @throws IOException
+     * @throws OllamaBaseException
+     * @throws ParseException
+     */
     public ModelDetail getModelDetails(Model model) throws IOException, OllamaBaseException, ParseException {
         String url = this.host + "/api/show";
         String jsonData = String.format("{\"name\": \"%s\"}", model.getName());
@@ -81,6 +106,14 @@ public class OllamaAPI {
         }
     }
 
+    /**
+     * Pull a model on the Ollama server from the list of <a href="https://ollama.ai/library">available models</a>.
+     *
+     * @param model the name of the model
+     * @throws IOException
+     * @throws ParseException
+     * @throws OllamaBaseException
+     */
     public void pullModel(String model) throws IOException, ParseException, OllamaBaseException {
         List<Model> models = listModels().stream().filter(m -> m.getModelName().split(":")[0].equals(model)).collect(Collectors.toList());
         if (!models.isEmpty()) {
@@ -106,6 +139,16 @@ public class OllamaAPI {
         }
     }
 
+    /**
+     * Create a custom model from a model file.
+     * Read more about custom model file creation <a href="https://github.com/jmorganca/ollama/blob/main/docs/modelfile.md">here</a>.
+     *
+     * @param name the name of the custom model to be created
+     * @param modelFilePath the path to model file that exists on the Ollama server.
+     * @throws IOException
+     * @throws ParseException
+     * @throws OllamaBaseException
+     */
     public void createModel(String name, String modelFilePath) throws IOException, ParseException, OllamaBaseException {
         String url = this.host + "/api/create";
         String jsonData = String.format("{\"name\": \"%s\", \"path\": \"%s\"}", name, modelFilePath);
@@ -127,6 +170,15 @@ public class OllamaAPI {
         }
     }
 
+    /**
+     * Delete a model from Ollama server.
+     *
+     * @param name the name of the model to be deleted.
+     * @param ignoreIfNotPresent - ignore errors if the specified model is not present on Ollama server.
+     * @throws IOException
+     * @throws ParseException
+     * @throws OllamaBaseException
+     */
     public void deleteModel(String name, boolean ignoreIfNotPresent) throws IOException, ParseException, OllamaBaseException {
         String url = this.host + "/api/delete";
         String jsonData = String.format("{\"name\": \"%s\"}", name);
@@ -152,6 +204,15 @@ public class OllamaAPI {
     }
 
 
+    /**
+     * Ask a question to a model running on Ollama server. This is a sync/blocking call.
+     *
+     * @param ollamaModelType the ollama model to ask the question to
+     * @param promptText the prompt/question text
+     * @return the response text from the model
+     * @throws OllamaBaseException
+     * @throws IOException
+     */
     public String ask(String ollamaModelType, String promptText) throws OllamaBaseException, IOException {
         Gson gson = new Gson();
         OllamaRequestModel ollamaRequestModel = new OllamaRequestModel(ollamaModelType, promptText);
@@ -182,6 +243,15 @@ public class OllamaAPI {
         }
     }
 
+    /**
+     * Ask a question to a model running on Ollama server and get a callback handle that can be used to check for status and get the response from the model later.
+     * This would be a async/non-blocking call.
+     *
+     * @param ollamaModelType the ollama model type
+     * @param promptText the prompt text
+     * @return the ollama async result callback
+     * @throws IOException
+     */
     public OllamaAsyncResultCallback askAsync(String ollamaModelType, String promptText) throws IOException {
         OllamaRequestModel ollamaRequestModel = new OllamaRequestModel(ollamaModelType, promptText);
         URL obj = new URL(this.host + "/api/generate");

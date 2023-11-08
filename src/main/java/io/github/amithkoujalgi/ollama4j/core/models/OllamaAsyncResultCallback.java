@@ -13,8 +13,8 @@ public class OllamaAsyncResultCallback extends Thread {
     private String result;
     private boolean isDone;
 
-    public OllamaAsyncResultCallback(HttpURLConnection con) {
-        this.connection = con;
+    public OllamaAsyncResultCallback(HttpURLConnection connection) {
+        this.connection = connection;
         this.isDone = false;
         this.result = "";
     }
