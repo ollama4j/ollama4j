@@ -6,6 +6,15 @@ A Java library (wrapper/binding) for [Ollama](https://github.com/jmorganca/ollam
 
 ![Build Status](https://github.com/amithkoujalgi/ollama4j/actions/workflows/maven-publish.yml/badge.svg)
 
+![GitHub stars](https://img.shields.io/github/stars/amithkoujalgi/ollama4j?style=social)
+![GitHub forks](https://img.shields.io/github/forks/amithkoujalgi/ollama4j?style=social)
+![GitHub watchers](https://img.shields.io/github/watchers/amithkoujalgi/ollama4j?style=social)
+![GitHub repo size](https://img.shields.io/github/repo-size/amithkoujalgi/ollama4j?style=plastic)
+![GitHub language count](https://img.shields.io/github/languages/count/amithkoujalgi/ollama4j?style=plastic)
+![GitHub top language](https://img.shields.io/github/languages/top/amithkoujalgi/ollama4j?style=plastic)
+![GitHub last commit](https://img.shields.io/github/last-commit/amithkoujalgi/ollama4j?color=red&style=plastic)
+![Hits](https://hits.seeyoufarm.com/api/count/incr/badge.svg?url=https%3A%2F%2Fgithub.com%2Famithkoujalgi%2Follama4j&count_bg=%2379C83D&title_bg=%23555555&icon=&icon_color=%23E7E7E7&title=hits&edge_flat=false)
+
 ## Table of Contents
 
 - [Requirements](#requirements)
