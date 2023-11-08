@@ -11,6 +11,7 @@ A Java library (wrapper) for [Ollama](https://github.com/jmorganca/ollama/blob/m
 - [Requirements](#requirements)
 - [Installation](#installation)
 - [Demo APIs](#try-out-the-apis)
+- [API Spec](#api-spec)
 - [Contributions](#get-involved)
 
 #### Requirements
@@ -185,6 +186,8 @@ FROM sales
          JOIN customers ON sales.customer_id = customers.customer_id
 GROUP BY customers.name;
 ```
+
+#### API Spec
 
 Find the full `Javadoc` (API specifications) [here](https://amithkoujalgi.github.io/ollama4j/).
 
