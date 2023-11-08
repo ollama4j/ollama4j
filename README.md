@@ -50,7 +50,7 @@ You might want to include the Maven repository to pull the ollama4j library from
 Build your project to resolve the dependencies:
 
 ```bash
-mvn clean install
+mvn clean install -U
 ```
 
 You can then use the Ollama Java APIs by importing `ollama4j`:
