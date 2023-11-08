@@ -196,6 +196,14 @@ Find the full `Javadoc` (API specifications) [here](https://amithkoujalgi.github
 - Use Java-naming conventions for attributes in the request/response models instead of the snake-case conventions. (
   possibly with Jackson-mapper's `@JsonProperty`)
 - Fix deprecated HTTP client code
+- Add additional params for `ask` APIs such as:
+    - `options`: additional model parameters for the Modelfile such as `temperature`
+    - `system`: system prompt to (overrides what is defined in the Modelfile)
+    - `template`: the full prompt or prompt template (overrides what is defined in the Modelfile)
+    - `context`: the context parameter returned from a previous request, which can be used to keep a short
+      conversational memory
+    - `stream`: Add support for streaming responses from the model
+
 - Setup logging
 - Add test cases
 - Handle exceptions better (maybe throw more appropriate exceptions)
