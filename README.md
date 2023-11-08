@@ -118,6 +118,67 @@ You'd then get a response from the model:
 > require
 > natural language understanding and generation capabilities.
 
+#### Try asking a question from general topics:
+
+```java
+public class Main {
+    public static void main(String[] args) throws Exception {
+        String host = "http://localhost:11434/";
+        OllamaAPI ollamaAPI = new OllamaAPI(host);
+
+        String prompt = SamplePrompts.getSampleDatabasePromptWithQuestion("Give me a list of world cup cricket teams.");
+        String response = ollamaAPI.ask(OllamaModelType.LLAMA2, prompt);
+        System.out.println(response);
+    }
+}
+```
+
+You'd then get a response from the model:
+
+> Certainly! Here are the 10 teams that have qualified for the ICC World Cup in cricket:
+>
+> 1. Australia
+> 2. Bangladesh
+> 3. England and Wales
+> 4. India
+> 5. Ireland
+> 6. New Zealand
+> 7. Pakistan
+> 8. South Africa
+> 9. Sri Lanka
+> 10. West Indies
+>
+> These teams will compete in the ICC World Cup 2019, which will be held in England and Wales from May 30 to July 14,
+2019.
+
+#### Try asking for a Database query for your data schema:
+
+```java
+public class Main {
+    public static void main(String[] args) throws Exception {
+        String host = "http://localhost:11434/";
+        OllamaAPI ollamaAPI = new OllamaAPI(host);
+
+        String prompt = SamplePrompts.getSampleDatabasePromptWithQuestion("List all customer names who have bought one or more products");
+        String response = ollamaAPI.ask(OllamaModelType.SQLCODER, prompt);
+        System.out.println(response);
+    }
+}
+```
+
+_Note: Here I've used
+a [sample prompt](https://github.com/amithkoujalgi/ollama4j/blob/main/src/main/resources/sample-db-prompt-template.txt)
+containing a database schema from within this library for demonstration purposes._
+
+You'd then get a response from the model:
+
+```sql
+SELECT customers.name
+FROM sales
+         JOIN customers ON sales.customer_id = customers.customer_id
+GROUP BY customers.name;
+```
+
 Find the full `Javadoc` (API specifications) [here](https://amithkoujalgi.github.io/ollama4j/).
 
 #### Get Involved
