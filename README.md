@@ -6,12 +6,19 @@ A Java library (wrapper) for [Ollama](https://github.com/jmorganca/ollama/blob/m
 
 ![Build Status](https://github.com/amithkoujalgi/ollama4j/actions/workflows/maven-publish.yml/badge.svg)
 
+## Table of Contents
+
+- [Requirements](#requirements)
+- [Installation](#installation)
+- [Demo APIs](#try-out-the-apis)
+- [Contributions](#get-involved)
+
 #### Requirements
 
 - Ollama (Either [natively](https://ollama.ai/download) setup or via [Docker](https://hub.docker.com/r/ollama/ollama))
 - Java 8 or above
 
-#### Install
+#### Installation
 
 In your Maven project, add this dependency available in
 the [Central Repository](https://s01.oss.sonatype.org/#nexus-search;quick~ollama4j):
@@ -180,6 +187,11 @@ GROUP BY customers.name;
 ```
 
 Find the full `Javadoc` (API specifications) [here](https://amithkoujalgi.github.io/ollama4j/).
+
+#### Areas of improvement
+
+- Use Java-naming conventions for attributes in the request/response models instead of the snake-case conventions. (
+  possibly with Jackson-mapper's `@JsonProperty`)
 
 #### Get Involved
 
