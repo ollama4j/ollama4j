@@ -169,7 +169,8 @@ public class Main {
     public static void main(String[] args) throws Exception {
         String host = "http://localhost:11434/";
         OllamaAPI ollamaAPI = new OllamaAPI(host);
-        ollamaAPI.createModel("mycustommodel", "/path/to/modelfile/on/ollama-server");
+        ollamaAPI.setVerbose(false);
+        ollamaAPI.deleteModel("mycustommodel", true);
     }
 }
 ```
@@ -183,7 +184,7 @@ public class Main {
     public static void main(String[] args) {
         String host = "http://localhost:11434/";
         OllamaAPI ollamaAPI = new OllamaAPI(host);
-        String response = ollamaAPI.runSync(OllamaModel.LLAMA2, "Who are you?");
+        String response = ollamaAPI.ask(OllamaModel.LLAMA2, "Who are you?");
         System.out.println(response);
     }
 }
@@ -196,7 +197,7 @@ public class Main {
     public static void main(String[] args) {
         String host = "http://localhost:11434/";
         OllamaAPI ollamaAPI = new OllamaAPI(host);
-        OllamaAsyncResultCallback ollamaAsyncResultCallback = ollamaAPI.runAsync(OllamaModel.LLAMA2, "Who are you?");
+        OllamaAsyncResultCallback ollamaAsyncResultCallback = ollamaAPI.askAsync(OllamaModel.LLAMA2, "Who are you?");
         while (true) {
             if (ollamaAsyncResultCallback.isComplete()) {
                 System.out.println(ollamaAsyncResultCallback.getResponse());

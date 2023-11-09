@@ -4,14 +4,26 @@ public class Model {
     private String name, modified_at, digest;
     private Long size;
 
+    /**
+     * Returns the model's tag. This includes model name and its version separated by a colon character `:`
+     * @return model tag
+     */
     public String getName() {
         return name;
     }
 
+    /**
+     * Returns the model name without its version
+     * @return model name
+     */
     public String getModelName() {
         return name.split(":")[0];
     }
 
+    /**
+     * Returns the model version without its name
+     * @return model version
+     */
     public String getModelVersion() {
         return name.split(":")[1];
     }
