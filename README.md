@@ -279,6 +279,28 @@ FROM sales
 GROUP BY customers.name;
 ```
 
+#### Async API with streaming response
+
+```java
+public class Main {
+    public static void main(String[] args) throws Exception {
+        String host = "http://localhost:11434/";
+        OllamaAPI ollamaAPI = new OllamaAPI(host);
+
+        String prompt = "List all cricket world cup teams of 2019.";
+        OllamaAsyncResultCallback callback = ollamaAPI.askAsync(OllamaModelType.LLAMA2, prompt);
+        while (!callback.isComplete() || !callback.getStream().isEmpty()) {
+            // poll for data from the response stream
+            String response = callback.getStream().poll();
+            if (response != null) {
+                System.out.print(response);
+            }
+            Thread.sleep(1000);
+        }
+    }
+}
+```
+
 #### API Spec
 
 Find the full `Javadoc` (API specifications) [here](https://amithkoujalgi.github.io/ollama4j/).

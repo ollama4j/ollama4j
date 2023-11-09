@@ -1,6 +1,7 @@
 package io.github.amithkoujalgi.ollama4j.core.models;
 
-import com.google.gson.GsonBuilder;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 public class ModelDetail {
     private String license, modelfile, parameters, template;
@@ -39,6 +40,13 @@ public class ModelDetail {
 
     @Override
     public String toString() {
-        return new GsonBuilder().setPrettyPrinting().create().toJson(this);
+        try {
+            return new ObjectMapper()
+                    .writer()
+                    .withDefaultPrettyPrinter()
+                    .writeValueAsString(this);
+        } catch (JsonProcessingException e) {
+            throw new RuntimeException(e);
+        }
     }
 }

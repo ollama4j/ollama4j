@@ -1,6 +1,6 @@
 package io.github.amithkoujalgi.ollama4j.core;
 
-import com.google.gson.Gson;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import io.github.amithkoujalgi.ollama4j.core.exceptions.OllamaBaseException;
 import io.github.amithkoujalgi.ollama4j.core.models.*;
 import org.apache.hc.client5.http.classic.methods.HttpDelete;
@@ -30,9 +30,12 @@ import java.util.stream.Collectors;
  */
 @SuppressWarnings({"DuplicatedCode", "ExtractMethodRecommender"})
 public class OllamaAPI {
+
     private static final Logger logger = LoggerFactory.getLogger(OllamaAPI.class);
     private final String host;
     private boolean verbose = false;
+
+    private final ObjectMapper objectMapper = new ObjectMapper();
 
     /**
      * Instantiates the Ollama API.
@@ -76,8 +79,7 @@ public class OllamaAPI {
                 responseString = EntityUtils.toString(responseEntity, "UTF-8");
             }
             if (statusCode == 200) {
-                Models m = new Gson().fromJson(responseString, Models.class);
-                return m.getModels();
+                return objectMapper.readValue(responseString, ListModelsResponse.class).getModels();
             } else {
                 throw new OllamaBaseException(statusCode + " - " + responseString);
             }
@@ -109,7 +111,7 @@ public class OllamaAPI {
                 responseString = EntityUtils.toString(responseEntity, "UTF-8");
             }
             if (statusCode == 200) {
-                return new Gson().fromJson(responseString, ModelDetail.class);
+                return objectMapper.readValue(responseString, ModelDetail.class);
             } else {
                 throw new OllamaBaseException(statusCode + " - " + responseString);
             }
@@ -234,7 +236,6 @@ public class OllamaAPI {
      * @throws IOException
      */
     public String ask(String ollamaModelType, String promptText) throws OllamaBaseException, IOException {
-        Gson gson = new Gson();
         OllamaRequestModel ollamaRequestModel = new OllamaRequestModel(ollamaModelType, promptText);
         URL obj = new URL(this.host + "/api/generate");
         HttpURLConnection con = (HttpURLConnection) obj.openConnection();
@@ -250,7 +251,7 @@ public class OllamaAPI {
                 String inputLine;
                 StringBuilder response = new StringBuilder();
                 while ((inputLine = in.readLine()) != null) {
-                    OllamaResponseModel ollamaResponseModel = gson.fromJson(inputLine, OllamaResponseModel.class);
+                    OllamaResponseModel ollamaResponseModel = objectMapper.readValue(inputLine, OllamaResponseModel.class);
                     if (!ollamaResponseModel.getDone()) {
                         response.append(ollamaResponseModel.getResponse());
                     }
