@@ -1,32 +1,23 @@
 package io.github.amithkoujalgi.ollama4j.core.models;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import java.util.List;
 
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class OllamaResponseModel {
     private String model;
-    @JsonProperty("created_at")
-    private String createdAt;
+    private @JsonProperty("created_at") String createdAt;
     private String response;
     private Boolean done;
     private List<Integer> context;
-    @JsonProperty("total_duration")
-    private Long totalDuration;
-
-    @JsonProperty("load_duration")
-    private Long loadDuration;
-    @JsonProperty("prompt_eval_duration")
-    private Long promptEvalDuration;
-    @JsonProperty("eval_duration")
-
-    private Long evalDuration;
-    @JsonProperty("prompt_eval_count")
-
-    private Integer promptEvalCount;
-    @JsonProperty("evalCount")
-
-    private Integer eval_count;
+    private @JsonProperty("total_duration") Long totalDuration;
+    private @JsonProperty("load_duration") Long loadDuration;
+    private @JsonProperty("prompt_eval_duration") Long promptEvalDuration;
+    private @JsonProperty("eval_duration") Long evalDuration;
+    private @JsonProperty("prompt_eval_count") Integer promptEvalCount;
+    private @JsonProperty("eval_count") Integer evalCount;
 
     public String getModel() {
         return model;
@@ -108,11 +99,11 @@ public class OllamaResponseModel {
         this.promptEvalCount = promptEvalCount;
     }
 
-    public Integer getEval_count() {
-        return eval_count;
+    public Integer getEvalCount() {
+        return evalCount;
     }
 
-    public void setEval_count(Integer eval_count) {
-        this.eval_count = eval_count;
+    public void setEvalCount(Integer eval_count) {
+        this.evalCount = eval_count;
     }
 }
