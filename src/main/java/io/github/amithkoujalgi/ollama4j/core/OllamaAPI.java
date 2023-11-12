@@ -1,9 +1,8 @@
 package io.github.amithkoujalgi.ollama4j.core;
 
-import com.fasterxml.jackson.databind.DeserializationFeature;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import io.github.amithkoujalgi.ollama4j.core.exceptions.OllamaBaseException;
 import io.github.amithkoujalgi.ollama4j.core.models.*;
+import io.github.amithkoujalgi.ollama4j.core.utils.Utils;
 import org.apache.hc.client5.http.classic.methods.HttpDelete;
 import org.apache.hc.client5.http.classic.methods.HttpGet;
 import org.apache.hc.client5.http.classic.methods.HttpPost;
@@ -36,9 +35,6 @@ public class OllamaAPI {
     private static final Logger logger = LoggerFactory.getLogger(OllamaAPI.class);
     private final String host;
     private boolean verbose = false;
-
-    private final ObjectMapper objectMapper = new ObjectMapper()
-            .configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
 
     /**
      * Instantiates the Ollama API.
@@ -82,7 +78,7 @@ public class OllamaAPI {
                 responseString = EntityUtils.toString(responseEntity, "UTF-8");
             }
             if (statusCode == 200) {
-                return objectMapper.readValue(responseString, ListModelsResponse.class).getModels();
+                return Utils.getObjectMapper().readValue(responseString, ListModelsResponse.class).getModels();
             } else {
                 throw new OllamaBaseException(statusCode + " - " + responseString);
             }
@@ -114,7 +110,7 @@ public class OllamaAPI {
                 responseString = EntityUtils.toString(responseEntity, "UTF-8");
             }
             if (statusCode == 200) {
-                return objectMapper.readValue(responseString, ModelDetail.class);
+                return Utils.getObjectMapper().readValue(responseString, ModelDetail.class);
             } else {
                 throw new OllamaBaseException(statusCode + " - " + responseString);
             }
@@ -245,9 +241,9 @@ public class OllamaAPI {
         con.setRequestMethod("POST");
         con.setDoOutput(true);
         con.setRequestProperty("Content-Type", "application/json");
-        System.out.println(ollamaRequestModel.toString());
+        String jsonReq = Utils.getObjectMapper().writeValueAsString(ollamaRequestModel);
         try (OutputStream out = con.getOutputStream()) {
-            out.write(ollamaRequestModel.toString().getBytes(StandardCharsets.UTF_8));
+            out.write(jsonReq.getBytes(StandardCharsets.UTF_8));
         }
         int responseCode = con.getResponseCode();
         if (responseCode == HttpURLConnection.HTTP_OK) {
@@ -255,7 +251,7 @@ public class OllamaAPI {
                 String inputLine;
                 StringBuilder response = new StringBuilder();
                 while ((inputLine = in.readLine()) != null) {
-                    OllamaResponseModel ollamaResponseModel = objectMapper.readValue(inputLine, OllamaResponseModel.class);
+                    OllamaResponseModel ollamaResponseModel = Utils.getObjectMapper().readValue(inputLine, OllamaResponseModel.class);
                     if (!ollamaResponseModel.getDone()) {
                         response.append(ollamaResponseModel.getResponse());
                     }
@@ -284,8 +280,9 @@ public class OllamaAPI {
         con.setRequestMethod("POST");
         con.setDoOutput(true);
         con.setRequestProperty("Content-Type", "application/json");
+        String jsonReq = Utils.getObjectMapper().writeValueAsString(ollamaRequestModel);
         try (OutputStream out = con.getOutputStream()) {
-            out.write(ollamaRequestModel.toString().getBytes(StandardCharsets.UTF_8));
+            out.write(jsonReq.getBytes(StandardCharsets.UTF_8));
         }
         OllamaAsyncResultCallback ollamaAsyncResultCallback = new OllamaAsyncResultCallback(con);
         ollamaAsyncResultCallback.start();
@@ -316,7 +313,7 @@ public class OllamaAPI {
             String responseString = "";
             if (responseEntity != null) {
                 responseString = EntityUtils.toString(responseEntity, "UTF-8");
-                EmbeddingResponse embeddingResponse = objectMapper.readValue(responseString, EmbeddingResponse.class);
+                EmbeddingResponse embeddingResponse = Utils.getObjectMapper().readValue(responseString, EmbeddingResponse.class);
                 return embeddingResponse.getEmbedding();
             } else {
                 throw new OllamaBaseException(statusCode + " - " + responseString);

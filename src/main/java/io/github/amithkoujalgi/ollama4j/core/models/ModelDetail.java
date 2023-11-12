@@ -1,8 +1,6 @@
 package io.github.amithkoujalgi.ollama4j.core.models;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 
 public class ModelDetail {
     private String license;
@@ -40,17 +38,5 @@ public class ModelDetail {
 
     public void setTemplate(String template) {
         this.template = template;
-    }
-
-    @Override
-    public String toString() {
-        try {
-            return new ObjectMapper()
-                    .writer()
-                    .withDefaultPrettyPrinter()
-                    .writeValueAsString(this);
-        } catch (JsonProcessingException e) {
-            throw new RuntimeException(e);
-        }
     }
 }
