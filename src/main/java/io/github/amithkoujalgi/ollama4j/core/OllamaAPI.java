@@ -1,8 +1,16 @@
 package io.github.amithkoujalgi.ollama4j.core;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import io.github.amithkoujalgi.ollama4j.core.exceptions.OllamaBaseException;
-import io.github.amithkoujalgi.ollama4j.core.models.*;
+import java.io.BufferedReader;
+import java.io.DataOutputStream;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.OutputStream;
+import java.net.HttpURLConnection;
+import java.net.URL;
+import java.nio.charset.StandardCharsets;
+import java.util.List;
+import java.util.stream.Collectors;
+
 import org.apache.hc.client5.http.classic.methods.HttpDelete;
 import org.apache.hc.client5.http.classic.methods.HttpGet;
 import org.apache.hc.client5.http.classic.methods.HttpPost;
@@ -16,14 +24,15 @@ import org.apache.hc.core5.http.io.entity.StringEntity;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.BufferedReader;
-import java.io.DataOutputStream;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.net.HttpURLConnection;
-import java.net.URL;
-import java.util.List;
-import java.util.stream.Collectors;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
+import io.github.amithkoujalgi.ollama4j.core.exceptions.OllamaBaseException;
+import io.github.amithkoujalgi.ollama4j.core.models.ListModelsResponse;
+import io.github.amithkoujalgi.ollama4j.core.models.Model;
+import io.github.amithkoujalgi.ollama4j.core.models.ModelDetail;
+import io.github.amithkoujalgi.ollama4j.core.models.OllamaAsyncResultCallback;
+import io.github.amithkoujalgi.ollama4j.core.models.OllamaRequestModel;
+import io.github.amithkoujalgi.ollama4j.core.models.OllamaResponseModel;
 
 /**
  * The base Ollama API class.
@@ -242,8 +251,8 @@ public class OllamaAPI {
         con.setRequestMethod("POST");
         con.setDoOutput(true);
         con.setRequestProperty("Content-Type", "application/json");
-        try (DataOutputStream wr = new DataOutputStream(con.getOutputStream())) {
-            wr.writeBytes(ollamaRequestModel.toString());
+        try (OutputStream out = con.getOutputStream()) {
+            out.write(ollamaRequestModel.toString().getBytes(StandardCharsets.UTF_8));
         }
         int responseCode = con.getResponseCode();
         if (responseCode == HttpURLConnection.HTTP_OK) {
