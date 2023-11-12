@@ -1,7 +1,12 @@
 package io.github.amithkoujalgi.ollama4j.core.models;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 public class Model {
-    private String name, modified_at, digest;
+    private String name;
+    @JsonProperty("modified_at")
+    private String modifiedAt;
+    private String digest;
     private Long size;
 
     /**
@@ -32,12 +37,12 @@ public class Model {
         this.name = name;
     }
 
-    public String getModified_at() {
-        return modified_at;
+    public String getModifiedAt() {
+        return modifiedAt;
     }
 
-    public void setModified_at(String modified_at) {
-        this.modified_at = modified_at;
+    public void setModifiedAt(String modifiedAt) {
+        this.modifiedAt = modifiedAt;
     }
 
     public String getDigest() {

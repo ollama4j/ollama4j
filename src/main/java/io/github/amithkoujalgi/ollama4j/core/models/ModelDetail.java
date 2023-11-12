@@ -1,10 +1,14 @@
 package io.github.amithkoujalgi.ollama4j.core.models;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 public class ModelDetail {
-    private String license, modelfile, parameters, template;
+    private String license;
+    @JsonProperty("modelfile")
+    private String modelFile;
+    private String parameters, template;
 
     public String getLicense() {
         return license;
@@ -14,12 +18,12 @@ public class ModelDetail {
         this.license = license;
     }
 
-    public String getModelfile() {
-        return modelfile;
+    public String getModelFile() {
+        return modelFile;
     }
 
-    public void setModelfile(String modelfile) {
-        this.modelfile = modelfile;
+    public void setModelFile(String modelFile) {
+        this.modelFile = modelFile;
     }
 
     public String getParameters() {
