@@ -1,5 +1,6 @@
 package io.github.amithkoujalgi.ollama4j.core;
 
+import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.github.amithkoujalgi.ollama4j.core.exceptions.OllamaBaseException;
 import io.github.amithkoujalgi.ollama4j.core.models.*;
@@ -33,7 +34,8 @@ public class OllamaAPI {
     private final String host;
     private boolean verbose = false;
 
-    private final ObjectMapper objectMapper = new ObjectMapper();
+    private final ObjectMapper objectMapper = new ObjectMapper()
+            .configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
 
     /**
      * Instantiates the Ollama API.
@@ -240,6 +242,7 @@ public class OllamaAPI {
         con.setRequestMethod("POST");
         con.setDoOutput(true);
         con.setRequestProperty("Content-Type", "application/json");
+        System.out.println(ollamaRequestModel.toString());
         try (OutputStream out = con.getOutputStream()) {
             out.write(ollamaRequestModel.toString().getBytes(StandardCharsets.UTF_8));
         }
