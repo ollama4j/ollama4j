@@ -293,12 +293,12 @@ public class OllamaAPI {
      *
      * @param model name of model to generate embeddings from
      * @param prompt text to generate embeddings for
-     * @return embeddings as double[]
+     * @return embeddings
      * @throws IOException
      * @throws ParseException
      * @throws OllamaBaseException
      */
-    public double[] generateEmbeddings(String model, String prompt) throws IOException, ParseException, OllamaBaseException {
+    public List<Double> generateEmbeddings(String model, String prompt) throws IOException, ParseException, OllamaBaseException {
         String url = this.host + "/api/embeddings";
         String jsonData = String.format("{\"model\": \"%s\", \"prompt\": \"%s\"}", model, prompt);
         final HttpPost httpPost = new HttpPost(url);

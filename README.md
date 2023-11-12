@@ -175,6 +175,20 @@ public class Main {
 }
 ```
 
+#### Generate embeddings:
+
+```java
+public class Main {
+    public static void main(String[] args) throws Exception {
+        String host = "http://localhost:11434/";
+        OllamaAPI ollamaAPI = new OllamaAPI(host);
+        ollamaAPI.setVerbose(true);
+        List<Double> doubleList = ollamaAPI.generateEmbeddings(OllamaModelType.LLAMA2, "Here is an article about llamas...");
+        doubleList.forEach(System.out::println);
+    }
+}
+```
+
 #### Ask a question to the model with ollama4j
 
 ##### Using sync API:
