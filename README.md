@@ -154,7 +154,7 @@ Response:
 
 ```java
 public class Main {
-    public static void main(String[] args) throws Exception {
+    public static void main(String[] args) {
         String host = "http://localhost:11434/";
         OllamaAPI ollamaAPI = new OllamaAPI(host);
         ollamaAPI.createModel("mycustommodel", "/path/to/modelfile/on/ollama-server");
@@ -166,7 +166,7 @@ public class Main {
 
 ```java
 public class Main {
-    public static void main(String[] args) throws Exception {
+    public static void main(String[] args) {
         String host = "http://localhost:11434/";
         OllamaAPI ollamaAPI = new OllamaAPI(host);
         ollamaAPI.setVerbose(false);
@@ -179,12 +179,11 @@ public class Main {
 
 ```java
 public class Main {
-    public static void main(String[] args) throws Exception {
+    public static void main(String[] args) {
         String host = "http://localhost:11434/";
         OllamaAPI ollamaAPI = new OllamaAPI(host);
-        ollamaAPI.setVerbose(true);
-        List<Double> doubleList = ollamaAPI.generateEmbeddings(OllamaModelType.LLAMA2, "Here is an article about llamas...");
-        doubleList.forEach(System.out::println);
+        List<Double> embeddings = ollamaAPI.generateEmbeddings(OllamaModelType.LLAMA2, "Here is an article about llamas...");
+        embeddings.forEach(System.out::println);
     }
 }
 ```
@@ -236,7 +235,7 @@ You'd then get a response from the model:
 
 ```java
 public class Main {
-    public static void main(String[] args) throws Exception {
+    public static void main(String[] args) {
         String host = "http://localhost:11434/";
         OllamaAPI ollamaAPI = new OllamaAPI(host);
 
@@ -269,7 +268,7 @@ You'd then get a response from the model:
 
 ```java
 public class Main {
-    public static void main(String[] args) throws Exception {
+    public static void main(String[] args) {
         String host = "http://localhost:11434/";
         OllamaAPI ollamaAPI = new OllamaAPI(host);
 
@@ -297,7 +296,7 @@ GROUP BY customers.name;
 
 ```java
 public class Main {
-    public static void main(String[] args) throws Exception {
+    public static void main(String[] args) {
         String host = "http://localhost:11434/";
         OllamaAPI ollamaAPI = new OllamaAPI(host);
 
