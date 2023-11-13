@@ -10,7 +10,7 @@ public class OllamaResponseModel {
     private String model;
     private @JsonProperty("created_at") String createdAt;
     private String response;
-    private Boolean done;
+    private boolean done;
     private List<Integer> context;
     private @JsonProperty("total_duration") Long totalDuration;
     private @JsonProperty("load_duration") Long loadDuration;
@@ -43,11 +43,11 @@ public class OllamaResponseModel {
         this.response = response;
     }
 
-    public Boolean getDone() {
+    public boolean getDone() {
         return done;
     }
 
-    public void setDone(Boolean done) {
+    public void setDone(boolean done) {
         this.done = done;
     }
 

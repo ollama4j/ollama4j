@@ -10,7 +10,6 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.net.HttpURLConnection;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.http.HttpClient;
@@ -22,6 +21,7 @@ import java.util.List;
 /**
  * The base Ollama API class.
  */
+@SuppressWarnings("DuplicatedCode")
 public class OllamaAPI {
 
     private static final Logger logger = LoggerFactory.getLogger(OllamaAPI.class);
@@ -205,12 +205,23 @@ public class OllamaAPI {
         HttpClient httpClient = HttpClient.newHttpClient();
         URI uri = URI.create(this.host + "/api/generate");
         HttpRequest request = HttpRequest.newBuilder(uri).POST(HttpRequest.BodyPublishers.ofString(Utils.getObjectMapper().writeValueAsString(ollamaRequestModel))).header("Content-Type", "application/json").build();
-        HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
-        if (response.statusCode() == HttpURLConnection.HTTP_OK) {
-            OllamaResponseModel ollamaResponseModel = Utils.getObjectMapper().readValue(response.body(), OllamaResponseModel.class);
-            return ollamaResponseModel.getResponse();
+        HttpResponse<InputStream> response = httpClient.send(request, HttpResponse.BodyHandlers.ofInputStream());
+        int statusCode = response.statusCode();
+        InputStream responseBodyStream = response.body();
+        StringBuilder responseBuffer = new StringBuilder();
+        try (BufferedReader reader = new BufferedReader(new InputStreamReader(responseBodyStream, StandardCharsets.UTF_8))) {
+            String line;
+            while ((line = reader.readLine()) != null) {
+                OllamaResponseModel ollamaResponseModel = Utils.getObjectMapper().readValue(line, OllamaResponseModel.class);
+                if (!ollamaResponseModel.getDone()) {
+                    responseBuffer.append(ollamaResponseModel.getResponse());
+                }
+            }
+        }
+        if (statusCode != 200) {
+            throw new OllamaBaseException(statusCode + " - " + responseBuffer);
         } else {
-            throw new OllamaBaseException(response.statusCode() + " - " + response.body());
+            return responseBuffer.toString().trim();
         }
     }
 
@@ -222,7 +233,7 @@ public class OllamaAPI {
      * @param promptText the prompt/question text
      * @return the ollama async result callback handle
      */
-    public OllamaAsyncResultCallback askAsyncNew(String ollamaModelType, String promptText) {
+    public OllamaAsyncResultCallback askAsync(String ollamaModelType, String promptText) {
         OllamaRequestModel ollamaRequestModel = new OllamaRequestModel(ollamaModelType, promptText);
         HttpClient httpClient = HttpClient.newHttpClient();
         URI uri = URI.create(this.host + "/api/generate");

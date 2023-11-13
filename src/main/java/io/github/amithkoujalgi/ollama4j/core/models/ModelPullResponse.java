@@ -7,8 +7,8 @@ public class ModelPullResponse {
     private String status;
 
     private String digest;
-    private Long total;
-    private Long completed;
+    private long total;
+    private long completed;
 
     public String getStatus() {
         return status;
@@ -26,19 +26,19 @@ public class ModelPullResponse {
         this.digest = digest;
     }
 
-    public Long getTotal() {
+    public long getTotal() {
         return total;
     }
 
-    public void setTotal(Long total) {
+    public void setTotal(long total) {
         this.total = total;
     }
 
-    public Long getCompleted() {
+    public long getCompleted() {
         return completed;
     }
 
-    public void setCompleted(Long completed) {
+    public void setCompleted(long completed) {
         this.completed = completed;
     }
 }

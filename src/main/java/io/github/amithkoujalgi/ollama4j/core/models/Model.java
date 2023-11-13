@@ -7,7 +7,7 @@ public class Model {
     @JsonProperty("modified_at")
     private String modifiedAt;
     private String digest;
-    private Long size;
+    private long size;
 
     /**
      * Returns the model's tag. This includes model name and its version separated by a colon character `:`
@@ -53,11 +53,11 @@ public class Model {
         this.digest = digest;
     }
 
-    public Long getSize() {
+    public long getSize() {
         return size;
     }
 
-    public void setSize(Long size) {
+    public void setSize(long size) {
         this.size = size;
     }
 
