@@ -24,7 +24,6 @@ public class OllamaAsyncResultCallback extends Thread {
     private String result;
     private boolean isDone;
 
-
     public OllamaAsyncResultCallback(HttpClient client, URI uri, OllamaRequestModel ollamaRequestModel) {
         this.client = client;
         this.ollamaRequestModel = ollamaRequestModel;
