@@ -17,6 +17,10 @@ public class Model {
         return name;
     }
 
+    public void setName(String name) {
+        this.name = name;
+    }
+
     /**
      * Returns the model name without its version
      * @return model name
@@ -31,10 +35,6 @@ public class Model {
      */
     public String getModelVersion() {
         return name.split(":")[1];
-    }
-
-    public void setName(String name) {
-        this.name = name;
     }
 
     public String getModifiedAt() {

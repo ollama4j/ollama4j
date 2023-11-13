@@ -3,33 +3,25 @@ package io.github.amithkoujalgi.ollama4j.core;
 import io.github.amithkoujalgi.ollama4j.core.exceptions.OllamaBaseException;
 import io.github.amithkoujalgi.ollama4j.core.models.*;
 import io.github.amithkoujalgi.ollama4j.core.utils.Utils;
-import org.apache.hc.client5.http.classic.methods.HttpDelete;
-import org.apache.hc.client5.http.classic.methods.HttpGet;
-import org.apache.hc.client5.http.classic.methods.HttpPost;
-import org.apache.hc.client5.http.impl.classic.CloseableHttpClient;
-import org.apache.hc.client5.http.impl.classic.CloseableHttpResponse;
-import org.apache.hc.client5.http.impl.classic.HttpClients;
-import org.apache.hc.core5.http.HttpEntity;
-import org.apache.hc.core5.http.ParseException;
-import org.apache.hc.core5.http.io.entity.EntityUtils;
-import org.apache.hc.core5.http.io.entity.StringEntity;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.io.OutputStream;
 import java.net.HttpURLConnection;
-import java.net.URL;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.net.http.HttpClient;
+import java.net.http.HttpRequest;
+import java.net.http.HttpResponse;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
-import java.util.stream.Collectors;
 
 /**
  * The base Ollama API class.
  */
-@SuppressWarnings({"DuplicatedCode", "ExtractMethodRecommender"})
 public class OllamaAPI {
 
     private static final Logger logger = LoggerFactory.getLogger(OllamaAPI.class);
@@ -61,27 +53,46 @@ public class OllamaAPI {
      * List available models from Ollama server.
      *
      * @return the list
-     * @throws IOException
-     * @throws OllamaBaseException
-     * @throws ParseException
      */
-    public List<Model> listModels() throws IOException, OllamaBaseException, ParseException {
+    public List<Model> listModels() throws OllamaBaseException, IOException, InterruptedException, URISyntaxException {
         String url = this.host + "/api/tags";
-        final HttpGet httpGet = new HttpGet(url);
-        httpGet.setHeader("Accept", "application/json");
-        httpGet.setHeader("Content-type", "application/json");
-        try (CloseableHttpClient client = HttpClients.createDefault(); CloseableHttpResponse response = client.execute(httpGet)) {
-            final int statusCode = response.getCode();
-            HttpEntity responseEntity = response.getEntity();
-            String responseString = "";
-            if (responseEntity != null) {
-                responseString = EntityUtils.toString(responseEntity, "UTF-8");
+        HttpClient httpClient = HttpClient.newHttpClient();
+        HttpRequest httpRequest = HttpRequest.newBuilder().uri(new URI(url)).header("Accept", "application/json").header("Content-type", "application/json").GET().build();
+        HttpResponse<String> response = httpClient.send(httpRequest, HttpResponse.BodyHandlers.ofString());
+        int statusCode = response.statusCode();
+        String responseString = response.body();
+        if (statusCode == 200) {
+            return Utils.getObjectMapper().readValue(responseString, ListModelsResponse.class).getModels();
+        } else {
+            throw new OllamaBaseException(statusCode + " - " + responseString);
+        }
+    }
+
+    /**
+     * Pull a model on the Ollama server from the list of <a href="https://ollama.ai/library">available models</a>.
+     *
+     * @param model the name of the model
+     */
+    public void pullModel(String model) throws OllamaBaseException, IOException, URISyntaxException, InterruptedException {
+        String url = this.host + "/api/pull";
+        String jsonData = String.format("{\"name\": \"%s\"}", model);
+        HttpRequest request = HttpRequest.newBuilder().uri(new URI(url)).POST(HttpRequest.BodyPublishers.ofString(jsonData)).header("Accept", "application/json").header("Content-type", "application/json").build();
+        HttpClient client = HttpClient.newHttpClient();
+        HttpResponse<InputStream> response = client.send(request, HttpResponse.BodyHandlers.ofInputStream());
+        int statusCode = response.statusCode();
+        InputStream responseBodyStream = response.body();
+        String responseString = "";
+        try (BufferedReader reader = new BufferedReader(new InputStreamReader(responseBodyStream, StandardCharsets.UTF_8))) {
+            String line;
+            while ((line = reader.readLine()) != null) {
+                ModelPullResponse modelPullResponse = Utils.getObjectMapper().readValue(line, ModelPullResponse.class);
+                if (verbose) {
+                    logger.info(modelPullResponse.getStatus());
+                }
             }
-            if (statusCode == 200) {
-                return Utils.getObjectMapper().readValue(responseString, ListModelsResponse.class).getModels();
-            } else {
-                throw new OllamaBaseException(statusCode + " - " + responseString);
-            }
+        }
+        if (statusCode != 200) {
+            throw new OllamaBaseException(statusCode + " - " + responseString);
         }
     }
 
@@ -90,63 +101,23 @@ public class OllamaAPI {
      *
      * @param modelName the model
      * @return the model details
-     * @throws IOException
-     * @throws OllamaBaseException
-     * @throws ParseException
      */
-    public ModelDetail getModelDetails(String modelName) throws IOException, OllamaBaseException, ParseException {
+    public ModelDetail getModelDetails(String modelName) throws IOException, OllamaBaseException, InterruptedException {
         String url = this.host + "/api/show";
         String jsonData = String.format("{\"name\": \"%s\"}", modelName);
-        final HttpPost httpPost = new HttpPost(url);
-        final StringEntity entity = new StringEntity(jsonData);
-        httpPost.setEntity(entity);
-        httpPost.setHeader("Accept", "application/json");
-        httpPost.setHeader("Content-type", "application/json");
-        try (CloseableHttpClient client = HttpClients.createDefault(); CloseableHttpResponse response = client.execute(httpPost)) {
-            final int statusCode = response.getCode();
-            HttpEntity responseEntity = response.getEntity();
-            String responseString = "";
-            if (responseEntity != null) {
-                responseString = EntityUtils.toString(responseEntity, "UTF-8");
-            }
-            if (statusCode == 200) {
-                return Utils.getObjectMapper().readValue(responseString, ModelDetail.class);
-            } else {
-                throw new OllamaBaseException(statusCode + " - " + responseString);
-            }
-        }
-    }
 
-    /**
-     * Pull a model on the Ollama server from the list of <a href="https://ollama.ai/library">available models</a>.
-     *
-     * @param model the name of the model
-     * @throws IOException
-     * @throws ParseException
-     * @throws OllamaBaseException
-     */
-    public void pullModel(String model) throws IOException, ParseException, OllamaBaseException {
-        List<Model> models = listModels().stream().filter(m -> m.getModelName().split(":")[0].equals(model)).collect(Collectors.toList());
-        if (!models.isEmpty()) {
-            return;
-        }
-        String url = this.host + "/api/pull";
-        String jsonData = String.format("{\"name\": \"%s\"}", model);
-        final HttpPost httpPost = new HttpPost(url);
-        final StringEntity entity = new StringEntity(jsonData);
-        httpPost.setEntity(entity);
-        httpPost.setHeader("Accept", "application/json");
-        httpPost.setHeader("Content-type", "application/json");
-        try (CloseableHttpClient client = HttpClients.createDefault(); CloseableHttpResponse response = client.execute(httpPost)) {
-            final int statusCode = response.getCode();
-            HttpEntity responseEntity = response.getEntity();
-            String responseString = "";
-            if (responseEntity != null) {
-                responseString = EntityUtils.toString(responseEntity, "UTF-8");
-            }
-            if (statusCode != 200) {
-                throw new OllamaBaseException(statusCode + " - " + responseString);
-            }
+        HttpRequest request = HttpRequest.newBuilder().uri(URI.create(url)).header("Accept", "application/json").header("Content-type", "application/json").POST(HttpRequest.BodyPublishers.ofString(jsonData)).build();
+
+        HttpClient client = HttpClient.newHttpClient();
+        HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
+
+        int statusCode = response.statusCode();
+        String responseBody = response.body();
+
+        if (statusCode == 200) {
+            return Utils.getObjectMapper().readValue(responseBody, ModelDetail.class);
+        } else {
+            throw new OllamaBaseException(statusCode + " - " + responseBody);
         }
     }
 
@@ -156,35 +127,24 @@ public class OllamaAPI {
      *
      * @param modelName the name of the custom model to be created.
      * @param modelFilePath the path to model file that exists on the Ollama server.
-     * @throws IOException
-     * @throws ParseException
-     * @throws OllamaBaseException
      */
-    public void createModel(String modelName, String modelFilePath) throws IOException, ParseException, OllamaBaseException {
+    public void createModel(String modelName, String modelFilePath) throws IOException, InterruptedException, OllamaBaseException {
         String url = this.host + "/api/create";
         String jsonData = String.format("{\"name\": \"%s\", \"path\": \"%s\"}", modelName, modelFilePath);
-        final HttpPost httpPost = new HttpPost(url);
-        final StringEntity entity = new StringEntity(jsonData);
-        httpPost.setEntity(entity);
-        httpPost.setHeader("Accept", "application/json");
-        httpPost.setHeader("Content-type", "application/json");
-        try (CloseableHttpClient client = HttpClients.createDefault(); CloseableHttpResponse response = client.execute(httpPost)) {
-            final int statusCode = response.getCode();
-            HttpEntity responseEntity = response.getEntity();
-            String responseString = "";
-            if (responseEntity != null) {
-                responseString = EntityUtils.toString(responseEntity, "UTF-8");
-                // FIXME: Ollama API returns HTTP status code 200 for model creation failure cases. Correct this if the issue is fixed in the Ollama API server.
-                if (responseString.contains("error")) {
-                    throw new OllamaBaseException(responseString);
-                }
-                if (verbose) {
-                    logger.info(responseString);
-                }
-            }
-            if (statusCode != 200) {
-                throw new OllamaBaseException(statusCode + " - " + responseString);
-            }
+        HttpRequest request = HttpRequest.newBuilder().uri(URI.create(url)).header("Accept", "application/json").header("Content-Type", "application/json").POST(HttpRequest.BodyPublishers.ofString(jsonData, StandardCharsets.UTF_8)).build();
+        HttpClient client = HttpClient.newHttpClient();
+        HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
+        int statusCode = response.statusCode();
+        String responseString = response.body();
+        if (statusCode != 200) {
+            throw new OllamaBaseException(statusCode + " - " + responseString);
+        }
+        // FIXME: Ollama API returns HTTP status code 200 for model creation failure cases. Correct this if the issue is fixed in the Ollama API server.
+        if (responseString.contains("error")) {
+            throw new OllamaBaseException(responseString);
+        }
+        if (verbose) {
+            logger.info(responseString);
         }
     }
 
@@ -193,100 +153,21 @@ public class OllamaAPI {
      *
      * @param name the name of the model to be deleted.
      * @param ignoreIfNotPresent - ignore errors if the specified model is not present on Ollama server.
-     * @throws IOException
-     * @throws ParseException
-     * @throws OllamaBaseException
      */
-    public void deleteModel(String name, boolean ignoreIfNotPresent) throws IOException, ParseException, OllamaBaseException {
+    public void deleteModel(String name, boolean ignoreIfNotPresent) throws IOException, InterruptedException, OllamaBaseException {
         String url = this.host + "/api/delete";
         String jsonData = String.format("{\"name\": \"%s\"}", name);
-        final HttpDelete httpDelete = new HttpDelete(url);
-        final StringEntity entity = new StringEntity(jsonData);
-        httpDelete.setEntity(entity);
-        httpDelete.setHeader("Accept", "application/json");
-        httpDelete.setHeader("Content-type", "application/json");
-        try (CloseableHttpClient client = HttpClients.createDefault(); CloseableHttpResponse response = client.execute(httpDelete)) {
-            final int statusCode = response.getCode();
-            HttpEntity responseEntity = response.getEntity();
-            String responseString = "";
-            if (responseEntity != null) {
-                responseString = EntityUtils.toString(responseEntity, "UTF-8");
-                if (verbose) {
-                    logger.info(responseString);
-                }
-            }
-            if (statusCode == 404 && responseString.contains("model") && responseString.contains("not found")) {
-                return;
-            }
-            if (statusCode != 200) {
-                throw new OllamaBaseException(statusCode + " - " + responseString);
-            }
+        HttpRequest request = HttpRequest.newBuilder().uri(URI.create(url)).method("DELETE", HttpRequest.BodyPublishers.ofString(jsonData, StandardCharsets.UTF_8)).header("Accept", "application/json").header("Content-type", "application/json").build();
+        HttpClient client = HttpClient.newHttpClient();
+        HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
+        int statusCode = response.statusCode();
+        String responseBody = response.body();
+        if (statusCode == 404 && responseBody.contains("model") && responseBody.contains("not found")) {
+            return;
         }
-    }
-
-
-    /**
-     * Ask a question to a model running on Ollama server. This is a sync/blocking call.
-     *
-     * @param ollamaModelType the ollama model to ask the question to
-     * @param promptText the prompt/question text
-     * @return the response text from the model
-     * @throws OllamaBaseException
-     * @throws IOException
-     */
-    public String ask(String ollamaModelType, String promptText) throws OllamaBaseException, IOException {
-        OllamaRequestModel ollamaRequestModel = new OllamaRequestModel(ollamaModelType, promptText);
-        URL obj = new URL(this.host + "/api/generate");
-        HttpURLConnection con = (HttpURLConnection) obj.openConnection();
-        con.setRequestMethod("POST");
-        con.setDoOutput(true);
-        con.setRequestProperty("Content-Type", "application/json");
-        String jsonReq = Utils.getObjectMapper().writeValueAsString(ollamaRequestModel);
-        try (OutputStream out = con.getOutputStream()) {
-            out.write(jsonReq.getBytes(StandardCharsets.UTF_8));
+        if (statusCode != 200) {
+            throw new OllamaBaseException(statusCode + " - " + responseBody);
         }
-        int responseCode = con.getResponseCode();
-        if (responseCode == HttpURLConnection.HTTP_OK) {
-            try (BufferedReader in = new BufferedReader(new InputStreamReader(con.getInputStream()))) {
-                String inputLine;
-                StringBuilder response = new StringBuilder();
-                while ((inputLine = in.readLine()) != null) {
-                    OllamaResponseModel ollamaResponseModel = Utils.getObjectMapper().readValue(inputLine, OllamaResponseModel.class);
-                    if (!ollamaResponseModel.getDone()) {
-                        response.append(ollamaResponseModel.getResponse());
-                    }
-                }
-                in.close();
-                return response.toString();
-            }
-        } else {
-            throw new OllamaBaseException(con.getResponseCode() + " - " + con.getResponseMessage());
-        }
-    }
-
-    /**
-     * Ask a question to a model running on Ollama server and get a callback handle that can be used to check for status and get the response from the model later.
-     * This would be a async/non-blocking call.
-     *
-     * @param ollamaModelType the ollama model to ask the question to
-     * @param promptText the prompt/question text
-     * @return the ollama async result callback handle
-     * @throws IOException
-     */
-    public OllamaAsyncResultCallback askAsync(String ollamaModelType, String promptText) throws IOException {
-        OllamaRequestModel ollamaRequestModel = new OllamaRequestModel(ollamaModelType, promptText);
-        URL obj = new URL(this.host + "/api/generate");
-        HttpURLConnection con = (HttpURLConnection) obj.openConnection();
-        con.setRequestMethod("POST");
-        con.setDoOutput(true);
-        con.setRequestProperty("Content-Type", "application/json");
-        String jsonReq = Utils.getObjectMapper().writeValueAsString(ollamaRequestModel);
-        try (OutputStream out = con.getOutputStream()) {
-            out.write(jsonReq.getBytes(StandardCharsets.UTF_8));
-        }
-        OllamaAsyncResultCallback ollamaAsyncResultCallback = new OllamaAsyncResultCallback(con);
-        ollamaAsyncResultCallback.start();
-        return ollamaAsyncResultCallback;
     }
 
     /**
@@ -295,29 +176,58 @@ public class OllamaAPI {
      * @param model name of model to generate embeddings from
      * @param prompt text to generate embeddings for
      * @return embeddings
-     * @throws IOException
-     * @throws ParseException
-     * @throws OllamaBaseException
      */
-    public List<Double> generateEmbeddings(String model, String prompt) throws IOException, ParseException, OllamaBaseException {
+    public List<Double> generateEmbeddings(String model, String prompt) throws IOException, InterruptedException, OllamaBaseException {
         String url = this.host + "/api/embeddings";
         String jsonData = String.format("{\"model\": \"%s\", \"prompt\": \"%s\"}", model, prompt);
-        final HttpPost httpPost = new HttpPost(url);
-        final StringEntity entity = new StringEntity(jsonData);
-        httpPost.setEntity(entity);
-        httpPost.setHeader("Accept", "application/json");
-        httpPost.setHeader("Content-type", "application/json");
-        try (CloseableHttpClient client = HttpClients.createDefault(); CloseableHttpResponse response = client.execute(httpPost)) {
-            final int statusCode = response.getCode();
-            HttpEntity responseEntity = response.getEntity();
-            String responseString = "";
-            if (responseEntity != null) {
-                responseString = EntityUtils.toString(responseEntity, "UTF-8");
-                EmbeddingResponse embeddingResponse = Utils.getObjectMapper().readValue(responseString, EmbeddingResponse.class);
-                return embeddingResponse.getEmbedding();
-            } else {
-                throw new OllamaBaseException(statusCode + " - " + responseString);
-            }
+        HttpClient httpClient = HttpClient.newHttpClient();
+        HttpRequest request = HttpRequest.newBuilder().uri(URI.create(url)).header("Accept", "application/json").header("Content-type", "application/json").POST(HttpRequest.BodyPublishers.ofString(jsonData)).build();
+        HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
+        int statusCode = response.statusCode();
+        String responseBody = response.body();
+        if (statusCode == 200) {
+            EmbeddingResponse embeddingResponse = Utils.getObjectMapper().readValue(responseBody, EmbeddingResponse.class);
+            return embeddingResponse.getEmbedding();
+        } else {
+            throw new OllamaBaseException(statusCode + " - " + responseBody);
         }
+    }
+
+    /**
+     * Ask a question to a model running on Ollama server. This is a sync/blocking call.
+     *
+     * @param ollamaModelType the ollama model to ask the question to
+     * @param promptText the prompt/question text
+     * @return the response text from the model
+     */
+    public String ask(String ollamaModelType, String promptText) throws OllamaBaseException, IOException, InterruptedException {
+        OllamaRequestModel ollamaRequestModel = new OllamaRequestModel(ollamaModelType, promptText);
+        HttpClient httpClient = HttpClient.newHttpClient();
+        URI uri = URI.create(this.host + "/api/generate");
+        HttpRequest request = HttpRequest.newBuilder(uri).POST(HttpRequest.BodyPublishers.ofString(Utils.getObjectMapper().writeValueAsString(ollamaRequestModel))).header("Content-Type", "application/json").build();
+        HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
+        if (response.statusCode() == HttpURLConnection.HTTP_OK) {
+            OllamaResponseModel ollamaResponseModel = Utils.getObjectMapper().readValue(response.body(), OllamaResponseModel.class);
+            return ollamaResponseModel.getResponse();
+        } else {
+            throw new OllamaBaseException(response.statusCode() + " - " + response.body());
+        }
+    }
+
+    /**
+     * Ask a question to a model running on Ollama server and get a callback handle that can be used to check for status and get the response from the model later.
+     * This would be an async/non-blocking call.
+     *
+     * @param ollamaModelType the ollama model to ask the question to
+     * @param promptText the prompt/question text
+     * @return the ollama async result callback handle
+     */
+    public OllamaAsyncResultCallback askAsyncNew(String ollamaModelType, String promptText) {
+        OllamaRequestModel ollamaRequestModel = new OllamaRequestModel(ollamaModelType, promptText);
+        HttpClient httpClient = HttpClient.newHttpClient();
+        URI uri = URI.create(this.host + "/api/generate");
+        OllamaAsyncResultCallback ollamaAsyncResultCallback = new OllamaAsyncResultCallback(httpClient, uri, ollamaRequestModel);
+        ollamaAsyncResultCallback.start();
+        return ollamaAsyncResultCallback;
     }
 }

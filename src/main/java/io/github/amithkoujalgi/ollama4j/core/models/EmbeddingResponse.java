@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 
 import java.util.List;
 
+@SuppressWarnings("unused")
 public class EmbeddingResponse {
     @JsonProperty("embedding")
     private List<Double> embedding;

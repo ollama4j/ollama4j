@@ -26,7 +26,7 @@ A Java library (wrapper/binding) for [Ollama](https://github.com/jmorganca/ollam
 #### Requirements
 
 - Ollama (Either [natively](https://ollama.ai/download) setup or via [Docker](https://hub.docker.com/r/ollama/ollama))
-- Java 8 or above
+- Java 11 or above
 
 #### Installation
 
@@ -322,7 +322,7 @@ Find the full `Javadoc` (API specifications) [here](https://amithkoujalgi.github
 
 - [x] Use Java-naming conventions for attributes in the request/response models instead of the snake-case conventions. (
   possibly with Jackson-mapper's `@JsonProperty`)
-- [ ] Fix deprecated HTTP client code
+- [x] Fix deprecated HTTP client code
 - [ ] Add additional params for `ask` APIs such as:
     - `options`: additional model parameters for the Modelfile such as `temperature`
     - `system`: system prompt to (overrides what is defined in the Modelfile)

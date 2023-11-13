@@ -5,21 +5,30 @@ import io.github.amithkoujalgi.ollama4j.core.utils.Utils;
 
 import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.net.HttpURLConnection;
+import java.net.URI;
+import java.net.http.HttpClient;
+import java.net.http.HttpRequest;
+import java.net.http.HttpResponse;
+import java.nio.charset.StandardCharsets;
 import java.util.LinkedList;
 import java.util.Queue;
 
-
-@SuppressWarnings("DuplicatedCode")
+@SuppressWarnings("unused")
 public class OllamaAsyncResultCallback extends Thread {
-    private final HttpURLConnection connection;
+    private final HttpClient client;
+    private final URI uri;
+    private final OllamaRequestModel ollamaRequestModel;
+    private final Queue<String> queue = new LinkedList<>();
     private String result;
     private boolean isDone;
-    private final Queue<String> queue = new LinkedList<>();
 
-    public OllamaAsyncResultCallback(HttpURLConnection connection) {
-        this.connection = connection;
+
+    public OllamaAsyncResultCallback(HttpClient client, URI uri, OllamaRequestModel ollamaRequestModel) {
+        this.client = client;
+        this.ollamaRequestModel = ollamaRequestModel;
+        this.uri = uri;
         this.isDone = false;
         this.result = "";
         this.queue.add("");
@@ -27,28 +36,31 @@ public class OllamaAsyncResultCallback extends Thread {
 
     @Override
     public void run() {
-        int responseCode = 0;
         try {
-            responseCode = this.connection.getResponseCode();
-            if (responseCode == HttpURLConnection.HTTP_OK) {
-                try (BufferedReader in = new BufferedReader(new InputStreamReader(this.connection.getInputStream()))) {
-                    String inputLine;
-                    StringBuilder response = new StringBuilder();
-                    while ((inputLine = in.readLine()) != null) {
-                        OllamaResponseModel ollamaResponseModel = Utils.getObjectMapper().readValue(inputLine, OllamaResponseModel.class);
-                        queue.add(ollamaResponseModel.getResponse());
-                        if (!ollamaResponseModel.getDone()) {
-                            response.append(ollamaResponseModel.getResponse());
-                        }
+            HttpRequest request = HttpRequest.newBuilder(uri).POST(HttpRequest.BodyPublishers.ofString(Utils.getObjectMapper().writeValueAsString(ollamaRequestModel))).header("Content-Type", "application/json").build();
+            HttpResponse<InputStream> response = client.send(request, HttpResponse.BodyHandlers.ofInputStream());
+            int statusCode = response.statusCode();
+
+            InputStream responseBodyStream = response.body();
+            String responseString = "";
+            try (BufferedReader reader = new BufferedReader(new InputStreamReader(responseBodyStream, StandardCharsets.UTF_8))) {
+                String line;
+                StringBuilder responseBuffer = new StringBuilder();
+                while ((line = reader.readLine()) != null) {
+                    OllamaResponseModel ollamaResponseModel = Utils.getObjectMapper().readValue(line, OllamaResponseModel.class);
+                    queue.add(ollamaResponseModel.getResponse());
+                    if (!ollamaResponseModel.getDone()) {
+                        responseBuffer.append(ollamaResponseModel.getResponse());
                     }
-                    in.close();
-                    this.isDone = true;
-                    this.result = response.toString();
                 }
-            } else {
-                throw new OllamaBaseException(connection.getResponseCode() + " - " + connection.getResponseMessage());
+                reader.close();
+                this.isDone = true;
+                this.result = responseBuffer.toString();
             }
-        } catch (IOException | OllamaBaseException e) {
+            if (statusCode != 200) {
+                throw new OllamaBaseException(statusCode + " - " + responseString);
+            }
+        } catch (IOException | InterruptedException | OllamaBaseException e) {
             this.isDone = true;
             this.result = "FAILED! " + e.getMessage();
         }

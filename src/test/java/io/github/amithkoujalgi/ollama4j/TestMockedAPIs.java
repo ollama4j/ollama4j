@@ -3,11 +3,11 @@ package io.github.amithkoujalgi.ollama4j;
 import io.github.amithkoujalgi.ollama4j.core.OllamaAPI;
 import io.github.amithkoujalgi.ollama4j.core.exceptions.OllamaBaseException;
 import io.github.amithkoujalgi.ollama4j.core.types.OllamaModelType;
-import org.apache.hc.core5.http.ParseException;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
 import java.io.IOException;
+import java.net.URISyntaxException;
 
 import static org.mockito.Mockito.*;
 
@@ -20,7 +20,7 @@ public class TestMockedAPIs {
             doNothing().when(ollamaAPI).pullModel(model);
             ollamaAPI.pullModel(model);
             verify(ollamaAPI, times(1)).pullModel(model);
-        } catch (IOException | ParseException | OllamaBaseException e) {
+        } catch (IOException | OllamaBaseException | InterruptedException | URISyntaxException e) {
             throw new RuntimeException(e);
         }
     }

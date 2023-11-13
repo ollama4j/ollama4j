@@ -9,7 +9,7 @@
     <root level="info">
         <appender-ref ref="STDOUT"/>
     </root>
-    
+
     <logger name="org.apache" level="WARN"/>
     <logger name="httpclient" level="WARN"/>
 </configuration>
