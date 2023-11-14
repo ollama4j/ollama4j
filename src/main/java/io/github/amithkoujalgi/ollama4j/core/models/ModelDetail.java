@@ -7,6 +7,15 @@ public class ModelDetail {
     @JsonProperty("modelfile")
     private String modelFile;
     private String parameters, template;
+    private String system;
+
+    public String getSystem() {
+        return system;
+    }
+
+    public void setSystem(String system) {
+        this.system = system;
+    }
 
     public String getLicense() {
         return license;
