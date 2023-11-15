@@ -4,6 +4,7 @@ import io.github.amithkoujalgi.ollama4j.core.OllamaAPI;
 import io.github.amithkoujalgi.ollama4j.core.exceptions.OllamaBaseException;
 import io.github.amithkoujalgi.ollama4j.core.models.ModelDetail;
 import io.github.amithkoujalgi.ollama4j.core.models.OllamaAsyncResultCallback;
+import io.github.amithkoujalgi.ollama4j.core.models.OllamaResult;
 import io.github.amithkoujalgi.ollama4j.core.types.OllamaModelType;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
@@ -100,7 +101,7 @@ public class TestMockedAPIs {
         String model = OllamaModelType.LLAMA2;
         String prompt = "some prompt text";
         try {
-            when(ollamaAPI.ask(model, prompt)).thenReturn("");
+            when(ollamaAPI.ask(model, prompt)).thenReturn(new OllamaResult("", 0));
             ollamaAPI.ask(model, prompt);
             verify(ollamaAPI, times(1)).ask(model, prompt);
         } catch (IOException | OllamaBaseException | InterruptedException e) {

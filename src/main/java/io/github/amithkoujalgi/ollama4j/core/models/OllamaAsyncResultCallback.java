@@ -23,6 +23,7 @@ public class OllamaAsyncResultCallback extends Thread {
     private final Queue<String> queue = new LinkedList<>();
     private String result;
     private boolean isDone;
+    private long responseTime = 0;
 
     public OllamaAsyncResultCallback(HttpClient client, URI uri, OllamaRequestModel ollamaRequestModel) {
         this.client = client;
@@ -36,6 +37,7 @@ public class OllamaAsyncResultCallback extends Thread {
     @Override
     public void run() {
         try {
+            long startTime = System.currentTimeMillis();
             HttpRequest request = HttpRequest.newBuilder(uri).POST(HttpRequest.BodyPublishers.ofString(Utils.getObjectMapper().writeValueAsString(ollamaRequestModel))).header("Content-Type", "application/json").build();
             HttpResponse<InputStream> response = client.send(request, HttpResponse.BodyHandlers.ofInputStream());
             int statusCode = response.statusCode();
@@ -55,6 +57,8 @@ public class OllamaAsyncResultCallback extends Thread {
                 reader.close();
                 this.isDone = true;
                 this.result = responseBuffer.toString();
+                long endTime = System.currentTimeMillis();
+                responseTime = endTime - startTime;
             }
             if (statusCode != 200) {
                 throw new OllamaBaseException(statusCode + " - " + responseString);
@@ -79,5 +83,13 @@ public class OllamaAsyncResultCallback extends Thread {
 
     public Queue<String> getStream() {
         return queue;
+    }
+
+    /**
+     * Returns the response time in seconds.
+     * @return response time in seconds
+     */
+    public long getResponseTime() {
+        return responseTime;
     }
 }

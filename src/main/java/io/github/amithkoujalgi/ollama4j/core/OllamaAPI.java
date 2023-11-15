@@ -105,15 +105,11 @@ public class OllamaAPI {
     public ModelDetail getModelDetails(String modelName) throws IOException, OllamaBaseException, InterruptedException {
         String url = this.host + "/api/show";
         String jsonData = String.format("{\"name\": \"%s\"}", modelName);
-
         HttpRequest request = HttpRequest.newBuilder().uri(URI.create(url)).header("Accept", "application/json").header("Content-type", "application/json").POST(HttpRequest.BodyPublishers.ofString(jsonData)).build();
-
         HttpClient client = HttpClient.newHttpClient();
         HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
-
         int statusCode = response.statusCode();
         String responseBody = response.body();
-
         if (statusCode == 200) {
             return Utils.getObjectMapper().readValue(responseBody, ModelDetail.class);
         } else {
@@ -200,8 +196,9 @@ public class OllamaAPI {
      * @param promptText the prompt/question text
      * @return the response text from the model
      */
-    public String ask(String ollamaModelType, String promptText) throws OllamaBaseException, IOException, InterruptedException {
+    public OllamaResult ask(String ollamaModelType, String promptText) throws OllamaBaseException, IOException, InterruptedException {
         OllamaRequestModel ollamaRequestModel = new OllamaRequestModel(ollamaModelType, promptText);
+        long startTime = System.currentTimeMillis();
         HttpClient httpClient = HttpClient.newHttpClient();
         URI uri = URI.create(this.host + "/api/generate");
         HttpRequest request = HttpRequest.newBuilder(uri).POST(HttpRequest.BodyPublishers.ofString(Utils.getObjectMapper().writeValueAsString(ollamaRequestModel))).header("Content-Type", "application/json").build();
@@ -221,7 +218,8 @@ public class OllamaAPI {
         if (statusCode != 200) {
             throw new OllamaBaseException(statusCode + " - " + responseBuffer);
         } else {
-            return responseBuffer.toString().trim();
+            long endTime = System.currentTimeMillis();
+            return new OllamaResult(responseBuffer.toString().trim(), endTime - startTime);
         }
     }
 
