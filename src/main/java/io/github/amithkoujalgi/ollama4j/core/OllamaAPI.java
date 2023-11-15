@@ -194,7 +194,7 @@ public class OllamaAPI {
      *
      * @param ollamaModelType the ollama model to ask the question to
      * @param promptText the prompt/question text
-     * @return the response text from the model
+     * @return OllamaResult - that includes response text and time taken for response
      */
     public OllamaResult ask(String ollamaModelType, String promptText) throws OllamaBaseException, IOException, InterruptedException {
         OllamaRequestModel ollamaRequestModel = new OllamaRequestModel(ollamaModelType, promptText);
