@@ -4,6 +4,19 @@
 
 A Java library (wrapper/binding) for [Ollama](https://github.com/jmorganca/ollama/blob/main/docs/api.md) APIs.
 
+```mermaid
+  graph LR
+;
+    o4j[Ollama4j]
+    o[Ollama Server]
+    o4j -->|Communicates with| o;
+    m[Models]
+    subgraph Ollama Deployment
+        direction TB
+        o -->|Manages| m
+    end
+```
+
 ![Build Status](https://github.com/amithkoujalgi/ollama4j/actions/workflows/maven-publish.yml/badge.svg)
 
 ![GitHub stars](https://img.shields.io/github/stars/amithkoujalgi/ollama4j?style=social)
