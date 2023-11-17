@@ -6,7 +6,7 @@ A Java library (wrapper/binding) for [Ollama](https://github.com/jmorganca/ollam
 
 ```mermaid
   flowchart LR
-    o4j[Ollama4j fa:fa-brands fa-java]
+    o4j[Ollama4j]
     o[Ollama Server]
     o4j -->|Communicates with| o;
     m[Models]
