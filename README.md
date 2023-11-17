@@ -5,9 +5,8 @@
 A Java library (wrapper/binding) for [Ollama](https://github.com/jmorganca/ollama/blob/main/docs/api.md) APIs.
 
 ```mermaid
-  graph LR
-;
-    o4j[Ollama4j]
+  flowchart LR
+    o4j[Ollama4j fa:fa-java]
     o[Ollama Server]
     o4j -->|Communicates with| o;
     m[Models]
