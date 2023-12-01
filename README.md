@@ -1,6 +1,7 @@
 ### Ollama4j
 
-<img src='https://raw.githubusercontent.com/amithkoujalgi/ollama4j/163e88bc82b4beb4a52e4d99f9b5d9ef1255ec06/ollama4j.png' width='100' alt="ollama4j-icon">
+![286174407-18285406-664e-4201-b644-9e0178b5b5f5](https://github.com/amithkoujalgi/ollama4j/assets/1876165/e65d8e66-09a2-49ff-8f4a-b2285746c51e)
+
 
 A Java library (wrapper/binding) for [Ollama](https://github.com/jmorganca/ollama/blob/main/docs/api.md) APIs.
 
