@@ -9,11 +9,14 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 public class OllamaResult {
   private final String response;
 
+  private int httpStatusCode;
+
   private long responseTime = 0;
 
-  public OllamaResult(String response, long responseTime) {
+  public OllamaResult(String response, long responseTime, int httpStatusCode) {
     this.response = response;
     this.responseTime = responseTime;
+    this.httpStatusCode = httpStatusCode;
   }
 
   /**
@@ -32,6 +35,15 @@ public class OllamaResult {
    */
   public long getResponseTime() {
     return responseTime;
+  }
+
+  /**
+   * Get the response status code.
+   *
+   * @return int - response status code
+   */
+  public int getHttpStatusCode() {
+    return httpStatusCode;
   }
 
   @Override
