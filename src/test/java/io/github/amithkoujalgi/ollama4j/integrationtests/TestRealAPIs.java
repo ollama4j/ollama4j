@@ -1,4 +1,4 @@
-package io.github.amithkoujalgi.ollama4j;
+package io.github.amithkoujalgi.ollama4j.integrationtests;
 
 import io.github.amithkoujalgi.ollama4j.core.OllamaAPI;
 import io.github.amithkoujalgi.ollama4j.core.exceptions.OllamaBaseException;
@@ -15,7 +15,7 @@ import java.util.ArrayList;
 
 import static org.mockito.Mockito.*;
 
-public class TestMockedAPIs {
+public class TestRealAPIs {
     @Test
     public void testMockPullModel() {
         OllamaAPI ollamaAPI = Mockito.mock(OllamaAPI.class);

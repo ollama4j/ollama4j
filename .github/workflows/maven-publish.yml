@@ -34,7 +34,7 @@ jobs:
       #        run: mvn -U clean verify --file pom.xml
 
       - name: Build with Maven
-        run: mvn -U -B clean verify package --file pom.xml
+        run: mvn --file pom.xml -U clean package -Punit-tests
 
       - name: Set up Apache Maven Central (Overwrite settings.xml)
         uses: actions/setup-java@v3
