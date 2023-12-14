@@ -11,6 +11,7 @@ import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.nio.charset.StandardCharsets;
+import java.time.Duration;
 import java.util.LinkedList;
 import java.util.Queue;
 
@@ -24,17 +25,23 @@ public class OllamaAsyncResultCallback extends Thread {
   private boolean isDone;
   private boolean succeeded;
 
+  private long requestTimeoutSeconds;
+
   private int httpStatusCode;
   private long responseTime = 0;
 
   public OllamaAsyncResultCallback(
-      HttpClient client, URI uri, OllamaRequestModel ollamaRequestModel) {
+      HttpClient client,
+      URI uri,
+      OllamaRequestModel ollamaRequestModel,
+      long requestTimeoutSeconds) {
     this.client = client;
     this.ollamaRequestModel = ollamaRequestModel;
     this.uri = uri;
     this.isDone = false;
     this.result = "";
     this.queue.add("");
+    this.requestTimeoutSeconds = requestTimeoutSeconds;
   }
 
   @Override
@@ -47,6 +54,7 @@ public class OllamaAsyncResultCallback extends Thread {
                   HttpRequest.BodyPublishers.ofString(
                       Utils.getObjectMapper().writeValueAsString(ollamaRequestModel)))
               .header("Content-Type", "application/json")
+              .timeout(Duration.ofSeconds(requestTimeoutSeconds))
               .build();
       HttpResponse<InputStream> response =
           client.send(request, HttpResponse.BodyHandlers.ofInputStream());
@@ -139,5 +147,9 @@ public class OllamaAsyncResultCallback extends Thread {
    */
   public long getResponseTime() {
     return responseTime;
+  }
+
+  public void setRequestTimeoutSeconds(long requestTimeoutSeconds) {
+    this.requestTimeoutSeconds = requestTimeoutSeconds;
   }
 }

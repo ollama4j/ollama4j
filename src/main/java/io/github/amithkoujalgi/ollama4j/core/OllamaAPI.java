@@ -13,6 +13,7 @@ import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.nio.charset.StandardCharsets;
+import java.time.Duration;
 import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -23,6 +24,7 @@ public class OllamaAPI {
 
   private static final Logger logger = LoggerFactory.getLogger(OllamaAPI.class);
   private final String host;
+  private long requestTimeoutSeconds = 3;
   private boolean verbose = false;
 
   /**
@@ -61,6 +63,7 @@ public class OllamaAPI {
             .uri(new URI(url))
             .header("Accept", "application/json")
             .header("Content-type", "application/json")
+            .timeout(Duration.ofSeconds(requestTimeoutSeconds))
             .GET()
             .build();
     HttpResponse<String> response =
@@ -92,6 +95,7 @@ public class OllamaAPI {
             .POST(HttpRequest.BodyPublishers.ofString(jsonData))
             .header("Accept", "application/json")
             .header("Content-type", "application/json")
+            .timeout(Duration.ofSeconds(requestTimeoutSeconds))
             .build();
     HttpClient client = HttpClient.newHttpClient();
     HttpResponse<InputStream> response =
@@ -130,6 +134,7 @@ public class OllamaAPI {
             .uri(URI.create(url))
             .header("Accept", "application/json")
             .header("Content-type", "application/json")
+            .timeout(Duration.ofSeconds(requestTimeoutSeconds))
             .POST(HttpRequest.BodyPublishers.ofString(jsonData))
             .build();
     HttpClient client = HttpClient.newHttpClient();
@@ -160,6 +165,7 @@ public class OllamaAPI {
             .uri(URI.create(url))
             .header("Accept", "application/json")
             .header("Content-Type", "application/json")
+            .timeout(Duration.ofSeconds(requestTimeoutSeconds))
             .POST(HttpRequest.BodyPublishers.ofString(jsonData, StandardCharsets.UTF_8))
             .build();
     HttpClient client = HttpClient.newHttpClient();
@@ -196,6 +202,7 @@ public class OllamaAPI {
             .method("DELETE", HttpRequest.BodyPublishers.ofString(jsonData, StandardCharsets.UTF_8))
             .header("Accept", "application/json")
             .header("Content-type", "application/json")
+            .timeout(Duration.ofSeconds(requestTimeoutSeconds))
             .build();
     HttpClient client = HttpClient.newHttpClient();
     HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
@@ -226,6 +233,7 @@ public class OllamaAPI {
             .uri(URI.create(url))
             .header("Accept", "application/json")
             .header("Content-type", "application/json")
+            .timeout(Duration.ofSeconds(requestTimeoutSeconds))
             .POST(HttpRequest.BodyPublishers.ofString(jsonData))
             .build();
     HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
@@ -259,6 +267,7 @@ public class OllamaAPI {
                 HttpRequest.BodyPublishers.ofString(
                     Utils.getObjectMapper().writeValueAsString(ollamaRequestModel)))
             .header("Content-Type", "application/json")
+            .timeout(Duration.ofSeconds(requestTimeoutSeconds))
             .build();
     HttpResponse<InputStream> response =
         httpClient.send(request, HttpResponse.BodyHandlers.ofInputStream());
@@ -304,7 +313,7 @@ public class OllamaAPI {
     HttpClient httpClient = HttpClient.newHttpClient();
     URI uri = URI.create(this.host + "/api/generate");
     OllamaAsyncResultCallback ollamaAsyncResultCallback =
-        new OllamaAsyncResultCallback(httpClient, uri, ollamaRequestModel);
+        new OllamaAsyncResultCallback(httpClient, uri, ollamaRequestModel, requestTimeoutSeconds);
     ollamaAsyncResultCallback.start();
     return ollamaAsyncResultCallback;
   }

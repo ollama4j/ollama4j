@@ -114,7 +114,7 @@ class TestMockedAPIs {
     String model = OllamaModelType.LLAMA2;
     String prompt = "some prompt text";
     when(ollamaAPI.askAsync(model, prompt))
-        .thenReturn(new OllamaAsyncResultCallback(null, null, null));
+        .thenReturn(new OllamaAsyncResultCallback(null, null, null, 3));
     ollamaAPI.askAsync(model, prompt);
     verify(ollamaAPI, times(1)).askAsync(model, prompt);
   }
