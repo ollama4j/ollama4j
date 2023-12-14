@@ -353,6 +353,7 @@ Find the full `Javadoc` (API specifications) [here](https://amithkoujalgi.github
       conversational memory
     - `stream`: Add support for streaming responses from the model
 - [x] Setup logging
+- [ ] Use lombok
 - [ ] Add test cases
 - [ ] Handle exceptions better (maybe throw more appropriate exceptions)
 
