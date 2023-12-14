@@ -103,7 +103,7 @@ With GPUs
 docker run -it \
   --gpus=all \
   -v ~/ollama:/root/.ollama \
-  -p 11434:11434 
+  -p 11434:11434 \
   ollama/ollama
 ```
 
