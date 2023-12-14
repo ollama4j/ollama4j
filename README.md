@@ -94,6 +94,11 @@ Start the Ollama docker container:
 docker run -v ~/ollama:/root/.ollama -p 11434:11434 ollama/ollama
 ```
 
+With GPUs
+```
+docker run -d --gpus=all -v ~/ollama:/root/.ollama -p 11434:11434 ollama/ollama
+```
+
 Instantiate `OllamaAPI`
 
 ```java
