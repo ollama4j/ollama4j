@@ -14,9 +14,9 @@ import java.util.ArrayList;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
-public class TestMockedAPIs {
+class TestMockedAPIs {
   @Test
-  public void testMockPullModel() {
+  void testMockPullModel() {
     OllamaAPI ollamaAPI = Mockito.mock(OllamaAPI.class);
     String model = OllamaModelType.LLAMA2;
     try {
@@ -29,7 +29,7 @@ public class TestMockedAPIs {
   }
 
   @Test
-  public void testListModels() {
+  void testListModels() {
     OllamaAPI ollamaAPI = Mockito.mock(OllamaAPI.class);
     try {
       when(ollamaAPI.listModels()).thenReturn(new ArrayList<>());
@@ -41,7 +41,7 @@ public class TestMockedAPIs {
   }
 
   @Test
-  public void testCreateModel() {
+  void testCreateModel() {
     OllamaAPI ollamaAPI = Mockito.mock(OllamaAPI.class);
     String model = OllamaModelType.LLAMA2;
     String modelFilePath = "/somemodel";
@@ -55,7 +55,7 @@ public class TestMockedAPIs {
   }
 
   @Test
-  public void testDeleteModel() {
+  void testDeleteModel() {
     OllamaAPI ollamaAPI = Mockito.mock(OllamaAPI.class);
     String model = OllamaModelType.LLAMA2;
     try {
@@ -68,7 +68,7 @@ public class TestMockedAPIs {
   }
 
   @Test
-  public void testGetModelDetails() {
+  void testGetModelDetails() {
     OllamaAPI ollamaAPI = Mockito.mock(OllamaAPI.class);
     String model = OllamaModelType.LLAMA2;
     try {
@@ -81,7 +81,7 @@ public class TestMockedAPIs {
   }
 
   @Test
-  public void testGenerateEmbeddings() {
+  void testGenerateEmbeddings() {
     OllamaAPI ollamaAPI = Mockito.mock(OllamaAPI.class);
     String model = OllamaModelType.LLAMA2;
     String prompt = "some prompt text";
@@ -95,7 +95,7 @@ public class TestMockedAPIs {
   }
 
   @Test
-  public void testAsk() {
+  void testAsk() {
     OllamaAPI ollamaAPI = Mockito.mock(OllamaAPI.class);
     String model = OllamaModelType.LLAMA2;
     String prompt = "some prompt text";
@@ -109,7 +109,7 @@ public class TestMockedAPIs {
   }
 
   @Test
-  public void testAskAsync() {
+  void testAskAsync() {
     OllamaAPI ollamaAPI = Mockito.mock(OllamaAPI.class);
     String model = OllamaModelType.LLAMA2;
     String prompt = "some prompt text";
