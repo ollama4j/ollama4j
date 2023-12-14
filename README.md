@@ -346,7 +346,7 @@ Find the full `Javadoc` (API specifications) [here](https://amithkoujalgi.github
 Build:
 
 ```shell
-make ut
+make build
 ```
 
 Run unit tests:
