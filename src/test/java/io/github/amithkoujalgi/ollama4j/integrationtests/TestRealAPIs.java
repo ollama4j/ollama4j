@@ -101,7 +101,7 @@ public class TestRealAPIs {
         String model = OllamaModelType.LLAMA2;
         String prompt = "some prompt text";
         try {
-            when(ollamaAPI.ask(model, prompt)).thenReturn(new OllamaResult("", 0));
+            when(ollamaAPI.ask(model, prompt)).thenReturn(new OllamaResult("", 0,200));
             ollamaAPI.ask(model, prompt);
             verify(ollamaAPI, times(1)).ask(model, prompt);
         } catch (IOException | OllamaBaseException | InterruptedException e) {

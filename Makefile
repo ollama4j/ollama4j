@@ -3,3 +3,6 @@ ut:
 
 it:
 	mvn clean verify -Pintegration-tests
+
+build:
+	mvn clean test install -Punit-tests

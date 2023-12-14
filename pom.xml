@@ -127,6 +127,7 @@
           <excludes>
             <exclude>**/unittests/*.java</exclude>
           </excludes>
+          <skipTests>${skipIntegrationTests}</skipTests>
         </configuration>
         <executions>
           <execution>
@@ -189,6 +190,7 @@
       <properties>
         <test.env>unit</test.env>
         <skipUnitTests>false</skipUnitTests>
+        <skipIntegrationTests>true</skipIntegrationTests>
       </properties>
     </profile>
     <profile>
@@ -196,6 +198,7 @@
       <properties>
         <test.env>integration</test.env>
         <skipUnitTests>true</skipUnitTests>
+        <skipIntegrationTests>false</skipIntegrationTests>
       </properties>
     </profile>
   </profiles>

@@ -37,6 +37,7 @@ A Java library (wrapper/binding) for [Ollama](https://github.com/jmorganca/ollam
 - [Installation](#installation)
 - [Demo APIs](#try-out-the-apis)
 - [API Spec](#api-spec)
+- [Development](#development)
 - [Contributions](#get-involved)
 
 #### Requirements
@@ -339,6 +340,26 @@ public class Main {
 #### API Spec
 
 Find the full `Javadoc` (API specifications) [here](https://amithkoujalgi.github.io/ollama4j/).
+
+#### Development
+
+Build:
+
+```shell
+make ut
+```
+
+Run unit tests:
+
+```shell
+make ut
+```
+
+Run integration tests:
+
+```shell
+make it
+```
 
 #### Areas of improvement
 
