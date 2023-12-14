@@ -68,12 +68,11 @@ public class OllamaAsyncResultCallback extends Thread {
             OllamaResponseModel ollamaResponseModel =
                 Utils.getObjectMapper().readValue(line, OllamaResponseModel.class);
             queue.add(ollamaResponseModel.getResponse());
-            if (!ollamaResponseModel.getDone()) {
+            if (!ollamaResponseModel.isDone()) {
               responseBuffer.append(ollamaResponseModel.getResponse());
             }
           }
         }
-        reader.close();
 
         this.isDone = true;
         this.succeeded = true;

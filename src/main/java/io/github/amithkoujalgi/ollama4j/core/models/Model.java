@@ -1,7 +1,9 @@
 package io.github.amithkoujalgi.ollama4j.core.models;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import lombok.Data;
 
+@Data
 public class Model {
 
   private String name;
@@ -12,19 +14,6 @@ public class Model {
   @JsonProperty("details")
   private ModelMeta modelMeta;
 
-  /**
-   * Returns the model's tag. This includes model name and its version separated by a colon
-   * character `:`
-   *
-   * @return model tag
-   */
-  public String getName() {
-    return name;
-  }
-
-  public void setName(String name) {
-    this.name = name;
-  }
 
   /**
    * Returns the model name without its version
@@ -44,31 +33,4 @@ public class Model {
     return name.split(":")[1];
   }
 
-  public String getModifiedAt() {
-    return modifiedAt;
-  }
-
-  public void setModifiedAt(String modifiedAt) {
-    this.modifiedAt = modifiedAt;
-  }
-
-  public String getDigest() {
-    return digest;
-  }
-
-  public void setDigest(String digest) {
-    this.digest = digest;
-  }
-
-  public long getSize() {
-    return size;
-  }
-
-  public void setSize(long size) {
-    this.size = size;
-  }
-
-  public ModelMeta getModelMeta() {
-    return modelMeta;
-  }
 }

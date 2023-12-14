@@ -1,51 +1,14 @@
 package io.github.amithkoujalgi.ollama4j.core.models;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import lombok.Data;
 
+@Data
 public class ModelDetail {
-    private String license;
-    @JsonProperty("modelfile")
-    private String modelFile;
-    private String parameters, template;
-    private String system;
-
-    public String getSystem() {
-        return system;
-    }
-
-    public void setSystem(String system) {
-        this.system = system;
-    }
-
-    public String getLicense() {
-        return license;
-    }
-
-    public void setLicense(String license) {
-        this.license = license;
-    }
-
-    public String getModelFile() {
-        return modelFile;
-    }
-
-    public void setModelFile(String modelFile) {
-        this.modelFile = modelFile;
-    }
-
-    public String getParameters() {
-        return parameters;
-    }
-
-    public void setParameters(String parameters) {
-        this.parameters = parameters;
-    }
-
-    public String getTemplate() {
-        return template;
-    }
-
-    public void setTemplate(String template) {
-        this.template = template;
-    }
+  private String license;
+  @JsonProperty("modelfile")
+  private String modelFile;
+  private String parameters;
+  private String template;
+  private String system;
 }

@@ -276,7 +276,7 @@ public class OllamaAPI {
         } else {
           OllamaResponseModel ollamaResponseModel =
               Utils.getObjectMapper().readValue(line, OllamaResponseModel.class);
-          if (!ollamaResponseModel.getDone()) {
+          if (!ollamaResponseModel.isDone()) {
             responseBuffer.append(ollamaResponseModel.getResponse());
           }
         }
