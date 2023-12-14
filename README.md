@@ -91,20 +91,13 @@ For simplest way to get started, I prefer to use the Ollama docker setup.
 Start the Ollama docker container:
 
 ```shell
-docker run -it \
-  -v ~/ollama:/root/.ollama \
-  -p 11434:11434 \
-  ollama/ollama
+docker run -it -v ~/ollama:/root/.ollama -p 11434:11434 ollama/ollama
 ```
 
 With GPUs
 
 ```shell
-docker run -it \
-  --gpus=all \
-  -v ~/ollama:/root/.ollama \
-  -p 11434:11434 \
-  ollama/ollama
+docker run -it --gpus=all -v ~/ollama:/root/.ollama -p 11434:11434 ollama/ollama
 ```
 
 Instantiate `OllamaAPI`
