@@ -257,7 +257,7 @@ public class OllamaAPI {
    * @param imageFiles the list of image files to use for the question
    * @return OllamaResult - that includes response text and time taken for response
    */
-  public OllamaResult askWithImages(String model, String promptText, List<File> imageFiles)
+  public OllamaResult askWithImageFiles(String model, String promptText, List<File> imageFiles)
       throws OllamaBaseException, IOException, InterruptedException {
     List<String> images = new ArrayList<>();
     for (File imageFile : imageFiles) {
