@@ -339,6 +339,8 @@ GROUP BY customers.name;
 
 #### Try asking some questions by passing images 🖼️:
 
+<img src='https://t3.ftcdn.net/jpg/02/96/63/80/360_F_296638053_0gUVA4WVBKceGsIr7LNqRWSnkusi07dq.jpg' width='200' alt="ollama4j-icon">
+
 With Files:
 
 ```java
