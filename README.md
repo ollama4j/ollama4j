@@ -39,8 +39,17 @@ for [Ollama](https://github.com/jmorganca/ollama/blob/main/docs/api.md) APIs.
 
 #### Requirements
 
-- ![Static Badge](https://img.shields.io/badge/Ollama-Local_Installation-blue?link=https%3A%2F%2Follama.ai%2F) or ![Static Badge](https://img.shields.io/badge/Ollama-Docker-blue?link=https%3A%2F%2Fhub.docker.com%2Fr%2Follama%2Follama)
-- ![Java](https://img.shields.io/badge/Java-11-green.svg)  or above
+![Java](https://img.shields.io/badge/Java-11_+-green.svg?style=for-the-badge&labelColor=gray)
+
+[![][ollama-shield]][ollama] Or  [![][ollama-docker-shield]][ollama-docker]
+
+[ollama]: https://ollama.ai/
+[ollama-shield]: https://img.shields.io/badge/Ollama-Local_Installation-blue.svg?style=for-the-badge&labelColor=gray
+
+[ollama-docker]: https://hub.docker.com/r/ollama/ollama
+[ollama-docker-shield]: https://img.shields.io/badge/Ollama-Docker-blue.svg?style=for-the-badge&labelColor=gray
+
+
 
 #### Installation
 
