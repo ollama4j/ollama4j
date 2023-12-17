@@ -4,7 +4,7 @@ package io.github.amithkoujalgi.ollama4j.core.types;
  * A class to provide constants for all the supported models by Ollama.
  *
  * <p>Refer to the full list of models and the details here: <a
- * href="https://ollama.ai/library">https://ollama.ai/library<a/>
+ * href="https://ollama.ai/library">https://ollama.ai/library</a>
  */
 @SuppressWarnings("ALL")
 public class OllamaModelType {
