@@ -39,9 +39,8 @@ for [Ollama](https://github.com/jmorganca/ollama/blob/main/docs/api.md) APIs.
 
 #### Requirements
 
-- Ollama (Either [natively](https://ollama.ai/download) setup or
-  via [Docker](https://hub.docker.com/r/ollama/ollama))
-- Java 11 or above
+- ![Static Badge](https://img.shields.io/badge/Ollama-Local_Installation-blue?link=https%3A%2F%2Follama.ai%2F) or ![Static Badge](https://img.shields.io/badge/Ollama-Docker-blue?link=https%3A%2F%2Fhub.docker.com%2Fr%2Follama%2Follama)
+- ![Java](https://img.shields.io/badge/Java-11-green.svg)  or above
 
 #### Installation
 
