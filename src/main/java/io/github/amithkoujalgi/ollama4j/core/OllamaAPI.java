@@ -24,7 +24,7 @@ public class OllamaAPI {
 
   private static final Logger logger = LoggerFactory.getLogger(OllamaAPI.class);
   private final String host;
-  private long requestTimeoutSeconds = 3;
+  private final long requestTimeoutSeconds = 3;
   private boolean verbose = false;
 
   /**
