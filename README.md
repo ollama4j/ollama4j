@@ -445,6 +445,10 @@ make it
   snake-case conventions. (
   possibly with Jackson-mapper's `@JsonProperty`)
 - [x] Fix deprecated HTTP client code
+- [x] Setup logging
+- [x] Use lombok
+- [ ] Update request body creation with Java objects
+- [ ] Async APIs for images 
 - [ ] Add additional params for `ask` APIs such as:
     - `options`: additional model parameters for the Modelfile such as `temperature`
     - `system`: system prompt to (overrides what is defined in the Modelfile)
@@ -453,8 +457,6 @@ make it
       short
       conversational memory
     - `stream`: Add support for streaming responses from the model
-- [x] Setup logging
-- [x] Use lombok
 - [ ] Add test cases
 - [ ] Handle exceptions better (maybe throw more appropriate exceptions)
 
