@@ -2,7 +2,8 @@
 
 <img src='https://raw.githubusercontent.com/amithkoujalgi/ollama4j/65a9d526150da8fcd98e2af6a164f055572bf722/ollama4j.jpeg' width='100' alt="ollama4j-icon">
 
-A Java library (wrapper/binding) for [Ollama](https://github.com/jmorganca/ollama/blob/main/docs/api.md) APIs.
+A Java library (wrapper/binding)
+for [Ollama](https://github.com/jmorganca/ollama/blob/main/docs/api.md) APIs.
 
 ```mermaid
   flowchart LR
@@ -38,7 +39,8 @@ A Java library (wrapper/binding) for [Ollama](https://github.com/jmorganca/ollam
 
 #### Requirements
 
-- Ollama (Either [natively](https://ollama.ai/download) setup or via [Docker](https://hub.docker.com/r/ollama/ollama))
+- Ollama (Either [natively](https://ollama.ai/download) setup or
+  via [Docker](https://hub.docker.com/r/ollama/ollama))
 - Java 11 or above
 
 #### Installation
@@ -49,21 +51,22 @@ the [Central Repository](https://s01.oss.sonatype.org/#nexus-search;quick~ollama
 ```xml
 
 <dependency>
-    <groupId>io.github.amithkoujalgi</groupId>
-    <artifactId>ollama4j</artifactId>
-    <version>1.0-SNAPSHOT</version>
+  <groupId>io.github.amithkoujalgi</groupId>
+  <artifactId>ollama4j</artifactId>
+  <version>1.0-SNAPSHOT</version>
 </dependency>
 ```
 
-You might want to include the Maven repository to pull the ollama4j library from. Include this in your `pom.xml`:
+You might want to include the Maven repository to pull the ollama4j library from. Include this in
+your `pom.xml`:
 
 ```xml
 
 <repositories>
-    <repository>
-        <id>ollama4j-from-ossrh</id>
-        <url>https://s01.oss.sonatype.org/content/repositories/snapshots</url>
-    </repository>
+  <repository>
+    <id>ollama4j-from-ossrh</id>
+    <url>https://s01.oss.sonatype.org/content/repositories/snapshots</url>
+  </repository>
 </repositories>
 ```
 
@@ -104,13 +107,14 @@ Instantiate `OllamaAPI`
 
 ```java
 public class Main {
-    public static void main(String[] args) {
-        String host = "http://localhost:11434/";
-        OllamaAPI ollamaAPI = new OllamaAPI(host);
 
-        // set verbose - true/false
-        ollamaAPI.setVerbose(true);
-    }
+  public static void main(String[] args) {
+    String host = "http://localhost:11434/";
+    OllamaAPI ollamaAPI = new OllamaAPI(host);
+
+    // set verbose - true/false
+    ollamaAPI.setVerbose(true);
+  }
 }
 ```
 
@@ -118,11 +122,12 @@ public class Main {
 
 ```java
 public class Main {
-    public static void main(String[] args) {
-        String host = "http://localhost:11434/";
-        OllamaAPI ollamaAPI = new OllamaAPI(host);
-        ollamaAPI.pullModel(OllamaModelType.LLAMA2);
-    }
+
+  public static void main(String[] args) {
+    String host = "http://localhost:11434/";
+    OllamaAPI ollamaAPI = new OllamaAPI(host);
+    ollamaAPI.pullModel(OllamaModelType.LLAMA2);
+  }
 }
 ```
 
@@ -132,12 +137,13 @@ _Find the list of available models from Ollama [here](https://ollama.ai/library)
 
 ```java
 public class Main {
-    public static void main(String[] args) {
-        String host = "http://localhost:11434/";
-        OllamaAPI ollamaAPI = new OllamaAPI(host);
-        List<Model> models = ollamaAPI.listModels();
-        models.forEach(model -> System.out.println(model.getName()));
-    }
+
+  public static void main(String[] args) {
+    String host = "http://localhost:11434/";
+    OllamaAPI ollamaAPI = new OllamaAPI(host);
+    List<Model> models = ollamaAPI.listModels();
+    models.forEach(model -> System.out.println(model.getName()));
+  }
 }
 ```
 
@@ -152,12 +158,13 @@ sqlcoder:latest
 
 ```java
 public class Main {
-    public static void main(String[] args) {
-        String host = "http://localhost:11434/";
-        OllamaAPI ollamaAPI = new OllamaAPI(host);
-        ModelDetail modelDetails = ollamaAPI.getModelDetails(OllamaModelType.LLAMA2);
-        System.out.println(modelDetails);
-    }
+
+  public static void main(String[] args) {
+    String host = "http://localhost:11434/";
+    OllamaAPI ollamaAPI = new OllamaAPI(host);
+    ModelDetail modelDetails = ollamaAPI.getModelDetails(OllamaModelType.LLAMA2);
+    System.out.println(modelDetails);
+  }
 }
 ```
 
@@ -176,11 +183,12 @@ Response:
 
 ```java
 public class Main {
-    public static void main(String[] args) {
-        String host = "http://localhost:11434/";
-        OllamaAPI ollamaAPI = new OllamaAPI(host);
-        ollamaAPI.createModel("mycustommodel", "/path/to/modelfile/on/ollama-server");
-    }
+
+  public static void main(String[] args) {
+    String host = "http://localhost:11434/";
+    OllamaAPI ollamaAPI = new OllamaAPI(host);
+    ollamaAPI.createModel("mycustommodel", "/path/to/modelfile/on/ollama-server");
+  }
 }
 ```
 
@@ -188,12 +196,13 @@ public class Main {
 
 ```java
 public class Main {
-    public static void main(String[] args) {
-        String host = "http://localhost:11434/";
-        OllamaAPI ollamaAPI = new OllamaAPI(host);
-        ollamaAPI.setVerbose(false);
-        ollamaAPI.deleteModel("mycustommodel", true);
-    }
+
+  public static void main(String[] args) {
+    String host = "http://localhost:11434/";
+    OllamaAPI ollamaAPI = new OllamaAPI(host);
+    ollamaAPI.setVerbose(false);
+    ollamaAPI.deleteModel("mycustommodel", true);
+  }
 }
 ```
 
@@ -201,12 +210,14 @@ public class Main {
 
 ```java
 public class Main {
-    public static void main(String[] args) {
-        String host = "http://localhost:11434/";
-        OllamaAPI ollamaAPI = new OllamaAPI(host);
-        List<Double> embeddings = ollamaAPI.generateEmbeddings(OllamaModelType.LLAMA2, "Here is an article about llamas...");
-        embeddings.forEach(System.out::println);
-    }
+
+  public static void main(String[] args) {
+    String host = "http://localhost:11434/";
+    OllamaAPI ollamaAPI = new OllamaAPI(host);
+    List<Double> embeddings = ollamaAPI.generateEmbeddings(OllamaModelType.LLAMA2,
+        "Here is an article about llamas...");
+    embeddings.forEach(System.out::println);
+  }
 }
 ```
 
@@ -216,12 +227,13 @@ public class Main {
 
 ```java
 public class Main {
-    public static void main(String[] args) {
-        String host = "http://localhost:11434/";
-        OllamaAPI ollamaAPI = new OllamaAPI(host);
-        String response = ollamaAPI.ask(OllamaModelType.LLAMA2, "Who are you?");
-        System.out.println(response);
-    }
+
+  public static void main(String[] args) {
+    String host = "http://localhost:11434/";
+    OllamaAPI ollamaAPI = new OllamaAPI(host);
+    String response = ollamaAPI.ask(OllamaModelType.LLAMA2, "Who are you?");
+    System.out.println(response);
+  }
 }
 ```
 
@@ -229,27 +241,32 @@ public class Main {
 
 ```java
 public class Main {
-    public static void main(String[] args) {
-        String host = "http://localhost:11434/";
-        OllamaAPI ollamaAPI = new OllamaAPI(host);
-        OllamaAsyncResultCallback ollamaAsyncResultCallback = ollamaAPI.askAsync(OllamaModelType.LLAMA2, "Who are you?");
-        while (true) {
-            if (ollamaAsyncResultCallback.isComplete()) {
-                System.out.println(ollamaAsyncResultCallback.getResponse());
-                break;
-            }
-            // introduce sleep to check for status with a time interval
-            // Thread.sleep(1000);
-        }
+
+  public static void main(String[] args) {
+    String host = "http://localhost:11434/";
+    OllamaAPI ollamaAPI = new OllamaAPI(host);
+    OllamaAsyncResultCallback ollamaAsyncResultCallback = ollamaAPI.askAsync(OllamaModelType.LLAMA2,
+        "Who are you?");
+    while (true) {
+      if (ollamaAsyncResultCallback.isComplete()) {
+        System.out.println(ollamaAsyncResultCallback.getResponse());
+        break;
+      }
+      // introduce sleep to check for status with a time interval
+      // Thread.sleep(1000);
     }
+  }
 }
 ```
 
 You'd then get a response from the model:
 
-> I am LLaMA, an AI assistant developed by Meta AI that can understand and respond to human input in a conversational
-> manner. I am trained on a massive dataset of text from the internet and can generate human-like responses to a wide
-> range of topics and questions. I can be used to create chatbots, virtual assistants, and other applications that
+> I am LLaMA, an AI assistant developed by Meta AI that can understand and respond to human input in
+> a conversational
+> manner. I am trained on a massive dataset of text from the internet and can generate human-like
+> responses to a wide
+> range of topics and questions. I can be used to create chatbots, virtual assistants, and other
+> applications that
 > require
 > natural language understanding and generation capabilities.
 
@@ -257,20 +274,22 @@ You'd then get a response from the model:
 
 ```java
 public class Main {
-    public static void main(String[] args) {
-        String host = "http://localhost:11434/";
-        OllamaAPI ollamaAPI = new OllamaAPI(host);
 
-        String prompt = "List all cricket world cup teams of 2019.";
-        String response = ollamaAPI.ask(OllamaModelType.LLAMA2, prompt);
-        System.out.println(response);
-    }
+  public static void main(String[] args) {
+    String host = "http://localhost:11434/";
+    OllamaAPI ollamaAPI = new OllamaAPI(host);
+
+    String prompt = "List all cricket world cup teams of 2019.";
+    String response = ollamaAPI.ask(OllamaModelType.LLAMA2, prompt);
+    System.out.println(response);
+  }
 }
 ```
 
 You'd then get a response from the model:
 
-> The 2019 ICC Cricket World Cup was held in England and Wales from May 30 to July 14, 2019. The following teams
+> The 2019 ICC Cricket World Cup was held in England and Wales from May 30 to July 14, 2019. The
+> following teams
 > participated in the tournament:
 >
 > 1. Australia
@@ -283,21 +302,24 @@ You'd then get a response from the model:
 > 8. Sri Lanka
 > 9. West Indies
 >
-> These teams competed in a round-robin format, with the top four teams advancing to the semi-finals. The tournament was
+> These teams competed in a round-robin format, with the top four teams advancing to the
+> semi-finals. The tournament was
 > won by the England cricket team, who defeated New Zealand in the final.
 
 #### Try asking for a Database query for your data schema:
 
 ```java
 public class Main {
-    public static void main(String[] args) {
-        String host = "http://localhost:11434/";
-        OllamaAPI ollamaAPI = new OllamaAPI(host);
 
-        String prompt = SamplePrompts.getSampleDatabasePromptWithQuestion("List all customer names who have bought one or more products");
-        String response = ollamaAPI.ask(OllamaModelType.SQLCODER, prompt);
-        System.out.println(response);
-    }
+  public static void main(String[] args) {
+    String host = "http://localhost:11434/";
+    OllamaAPI ollamaAPI = new OllamaAPI(host);
+
+    String prompt = SamplePrompts.getSampleDatabasePromptWithQuestion(
+        "List all customer names who have bought one or more products");
+    String response = ollamaAPI.ask(OllamaModelType.SQLCODER, prompt);
+    System.out.println(response);
+  }
 }
 ```
 
@@ -315,27 +337,75 @@ FROM sales
 GROUP BY customers.name;
 ```
 
+#### Try asking some questions by passing images 🖼️:
+
+With Files:
+
+```java
+public class Main {
+
+  public static void main(String[] args) {
+    String host = "http://localhost:11434/";
+    OllamaAPI ollamaAPI = new OllamaAPI(host);
+    ollamaAPI.setRequestTimeoutSeconds(10);
+
+    OllamaResult response = ollamaAPI.askWithImageURLs(OllamaModelType.LLAVA,
+        "What's in this image?",
+        List.of(
+            "/path/to/image"));
+    System.out.println(response);
+  }
+}
+```
+
+With URLs:
+
+```java
+public class Main {
+
+  public static void main(String[] args) {
+    String host = "http://localhost:11434/";
+    OllamaAPI ollamaAPI = new OllamaAPI(host);
+    ollamaAPI.setRequestTimeoutSeconds(10);
+
+    OllamaResult response = ollamaAPI.askWithImageURLs(OllamaModelType.LLAVA,
+        "What's in this image?",
+        List.of(
+            "https://t3.ftcdn.net/jpg/02/96/63/80/360_F_296638053_0gUVA4WVBKceGsIr7LNqRWSnkusi07dq.jpg"));
+    System.out.println(response);
+  }
+}
+```
+
+You'd then get a response from the model:
+
+```
+This image features a white boat with brown cushions, where a dog is sitting on the back of the boat. 
+The dog seems to be enjoying its time outdoors, perhaps on a lake.
+```
+
 #### Async API with streaming response
 
 ```java
 
 @SuppressWarnings("ALL")
 public class Main {
-    public static void main(String[] args) {
-        String host = "http://localhost:11434/";
-        OllamaAPI ollamaAPI = new OllamaAPI(host);
 
-        String prompt = "List all cricket world cup teams of 2019.";
-        OllamaAsyncResultCallback callback = ollamaAPI.askAsync(OllamaModelType.LLAMA2, prompt);
-        while (!callback.isComplete() || !callback.getStream().isEmpty()) {
-            // poll for data from the response stream
-            String response = callback.getStream().poll();
-            if (response != null) {
-                System.out.print(response);
-            }
-            Thread.sleep(1000);
-        }
+  public static void main(String[] args) {
+    String host = "http://localhost:11434/";
+    OllamaAPI ollamaAPI = new OllamaAPI(host);
+
+    String prompt = "List all cricket world cup teams of 2019.";
+    OllamaAsyncResultCallback callback = ollamaAPI.askAsync(OllamaModelType.LLAMA2, prompt);
+    while (!callback.isComplete() || !callback.getStream().isEmpty()) {
+      // poll for data from the response stream
+      String response = callback.getStream().poll();
+      if (response != null) {
+        System.out.print(response);
+      }
+      Thread.sleep(1000);
     }
+  }
 }
 ```
 
@@ -369,14 +439,16 @@ make it
 
 ### Areas of improvement
 
-- [x] Use Java-naming conventions for attributes in the request/response models instead of the snake-case conventions. (
+- [x] Use Java-naming conventions for attributes in the request/response models instead of the
+  snake-case conventions. (
   possibly with Jackson-mapper's `@JsonProperty`)
 - [x] Fix deprecated HTTP client code
 - [ ] Add additional params for `ask` APIs such as:
     - `options`: additional model parameters for the Modelfile such as `temperature`
     - `system`: system prompt to (overrides what is defined in the Modelfile)
     - `template`: the full prompt or prompt template (overrides what is defined in the Modelfile)
-    - `context`: the context parameter returned from a previous request, which can be used to keep a short
+    - `context`: the context parameter returned from a previous request, which can be used to keep a
+      short
       conversational memory
     - `stream`: Add support for streaming responses from the model
 - [x] Setup logging
@@ -386,9 +458,11 @@ make it
 
 ### Get Involved
 
-Contributions are most welcome! Whether it's reporting a bug, proposing an enhancement, or helping with code - any sort
+Contributions are most welcome! Whether it's reporting a bug, proposing an enhancement, or helping
+with code - any sort
 of contribution is much appreciated.
 
 ### Credits
 
-The nomenclature and the icon have been adopted from the incredible [Ollama](https://ollama.ai/) project.
+The nomenclature and the icon have been adopted from the incredible [Ollama](https://ollama.ai/)
+project.
