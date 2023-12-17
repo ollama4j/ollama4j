@@ -32,8 +32,8 @@ for [Ollama](https://github.com/jmorganca/ollama/blob/main/docs/api.md) APIs.
 
 - [Requirements](#requirements)
 - [Installation](#installation)
-- [Demo APIs](#try-out-the-apis)
 - [API Spec](#api-spec)
+- [Demo APIs](#try-out-the-apis-with-ollama-server)
 - [Development](#development)
 - [Contributions](#get-involved)
 
@@ -99,9 +99,6 @@ With GPUs
 ```shell
 docker run -it --gpus=all -v ~/ollama:/root/.ollama -p 11434:11434 ollama/ollama
 ```
-
-Read the full list of APIs
-here: https://amithkoujalgi.github.io/ollama4j/io/github/amithkoujalgi/ollama4j/core/OllamaAPI.html
 
 Instantiate `OllamaAPI`
 
