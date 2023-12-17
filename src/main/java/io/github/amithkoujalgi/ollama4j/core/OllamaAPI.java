@@ -251,13 +251,13 @@ public class OllamaAPI {
   /**
    * Ask a question to a model running on Ollama server. This is a sync/blocking call.
    *
-   * @param ollamaModelType the ollama model to ask the question to
+   * @param model the ollama model to ask the question to
    * @param promptText the prompt/question text
    * @return OllamaResult - that includes response text and time taken for response
    */
-  public OllamaResult ask(String ollamaModelType, String promptText)
+  public OllamaResult ask(String model, String promptText)
       throws OllamaBaseException, IOException, InterruptedException {
-    OllamaRequestModel ollamaRequestModel = new OllamaRequestModel(ollamaModelType, promptText);
+    OllamaRequestModel ollamaRequestModel = new OllamaRequestModel(model, promptText);
     long startTime = System.currentTimeMillis();
     HttpClient httpClient = HttpClient.newHttpClient();
     URI uri = URI.create(this.host + "/api/generate");
@@ -304,12 +304,12 @@ public class OllamaAPI {
    * to check for status and get the response from the model later. This would be an
    * async/non-blocking call.
    *
-   * @param ollamaModelType the ollama model to ask the question to
+   * @param model the ollama model to ask the question to
    * @param promptText the prompt/question text
    * @return the ollama async result callback handle
    */
-  public OllamaAsyncResultCallback askAsync(String ollamaModelType, String promptText) {
-    OllamaRequestModel ollamaRequestModel = new OllamaRequestModel(ollamaModelType, promptText);
+  public OllamaAsyncResultCallback askAsync(String model, String promptText) {
+    OllamaRequestModel ollamaRequestModel = new OllamaRequestModel(model, promptText);
     HttpClient httpClient = HttpClient.newHttpClient();
     URI uri = URI.create(this.host + "/api/generate");
     OllamaAsyncResultCallback ollamaAsyncResultCallback =
