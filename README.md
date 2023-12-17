@@ -27,10 +27,6 @@ A Java library (wrapper/binding) for [Ollama](https://github.com/jmorganca/ollam
 ![GitHub last commit](https://img.shields.io/github/last-commit/amithkoujalgi/ollama4j?color=red&style=plastic)
 ![Hits](https://hits.seeyoufarm.com/api/count/incr/badge.svg?url=https%3A%2F%2Fgithub.com%2Famithkoujalgi%2Follama4j&count_bg=%2379C83D&title_bg=%23555555&icon=&icon_color=%23E7E7E7&title=hits&edge_flat=false)
 
-#### Star History
-
-[![Star History Chart](https://api.star-history.com/svg?repos=amithkoujalgi/ollama4j&type=Date)](https://star-history.com/#amithkoujalgi/ollama4j&Date)
-
 ## Table of Contents
 
 - [Requirements](#requirements)
@@ -309,6 +305,7 @@ containing a database schema from within this library for demonstration purposes
 You'd then get a response from the model:
 
 ```sql
+-- noinspection SqlResolve
 SELECT customers.name
 FROM sales
          JOIN customers ON sales.customer_id = customers.customer_id
@@ -318,6 +315,8 @@ GROUP BY customers.name;
 #### Async API with streaming response
 
 ```java
+
+@SuppressWarnings("ALL")
 public class Main {
     public static void main(String[] args) {
         String host = "http://localhost:11434/";
@@ -361,7 +360,11 @@ Run integration tests:
 make it
 ```
 
-#### Areas of improvement
+#### Traction
+
+[![Star History Chart](https://api.star-history.com/svg?repos=amithkoujalgi/ollama4j&type=Date)](https://star-history.com/#amithkoujalgi/ollama4j&Date)
+
+### Areas of improvement
 
 - [x] Use Java-naming conventions for attributes in the request/response models instead of the snake-case conventions. (
   possibly with Jackson-mapper's `@JsonProperty`)
@@ -374,15 +377,15 @@ make it
       conversational memory
     - `stream`: Add support for streaming responses from the model
 - [x] Setup logging
-- [ ] Use lombok
+- [x] Use lombok
 - [ ] Add test cases
 - [ ] Handle exceptions better (maybe throw more appropriate exceptions)
 
-#### Get Involved
+### Get Involved
 
 Contributions are most welcome! Whether it's reporting a bug, proposing an enhancement, or helping with code - any sort
 of contribution is much appreciated.
 
-#### Credits
+### Credits
 
-The nomenclature and the icon have been adopted from the incredible Ollama project.
+The nomenclature and the icon have been adopted from the incredible [Ollama](https://ollama.ai/) project.
