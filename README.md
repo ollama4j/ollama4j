@@ -351,7 +351,7 @@ public class Main {
     OllamaAPI ollamaAPI = new OllamaAPI(host);
     ollamaAPI.setRequestTimeoutSeconds(10);
 
-    OllamaResult response = ollamaAPI.askWithImageURLs(OllamaModelType.LLAVA,
+    OllamaResult response = ollamaAPI.askWithImageFiles(OllamaModelType.LLAVA,
         "What's in this image?",
         List.of(
             "/path/to/image"));
