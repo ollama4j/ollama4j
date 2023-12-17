@@ -354,7 +354,7 @@ public class Main {
     OllamaResult response = ollamaAPI.askWithImageFiles(OllamaModelType.LLAVA,
         "What's in this image?",
         List.of(
-            "/path/to/image"));
+            new File("/path/to/image")));
     System.out.println(response);
   }
 }
