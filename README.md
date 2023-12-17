@@ -81,9 +81,9 @@ You can then use the Ollama Java APIs by importing `ollama4j`:
 import io.github.amithkoujalgi.ollama4j.core.OllamaAPI;
 ```
 
-### Try out the APIs
+### Try out the APIs with Ollama server
 
-For simplest way to get started, I prefer to use the Ollama docker setup.
+For simplest way to get started, I prefer to use the Ollama server in a docker setup.
 
 Start the Ollama docker container:
 
@@ -96,6 +96,9 @@ With GPUs
 ```shell
 docker run -it --gpus=all -v ~/ollama:/root/.ollama -p 11434:11434 ollama/ollama
 ```
+
+Read the full list of APIs
+here: https://amithkoujalgi.github.io/ollama4j/io/github/amithkoujalgi/ollama4j/core/OllamaAPI.html
 
 Instantiate `OllamaAPI`
 
@@ -118,7 +121,7 @@ public class Main {
     public static void main(String[] args) {
         String host = "http://localhost:11434/";
         OllamaAPI ollamaAPI = new OllamaAPI(host);
-        ollamaAPI.pullModel(OllamaModel.LLAMA2);
+        ollamaAPI.pullModel(OllamaModelType.LLAMA2);
     }
 }
 ```
@@ -216,7 +219,7 @@ public class Main {
     public static void main(String[] args) {
         String host = "http://localhost:11434/";
         OllamaAPI ollamaAPI = new OllamaAPI(host);
-        String response = ollamaAPI.ask(OllamaModel.LLAMA2, "Who are you?");
+        String response = ollamaAPI.ask(OllamaModelType.LLAMA2, "Who are you?");
         System.out.println(response);
     }
 }
@@ -229,7 +232,7 @@ public class Main {
     public static void main(String[] args) {
         String host = "http://localhost:11434/";
         OllamaAPI ollamaAPI = new OllamaAPI(host);
-        OllamaAsyncResultCallback ollamaAsyncResultCallback = ollamaAPI.askAsync(OllamaModel.LLAMA2, "Who are you?");
+        OllamaAsyncResultCallback ollamaAsyncResultCallback = ollamaAPI.askAsync(OllamaModelType.LLAMA2, "Who are you?");
         while (true) {
             if (ollamaAsyncResultCallback.isComplete()) {
                 System.out.println(ollamaAsyncResultCallback.getResponse());
