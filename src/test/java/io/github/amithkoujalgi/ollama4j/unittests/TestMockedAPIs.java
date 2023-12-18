@@ -44,11 +44,11 @@ class TestMockedAPIs {
   void testCreateModel() {
     OllamaAPI ollamaAPI = Mockito.mock(OllamaAPI.class);
     String model = OllamaModelType.LLAMA2;
-    String modelFilePath = "/somemodel";
+    String modelFilePath = "FROM llama2\nSYSTEM You are mario from Super Mario Bros.";
     try {
-      doNothing().when(ollamaAPI).createModel(model, modelFilePath);
-      ollamaAPI.createModel(model, modelFilePath);
-      verify(ollamaAPI, times(1)).createModel(model, modelFilePath);
+      doNothing().when(ollamaAPI).createModelWithModelFileContents(model, modelFilePath);
+      ollamaAPI.createModelWithModelFileContents(model, modelFilePath);
+      verify(ollamaAPI, times(1)).createModelWithModelFileContents(model, modelFilePath);
     } catch (IOException | OllamaBaseException | InterruptedException e) {
       throw new RuntimeException(e);
     }

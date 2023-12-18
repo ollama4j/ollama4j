@@ -44,12 +44,12 @@ for [Ollama](https://github.com/jmorganca/ollama/blob/main/docs/api.md) APIs.
 [![][ollama-shield]][ollama] Or  [![][ollama-docker-shield]][ollama-docker]
 
 [ollama]: https://ollama.ai/
+
 [ollama-shield]: https://img.shields.io/badge/Ollama-Local_Installation-blue.svg?style=for-the-badge&labelColor=gray
 
 [ollama-docker]: https://hub.docker.com/r/ollama/ollama
+
 [ollama-docker-shield]: https://img.shields.io/badge/Ollama-Docker-blue.svg?style=for-the-badge&labelColor=gray
-
-
 
 #### Installation
 
@@ -59,9 +59,9 @@ the [Central Repository](https://s01.oss.sonatype.org/#nexus-search;quick~ollama
 ```xml
 
 <dependency>
-  <groupId>io.github.amithkoujalgi</groupId>
-  <artifactId>ollama4j</artifactId>
-  <version>1.0-SNAPSHOT</version>
+    <groupId>io.github.amithkoujalgi</groupId>
+    <artifactId>ollama4j</artifactId>
+    <version>1.0-SNAPSHOT</version>
 </dependency>
 ```
 
@@ -71,10 +71,10 @@ your `pom.xml`:
 ```xml
 
 <repositories>
-  <repository>
-    <id>ollama4j-from-ossrh</id>
-    <url>https://s01.oss.sonatype.org/content/repositories/snapshots</url>
-  </repository>
+    <repository>
+        <id>ollama4j-from-ossrh</id>
+        <url>https://s01.oss.sonatype.org/content/repositories/snapshots</url>
+    </repository>
 </repositories>
 ```
 
@@ -113,13 +113,13 @@ Instantiate `OllamaAPI`
 ```java
 public class Main {
 
-  public static void main(String[] args) {
-    String host = "http://localhost:11434/";
-    OllamaAPI ollamaAPI = new OllamaAPI(host);
+    public static void main(String[] args) {
+        String host = "http://localhost:11434/";
+        OllamaAPI ollamaAPI = new OllamaAPI(host);
 
-    // set verbose - true/false
-    ollamaAPI.setVerbose(true);
-  }
+        // set verbose - true/false
+        ollamaAPI.setVerbose(true);
+    }
 }
 ```
 
@@ -128,11 +128,11 @@ public class Main {
 ```java
 public class Main {
 
-  public static void main(String[] args) {
-    String host = "http://localhost:11434/";
-    OllamaAPI ollamaAPI = new OllamaAPI(host);
-    ollamaAPI.pullModel(OllamaModelType.LLAMA2);
-  }
+    public static void main(String[] args) {
+        String host = "http://localhost:11434/";
+        OllamaAPI ollamaAPI = new OllamaAPI(host);
+        ollamaAPI.pullModel(OllamaModelType.LLAMA2);
+    }
 }
 ```
 
@@ -143,12 +143,12 @@ _Find the list of available models from Ollama [here](https://ollama.ai/library)
 ```java
 public class Main {
 
-  public static void main(String[] args) {
-    String host = "http://localhost:11434/";
-    OllamaAPI ollamaAPI = new OllamaAPI(host);
-    List<Model> models = ollamaAPI.listModels();
-    models.forEach(model -> System.out.println(model.getName()));
-  }
+    public static void main(String[] args) {
+        String host = "http://localhost:11434/";
+        OllamaAPI ollamaAPI = new OllamaAPI(host);
+        List<Model> models = ollamaAPI.listModels();
+        models.forEach(model -> System.out.println(model.getName()));
+    }
 }
 ```
 
@@ -164,12 +164,12 @@ sqlcoder:latest
 ```java
 public class Main {
 
-  public static void main(String[] args) {
-    String host = "http://localhost:11434/";
-    OllamaAPI ollamaAPI = new OllamaAPI(host);
-    ModelDetail modelDetails = ollamaAPI.getModelDetails(OllamaModelType.LLAMA2);
-    System.out.println(modelDetails);
-  }
+    public static void main(String[] args) {
+        String host = "http://localhost:11434/";
+        OllamaAPI ollamaAPI = new OllamaAPI(host);
+        ModelDetail modelDetails = ollamaAPI.getModelDetails(OllamaModelType.LLAMA2);
+        System.out.println(modelDetails);
+    }
 }
 ```
 
@@ -189,11 +189,11 @@ Response:
 ```java
 public class Main {
 
-  public static void main(String[] args) {
-    String host = "http://localhost:11434/";
-    OllamaAPI ollamaAPI = new OllamaAPI(host);
-    ollamaAPI.createModel("mycustommodel", "/path/to/modelfile/on/ollama-server");
-  }
+    public static void main(String[] args) {
+        String host = "http://localhost:11434/";
+        OllamaAPI ollamaAPI = new OllamaAPI(host);
+        ollamaAPI.createModel("mycustommodel", "/path/to/modelfile/on/ollama-server");
+    }
 }
 ```
 
@@ -202,12 +202,12 @@ public class Main {
 ```java
 public class Main {
 
-  public static void main(String[] args) {
-    String host = "http://localhost:11434/";
-    OllamaAPI ollamaAPI = new OllamaAPI(host);
-    ollamaAPI.setVerbose(false);
-    ollamaAPI.deleteModel("mycustommodel", true);
-  }
+    public static void main(String[] args) {
+        String host = "http://localhost:11434/";
+        OllamaAPI ollamaAPI = new OllamaAPI(host);
+        ollamaAPI.setVerbose(false);
+        ollamaAPI.deleteModel("mycustommodel", true);
+    }
 }
 ```
 
@@ -216,13 +216,13 @@ public class Main {
 ```java
 public class Main {
 
-  public static void main(String[] args) {
-    String host = "http://localhost:11434/";
-    OllamaAPI ollamaAPI = new OllamaAPI(host);
-    List<Double> embeddings = ollamaAPI.generateEmbeddings(OllamaModelType.LLAMA2,
-        "Here is an article about llamas...");
-    embeddings.forEach(System.out::println);
-  }
+    public static void main(String[] args) {
+        String host = "http://localhost:11434/";
+        OllamaAPI ollamaAPI = new OllamaAPI(host);
+        List<Double> embeddings = ollamaAPI.generateEmbeddings(OllamaModelType.LLAMA2,
+                "Here is an article about llamas...");
+        embeddings.forEach(System.out::println);
+    }
 }
 ```
 
@@ -233,12 +233,12 @@ public class Main {
 ```java
 public class Main {
 
-  public static void main(String[] args) {
-    String host = "http://localhost:11434/";
-    OllamaAPI ollamaAPI = new OllamaAPI(host);
-    String response = ollamaAPI.ask(OllamaModelType.LLAMA2, "Who are you?");
-    System.out.println(response);
-  }
+    public static void main(String[] args) {
+        String host = "http://localhost:11434/";
+        OllamaAPI ollamaAPI = new OllamaAPI(host);
+        String response = ollamaAPI.ask(OllamaModelType.LLAMA2, "Who are you?");
+        System.out.println(response);
+    }
 }
 ```
 
@@ -247,20 +247,20 @@ public class Main {
 ```java
 public class Main {
 
-  public static void main(String[] args) {
-    String host = "http://localhost:11434/";
-    OllamaAPI ollamaAPI = new OllamaAPI(host);
-    OllamaAsyncResultCallback ollamaAsyncResultCallback = ollamaAPI.askAsync(OllamaModelType.LLAMA2,
-        "Who are you?");
-    while (true) {
-      if (ollamaAsyncResultCallback.isComplete()) {
-        System.out.println(ollamaAsyncResultCallback.getResponse());
-        break;
-      }
-      // introduce sleep to check for status with a time interval
-      // Thread.sleep(1000);
+    public static void main(String[] args) {
+        String host = "http://localhost:11434/";
+        OllamaAPI ollamaAPI = new OllamaAPI(host);
+        OllamaAsyncResultCallback ollamaAsyncResultCallback = ollamaAPI.askAsync(OllamaModelType.LLAMA2,
+                "Who are you?");
+        while (true) {
+            if (ollamaAsyncResultCallback.isComplete()) {
+                System.out.println(ollamaAsyncResultCallback.getResponse());
+                break;
+            }
+            // introduce sleep to check for status with a time interval
+            // Thread.sleep(1000);
+        }
     }
-  }
 }
 ```
 
@@ -280,14 +280,14 @@ You'd then get a response from the model:
 ```java
 public class Main {
 
-  public static void main(String[] args) {
-    String host = "http://localhost:11434/";
-    OllamaAPI ollamaAPI = new OllamaAPI(host);
+    public static void main(String[] args) {
+        String host = "http://localhost:11434/";
+        OllamaAPI ollamaAPI = new OllamaAPI(host);
 
-    String prompt = "List all cricket world cup teams of 2019.";
-    String response = ollamaAPI.ask(OllamaModelType.LLAMA2, prompt);
-    System.out.println(response);
-  }
+        String prompt = "List all cricket world cup teams of 2019.";
+        String response = ollamaAPI.ask(OllamaModelType.LLAMA2, prompt);
+        System.out.println(response);
+    }
 }
 ```
 
@@ -316,15 +316,15 @@ You'd then get a response from the model:
 ```java
 public class Main {
 
-  public static void main(String[] args) {
-    String host = "http://localhost:11434/";
-    OllamaAPI ollamaAPI = new OllamaAPI(host);
+    public static void main(String[] args) {
+        String host = "http://localhost:11434/";
+        OllamaAPI ollamaAPI = new OllamaAPI(host);
 
-    String prompt = SamplePrompts.getSampleDatabasePromptWithQuestion(
-        "List all customer names who have bought one or more products");
-    String response = ollamaAPI.ask(OllamaModelType.SQLCODER, prompt);
-    System.out.println(response);
-  }
+        String prompt = SamplePrompts.getSampleDatabasePromptWithQuestion(
+                "List all customer names who have bought one or more products");
+        String response = ollamaAPI.ask(OllamaModelType.SQLCODER, prompt);
+        System.out.println(response);
+    }
 }
 ```
 
@@ -351,17 +351,17 @@ With Files:
 ```java
 public class Main {
 
-  public static void main(String[] args) {
-    String host = "http://localhost:11434/";
-    OllamaAPI ollamaAPI = new OllamaAPI(host);
-    ollamaAPI.setRequestTimeoutSeconds(10);
+    public static void main(String[] args) {
+        String host = "http://localhost:11434/";
+        OllamaAPI ollamaAPI = new OllamaAPI(host);
+        ollamaAPI.setRequestTimeoutSeconds(10);
 
-    OllamaResult response = ollamaAPI.askWithImageFiles(OllamaModelType.LLAVA,
-        "What's in this image?",
-        List.of(
-            new File("/path/to/image")));
-    System.out.println(response);
-  }
+        OllamaResult response = ollamaAPI.askWithImageFiles(OllamaModelType.LLAVA,
+                "What's in this image?",
+                List.of(
+                        new File("/path/to/image")));
+        System.out.println(response);
+    }
 }
 ```
 
@@ -370,17 +370,17 @@ With URLs:
 ```java
 public class Main {
 
-  public static void main(String[] args) {
-    String host = "http://localhost:11434/";
-    OllamaAPI ollamaAPI = new OllamaAPI(host);
-    ollamaAPI.setRequestTimeoutSeconds(10);
+    public static void main(String[] args) {
+        String host = "http://localhost:11434/";
+        OllamaAPI ollamaAPI = new OllamaAPI(host);
+        ollamaAPI.setRequestTimeoutSeconds(10);
 
-    OllamaResult response = ollamaAPI.askWithImageURLs(OllamaModelType.LLAVA,
-        "What's in this image?",
-        List.of(
-            "https://t3.ftcdn.net/jpg/02/96/63/80/360_F_296638053_0gUVA4WVBKceGsIr7LNqRWSnkusi07dq.jpg"));
-    System.out.println(response);
-  }
+        OllamaResult response = ollamaAPI.askWithImageURLs(OllamaModelType.LLAVA,
+                "What's in this image?",
+                List.of(
+                        "https://t3.ftcdn.net/jpg/02/96/63/80/360_F_296638053_0gUVA4WVBKceGsIr7LNqRWSnkusi07dq.jpg"));
+        System.out.println(response);
+    }
 }
 ```
 
@@ -398,21 +398,21 @@ The dog seems to be enjoying its time outdoors, perhaps on a lake.
 @SuppressWarnings("ALL")
 public class Main {
 
-  public static void main(String[] args) {
-    String host = "http://localhost:11434/";
-    OllamaAPI ollamaAPI = new OllamaAPI(host);
+    public static void main(String[] args) {
+        String host = "http://localhost:11434/";
+        OllamaAPI ollamaAPI = new OllamaAPI(host);
 
-    String prompt = "List all cricket world cup teams of 2019.";
-    OllamaAsyncResultCallback callback = ollamaAPI.askAsync(OllamaModelType.LLAMA2, prompt);
-    while (!callback.isComplete() || !callback.getStream().isEmpty()) {
-      // poll for data from the response stream
-      String response = callback.getStream().poll();
-      if (response != null) {
-        System.out.print(response);
-      }
-      Thread.sleep(1000);
+        String prompt = "List all cricket world cup teams of 2019.";
+        OllamaAsyncResultCallback callback = ollamaAPI.askAsync(OllamaModelType.LLAMA2, prompt);
+        while (!callback.isComplete() || !callback.getStream().isEmpty()) {
+            // poll for data from the response stream
+            String response = callback.getStream().poll();
+            if (response != null) {
+                System.out.print(response);
+            }
+            Thread.sleep(1000);
+        }
     }
-  }
 }
 ```
 
@@ -452,8 +452,8 @@ make it
 - [x] Fix deprecated HTTP client code
 - [x] Setup logging
 - [x] Use lombok
-- [ ] Update request body creation with Java objects
-- [ ] Async APIs for images 
+- [x] Update request body creation with Java objects
+- [ ] Async APIs for images
 - [ ] Add additional params for `ask` APIs such as:
     - `options`: additional model parameters for the Modelfile such as `temperature`
     - `system`: system prompt to (overrides what is defined in the Modelfile)
