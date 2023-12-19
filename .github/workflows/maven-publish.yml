@@ -5,8 +5,7 @@ name: Test and Publish Package
 
 on:
   release:
-    types:
-      - created
+    types: [ "created" ]
 
 #on:
 #  push:
