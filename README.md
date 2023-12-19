@@ -262,8 +262,8 @@ public class Main {
     public static void main(String[] args) {
         String host = "http://localhost:11434/";
         OllamaAPI ollamaAPI = new OllamaAPI(host);
-        OllamaResult response = ollamaAPI.ask(OllamaModelType.LLAMA2, "Who are you?");
-        System.out.println(response.getResponse());
+        OllamaResult result = ollamaAPI.ask(OllamaModelType.LLAMA2, "Who are you?");
+        System.out.println(result.getResponse());
     }
 }
 ```
@@ -311,8 +311,8 @@ public class Main {
         OllamaAPI ollamaAPI = new OllamaAPI(host);
 
         String prompt = "List all cricket world cup teams of 2019.";
-        OllamaResult response = ollamaAPI.ask(OllamaModelType.LLAMA2, prompt);
-        System.out.println(response.getResponse());
+        OllamaResult result = ollamaAPI.ask(OllamaModelType.LLAMA2, prompt);
+        System.out.println(result.getResponse());
     }
 }
 ```
@@ -348,8 +348,8 @@ public class Main {
 
         String prompt = SamplePrompts.getSampleDatabasePromptWithQuestion(
                 "List all customer names who have bought one or more products");
-        OllamaResult response = ollamaAPI.ask(OllamaModelType.SQLCODER, prompt);
-        System.out.println(response.getResponse());
+        OllamaResult result = ollamaAPI.ask(OllamaModelType.SQLCODER, prompt);
+        System.out.println(result.getResponse());
     }
 }
 ```
@@ -382,11 +382,11 @@ public class Main {
         OllamaAPI ollamaAPI = new OllamaAPI(host);
         ollamaAPI.setRequestTimeoutSeconds(10);
 
-        OllamaResult response = ollamaAPI.askWithImageFiles(OllamaModelType.LLAVA,
+        OllamaResult result = ollamaAPI.askWithImageFiles(OllamaModelType.LLAVA,
                 "What's in this image?",
                 List.of(
                         new File("/path/to/image")));
-        System.out.println(response);
+        System.out.println(result.getResponse());
     }
 }
 ```
@@ -401,11 +401,11 @@ public class Main {
         OllamaAPI ollamaAPI = new OllamaAPI(host);
         ollamaAPI.setRequestTimeoutSeconds(10);
 
-        OllamaResult response = ollamaAPI.askWithImageURLs(OllamaModelType.LLAVA,
+        OllamaResult result = ollamaAPI.askWithImageURLs(OllamaModelType.LLAVA,
                 "What's in this image?",
                 List.of(
                         "https://t3.ftcdn.net/jpg/02/96/63/80/360_F_296638053_0gUVA4WVBKceGsIr7LNqRWSnkusi07dq.jpg"));
-        System.out.println(response);
+        System.out.println(result.getResponse());
     }
 }
 ```
@@ -432,9 +432,9 @@ public class Main {
         OllamaAsyncResultCallback callback = ollamaAPI.askAsync(OllamaModelType.LLAMA2, prompt);
         while (!callback.isComplete() || !callback.getStream().isEmpty()) {
             // poll for data from the response stream
-            String response = callback.getStream().poll();
+            String result = callback.getStream().poll();
             if (response != null) {
-                System.out.print(response);
+                System.out.print(result.getResponse());
             }
             Thread.sleep(1000);
         }
