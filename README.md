@@ -455,7 +455,7 @@ make it
 
 #### Releases
 
-Releases (newer artifact versions) are done automatically on pushj g code to the `main` branch through GitHub Actions CI workflow.
+Releases (newer artifact versions) are done automatically on pushing the code to the `main` branch through GitHub Actions CI workflow.
 
 #### Traction
 
