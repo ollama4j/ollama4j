@@ -6,7 +6,7 @@
 
     <groupId>io.github.amithkoujalgi</groupId>
     <artifactId>ollama4j</artifactId>
-    <version>1.0</version>
+    <version>1.0.1</version>
 
     <name>Ollama4j</name>
     <description>Java library for interacting with Ollama API.</description>
@@ -141,8 +141,11 @@
                 </executions>
             </plugin>
             <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-release-plugin</artifactId>
+                <version>3.0.1</version>
                 <configuration>
+                    <goals>install</goals>
                     <tagNameFormat>v@{project.version}</tagNameFormat>
                 </configuration>
             </plugin>
