@@ -97,14 +97,6 @@ or use `logback-classic` implementation:
 
 or use other suitable implementations.
 
-#### Build:
-
-Build your project to resolve the dependencies:
-
-```shell
-mvn clean install -U
-```
-
 You can then use the Ollama Java APIs by importing `ollama4j`:
 
 ```java
@@ -458,6 +450,10 @@ Run integration tests:
 ```shell
 make it
 ```
+
+#### Releases
+
+Releases (newer artifact versions) are done automatically on pushj g code to the `main` branch through GitHub Actions CI workflow.
 
 #### Traction
 
