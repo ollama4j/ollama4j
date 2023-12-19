@@ -60,12 +60,15 @@ In your Maven project, add this dependency:
 <dependency>
     <groupId>io.github.amithkoujalgi</groupId>
     <artifactId>ollama4j</artifactId>
-    <version>1.0-SNAPSHOT</version>
+    <version>1.0.20</version>
 </dependency>
 ```
 
-Get the latest version from [Maven Central](https://central.sonatype.com/artifact/io.github.amithkoujalgi/ollama4j)
-or [Nexus Repository](https://s01.oss.sonatype.org/#nexus-search;quick~ollama4j).
+[![][lib-shield]][lib]
+
+[lib]: https://central.sonatype.com/artifact/io.github.amithkoujalgi/ollama4j
+
+[lib-shield]: https://img.shields.io/badge/ollama4j-get_latest_version-blue.svg?style=for-the-badge&labelColor=gray
 
 You might want to include an implementation of [SL4J](https://www.slf4j.org/) logger in your `pom.xml` file. For
 example,
