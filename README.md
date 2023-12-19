@@ -78,6 +78,17 @@ your `pom.xml`:
 </repositories>
 ```
 
+You should also include [SL4J](https://www.slf4j.org/) in your `pom.xml` file if you encounter any errors related to this.
+
+```xml
+
+<dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-jdk14</artifactId>
+            <version>2.0.9</version>
+        </dependency>
+```
+
 #### Build:
 
 Build your project to resolve the dependencies:
@@ -236,8 +247,8 @@ public class Main {
     public static void main(String[] args) {
         String host = "http://localhost:11434/";
         OllamaAPI ollamaAPI = new OllamaAPI(host);
-        String response = ollamaAPI.ask(OllamaModelType.LLAMA2, "Who are you?");
-        System.out.println(response);
+        OllamaResult response = ollamaAPI.ask(OllamaModelType.LLAMA2, "Who are you?");
+        System.out.println(response.getResponse());
     }
 }
 ```
@@ -285,8 +296,8 @@ public class Main {
         OllamaAPI ollamaAPI = new OllamaAPI(host);
 
         String prompt = "List all cricket world cup teams of 2019.";
-        String response = ollamaAPI.ask(OllamaModelType.LLAMA2, prompt);
-        System.out.println(response);
+        OllamaResult response = ollamaAPI.ask(OllamaModelType.LLAMA2, prompt);
+        System.out.println(response.getResponse());
     }
 }
 ```
@@ -322,8 +333,8 @@ public class Main {
 
         String prompt = SamplePrompts.getSampleDatabasePromptWithQuestion(
                 "List all customer names who have bought one or more products");
-        String response = ollamaAPI.ask(OllamaModelType.SQLCODER, prompt);
-        System.out.println(response);
+        OllamaResult response = ollamaAPI.ask(OllamaModelType.SQLCODER, prompt);
+        System.out.println(response.getResponse());
     }
 }
 ```
