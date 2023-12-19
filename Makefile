@@ -6,3 +6,6 @@ it:
 
 build:
 	mvn clean test install -Punit-tests
+
+release:
+	 mvn clean release:prepare release:perform

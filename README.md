@@ -78,16 +78,31 @@ your `pom.xml`:
 </repositories>
 ```
 
-You should also include [SL4J](https://www.slf4j.org/) in your `pom.xml` file if you encounter any errors related to this.
+You should also include an implementation of [SL4J](https://www.slf4j.org/) logger in your `pom.xml` file. For example,
+
+Use `slf4j-jdk14` implementation:
 
 ```xml
 
 <dependency>
-            <groupId>org.slf4j</groupId>
-            <artifactId>slf4j-jdk14</artifactId>
-            <version>2.0.9</version>
-        </dependency>
+    <groupId>org.slf4j</groupId>
+    <artifactId>slf4j-jdk14</artifactId>
+    <version>2.0.9</version> <!--Replace with appropriate version-->
+</dependency>
 ```
+
+or use `logback-classic` implementation:
+
+```xml
+
+<dependency>
+    <groupId>ch.qos.logback</groupId>
+    <artifactId>logback-classic</artifactId>
+    <version>1.3.11</version> <!--Replace with appropriate version-->
+</dependency>
+```
+
+or use other suitable implementations.
 
 #### Build:
 
