@@ -40,7 +40,18 @@ jobs:
           server-password: MAVEN_PASSWORD
           gpg-private-key: ${{ secrets.GPG_PRIVATE_KEY }}
           gpg-passphrase: MAVEN_GPG_PASSPHRASE
+      - name: Set up Maven cache
+        uses: actions/cache@v3
+        with:
+          path: ~/.m2/repository
+          key: ${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
+          restore-keys: |
+            ${{ runner.os }}-maven-
       - name: Publish to GitHub Packages Apache Maven
+        if: >
+          github.event_name != 'pull_request' &&
+          github.ref_name == 'main' &&
+          contains(github.event.head_commit.message, '[release]')
         run: |
           git config --global user.email "koujalgi.amith@gmail.com"
           git config --global user.name "amithkoujalgi"
