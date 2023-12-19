@@ -64,6 +64,8 @@ In your Maven project, add this dependency:
 </dependency>
 ```
 
+https://img.shields.io/maven-metadata/v.svg?label=ollama4j-version&metadataUrl=https%3A%2F%2Frepo1.maven.org%2Fmaven2%2Fio%2Fgithub%2Famithkoujalgi%2Follama4j%2Fmaven-metadata.xml
+
 [![][lib-shield]][lib]
 
 [lib]: https://central.sonatype.com/artifact/io.github.amithkoujalgi/ollama4j
