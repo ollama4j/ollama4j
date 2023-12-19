@@ -4,7 +4,7 @@
 
     <groupId>io.github.amithkoujalgi</groupId>
     <artifactId>ollama4j</artifactId>
-    <version>1.0.2-SNAPSHOT</version>
+    <version>1.0.2</version>
 
     <name>Ollama4j</name>
     <description>Java library for interacting with Ollama API.</description>
@@ -39,7 +39,7 @@
         <connection>scm:git:git@github.com:amithkoujalgi/ollama4j.git</connection>
         <developerConnection>scm:git:https://github.com/amithkoujalgi/ollama4j.git</developerConnection>
         <url>https://github.com/amithkoujalgi/ollama4j</url>
-        <tag>v1.0.1</tag>
+        <tag>v1.0.2</tag>
     </scm>
 
     <build>
