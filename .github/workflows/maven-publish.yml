@@ -53,7 +53,7 @@ jobs:
         if: >
           github.event_name != 'pull_request' &&
           github.ref_name == 'main' &&
-          contains(github.event.head_commit.message, '[release]')
+          contains(github.event.head_commit.message, 'release')
         run: |
           git config --global user.email "koujalgi.amith@gmail.com"
           git config --global user.name "amithkoujalgi"
