@@ -50,10 +50,10 @@ jobs:
       - name: Build
         run: mvn -B -ntp clean install
       - name: Publish to GitHub Packages Apache Maven
-        if: >
-          github.event_name != 'pull_request' &&
-          github.ref_name == 'main' &&
-          contains(github.event.head_commit.message, 'release')
+        #        if: >
+        #          github.event_name != 'pull_request' &&
+        #          github.ref_name == 'main' &&
+        #          contains(github.event.head_commit.message, 'release')
         run: |
           git config --global user.email "koujalgi.amith@gmail.com"
           git config --global user.name "amithkoujalgi"
