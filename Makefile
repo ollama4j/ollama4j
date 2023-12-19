@@ -5,7 +5,7 @@ it:
 	mvn clean verify -Pintegration-tests
 
 build:
-	mvn clean test install -Punit-tests
+	mvn -B clean test install -Punit-tests -Dgpg.passphrase="${GPG_PASSPHRASE}" -e
 
 release:
 	mvn clean -Punit-tests release:clean release:prepare release:perform -B
