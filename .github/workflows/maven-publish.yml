@@ -49,7 +49,10 @@ jobs:
           gpg-passphrase: MAVEN_GPG_PASSPHRASE
 
       - name: Publish to GitHub Packages Apache Maven
-        run: mvn clean -Punit-tests release:clean release:prepare release:perform -B -Darguments="-DskipTests -Dgpg.passphrase=${{ secrets.GPG_PASSPHRASE }}"
+        run: |
+          git config --global user.email "koujalgi.amith@gmail.com"
+          git config --global user.name "amithkoujalgi"
+        mvn clean -Punit-tests release:clean release:prepare release:perform -B -Darguments="-DskipTests -Dgpg.passphrase=${{ secrets.GPG_PASSPHRASE }}"
         #        run: mvn clean deploy -Punit-tests -Dgpg.passphrase="${{ secrets.GPG_PASSPHRASE }}"
 
         env:
