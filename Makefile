@@ -8,7 +8,7 @@ build:
 	mvn -B clean test install -Punit-tests -Dgpg.passphrase="${GPG_PASSPHRASE}" -e
 
 release:
-	mvn clean -Punit-tests release:clean release:prepare release:perform -B
+	mvn -B clean install -Punit-tests release:clean release:prepare release:perform -Dgpg.passphrase="${GPG_PASSPHRASE}" -e
 
 update-version:
 	mvn versions:set -DnewVersion=1.0.1
