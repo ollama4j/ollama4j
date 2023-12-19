@@ -23,6 +23,12 @@ gpg --keyserver keys.gnupg.net --send-keys CA925CD6C9E8D064FF05B4728190C4130ABA0
 - Now other people can import your public key from the key server to their local
   machines: `gpg --keyserver keyserver.ubuntu.com --recv-keys CA925CD6C9E8D064FF05B4728190C4130ABA0F98`
 
+Export for later use:
+
+```shell
+gpg --armor --export-secret-keys 88AA0C903A513340A0F3094326257A6F6F5F24A9 > ~/ollama4j/mvn-publish/private.gpg
+```
+
 ## Maven publish
 
 https://central.sonatype.org/publish/publish-maven/

@@ -53,8 +53,10 @@ for [Ollama](https://github.com/jmorganca/ollama/blob/main/docs/api.md) APIs.
 
 #### Installation
 
-In your Maven project, add this dependency available in
-the [Central Repository](https://s01.oss.sonatype.org/#nexus-search;quick~ollama4j):
+In your Maven project, add this dependency available in:
+
+- https://central.sonatype.com/artifact/io.github.amithkoujalgi/ollama4j
+- [Central Repository](https://s01.oss.sonatype.org/#nexus-search;quick~ollama4j)
 
 ```xml
 
