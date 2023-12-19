@@ -64,7 +64,7 @@ In your Maven project, add this dependency:
 </dependency>
 ```
 
-![Maven Central](https://img.shields.io/maven-central/v/io.github.amithkoujalgi/ollama4j)
+![Maven Central](https://img.shields.io/maven-central/v/io.github.amithkoujalgi/ollama4j?style=for-the-badge&labelColor=gray)
 
 [![][lib-shield]][lib]
 
