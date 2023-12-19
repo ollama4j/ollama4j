@@ -3,14 +3,14 @@
 
 name: Test and Publish Package
 
-on:
-  release:
-    types: [ "created" ]
-
 #on:
-#  push:
-#    branches: [ "main" ]
-#  workflow_dispatch:
+#  release:
+#    types: [ "created" ]
+
+on:
+  push:
+    branches: [ "main" ]
+  workflow_dispatch:
 
 jobs:
   build:
