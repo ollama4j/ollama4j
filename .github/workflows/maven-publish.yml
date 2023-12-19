@@ -58,7 +58,6 @@ jobs:
           git config --global user.email "koujalgi.amith@gmail.com"
           git config --global user.name "amithkoujalgi"
           mvn -B -ntp -DskipTests -Pci-cd -Darguments="-DskipTests -Pci-cd" release:clean release:prepare release:perform
-        #          mvn clean -Punit-tests release:clean release:prepare release:perform -B -Darguments="-DskipTests -Dgpg.passphrase=${{ secrets.GPG_PASSPHRASE }}"
         env:
           MAVEN_USERNAME: ${{ secrets.OSSRH_USERNAME }}
           MAVEN_PASSWORD: ${{ secrets.OSSRH_PASSWORD }}

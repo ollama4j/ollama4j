@@ -1,13 +1,16 @@
 Understanding publishing:
 https://dzone.com/articles/how-to-publish-artifacts-to-maven-central
 
-GPG Signing setup
+Reference Repo:
+https://github.com/dsibilio/badge-maker/tree/main
 
-## GPG Setup
+## GPG Signing setup
+
+### GPG Setup
 
 https://central.sonatype.org/publish/requirements/gpg/#listing-keys
 
-### Steps
+#### Steps
 
 - Create key: `gpg --gen-key` and then list keys to verify: `gpg --list-keys`
 - Distributing Your Public Key:
@@ -33,4 +36,19 @@ gpg --armor --export-secret-keys 88AA0C903A513340A0F3094326257A6F6F5F24A9 > ~/ol
 
 https://central.sonatype.org/publish/publish-maven/
 
-### Steps
+## List release versions
+
+```shell
+curl 'https://central.sonatype.com/api/internal/browse/component/versions?sortField=normalizedVersion&sortDirection=desc&page=0&size=12&filter=namespace%3Aio.github.amithkoujalgi%2Cname%3Aollama4j' \
+  --compressed \
+  --silent | jq '.components[].version'
+```
+
+Deployment steps to test. [IGNORE THIS FOR PUBLISHING CONTEXT. THIS IS ONLY TO TEST STUFF OUT LOCALLY]
+
+```shell
+# release:
+mvn -B clean install deploy -Punit-tests -Dgpg.passphrase="${GPG_PASSPHRASE}" -e
+#or
+mvn -B clean install -Punit-tests release:clean release:prepare release:perform -Dgpg.passphrase="${GPG_PASSPHRASE}" -e
+```

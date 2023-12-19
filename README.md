@@ -53,10 +53,7 @@ for [Ollama](https://github.com/jmorganca/ollama/blob/main/docs/api.md) APIs.
 
 #### Installation
 
-In your Maven project, add this dependency available in:
-
-- https://central.sonatype.com/artifact/io.github.amithkoujalgi/ollama4j
-- [Central Repository](https://s01.oss.sonatype.org/#nexus-search;quick~ollama4j)
+In your Maven project, add this dependency:
 
 ```xml
 
@@ -67,20 +64,11 @@ In your Maven project, add this dependency available in:
 </dependency>
 ```
 
-You might want to include the Maven repository to pull the ollama4j library from. Include this in
-your `pom.xml`:
+Get the latest version from [Maven Central](https://central.sonatype.com/artifact/io.github.amithkoujalgi/ollama4j)
+or [Nexus Repository](https://s01.oss.sonatype.org/#nexus-search;quick~ollama4j).
 
-```xml
-
-<repositories>
-    <repository>
-        <id>ollama4j-from-ossrh</id>
-        <url>https://s01.oss.sonatype.org/content/repositories/snapshots</url>
-    </repository>
-</repositories>
-```
-
-You should also include an implementation of [SL4J](https://www.slf4j.org/) logger in your `pom.xml` file. For example,
+You might want to include an implementation of [SL4J](https://www.slf4j.org/) logger in your `pom.xml` file. For
+example,
 
 Use `slf4j-jdk14` implementation:
 
