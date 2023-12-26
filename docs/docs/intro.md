@@ -41,11 +41,11 @@ terminal of your code editor.
 
 The command runs the Ollama server locally at **http://localhost:11434/**.
 
-### Start your project
+### Setup your project
 
 Get started by **creating a new Maven project** on your favorite IDE.
 
-Add the dependency to your project.
+Add the dependency to your project's `pom.xml`.
 
 ```xml
 
