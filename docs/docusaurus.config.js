@@ -9,7 +9,7 @@ import {themes as prismThemes} from 'prism-react-renderer';
 /** @type {import('@docusaurus/types').Config} */
 const config = {
     title: 'Ollama4J',
-    tagline: 'Java library for interacting with Ollama API.',
+    tagline: 'Java library for interacting with Ollama.',
     favicon: 'img/favicon.ico',
 
     // Set the production url of your site here
