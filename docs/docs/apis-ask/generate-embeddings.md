@@ -1,57 +1,42 @@
 ---
-sidebar_position: 2
+sidebar_position: 5
 ---
 
 # Generate Embeddings
 
-Documents are **groups of pages** connected through:
+Generate embeddings from a model.
 
-- a **sidebar**
-- **previous/next navigation**
-- **versioning**
+Parameters:
 
-## Create your first Doc
+- `model`: name of model to generate embeddings from
+- `prompt`: text to generate embeddings for
 
-Create a Markdown file at `docs/hello.md`:
+```java
+public class Main {
 
-```md title="docs/hello.md"
-# Hello
-
-This is my **first Docusaurus document**!
+    public static void main(String[] args) {
+        String host = "http://localhost:11434/";
+        OllamaAPI ollamaAPI = new OllamaAPI(host);
+        List<Double> embeddings = ollamaAPI.generateEmbeddings(OllamaModelType.LLAMA2,
+                "Here is an article about llamas...");
+        embeddings.forEach(System.out::println);
+    }
+}
 ```
 
-A new document is now available at [http://localhost:3000/docs/hello](http://localhost:3000/docs/hello).
+You will get a response similar to:
 
-## Configure the Sidebar
-
-Docusaurus automatically **creates a sidebar** from the `docs` folder.
-
-Add metadata to customize the sidebar label and position:
-
-```md title="docs/hello.md" {1-4}
----
-sidebar_label: 'Hi!'
-sidebar_position: 3
----
-
-# Hello
-
-This is my **first Docusaurus document**!
-```
-
-It is also possible to create your sidebar explicitly in `sidebars.js`:
-
-```js title="sidebars.js"
-export default {
-  tutorialSidebar: [
-    'intro',
-    // highlight-next-line
-    'hello',
-    {
-      type: 'category',
-      label: 'Tutorial',
-      items: ['tutorial-basics/create-a-document'],
-    },
-  ],
-};
+```json
+ [
+  0.5670403838157654,
+  0.009260174818336964,
+  0.23178744316101074,
+  -0.2916173040866852,
+  -0.8924556970596313,
+  0.8785552978515625,
+  -0.34576427936553955,
+  0.5742510557174683,
+  -0.04222835972905159,
+  -0.137906014919281
+]
 ```

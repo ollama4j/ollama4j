@@ -1,34 +1,23 @@
 ---
-sidebar_position: 3
+sidebar_position: 4
 ---
 
 # Create Model
 
-Docusaurus creates a **page for each blog post**, but also a **blog index page**, a **tag system**, an **RSS** feed...
+This API lets you create a custom model on the Ollama server.
 
-## Create your first Post
+```java title="CreateModel.java"
+public class CreateModel {
 
-Create a file at `blog/2021-02-28-greetings.md`:
+    public static void main(String[] args) {
 
-```md title="blog/2021-02-28-greetings.md"
----
-slug: greetings
-title: Greetings!
-authors:
-  - name: Joel Marcey
-    title: Co-creator of Docusaurus 1
-    url: https://github.com/JoelMarcey
-    image_url: https://github.com/JoelMarcey.png
-  - name: Sébastien Lorber
-    title: Docusaurus maintainer
-    url: https://sebastienlorber.com
-    image_url: https://github.com/slorber.png
-tags: [greetings]
----
+        String host = "http://localhost:11434/";
 
-Congratulations, you have made your first post!
+        OllamaAPI ollamaAPI = new OllamaAPI(host);
 
-Feel free to play around and edit this post as much you like.
+        ollamaAPI.createModel("mycustommodel", "/path/to/modelfile/on/ollama-server");
+    }
+}
 ```
 
-A new blog post is now available at [http://localhost:3000/blog/greetings](http://localhost:3000/blog/greetings).
+Once created, you can see it when you use [list models](./list-models) API.

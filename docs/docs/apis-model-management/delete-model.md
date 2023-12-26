@@ -4,28 +4,19 @@ sidebar_position: 5
 
 # Delete Model
 
-Docusaurus is a **static-site-generator** (also called **[Jamstack](https://jamstack.org/)**).
+This API lets you create a delete a model from the Ollama server.
 
-It builds your site as simple **static HTML, JavaScript and CSS files**.
+```java title="DeleteModel.java"
+public class Main {
 
-## Build your site
+    public static void main(String[] args) {
+        String host = "http://localhost:11434/";
+        OllamaAPI ollamaAPI = new OllamaAPI(host);
+        ollamaAPI.setVerbose(false);
+        ollamaAPI.deleteModel("mycustommodel", true);
+    }
+}
 
-Build your site **for production**:
-
-```bash
-npm run build
 ```
 
-The static files are generated in the `build` folder.
-
-## Deploy your site
-
-Test your production build locally:
-
-```bash
-npm run serve
-```
-
-The `build` folder is now served at [http://localhost:3000/](http://localhost:3000/).
-
-You can now deploy the `build` folder **almost anywhere** easily, **for free** or very small cost (read the **[Deployment Guide](https://docusaurus.io/docs/deployment)**).
+Once deleted, you can verify it using [list models](./list-models) API.

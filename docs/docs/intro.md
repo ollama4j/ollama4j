@@ -4,7 +4,7 @@ sidebar_position: 1
 
 # Intro
 
-Let's discover **Ollama4J in less than 5 minutes**.
+Let's get started with **Ollama4J**.
 
 ## Getting Started
 
@@ -50,9 +50,9 @@ Add the dependency to your project's `pom.xml`.
 ```xml
 
 <dependency>
-  <groupId>io.github.amithkoujalgi</groupId>
-  <artifactId>ollama4j</artifactId>
-  <version>1.0.27</version>
+    <groupId>io.github.amithkoujalgi</groupId>
+    <artifactId>ollama4j</artifactId>
+    <version>1.0.27</version>
 </dependency>
 ```
 
@@ -61,16 +61,16 @@ Create a new Java class in your project and add this code.
 ```java
 public class OllamaAPITest {
 
-  public static void main(String[] args) {
-    String host = "http://localhost:11434/";
-    
-    OllamaAPI ollamaAPI = new OllamaAPI(host);
+    public static void main(String[] args) {
+        String host = "http://localhost:11434/";
 
-    ollamaAPI.setVerbose(true);
+        OllamaAPI ollamaAPI = new OllamaAPI(host);
 
-    boolean isOllamaServerReachable  = ollamaAPI.ping();
+        ollamaAPI.setVerbose(true);
 
-    System.out.println("Is Ollama server alive: " + isOllamaServerReachable);
-  }
+        boolean isOllamaServerReachable = ollamaAPI.ping();
+
+        System.out.println("Is Ollama server alive: " + isOllamaServerReachable);
+    }
 }
 ```

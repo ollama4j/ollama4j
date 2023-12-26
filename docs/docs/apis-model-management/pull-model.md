@@ -1,23 +1,23 @@
 ---
-sidebar_position: 6
+sidebar_position: 2
 ---
 
 # Pull Model
 
-You have just learned the **basics of Docusaurus** and made some changes to the **initial template**.
+This API lets you pull a model on the Ollama server.
 
-Docusaurus has **much more to offer**!
+```java title="PullModel.java"
+public class Main {
 
-Have **5 more minutes**? Take a look at **[versioning](../tutorial-extras/manage-docs-versions.md)** and **[i18n](../tutorial-extras/translate-your-site.md)**.
+    public static void main(String[] args) {
+        
+        String host = "http://localhost:11434/";
 
-Anything **unclear** or **buggy** in this tutorial? [Please report it!](https://github.com/facebook/docusaurus/discussions/4610)
+        OllamaAPI ollamaAPI = new OllamaAPI(host);
 
-## What's next?
+        ollamaAPI.pullModel(OllamaModelType.LLAMA2);
+    }
+}
+```
 
-- Read the [official documentation](https://docusaurus.io/)
-- Modify your site configuration with [`docusaurus.config.js`](https://docusaurus.io/docs/api/docusaurus-config)
-- Add navbar and footer items with [`themeConfig`](https://docusaurus.io/docs/api/themes/configuration)
-- Add a custom [Design and Layout](https://docusaurus.io/docs/styling-layout)
-- Add a [search bar](https://docusaurus.io/docs/search)
-- Find inspirations in the [Docusaurus showcase](https://docusaurus.io/showcase)
-- Get involved in the [Docusaurus Community](https://docusaurus.io/community/support)
+Once downloaded, you can see them when you use [list models](./list-models) API.
