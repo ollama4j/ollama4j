@@ -3,6 +3,6 @@
   "position": 4,
   "link": {
     "type": "generated-index",
-    "description": "Specs of APIs and their usage."
+    "description": "Details of APIs to manage LLMs."
   }
 }

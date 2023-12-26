@@ -1,0 +1,8 @@
+{
+  "label": "APIs - Extras",
+  "position": 10,
+  "link": {
+    "type": "generated-index",
+    "description": "Details of APIs to handle bunch of extra stuff."
+  }
+}
