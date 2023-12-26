@@ -11,22 +11,16 @@ Hey there, my fellow Java Developers! 🚀
 I am glad to announce the release of Ollama4j, a library that unites Ollama (an LLM manager and runner) and your Java
 applications! 🌐🚀
 
-👉 GitHub Repository: Ollama4j on GitHub (https://lnkd.in/gShPqwkR)
+👉 GitHub Repository: Ollama4j on GitHub (https://github.com/amithkoujalgi/ollama4j)
 
 🌟 Key Features:
 
 - Easy integration with Ollama, enabling the execution of large language models locally.
-
 - Clean and simple APIs, focused on seamless interaction with Ollama.
-
 - Empowers Java developers to harness the full capabilities of Ollama.
-
 - Provides APIs to perform operations such as listing, pulling, deleting models, and creating custom models.
-
 - Provides APIs to ask questions (generate completions) to the LLMs in synchronous and asynchronous modes.
-
 - Ability to ask questions along with image files or image URLs! 🤩
-
 - Open-source and primed for collaborative contributions from the community!
 
 🦙 What is Ollama?
@@ -38,8 +32,7 @@ models.
 For more details about Ollama, check these out:
 
 - https://ollama.ai/
-
-- https://lnkd.in/g8MQqnMT
+- https://www.linkedin.com/company/ollama/
 
 👨‍💻 Why Ollama4j?
 
@@ -65,7 +58,9 @@ elevate your projects.
 
 I look forward to seeing the incredible applications/projects you'll build with Ollama4j! 🌟
 
-You can find the Javadoc here: https://lnkd.in/gzmWTX7h
+Find the full API spec here: https://amithkoujalgi.github.io/ollama4j/
+
+Find the Javadoc here: https://amithkoujalgi.github.io/ollama4j/apidocs/
 
 Ollama4j Docs is powered by [Docusaurus](https://docusaurus.io).
 

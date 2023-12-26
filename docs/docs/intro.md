@@ -17,8 +17,8 @@ Let's get started with **Ollama4j**.
 
 ### Start Ollama server
 
-The easiest way of getting started with Ollama server is with *
-*[Docker](https://docs.docker.com/get-started/overview/)**. But if you choose to run the
+The easiest way of getting started with Ollama server is with [Docker](https://docs.docker.com/get-started/overview/).
+But if you choose to run the
 Ollama server directly, **[download](https://ollama.ai/download)** the distribution of your choice
 and follow the installation process.
 
@@ -55,6 +55,8 @@ If you're on Maven, add the dependency to your project's `pom.xml`.
     <version>1.0.27</version>
 </dependency>
 ```
+
+Find the latest version of the library [here](https://central.sonatype.com/artifact/io.github.amithkoujalgi/ollama4j).
 
 If you're on Gradle, add the following to your `build.gradle`:
 
