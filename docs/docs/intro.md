@@ -13,7 +13,7 @@ Let's get started with **Ollama4j**.
 - **[Ollama](https://ollama.ai/download)**
 - **[Oracle JDK](https://www.oracle.com/java/technologies/javase/jdk11-archive-downloads.html)** or
   **[Open JDK](https://jdk.java.net/archive/)** 11.0 or above.
-- **[Maven](https://maven.apache.org/download.cgi)** or **[Gradle](https://gradle.org/install/)**
+- **[Maven](https://maven.apache.org/download.cgi)**
 
 ### Start Ollama server
 
@@ -43,9 +43,9 @@ The command runs the Ollama server locally at **http://localhost:11434/**.
 
 ### Setup your project
 
-Get started by **creating a new project** on your favorite IDE.
+Get started by **creating a new Maven project** on your favorite IDE.
 
-If you're on Maven, add the dependency to your project's `pom.xml`.
+Add the dependency to your project's `pom.xml`.
 
 ```xml
 
@@ -58,13 +58,32 @@ If you're on Maven, add the dependency to your project's `pom.xml`.
 
 Find the latest version of the library [here](https://central.sonatype.com/artifact/io.github.amithkoujalgi/ollama4j).
 
-If you're on Gradle, add the following to your `build.gradle`:
+You might want to include an implementation of [SL4J](https://www.slf4j.org/) logger in your `pom.xml` file. For
+example,
 
-```gradle
-dependencies {
-    implementation 'io.github.amithkoujalgi:ollama4j:1.0.27'
-}
+Use `slf4j-jdk14` implementation:
+
+```xml
+
+<dependency>
+    <groupId>org.slf4j</groupId>
+    <artifactId>slf4j-jdk14</artifactId>
+    <version>2.0.9</version> <!--Replace with appropriate version-->
+</dependency>
 ```
+
+or use `logback-classic` implementation:
+
+```xml
+
+<dependency>
+    <groupId>ch.qos.logback</groupId>
+    <artifactId>logback-classic</artifactId>
+    <version>1.3.11</version> <!--Replace with appropriate version-->
+</dependency>
+```
+
+or use other suitable implementations.
 
 Create a new Java class in your project and add this code.
 

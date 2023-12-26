@@ -17,15 +17,16 @@ public class Main {
 
         OllamaAPI ollamaAPI = new OllamaAPI(host);
 
-        OllamaAsyncResultCallback ollamaAsyncResultCallback = ollamaAPI.askAsync(OllamaModelType.LLAMA2,
-                "Who are you?");
+        String prompt = "Who are you?";
 
-        while (true) {
-            if (ollamaAsyncResultCallback.isComplete()) {
-                System.out.println(ollamaAsyncResultCallback.getResponse());
-                break;
+        OllamaAsyncResultCallback callback = ollamaAPI.askAsync(OllamaModelType.LLAMA2, prompt);
+
+        while (!callback.isComplete() || !callback.getStream().isEmpty()) {
+            // poll for data from the response stream
+            String result = callback.getStream().poll();
+            if (response != null) {
+                System.out.print(result.getResponse());
             }
-            // introduce sleep to check for status with a time interval
             Thread.sleep(100);
         }
     }

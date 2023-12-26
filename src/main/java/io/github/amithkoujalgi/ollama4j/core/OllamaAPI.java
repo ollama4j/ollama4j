@@ -17,6 +17,7 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.net.http.HttpClient;
+import java.net.http.HttpConnectTimeoutException;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.nio.charset.StandardCharsets;
@@ -61,6 +62,39 @@ public class OllamaAPI {
    */
   public void setVerbose(boolean verbose) {
     this.verbose = verbose;
+  }
+
+  /**
+   * API to check the reachability of Ollama server.
+   *
+   * @return true if the server is reachable, false otherwise.
+   */
+  public boolean ping() {
+    String url = this.host + "/api/tags";
+    HttpClient httpClient = HttpClient.newHttpClient();
+    HttpRequest httpRequest = null;
+    try {
+      httpRequest =
+          HttpRequest.newBuilder()
+              .uri(new URI(url))
+              .header("Accept", "application/json")
+              .header("Content-type", "application/json")
+              .timeout(Duration.ofSeconds(requestTimeoutSeconds))
+              .GET()
+              .build();
+    } catch (URISyntaxException e) {
+      throw new RuntimeException(e);
+    }
+    HttpResponse<String> response = null;
+    try {
+      response = httpClient.send(httpRequest, HttpResponse.BodyHandlers.ofString());
+    } catch (HttpConnectTimeoutException e) {
+      return false;
+    } catch (IOException | InterruptedException e) {
+      throw new RuntimeException(e);
+    }
+    int statusCode = response.statusCode();
+    return statusCode == 200;
   }
 
   /**
