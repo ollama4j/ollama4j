@@ -43,9 +43,9 @@ The command runs the Ollama server locally at **http://localhost:11434/**.
 
 ### Setup your project
 
-Get started by **creating a new Maven project** on your favorite IDE.
+Get started by **creating a new project** on your favorite IDE.
 
-Add the dependency to your project's `pom.xml`.
+If you're on Maven, add the dependency to your project's `pom.xml`.
 
 ```xml
 
@@ -54,6 +54,14 @@ Add the dependency to your project's `pom.xml`.
     <artifactId>ollama4j</artifactId>
     <version>1.0.27</version>
 </dependency>
+```
+
+If you're on Gradle, add the following to your `build.gradle`:
+
+```gradle
+dependencies {
+    implementation 'io.github.amithkoujalgi:ollama4j:1.0.27'
+}
 ```
 
 Create a new Java class in your project and add this code.
