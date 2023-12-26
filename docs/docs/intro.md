@@ -2,46 +2,75 @@
 sidebar_position: 1
 ---
 
-# Tutorial Intro
+# Intro
 
-Let's discover **Docusaurus in less than 5 minutes**.
+Let's discover **Ollama4J in less than 5 minutes**.
 
 ## Getting Started
 
-Get started by **creating a new site**.
-
-Or **try Docusaurus immediately** with **[docusaurus.new](https://docusaurus.new)**.
-
 ### What you'll need
 
-- [Node.js](https://nodejs.org/en/download/) version 18.0 or above:
-  - When installing Node.js, you are recommended to check all checkboxes related to dependencies.
+- **[Ollama](https://ollama.ai/download)**
+- **[Oracle JDK](https://www.oracle.com/java/technologies/javase/jdk11-archive-downloads.html)** or
+  **[Open JDK](https://jdk.java.net/archive/)** 11.0 or above.
+- **[Maven](https://maven.apache.org/download.cgi)** or **[Gradle](https://gradle.org/install/)**
 
-## Generate a new site
+### Start Ollama server
 
-Generate a new Docusaurus site using the **classic template**.
+The easiest way of getting started with Ollama server is with *
+*[Docker](https://docs.docker.com/get-started/overview/)**. But if you choose to run the
+Ollama server directly, **[download](https://ollama.ai/download)** the distribution of your choice
+and follow the installation process.
 
-The classic template will automatically be added to your project after you run the command:
+#### With Docker
 
-```bash
-npm init docusaurus@latest my-website classic
-```
-
-You can type this command into Command Prompt, Powershell, Terminal, or any other integrated terminal of your code editor.
-
-The command also installs all necessary dependencies you need to run Docusaurus.
-
-## Start your site
-
-Run the development server:
+##### Run in CPU mode:
 
 ```bash
-cd my-website
-npm run start
+docker run -it -v ~/ollama:/root/.ollama -p 11434:11434 ollama/ollama
 ```
 
-The `cd` command changes the directory you're working with. In order to work with your newly created Docusaurus site, you'll need to navigate the terminal there.
+##### Run in GPU mode:
 
-The `npm run start` command builds your website locally and serves it through a development server, ready for you to view at http://localhost:3000/.
+```bash
+docker run -it --gpus=all -v ~/ollama:/root/.ollama -p 11434:11434 ollama/ollama
+```
 
-Open `docs/intro.md` (this page) and edit some lines: the site **reloads automatically** and displays your changes.
+You can type this command into Command Prompt, Powershell, Terminal, or any other integrated
+terminal of your code editor.
+
+The command runs the Ollama server locally at **http://localhost:11434/**.
+
+### Start your project
+
+Get started by **creating a new Maven project** on your favorite IDE.
+
+Add the dependency to your project.
+
+```xml
+
+<dependency>
+  <groupId>io.github.amithkoujalgi</groupId>
+  <artifactId>ollama4j</artifactId>
+  <version>1.0.27</version>
+</dependency>
+```
+
+Create a new Java class in your project and add this code.
+
+```java
+public class OllamaAPITest {
+
+  public static void main(String[] args) {
+    String host = "http://localhost:11434/";
+    
+    OllamaAPI ollamaAPI = new OllamaAPI(host);
+
+    ollamaAPI.setVerbose(true);
+
+    boolean isOllamaServerReachable  = ollamaAPI.ping();
+
+    System.out.println("Is Ollama server alive: " + isOllamaServerReachable);
+  }
+}
+```
