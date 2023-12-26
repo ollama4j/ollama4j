@@ -78,8 +78,8 @@ const config = {
                         position: 'left',
                         label: 'Usage',
                     },
-                    {to: '/blog', label: 'Blog', position: 'left'},
                     {to: 'https://amithkoujalgi.github.io/ollama4j/apidocs/', label: 'Javadoc', position: 'left'},
+                    {to: '/blog', label: 'Blog', position: 'left'},
                     {
                         href: 'https://github.com/amithkoujalgi/ollama4j',
                         label: 'GitHub',
