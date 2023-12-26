@@ -79,7 +79,7 @@ const config = {
             label: 'Tutorial',
           },
           {to: '/blog', label: 'Blog', position: 'left'},
-          {to: 'https://github.com/amithkoujalgi/ollama4j', label: 'Javadoc', position: 'left'},
+          {to: 'https://amithkoujalgi.github.io/ollama4j/apidocs/', label: 'Javadoc', position: 'left'},
           {
             href: 'https://github.com/amithkoujalgi/ollama4j',
             label: 'GitHub',
