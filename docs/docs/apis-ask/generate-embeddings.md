@@ -15,10 +15,14 @@ Parameters:
 public class Main {
 
     public static void main(String[] args) {
+
         String host = "http://localhost:11434/";
+
         OllamaAPI ollamaAPI = new OllamaAPI(host);
+
         List<Double> embeddings = ollamaAPI.generateEmbeddings(OllamaModelType.LLAMA2,
                 "Here is an article about llamas...");
+
         embeddings.forEach(System.out::println);
     }
 }

@@ -14,7 +14,7 @@ function HomepageHeader() {
             <Heading as="h1" className="hero__title">
                 {siteConfig.title}
             </Heading>
-            <img src="img/logo.svg" alt="Ollama4J Logo" className={styles.logo} style={{maxWidth: '20vh'}}/>
+            <img src="img/logo.svg" alt="Ollama4j Logo" className={styles.logo} style={{maxWidth: '20vh'}}/>
             <p className="hero__subtitle">{siteConfig.tagline}</p>
             <div className={styles.buttons}>
                 <Link

@@ -4,7 +4,7 @@ sidebar_position: 1
 
 # Intro
 
-Let's get started with **Ollama4J**.
+Let's get started with **Ollama4j**.
 
 ## Getting Started
 

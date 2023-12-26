@@ -8,7 +8,7 @@ import {themes as prismThemes} from 'prism-react-renderer';
 
 /** @type {import('@docusaurus/types').Config} */
 const config = {
-    title: 'Ollama4J',
+    title: 'Ollama4j',
     tagline: 'Java library for interacting with Ollama.',
     favicon: 'img/favicon.ico',
 
@@ -66,9 +66,9 @@ const config = {
             // Replace with your project's social card
             image: 'img/docusaurus-social-card.jpg',
             navbar: {
-                title: 'Ollama4J',
+                title: 'Ollama4j',
                 logo: {
-                    alt: 'Ollama4J Logo',
+                    alt: 'Ollama4j Logo',
                     src: 'img/logo.svg',
                 },
                 items: [
@@ -126,7 +126,7 @@ const config = {
                         ],
                     },
                 ],
-                copyright: `Ollama4J Documentation ${new Date().getFullYear()}. Built with Docusaurus.`,
+                copyright: `Ollama4j Documentation ${new Date().getFullYear()}. Built with Docusaurus.`,
             },
             prism: {
                 theme: prismThemes.github,
