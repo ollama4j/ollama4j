@@ -316,17 +316,13 @@ public class OllamaAPI {
    */
   public List<Double> generateEmbeddings(String model, String prompt)
       throws IOException, InterruptedException, OllamaBaseException {
-    String url = this.host + "/api/embeddings";
+    URI uri = URI.create(this.host + "/api/embeddings");
     String jsonData = new ModelEmbeddingsRequest(model, prompt).toString();
     HttpClient httpClient = HttpClient.newHttpClient();
-    HttpRequest request =
-        HttpRequest.newBuilder()
-            .uri(URI.create(url))
+    HttpRequest.Builder requestBuilder = getRequestBuilderDefault(uri)
             .header("Accept", "application/json")
-            .header("Content-type", "application/json")
-            .timeout(Duration.ofSeconds(requestTimeoutSeconds))
-            .POST(HttpRequest.BodyPublishers.ofString(jsonData))
-            .build();
+            .POST(HttpRequest.BodyPublishers.ofString(jsonData));
+    HttpRequest request = requestBuilder.build();
     HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
     int statusCode = response.statusCode();
     String responseBody = response.body();
@@ -436,16 +432,10 @@ public class OllamaAPI {
     long startTime = System.currentTimeMillis();
     HttpClient httpClient = HttpClient.newHttpClient();
     URI uri = URI.create(this.host + "/api/generate");
-    HttpRequest.Builder requestBuilder =
-        HttpRequest.newBuilder(uri)
+    HttpRequest.Builder requestBuilder = getRequestBuilderDefault(uri)
             .POST(
                 HttpRequest.BodyPublishers.ofString(
-                    Utils.getObjectMapper().writeValueAsString(ollamaRequestModel)))
-            .header("Content-Type", "application/json")
-            .timeout(Duration.ofSeconds(requestTimeoutSeconds));
-    if (basicAuthCredentialsSet()) {
-      requestBuilder.header("Authorization", getBasicAuthHeaderValue());
-    }
+                    Utils.getObjectMapper().writeValueAsString(ollamaRequestModel)));
     HttpRequest request = requestBuilder.build();
     logger.debug("Ask model '" + ollamaRequestModel + "' ...");
     HttpResponse<InputStream> response =
@@ -483,6 +473,20 @@ public class OllamaAPI {
       long endTime = System.currentTimeMillis();
       return new OllamaResult(responseBuffer.toString().trim(), endTime - startTime, statusCode);
     }
+  }
+
+  /**
+   *
+   */
+  private HttpRequest.Builder getRequestBuilderDefault(URI uri) {
+    HttpRequest.Builder requestBuilder =
+            HttpRequest.newBuilder(uri)
+                    .header("Content-Type", "application/json")
+                    .timeout(Duration.ofSeconds(requestTimeoutSeconds));
+    if (basicAuthCredentialsSet()) {
+      requestBuilder.header("Authorization", getBasicAuthHeaderValue());
+    }
+    return requestBuilder;
   }
 
   /**
