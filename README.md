@@ -39,17 +39,17 @@ for [Ollama](https://github.com/jmorganca/ollama/blob/main/docs/api.md) APIs.
 
 #### Requirements
 
-![Java](https://img.shields.io/badge/Java-11_+-green.svg?style=for-the-badge&labelColor=gray)
+![Java](https://img.shields.io/badge/Java-11_+-green.svg?style=just-the-message&labelColor=gray)
 
-[![][ollama-shield]][ollama] Or  [![][ollama-docker-shield]][ollama-docker]
+[![][ollama-shield]][ollama] **Or** [![][ollama-docker-shield]][ollama-docker]
 
 [ollama]: https://ollama.ai/
 
-[ollama-shield]: https://img.shields.io/badge/Ollama-Local_Installation-blue.svg?style=for-the-badge&labelColor=gray
+[ollama-shield]: https://img.shields.io/badge/Ollama-Local_Installation-blue.svg?style=just-the-message&labelColor=gray
 
 [ollama-docker]: https://hub.docker.com/r/ollama/ollama
 
-[ollama-docker-shield]: https://img.shields.io/badge/Ollama-Docker-blue.svg?style=for-the-badge&labelColor=gray
+[ollama-docker-shield]: https://img.shields.io/badge/Ollama-Docker-blue.svg?style=just-the-message&labelColor=gray
 
 #### Installation
 
@@ -64,13 +64,15 @@ In your Maven project, add this dependency:
 </dependency>
 ```
 
-Latest release: ![Maven Central](https://img.shields.io/maven-central/v/io.github.amithkoujalgi/ollama4j)
+Latest release: 
+
+![Maven Central](https://img.shields.io/maven-central/v/io.github.amithkoujalgi/ollama4j)
 
 [![][lib-shield]][lib]
 
 [lib]: https://central.sonatype.com/artifact/io.github.amithkoujalgi/ollama4j
 
-[lib-shield]: https://img.shields.io/badge/ollama4j-get_latest_version-blue.svg?style=for-the-badge&labelColor=gray
+[lib-shield]: https://img.shields.io/badge/ollama4j-get_latest_version-blue.svg?style=just-the-message&labelColor=gray
 
 #### API Spec
 
