@@ -371,7 +371,7 @@ public class Main {
                 "What's in this image?",
                 List.of(
                         new File("/path/to/image")));
-        System.out.println(response);
+        System.out.println(response.getResponse());
     }
 }
 ```
@@ -390,7 +390,7 @@ public class Main {
                 "What's in this image?",
                 List.of(
                         "https://t3.ftcdn.net/jpg/02/96/63/80/360_F_296638053_0gUVA4WVBKceGsIr7LNqRWSnkusi07dq.jpg"));
-        System.out.println(response);
+        System.out.println(response.getResponse());
     }
 }
 ```
@@ -419,7 +419,7 @@ public class Main {
             // poll for data from the response stream
             String response = callback.getStream().poll();
             if (response != null) {
-                System.out.print(response);
+                System.out.print(response.getResponse());
             }
             Thread.sleep(1000);
         }
