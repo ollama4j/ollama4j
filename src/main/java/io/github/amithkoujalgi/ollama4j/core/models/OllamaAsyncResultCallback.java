@@ -6,7 +6,6 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
@@ -14,30 +13,44 @@ import java.nio.charset.StandardCharsets;
 import java.time.Duration;
 import java.util.LinkedList;
 import java.util.Queue;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
 
+@Data
+@EqualsAndHashCode(callSuper = true)
 @SuppressWarnings("unused")
 public class OllamaAsyncResultCallback extends Thread {
-  private final HttpClient client;
-  private final URI uri;
+  private final HttpRequest.Builder requestBuilder;
   private final OllamaRequestModel ollamaRequestModel;
   private final Queue<String> queue = new LinkedList<>();
   private String result;
   private boolean isDone;
-  private boolean succeeded;
+
+  /**
+   * -- GETTER -- Returns the status of the request. Indicates if the request was successful or a
+   * failure. If the request was a failure, the `getResponse()` method will return the error
+   * message.
+   */
+  @Getter private boolean succeeded;
 
   private long requestTimeoutSeconds;
 
-  private int httpStatusCode;
-  private long responseTime = 0;
+  /**
+   * -- GETTER -- Returns the HTTP response status code for the request that was made to Ollama
+   * server.
+   */
+  @Getter private int httpStatusCode;
+
+  /** -- GETTER -- Returns the response time in milliseconds. */
+  @Getter private long responseTime = 0;
 
   public OllamaAsyncResultCallback(
-      HttpClient client,
-      URI uri,
+      HttpRequest.Builder requestBuilder,
       OllamaRequestModel ollamaRequestModel,
       long requestTimeoutSeconds) {
-    this.client = client;
+    this.requestBuilder = requestBuilder;
     this.ollamaRequestModel = ollamaRequestModel;
-    this.uri = uri;
     this.isDone = false;
     this.result = "";
     this.queue.add("");
@@ -46,10 +59,11 @@ public class OllamaAsyncResultCallback extends Thread {
 
   @Override
   public void run() {
+    HttpClient httpClient = HttpClient.newHttpClient();
     try {
       long startTime = System.currentTimeMillis();
       HttpRequest request =
-          HttpRequest.newBuilder(uri)
+          requestBuilder
               .POST(
                   HttpRequest.BodyPublishers.ofString(
                       Utils.getObjectMapper().writeValueAsString(ollamaRequestModel)))
@@ -57,7 +71,7 @@ public class OllamaAsyncResultCallback extends Thread {
               .timeout(Duration.ofSeconds(requestTimeoutSeconds))
               .build();
       HttpResponse<InputStream> response =
-          client.send(request, HttpResponse.BodyHandlers.ofInputStream());
+          httpClient.send(request, HttpResponse.BodyHandlers.ofInputStream());
       int statusCode = response.statusCode();
       this.httpStatusCode = statusCode;
 
@@ -109,25 +123,6 @@ public class OllamaAsyncResultCallback extends Thread {
   }
 
   /**
-   * Returns the HTTP response status code for the request that was made to Ollama server.
-   *
-   * @return int - the status code for the request
-   */
-  public int getHttpStatusCode() {
-    return httpStatusCode;
-  }
-
-  /**
-   * Returns the status of the request. Indicates if the request was successful or a failure. If the
-   * request was a failure, the `getResponse()` method will return the error message.
-   *
-   * @return boolean - status
-   */
-  public boolean isSucceeded() {
-    return succeeded;
-  }
-
-  /**
    * Returns the final response when the execution completes. Does not return intermediate results.
    *
    * @return String - response text
@@ -138,15 +133,6 @@ public class OllamaAsyncResultCallback extends Thread {
 
   public Queue<String> getStream() {
     return queue;
-  }
-
-  /**
-   * Returns the response time in milliseconds.
-   *
-   * @return long - response time in milliseconds.
-   */
-  public long getResponseTime() {
-    return responseTime;
   }
 
   public void setRequestTimeoutSeconds(long requestTimeoutSeconds) {

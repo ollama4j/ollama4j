@@ -37,8 +37,7 @@ public class OllamaAPI {
   private final String host;
   private long requestTimeoutSeconds = 3;
   private boolean verbose = true;
-  private String username;
-  private String password;
+  private BasicAuth basicAuth;
 
   /**
    * Instantiates the Ollama API.
@@ -53,6 +52,11 @@ public class OllamaAPI {
     }
   }
 
+  /**
+   * Set request timeout in seconds. Default is 3 seconds.
+   *
+   * @param requestTimeoutSeconds the request timeout in seconds
+   */
   public void setRequestTimeoutSeconds(long requestTimeoutSeconds) {
     this.requestTimeoutSeconds = requestTimeoutSeconds;
   }
@@ -67,11 +71,13 @@ public class OllamaAPI {
   }
 
   /**
+   * Set basic authentication for accessing Ollama server that's behind a reverse-proxy/gateway.
    *
+   * @param username the username
+   * @param password the password
    */
   public void setBasicAuth(String username, String password) {
-    this.username = username;
-    this.password = password;
+    this.basicAuth = new BasicAuth(username, password);
   }
 
   /**
@@ -85,11 +91,9 @@ public class OllamaAPI {
     HttpRequest httpRequest = null;
     try {
       httpRequest =
-          HttpRequest.newBuilder()
-              .uri(new URI(url))
+          getRequestBuilderDefault(new URI(url))
               .header("Accept", "application/json")
               .header("Content-type", "application/json")
-              .timeout(Duration.ofSeconds(requestTimeoutSeconds))
               .GET()
               .build();
     } catch (URISyntaxException e) {
@@ -117,11 +121,9 @@ public class OllamaAPI {
     String url = this.host + "/api/tags";
     HttpClient httpClient = HttpClient.newHttpClient();
     HttpRequest httpRequest =
-        HttpRequest.newBuilder()
-            .uri(new URI(url))
+        getRequestBuilderDefault(new URI(url))
             .header("Accept", "application/json")
             .header("Content-type", "application/json")
-            .timeout(Duration.ofSeconds(requestTimeoutSeconds))
             .GET()
             .build();
     HttpResponse<String> response =
@@ -148,12 +150,10 @@ public class OllamaAPI {
     String url = this.host + "/api/pull";
     String jsonData = new ModelRequest(modelName).toString();
     HttpRequest request =
-        HttpRequest.newBuilder()
-            .uri(new URI(url))
+        getRequestBuilderDefault(new URI(url))
             .POST(HttpRequest.BodyPublishers.ofString(jsonData))
             .header("Accept", "application/json")
             .header("Content-type", "application/json")
-            .timeout(Duration.ofSeconds(requestTimeoutSeconds))
             .build();
     HttpClient client = HttpClient.newHttpClient();
     HttpResponse<InputStream> response =
@@ -184,15 +184,13 @@ public class OllamaAPI {
    * @return the model details
    */
   public ModelDetail getModelDetails(String modelName)
-      throws IOException, OllamaBaseException, InterruptedException {
+      throws IOException, OllamaBaseException, InterruptedException, URISyntaxException {
     String url = this.host + "/api/show";
     String jsonData = new ModelRequest(modelName).toString();
     HttpRequest request =
-        HttpRequest.newBuilder()
-            .uri(URI.create(url))
+        getRequestBuilderDefault(new URI(url))
             .header("Accept", "application/json")
             .header("Content-type", "application/json")
-            .timeout(Duration.ofSeconds(requestTimeoutSeconds))
             .POST(HttpRequest.BodyPublishers.ofString(jsonData))
             .build();
     HttpClient client = HttpClient.newHttpClient();
@@ -214,15 +212,13 @@ public class OllamaAPI {
    * @param modelFilePath the path to model file that exists on the Ollama server.
    */
   public void createModelWithFilePath(String modelName, String modelFilePath)
-      throws IOException, InterruptedException, OllamaBaseException {
+      throws IOException, InterruptedException, OllamaBaseException, URISyntaxException {
     String url = this.host + "/api/create";
     String jsonData = new CustomModelFilePathRequest(modelName, modelFilePath).toString();
     HttpRequest request =
-        HttpRequest.newBuilder()
-            .uri(URI.create(url))
+        getRequestBuilderDefault(new URI(url))
             .header("Accept", "application/json")
             .header("Content-Type", "application/json")
-            .timeout(Duration.ofSeconds(requestTimeoutSeconds))
             .POST(HttpRequest.BodyPublishers.ofString(jsonData, StandardCharsets.UTF_8))
             .build();
     HttpClient client = HttpClient.newHttpClient();
@@ -250,15 +246,13 @@ public class OllamaAPI {
    * @param modelFileContents the path to model file that exists on the Ollama server.
    */
   public void createModelWithModelFileContents(String modelName, String modelFileContents)
-      throws IOException, InterruptedException, OllamaBaseException {
+      throws IOException, InterruptedException, OllamaBaseException, URISyntaxException {
     String url = this.host + "/api/create";
     String jsonData = new CustomModelFileContentsRequest(modelName, modelFileContents).toString();
     HttpRequest request =
-        HttpRequest.newBuilder()
-            .uri(URI.create(url))
+        getRequestBuilderDefault(new URI(url))
             .header("Accept", "application/json")
             .header("Content-Type", "application/json")
-            .timeout(Duration.ofSeconds(requestTimeoutSeconds))
             .POST(HttpRequest.BodyPublishers.ofString(jsonData, StandardCharsets.UTF_8))
             .build();
     HttpClient client = HttpClient.newHttpClient();
@@ -280,20 +274,17 @@ public class OllamaAPI {
    * Delete a model from Ollama server.
    *
    * @param modelName the name of the model to be deleted.
-   * @param ignoreIfNotPresent - ignore errors if the specified model is not present on Ollama
-   *     server.
+   * @param ignoreIfNotPresent ignore errors if the specified model is not present on Ollama server.
    */
   public void deleteModel(String modelName, boolean ignoreIfNotPresent)
-      throws IOException, InterruptedException, OllamaBaseException {
+      throws IOException, InterruptedException, OllamaBaseException, URISyntaxException {
     String url = this.host + "/api/delete";
     String jsonData = new ModelRequest(modelName).toString();
     HttpRequest request =
-        HttpRequest.newBuilder()
-            .uri(URI.create(url))
+        getRequestBuilderDefault(new URI(url))
             .method("DELETE", HttpRequest.BodyPublishers.ofString(jsonData, StandardCharsets.UTF_8))
             .header("Accept", "application/json")
             .header("Content-type", "application/json")
-            .timeout(Duration.ofSeconds(requestTimeoutSeconds))
             .build();
     HttpClient client = HttpClient.newHttpClient();
     HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
@@ -319,7 +310,8 @@ public class OllamaAPI {
     URI uri = URI.create(this.host + "/api/embeddings");
     String jsonData = new ModelEmbeddingsRequest(model, prompt).toString();
     HttpClient httpClient = HttpClient.newHttpClient();
-    HttpRequest.Builder requestBuilder = getRequestBuilderDefault(uri)
+    HttpRequest.Builder requestBuilder =
+        getRequestBuilderDefault(uri)
             .header("Accept", "application/json")
             .POST(HttpRequest.BodyPublishers.ofString(jsonData));
     HttpRequest request = requestBuilder.build();
@@ -340,7 +332,7 @@ public class OllamaAPI {
    *
    * @param model the ollama model to ask the question to
    * @param promptText the prompt/question text
-   * @return OllamaResult - that includes response text and time taken for response
+   * @return OllamaResult that includes response text and time taken for response
    */
   public OllamaResult ask(String model, String promptText)
       throws OllamaBaseException, IOException, InterruptedException {
@@ -359,10 +351,11 @@ public class OllamaAPI {
    */
   public OllamaAsyncResultCallback askAsync(String model, String promptText) {
     OllamaRequestModel ollamaRequestModel = new OllamaRequestModel(model, promptText);
-    HttpClient httpClient = HttpClient.newHttpClient();
+
     URI uri = URI.create(this.host + "/api/generate");
     OllamaAsyncResultCallback ollamaAsyncResultCallback =
-        new OllamaAsyncResultCallback(httpClient, uri, ollamaRequestModel, requestTimeoutSeconds);
+        new OllamaAsyncResultCallback(
+            getRequestBuilderDefault(uri), ollamaRequestModel, requestTimeoutSeconds);
     ollamaAsyncResultCallback.start();
     return ollamaAsyncResultCallback;
   }
@@ -374,7 +367,7 @@ public class OllamaAPI {
    * @param model the ollama model to ask the question to
    * @param promptText the prompt/question text
    * @param imageFiles the list of image files to use for the question
-   * @return OllamaResult - that includes response text and time taken for response
+   * @return OllamaResult that includes response text and time taken for response
    */
   public OllamaResult askWithImageFiles(String model, String promptText, List<File> imageFiles)
       throws OllamaBaseException, IOException, InterruptedException {
@@ -393,7 +386,7 @@ public class OllamaAPI {
    * @param model the ollama model to ask the question to
    * @param promptText the prompt/question text
    * @param imageURLs the list of image URLs to use for the question
-   * @return OllamaResult - that includes response text and time taken for response
+   * @return OllamaResult that includes response text and time taken for response
    */
   public OllamaResult askWithImageURLs(String model, String promptText, List<String> imageURLs)
       throws OllamaBaseException, IOException, InterruptedException, URISyntaxException {
@@ -432,7 +425,8 @@ public class OllamaAPI {
     long startTime = System.currentTimeMillis();
     HttpClient httpClient = HttpClient.newHttpClient();
     URI uri = URI.create(this.host + "/api/generate");
-    HttpRequest.Builder requestBuilder = getRequestBuilderDefault(uri)
+    HttpRequest.Builder requestBuilder =
+        getRequestBuilderDefault(uri)
             .POST(
                 HttpRequest.BodyPublishers.ofString(
                     Utils.getObjectMapper().writeValueAsString(ollamaRequestModel)));
@@ -455,9 +449,10 @@ public class OllamaAPI {
         } else if (statusCode == 401) {
           logger.warn("Status code: 401 (Unauthorized)");
           OllamaErrorResponseModel ollamaResponseModel =
-                  Utils.getObjectMapper().readValue("{\"error\":\"Unauthorized\"}", OllamaErrorResponseModel.class);
+              Utils.getObjectMapper()
+                  .readValue("{\"error\":\"Unauthorized\"}", OllamaErrorResponseModel.class);
           responseBuffer.append(ollamaResponseModel.getError());
-        }else {
+        } else {
           OllamaResponseModel ollamaResponseModel =
               Utils.getObjectMapper().readValue(line, OllamaResponseModel.class);
           if (!ollamaResponseModel.isDone()) {
@@ -467,7 +462,7 @@ public class OllamaAPI {
       }
     }
     if (statusCode != 200) {
-      logger.error("Status code " + statusCode + " instead 200");
+      logger.error("Status code " + statusCode);
       throw new OllamaBaseException(responseBuffer.toString());
     } else {
       long endTime = System.currentTimeMillis();
@@ -476,35 +471,38 @@ public class OllamaAPI {
   }
 
   /**
+   * Get default request builder.
    *
+   * @param uri URI to get a HttpRequest.Builder
+   * @return HttpRequest.Builder
    */
   private HttpRequest.Builder getRequestBuilderDefault(URI uri) {
     HttpRequest.Builder requestBuilder =
-            HttpRequest.newBuilder(uri)
-                    .header("Content-Type", "application/json")
-                    .timeout(Duration.ofSeconds(requestTimeoutSeconds));
-    if (basicAuthCredentialsSet()) {
+        HttpRequest.newBuilder(uri)
+            .header("Content-Type", "application/json")
+            .timeout(Duration.ofSeconds(requestTimeoutSeconds));
+    if (isBasicAuthCredentialsSet()) {
       requestBuilder.header("Authorization", getBasicAuthHeaderValue());
     }
     return requestBuilder;
   }
 
   /**
+   * Get basic authentication header value.
+   *
    * @return basic authentication header value (encoded credentials)
    */
   private String getBasicAuthHeaderValue() {
-    String credentialsToEncode = username + ":" + password;
+    String credentialsToEncode = basicAuth.getUsername() + ":" + basicAuth.getPassword();
     return "Basic " + Base64.getEncoder().encodeToString(credentialsToEncode.getBytes());
   }
 
   /**
+   * Check if Basic Auth credentials set.
+   *
    * @return true when Basic Auth credentials set
    */
-  private boolean basicAuthCredentialsSet() {
-    if (username != null && password !=  null) {
-      return true;
-    } else {
-      return false;
-    }
+  private boolean isBasicAuthCredentialsSet() {
+    return basicAuth != null;
   }
 }

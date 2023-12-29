@@ -11,12 +11,13 @@ import io.github.amithkoujalgi.ollama4j.core.types.OllamaModelType;
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
+import java.util.Collections;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
 class TestMockedAPIs {
   @Test
-  void testMockPullModel() {
+  void testPullModel() {
     OllamaAPI ollamaAPI = Mockito.mock(OllamaAPI.class);
     String model = OllamaModelType.LLAMA2;
     try {
@@ -49,7 +50,7 @@ class TestMockedAPIs {
       doNothing().when(ollamaAPI).createModelWithModelFileContents(model, modelFilePath);
       ollamaAPI.createModelWithModelFileContents(model, modelFilePath);
       verify(ollamaAPI, times(1)).createModelWithModelFileContents(model, modelFilePath);
-    } catch (IOException | OllamaBaseException | InterruptedException e) {
+    } catch (IOException | OllamaBaseException | InterruptedException | URISyntaxException e) {
       throw new RuntimeException(e);
     }
   }
@@ -62,7 +63,7 @@ class TestMockedAPIs {
       doNothing().when(ollamaAPI).deleteModel(model, true);
       ollamaAPI.deleteModel(model, true);
       verify(ollamaAPI, times(1)).deleteModel(model, true);
-    } catch (IOException | OllamaBaseException | InterruptedException e) {
+    } catch (IOException | OllamaBaseException | InterruptedException | URISyntaxException e) {
       throw new RuntimeException(e);
     }
   }
@@ -75,7 +76,7 @@ class TestMockedAPIs {
       when(ollamaAPI.getModelDetails(model)).thenReturn(new ModelDetail());
       ollamaAPI.getModelDetails(model);
       verify(ollamaAPI, times(1)).getModelDetails(model);
-    } catch (IOException | OllamaBaseException | InterruptedException e) {
+    } catch (IOException | OllamaBaseException | InterruptedException | URISyntaxException e) {
       throw new RuntimeException(e);
     }
   }
@@ -109,12 +110,42 @@ class TestMockedAPIs {
   }
 
   @Test
+  void testAskWithImageFiles() {
+    OllamaAPI ollamaAPI = Mockito.mock(OllamaAPI.class);
+    String model = OllamaModelType.LLAMA2;
+    String prompt = "some prompt text";
+    try {
+      when(ollamaAPI.askWithImageFiles(model, prompt, Collections.emptyList()))
+          .thenReturn(new OllamaResult("", 0, 200));
+      ollamaAPI.askWithImageFiles(model, prompt, Collections.emptyList());
+      verify(ollamaAPI, times(1)).askWithImageFiles(model, prompt, Collections.emptyList());
+    } catch (IOException | OllamaBaseException | InterruptedException e) {
+      throw new RuntimeException(e);
+    }
+  }
+
+  @Test
+  void testAskWithImageURLs() {
+    OllamaAPI ollamaAPI = Mockito.mock(OllamaAPI.class);
+    String model = OllamaModelType.LLAMA2;
+    String prompt = "some prompt text";
+    try {
+      when(ollamaAPI.askWithImageURLs(model, prompt, Collections.emptyList()))
+          .thenReturn(new OllamaResult("", 0, 200));
+      ollamaAPI.askWithImageURLs(model, prompt, Collections.emptyList());
+      verify(ollamaAPI, times(1)).askWithImageURLs(model, prompt, Collections.emptyList());
+    } catch (IOException | OllamaBaseException | InterruptedException | URISyntaxException e) {
+      throw new RuntimeException(e);
+    }
+  }
+
+  @Test
   void testAskAsync() {
     OllamaAPI ollamaAPI = Mockito.mock(OllamaAPI.class);
     String model = OllamaModelType.LLAMA2;
     String prompt = "some prompt text";
     when(ollamaAPI.askAsync(model, prompt))
-        .thenReturn(new OllamaAsyncResultCallback(null, null, null, 3));
+        .thenReturn(new OllamaAsyncResultCallback(null, null, 3));
     ollamaAPI.askAsync(model, prompt);
     verify(ollamaAPI, times(1)).askAsync(model, prompt);
   }
