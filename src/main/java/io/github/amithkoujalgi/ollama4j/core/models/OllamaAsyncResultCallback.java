@@ -123,9 +123,9 @@ public class OllamaAsyncResultCallback extends Thread {
   }
 
   /**
-   * Returns the final response when the execution completes. Does not return intermediate results.
+   * Returns the final completion/response when the execution completes. Does not return intermediate results.
    *
-   * @return String - response text
+   * @return String completion/response text
    */
   public String getResponse() {
     return result;

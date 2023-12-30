@@ -13,9 +13,9 @@ import lombok.Getter;
 public class OllamaResult {
   /**
    * -- GETTER --
-   *  Get the response text
+   *  Get the completion/response text
    *
-   * @return String - response text
+   * @return String completion/response text
    */
   private final String response;
 
