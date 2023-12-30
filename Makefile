@@ -17,3 +17,9 @@ build-docs:
 
 start-docs:
 	npm i --prefix docs && npm run start --prefix docs
+
+start-cpu:
+	docker run -it -v ~/ollama:/root/.ollama -p 11434:11434 ollama/ollama
+
+start-gpu:
+	docker run -it --gpus=all -v ~/ollama:/root/.ollama -p 11434:11434 ollama/ollama

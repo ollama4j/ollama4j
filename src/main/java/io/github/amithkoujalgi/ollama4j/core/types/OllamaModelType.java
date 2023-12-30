@@ -21,6 +21,7 @@ public class OllamaModelType {
   public static final String VICUNA = "vicuna";
   public static final String WIZARD_VICUNA_UNCENSORED = "wizard-vicuna-uncensored";
   public static final String PHIND_CODELLAMA = "phind-codellama";
+  public static final String PHI = "phi";
   public static final String ZEPHYR = "zephyr";
   public static final String WIZARDCODER = "wizardcoder";
   public static final String MISTRAL_OPENORCA = "mistral-openorca";
