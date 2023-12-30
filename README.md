@@ -2,8 +2,33 @@
 
 <img src='https://raw.githubusercontent.com/amithkoujalgi/ollama4j/65a9d526150da8fcd98e2af6a164f055572bf722/ollama4j.jpeg' width='100' alt="ollama4j-icon">
 
-A Java library (wrapper/binding)
-for [Ollama](https://github.com/jmorganca/ollama/blob/main/docs/api.md) APIs.
+A Java library (wrapper/binding) for [Ollama](https://ollama.ai/) server.
+
+Find more details on the [website](https://amithkoujalgi.github.io/ollama4j/).
+
+![GitHub stars](https://img.shields.io/github/stars/amithkoujalgi/ollama4j)
+![GitHub forks](https://img.shields.io/github/forks/amithkoujalgi/ollama4j)
+![GitHub watchers](https://img.shields.io/github/watchers/amithkoujalgi/ollama4j)
+![GitHub repo size](https://img.shields.io/github/repo-size/amithkoujalgi/ollama4j)
+![GitHub language count](https://img.shields.io/github/languages/count/amithkoujalgi/ollama4j)
+![GitHub top language](https://img.shields.io/github/languages/top/amithkoujalgi/ollama4j)
+![GitHub last commit](https://img.shields.io/github/last-commit/amithkoujalgi/ollama4j?color=green)
+![Hits](https://hits.seeyoufarm.com/api/count/incr/badge.svg?url=https%3A%2F%2Fgithub.com%2Famithkoujalgi%2Follama4j&count_bg=%2379C83D&title_bg=%23555555&icon=&icon_color=%23E7E7E7&title=hits&edge_flat=false)
+
+![Build Status](https://github.com/amithkoujalgi/ollama4j/actions/workflows/maven-publish.yml/badge.svg)
+
+## Table of Contents
+
+- [How does it work?](#how-does-it-work)
+- [Requirements](#requirements)
+- [Installation](#installation)
+- [API Spec](#api-spec)
+- [Demo APIs](#try-out-the-apis-with-ollama-server)
+- [Development](#development)
+- [Contributions](#get-involved)
+- [References](#references)
+
+#### How does it work?
 
 ```mermaid
   flowchart LR
@@ -16,26 +41,6 @@ for [Ollama](https://github.com/jmorganca/ollama/blob/main/docs/api.md) APIs.
         o -->|Manages| m
     end
 ```
-
-![Build Status](https://github.com/amithkoujalgi/ollama4j/actions/workflows/maven-publish.yml/badge.svg)
-
-![GitHub stars](https://img.shields.io/github/stars/amithkoujalgi/ollama4j?style=social)
-![GitHub forks](https://img.shields.io/github/forks/amithkoujalgi/ollama4j?style=social)
-![GitHub watchers](https://img.shields.io/github/watchers/amithkoujalgi/ollama4j?style=social)
-![GitHub repo size](https://img.shields.io/github/repo-size/amithkoujalgi/ollama4j?style=plastic)
-![GitHub language count](https://img.shields.io/github/languages/count/amithkoujalgi/ollama4j?style=plastic)
-![GitHub top language](https://img.shields.io/github/languages/top/amithkoujalgi/ollama4j?style=plastic)
-![GitHub last commit](https://img.shields.io/github/last-commit/amithkoujalgi/ollama4j?color=red&style=plastic)
-![Hits](https://hits.seeyoufarm.com/api/count/incr/badge.svg?url=https%3A%2F%2Fgithub.com%2Famithkoujalgi%2Follama4j&count_bg=%2379C83D&title_bg=%23555555&icon=&icon_color=%23E7E7E7&title=hits&edge_flat=false)
-
-## Table of Contents
-
-- [Requirements](#requirements)
-- [Installation](#installation)
-- [API Spec](#api-spec)
-- [Demo APIs](#try-out-the-apis-with-ollama-server)
-- [Development](#development)
-- [Contributions](#get-involved)
 
 #### Requirements
 
@@ -64,7 +69,7 @@ In your Maven project, add this dependency:
 </dependency>
 ```
 
-Latest release: 
+Latest release:
 
 ![Maven Central](https://img.shields.io/maven-central/v/io.github.amithkoujalgi/ollama4j)
 
@@ -76,7 +81,7 @@ Latest release:
 
 #### API Spec
 
-Find the full `Javadoc` (API specifications) [here](https://amithkoujalgi.github.io/ollama4j/).
+Find the full API specifications on the [website](https://amithkoujalgi.github.io/ollama4j/).
 
 #### Development
 
@@ -117,6 +122,7 @@ Actions CI workflow.
 - [x] Use lombok
 - [x] Update request body creation with Java objects
 - [ ] Async APIs for images
+- [ ] Add custom headers to requests
 - [ ] Add additional params for `ask` APIs such as:
     - `options`: additional model parameters for the Modelfile such as `temperature`
     - `system`: system prompt to (overrides what is defined in the Modelfile)
@@ -138,3 +144,7 @@ of contribution is much appreciated.
 
 The nomenclature and the icon have been adopted from the incredible [Ollama](https://ollama.ai/)
 project.
+
+### References
+
+- [Ollama REST APIs](https://github.com/jmorganca/ollama/blob/main/docs/api.md)

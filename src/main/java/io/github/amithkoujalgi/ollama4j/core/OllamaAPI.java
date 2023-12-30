@@ -331,12 +331,12 @@ public class OllamaAPI {
    * Ask a question to a model running on Ollama server. This is a sync/blocking call.
    *
    * @param model the ollama model to ask the question to
-   * @param promptText the prompt/question text
+   * @param prompt the prompt/question text
    * @return OllamaResult that includes response text and time taken for response
    */
-  public OllamaResult ask(String model, String promptText)
+  public OllamaResult ask(String model, String prompt)
       throws OllamaBaseException, IOException, InterruptedException {
-    OllamaRequestModel ollamaRequestModel = new OllamaRequestModel(model, promptText);
+    OllamaRequestModel ollamaRequestModel = new OllamaRequestModel(model, prompt);
     return askSync(ollamaRequestModel);
   }
 
@@ -346,11 +346,11 @@ public class OllamaAPI {
    * async/non-blocking call.
    *
    * @param model the ollama model to ask the question to
-   * @param promptText the prompt/question text
+   * @param prompt the prompt/question text
    * @return the ollama async result callback handle
    */
-  public OllamaAsyncResultCallback askAsync(String model, String promptText) {
-    OllamaRequestModel ollamaRequestModel = new OllamaRequestModel(model, promptText);
+  public OllamaAsyncResultCallback askAsync(String model, String prompt) {
+    OllamaRequestModel ollamaRequestModel = new OllamaRequestModel(model, prompt);
 
     URI uri = URI.create(this.host + "/api/generate");
     OllamaAsyncResultCallback ollamaAsyncResultCallback =
@@ -365,17 +365,17 @@ public class OllamaAPI {
    * sync/blocking call.
    *
    * @param model the ollama model to ask the question to
-   * @param promptText the prompt/question text
+   * @param prompt the prompt/question text
    * @param imageFiles the list of image files to use for the question
    * @return OllamaResult that includes response text and time taken for response
    */
-  public OllamaResult askWithImageFiles(String model, String promptText, List<File> imageFiles)
+  public OllamaResult askWithImageFiles(String model, String prompt, List<File> imageFiles)
       throws OllamaBaseException, IOException, InterruptedException {
     List<String> images = new ArrayList<>();
     for (File imageFile : imageFiles) {
       images.add(encodeFileToBase64(imageFile));
     }
-    OllamaRequestModel ollamaRequestModel = new OllamaRequestModel(model, promptText, images);
+    OllamaRequestModel ollamaRequestModel = new OllamaRequestModel(model, prompt, images);
     return askSync(ollamaRequestModel);
   }
 
@@ -384,17 +384,17 @@ public class OllamaAPI {
    * sync/blocking call.
    *
    * @param model the ollama model to ask the question to
-   * @param promptText the prompt/question text
+   * @param prompt the prompt/question text
    * @param imageURLs the list of image URLs to use for the question
    * @return OllamaResult that includes response text and time taken for response
    */
-  public OllamaResult askWithImageURLs(String model, String promptText, List<String> imageURLs)
+  public OllamaResult askWithImageURLs(String model, String prompt, List<String> imageURLs)
       throws OllamaBaseException, IOException, InterruptedException, URISyntaxException {
     List<String> images = new ArrayList<>();
     for (String imageURL : imageURLs) {
       images.add(encodeByteArrayToBase64(loadImageBytesFromUrl(imageURL)));
     }
-    OllamaRequestModel ollamaRequestModel = new OllamaRequestModel(model, promptText, images);
+    OllamaRequestModel ollamaRequestModel = new OllamaRequestModel(model, prompt, images);
     return askSync(ollamaRequestModel);
   }
 
