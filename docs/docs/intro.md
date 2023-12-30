@@ -2,9 +2,37 @@
 sidebar_position: 1
 ---
 
-# Intro
+# Introduction
 
 Let's get started with **Ollama4j**.
+
+## 🦙 What is Ollama?
+
+[Ollama](https://ollama.ai/) is an advanced AI tool that allows users to easily set up and run large language models
+locally (in CPU and GPU
+modes). With Ollama, users can leverage powerful language models such as Llama 2 and even customize and create their own
+models.
+
+## 👨‍💻 Why Ollama4j?
+
+Ollama4j was built for the simple purpose of integrating Ollama with Java applications.
+
+```mermaid
+  flowchart LR
+    o4j[Ollama4j]
+    o[Ollama Server]
+    o4j -->|Communicates with| o;
+    m[Models]
+    p[Your Java Project]
+    subgraph Your Java Environment
+        direction TB
+        p -->|Uses| o4j
+    end
+    subgraph Ollama Setup
+        direction TB
+        o -->|Manages| m
+    end
+```
 
 ## Getting Started
 

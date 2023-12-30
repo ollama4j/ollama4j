@@ -131,8 +131,13 @@ const config = {
             prism: {
                 theme: prismThemes.github,
                 darkTheme: prismThemes.dracula,
+                additionalLanguages: ['java'],
             },
         }),
+    markdown: {
+        mermaid: true,
+    },
+    themes: ['@docusaurus/theme-mermaid']
 };
 
 export default config;

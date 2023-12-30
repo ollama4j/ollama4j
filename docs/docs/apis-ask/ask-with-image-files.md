@@ -8,7 +8,7 @@ This API lets you ask questions along with the image files to the LLMs.
 These APIs correlate to
 the [completion](https://github.com/jmorganca/ollama/blob/main/docs/api.md#generate-a-completion) APIs.
 
-:::caution
+:::note
 
 Executing this on Ollama server running in CPU-mode will take longer to generate response. Hence, GPU-mode is
 recommended.
