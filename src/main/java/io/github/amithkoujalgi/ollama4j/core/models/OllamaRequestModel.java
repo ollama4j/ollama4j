@@ -1,10 +1,10 @@
 package io.github.amithkoujalgi.ollama4j.core.models;
 
-
 import static io.github.amithkoujalgi.ollama4j.core.utils.Utils.getObjectMapper;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import java.util.List;
+import java.util.Map;
 import lombok.Data;
 
 @Data
@@ -13,6 +13,7 @@ public class OllamaRequestModel {
   private String model;
   private String prompt;
   private List<String> images;
+  private Map<String, Object> options;
 
   public OllamaRequestModel(String model, String prompt) {
     this.model = model;

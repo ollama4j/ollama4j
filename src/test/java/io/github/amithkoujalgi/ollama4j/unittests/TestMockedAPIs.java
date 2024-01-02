@@ -8,6 +8,7 @@ import io.github.amithkoujalgi.ollama4j.core.models.ModelDetail;
 import io.github.amithkoujalgi.ollama4j.core.models.OllamaAsyncResultCallback;
 import io.github.amithkoujalgi.ollama4j.core.models.OllamaResult;
 import io.github.amithkoujalgi.ollama4j.core.types.OllamaModelType;
+import io.github.amithkoujalgi.ollama4j.core.utils.OptionsBuilder;
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
@@ -100,10 +101,12 @@ class TestMockedAPIs {
     OllamaAPI ollamaAPI = Mockito.mock(OllamaAPI.class);
     String model = OllamaModelType.LLAMA2;
     String prompt = "some prompt text";
+    OptionsBuilder optionsBuilder = new OptionsBuilder();
     try {
-      when(ollamaAPI.ask(model, prompt)).thenReturn(new OllamaResult("", 0, 200));
-      ollamaAPI.ask(model, prompt);
-      verify(ollamaAPI, times(1)).ask(model, prompt);
+      when(ollamaAPI.ask(model, prompt, optionsBuilder.build()))
+          .thenReturn(new OllamaResult("", 0, 200));
+      ollamaAPI.ask(model, prompt, optionsBuilder.build());
+      verify(ollamaAPI, times(1)).ask(model, prompt, optionsBuilder.build());
     } catch (IOException | OllamaBaseException | InterruptedException e) {
       throw new RuntimeException(e);
     }

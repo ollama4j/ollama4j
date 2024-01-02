@@ -8,6 +8,11 @@ This API lets you ask questions to the LLMs in a synchronous way.
 These APIs correlate to
 the [completion](https://github.com/jmorganca/ollama/blob/main/docs/api.md#generate-a-completion) APIs.
 
+Use the `OptionBuilder` to build the `Options` object
+with [extra parameters](https://github.com/jmorganca/ollama/blob/main/docs/modelfile.md#valid-parameters-and-values).
+Refer
+to [this](/docs/apis-extras/options-builder).
+
 ## Try asking a question about the model.
 
 ```java
@@ -19,11 +24,13 @@ public class Main {
 
         OllamaAPI ollamaAPI = new OllamaAPI(host);
 
-        OllamaResult result = ollamaAPI.ask(OllamaModelType.LLAMA2, "Who are you?");
+        OllamaResult result =
+                ollamaAPI.ask(OllamaModelType.LLAMA2, "Who are you?", new OptionsBuilder().build());
 
         System.out.println(result.getResponse());
     }
 }
+
 ```
 
 You will get a response similar to:
@@ -47,11 +54,13 @@ public class Main {
 
         String prompt = "List all cricket world cup teams of 2019.";
 
-        OllamaResult result = ollamaAPI.ask(OllamaModelType.LLAMA2, prompt);
+        OllamaResult result =
+                ollamaAPI.ask(OllamaModelType.LLAMA2, prompt, new OptionsBuilder().build());
 
         System.out.println(result.getResponse());
     }
 }
+
 ```
 
 You'd then get a response from the model:
@@ -84,12 +93,15 @@ public class Main {
         String host = "http://localhost:11434/";
         OllamaAPI ollamaAPI = new OllamaAPI(host);
 
-        String prompt = SamplePrompts.getSampleDatabasePromptWithQuestion(
-                "List all customer names who have bought one or more products");
-        OllamaResult result = ollamaAPI.ask(OllamaModelType.SQLCODER, prompt);
+        String prompt =
+                SamplePrompts.getSampleDatabasePromptWithQuestion(
+                        "List all customer names who have bought one or more products");
+        OllamaResult result =
+                ollamaAPI.ask(OllamaModelType.SQLCODER, prompt, new OptionsBuilder().build());
         System.out.println(result.getResponse());
     }
 }
+
 ```
 
 _Note: Here I've used

@@ -6,6 +6,7 @@ import io.github.amithkoujalgi.ollama4j.core.models.request.CustomModelFileConte
 import io.github.amithkoujalgi.ollama4j.core.models.request.CustomModelFilePathRequest;
 import io.github.amithkoujalgi.ollama4j.core.models.request.ModelEmbeddingsRequest;
 import io.github.amithkoujalgi.ollama4j.core.models.request.ModelRequest;
+import io.github.amithkoujalgi.ollama4j.core.utils.Options;
 import io.github.amithkoujalgi.ollama4j.core.utils.Utils;
 import java.io.BufferedReader;
 import java.io.ByteArrayOutputStream;
@@ -332,11 +333,15 @@ public class OllamaAPI {
    *
    * @param model the ollama model to ask the question to
    * @param prompt the prompt/question text
+   * @param options the Options object - <a
+   *     href="https://github.com/jmorganca/ollama/blob/main/docs/modelfile.md#valid-parameters-and-values">More
+   *     details on the options</a>
    * @return OllamaResult that includes response text and time taken for response
    */
-  public OllamaResult ask(String model, String prompt)
+  public OllamaResult ask(String model, String prompt, Options options)
       throws OllamaBaseException, IOException, InterruptedException {
     OllamaRequestModel ollamaRequestModel = new OllamaRequestModel(model, prompt);
+    ollamaRequestModel.setOptions(options.getOptionsMap());
     return askSync(ollamaRequestModel);
   }
 
