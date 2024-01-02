@@ -341,6 +341,21 @@ public class OllamaAPI {
   }
 
   /**
+   * Ask a question to a model running on Ollama server. This is a sync/blocking call.
+   *
+   * @param model the ollama model to ask the question to
+   * @param prompt the prompt/question text
+   * @param options Options like for example temperature or top_p
+   * @return OllamaResult that includes response text and time taken for response
+   */
+  public OllamaResult ask(String model, String prompt, Options options)
+          throws OllamaBaseException, IOException, InterruptedException {
+    OllamaRequestModel ollamaRequestModel = new OllamaRequestModel(model, prompt);
+    ollamaRequestModel.setOptions(options);
+    return askSync(ollamaRequestModel);
+  }
+
+  /**
    * Ask a question to a model running on Ollama server and get a callback handle that can be used
    * to check for status and get the response from the model later. This would be an
    * async/non-blocking call.
