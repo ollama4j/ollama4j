@@ -12,6 +12,7 @@ public class OllamaRequestModel {
 
   private String model;
   private String prompt;
+  private Options options;
   private List<String> images;
 
   public OllamaRequestModel(String model, String prompt) {
@@ -25,6 +26,14 @@ public class OllamaRequestModel {
     this.images = images;
   }
 
+  /**
+   * Set options
+   */
+  public void setOptions(Options options) {
+    this.options = options;
+  }
+
+  @Override
   public String toString() {
     try {
       return getObjectMapper().writerWithDefaultPrettyPrinter().writeValueAsString(this);
