@@ -76,7 +76,7 @@ const config = {
                         type: 'docSidebar',
                         sidebarId: 'tutorialSidebar',
                         position: 'left',
-                        label: 'Usage',
+                        label: 'Docs',
                     },
                     {to: 'https://amithkoujalgi.github.io/ollama4j/apidocs/', label: 'Javadoc', position: 'left'},
                     {to: '/blog', label: 'Blog', position: 'left'},

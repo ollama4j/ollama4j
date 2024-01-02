@@ -126,13 +126,14 @@ Actions CI workflow.
 - [ ] Async APIs for images
 - [ ] Add custom headers to requests
 - [ ] Add additional params for `ask` APIs such as:
-    - `options`: additional model parameters for the Modelfile such as `temperature`
-    - `system`: system prompt to (overrides what is defined in the Modelfile)
-    - `template`: the full prompt or prompt template (overrides what is defined in the Modelfile)
-    - `context`: the context parameter returned from a previous request, which can be used to keep a
+    - [x] `options`: additional model parameters for the Modelfile such as `temperature` -
+      Supported [params](https://github.com/jmorganca/ollama/blob/main/docs/modelfile.md#valid-parameters-and-values).
+    - [ ] `system`: system prompt to (overrides what is defined in the Modelfile)
+    - [ ] `template`: the full prompt or prompt template (overrides what is defined in the Modelfile)
+    - [ ] `context`: the context parameter returned from a previous request, which can be used to keep a
       short
       conversational memory
-    - `stream`: Add support for streaming responses from the model
+    - [ ] `stream`: Add support for streaming responses from the model
 - [ ] Add test cases
 - [ ] Handle exceptions better (maybe throw more appropriate exceptions)
 
