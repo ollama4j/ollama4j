@@ -118,10 +118,13 @@ class TestMockedAPIs {
     String model = OllamaModelType.LLAMA2;
     String prompt = "some prompt text";
     try {
-      when(ollamaAPI.askWithImageFiles(model, prompt, Collections.emptyList()))
+      when(ollamaAPI.askWithImageFiles(
+              model, prompt, Collections.emptyList(), new OptionsBuilder().build()))
           .thenReturn(new OllamaResult("", 0, 200));
-      ollamaAPI.askWithImageFiles(model, prompt, Collections.emptyList());
-      verify(ollamaAPI, times(1)).askWithImageFiles(model, prompt, Collections.emptyList());
+      ollamaAPI.askWithImageFiles(
+          model, prompt, Collections.emptyList(), new OptionsBuilder().build());
+      verify(ollamaAPI, times(1))
+          .askWithImageFiles(model, prompt, Collections.emptyList(), new OptionsBuilder().build());
     } catch (IOException | OllamaBaseException | InterruptedException e) {
       throw new RuntimeException(e);
     }
@@ -133,10 +136,13 @@ class TestMockedAPIs {
     String model = OllamaModelType.LLAMA2;
     String prompt = "some prompt text";
     try {
-      when(ollamaAPI.askWithImageURLs(model, prompt, Collections.emptyList()))
+      when(ollamaAPI.askWithImageURLs(
+              model, prompt, Collections.emptyList(), new OptionsBuilder().build()))
           .thenReturn(new OllamaResult("", 0, 200));
-      ollamaAPI.askWithImageURLs(model, prompt, Collections.emptyList());
-      verify(ollamaAPI, times(1)).askWithImageURLs(model, prompt, Collections.emptyList());
+      ollamaAPI.askWithImageURLs(
+          model, prompt, Collections.emptyList(), new OptionsBuilder().build());
+      verify(ollamaAPI, times(1))
+          .askWithImageURLs(model, prompt, Collections.emptyList(), new OptionsBuilder().build());
     } catch (IOException | OllamaBaseException | InterruptedException | URISyntaxException e) {
       throw new RuntimeException(e);
     }

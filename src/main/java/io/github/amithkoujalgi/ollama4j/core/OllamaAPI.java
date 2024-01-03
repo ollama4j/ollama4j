@@ -372,15 +372,20 @@ public class OllamaAPI {
    * @param model the ollama model to ask the question to
    * @param prompt the prompt/question text
    * @param imageFiles the list of image files to use for the question
+   * @param options the Options object - <a
+   *     href="https://github.com/jmorganca/ollama/blob/main/docs/modelfile.md#valid-parameters-and-values">More
+   *     details on the options</a>
    * @return OllamaResult that includes response text and time taken for response
    */
-  public OllamaResult askWithImageFiles(String model, String prompt, List<File> imageFiles)
+  public OllamaResult askWithImageFiles(
+      String model, String prompt, List<File> imageFiles, Options options)
       throws OllamaBaseException, IOException, InterruptedException {
     List<String> images = new ArrayList<>();
     for (File imageFile : imageFiles) {
       images.add(encodeFileToBase64(imageFile));
     }
     OllamaRequestModel ollamaRequestModel = new OllamaRequestModel(model, prompt, images);
+    ollamaRequestModel.setOptions(options.getOptionsMap());
     return askSync(ollamaRequestModel);
   }
 
@@ -391,15 +396,20 @@ public class OllamaAPI {
    * @param model the ollama model to ask the question to
    * @param prompt the prompt/question text
    * @param imageURLs the list of image URLs to use for the question
+   * @param options the Options object - <a
+   *     href="https://github.com/jmorganca/ollama/blob/main/docs/modelfile.md#valid-parameters-and-values">More
+   *     details on the options</a>
    * @return OllamaResult that includes response text and time taken for response
    */
-  public OllamaResult askWithImageURLs(String model, String prompt, List<String> imageURLs)
+  public OllamaResult askWithImageURLs(
+      String model, String prompt, List<String> imageURLs, Options options)
       throws OllamaBaseException, IOException, InterruptedException, URISyntaxException {
     List<String> images = new ArrayList<>();
     for (String imageURL : imageURLs) {
       images.add(encodeByteArrayToBase64(loadImageBytesFromUrl(imageURL)));
     }
     OllamaRequestModel ollamaRequestModel = new OllamaRequestModel(model, prompt, images);
+    ollamaRequestModel.setOptions(options.getOptionsMap());
     return askSync(ollamaRequestModel);
   }
 
@@ -436,7 +446,7 @@ public class OllamaAPI {
                 HttpRequest.BodyPublishers.ofString(
                     Utils.getObjectMapper().writeValueAsString(ollamaRequestModel)));
     HttpRequest request = requestBuilder.build();
-    logger.debug("Ask model '" + ollamaRequestModel + "' ...");
+    if (verbose) logger.info("Asking model: " + ollamaRequestModel);
     HttpResponse<InputStream> response =
         httpClient.send(request, HttpResponse.BodyHandlers.ofInputStream());
     int statusCode = response.statusCode();
@@ -471,7 +481,10 @@ public class OllamaAPI {
       throw new OllamaBaseException(responseBuffer.toString());
     } else {
       long endTime = System.currentTimeMillis();
-      return new OllamaResult(responseBuffer.toString().trim(), endTime - startTime, statusCode);
+      OllamaResult ollamaResult =
+          new OllamaResult(responseBuffer.toString().trim(), endTime - startTime, statusCode);
+      if (verbose) logger.info("Model response: " + ollamaResult);
+      return ollamaResult;
     }
   }
 
