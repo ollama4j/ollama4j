@@ -476,6 +476,7 @@ public class OllamaAPI {
         }
       }
     }
+
     if (statusCode != 200) {
       logger.error("Status code " + statusCode);
       throw new OllamaBaseException(responseBuffer.toString());
