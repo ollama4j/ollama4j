@@ -79,6 +79,7 @@ const config = {
                         label: 'Docs',
                     },
                     {to: 'https://amithkoujalgi.github.io/ollama4j/apidocs/', label: 'Javadoc', position: 'left'},
+                    {to: 'https://amithkoujalgi.github.io/ollama4j/doxygen/html/', label: 'Doxygen', position: 'left'},
                     {to: '/blog', label: 'Blog', position: 'left'},
                     {
                         href: 'https://github.com/amithkoujalgi/ollama4j',
