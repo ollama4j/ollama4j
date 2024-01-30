@@ -9,5 +9,5 @@ import lombok.Data;
 @Data
 public class EmbeddingResponse {
     @JsonProperty("embedding")
-    private List<Double> embedding;
+    private ArrayList<Double> embedding;
 }
