@@ -2,7 +2,7 @@
 sidebar_position: 4
 ---
 
-# Ask - With Image URLs
+# Generate - With Image URLs
 
 This API lets you ask questions along with the image files to the LLMs.
 These APIs correlate to
@@ -29,7 +29,7 @@ public class Main {
         OllamaAPI ollamaAPI = new OllamaAPI(host);
         ollamaAPI.setRequestTimeoutSeconds(10);
 
-        OllamaResult result = ollamaAPI.askWithImageURLs(OllamaModelType.LLAVA,
+        OllamaResult result = ollamaAPI.generateWithImageURLs(OllamaModelType.LLAVA,
                 "What's in this image?",
                 List.of(
                         "https://t3.ftcdn.net/jpg/02/96/63/80/360_F_296638053_0gUVA4WVBKceGsIr7LNqRWSnkusi07dq.jpg"));

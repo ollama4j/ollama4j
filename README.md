@@ -67,7 +67,7 @@ In your Maven project, add this dependency:
 <dependency>
     <groupId>io.github.amithkoujalgi</groupId>
     <artifactId>ollama4j</artifactId>
-    <version>1.0.29</version>
+    <version>1.0.47</version>
 </dependency>
 ```
 

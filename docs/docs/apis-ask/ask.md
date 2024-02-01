@@ -2,7 +2,7 @@
 sidebar_position: 1
 ---
 
-# Ask - Sync
+# Generate - Sync
 
 This API lets you ask questions to the LLMs in a synchronous way.
 These APIs correlate to
@@ -25,7 +25,7 @@ public class Main {
         OllamaAPI ollamaAPI = new OllamaAPI(host);
 
         OllamaResult result =
-                ollamaAPI.ask(OllamaModelType.LLAMA2, "Who are you?", new OptionsBuilder().build());
+                ollamaAPI.generate(OllamaModelType.LLAMA2, "Who are you?", new OptionsBuilder().build());
 
         System.out.println(result.getResponse());
     }
@@ -55,7 +55,7 @@ public class Main {
         String prompt = "List all cricket world cup teams of 2019.";
 
         OllamaResult result =
-                ollamaAPI.ask(OllamaModelType.LLAMA2, prompt, new OptionsBuilder().build());
+                ollamaAPI.generate(OllamaModelType.LLAMA2, prompt, new OptionsBuilder().build());
 
         System.out.println(result.getResponse());
     }
@@ -97,7 +97,7 @@ public class Main {
                 SamplePrompts.getSampleDatabasePromptWithQuestion(
                         "List all customer names who have bought one or more products");
         OllamaResult result =
-                ollamaAPI.ask(OllamaModelType.SQLCODER, prompt, new OptionsBuilder().build());
+                ollamaAPI.generate(OllamaModelType.SQLCODER, prompt, new OptionsBuilder().build());
         System.out.println(result.getResponse());
     }
 }

@@ -2,7 +2,7 @@
 sidebar_position: 3
 ---
 
-# Ask - With Image Files
+# Generate - With Image Files
 
 This API lets you ask questions along with the image files to the LLMs.
 These APIs correlate to
@@ -15,7 +15,7 @@ recommended.
 
 :::
 
-## Ask (Sync)
+## Synchronous mode
 
 If you have this image downloaded and you pass the path to the downloaded image to the following code:
 
@@ -29,7 +29,7 @@ public class Main {
         OllamaAPI ollamaAPI = new OllamaAPI(host);
         ollamaAPI.setRequestTimeoutSeconds(10);
 
-        OllamaResult result = ollamaAPI.askWithImageFiles(OllamaModelType.LLAVA,
+        OllamaResult result = ollamaAPI.generateWithImageFiles(OllamaModelType.LLAVA,
                 "What's in this image?",
                 List.of(
                         new File("/path/to/image")));

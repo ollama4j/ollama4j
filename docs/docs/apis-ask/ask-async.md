@@ -2,7 +2,7 @@
 sidebar_position: 2
 ---
 
-# Ask - Async
+# Generate - Async
 
 This API lets you ask questions to the LLMs in a asynchronous way.
 These APIs correlate to
@@ -19,7 +19,7 @@ public class Main {
 
         String prompt = "Who are you?";
 
-        OllamaAsyncResultCallback callback = ollamaAPI.askAsync(OllamaModelType.LLAMA2, prompt);
+        OllamaAsyncResultCallback callback = ollamaAPI.generateAsync(OllamaModelType.LLAMA2, prompt);
 
         while (!callback.isComplete() || !callback.getStream().isEmpty()) {
             // poll for data from the response stream

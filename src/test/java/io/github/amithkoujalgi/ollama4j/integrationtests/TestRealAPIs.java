@@ -101,7 +101,7 @@ class TestRealAPIs {
     testEndpointReachability();
     try {
       OllamaResult result =
-          ollamaAPI.ask(
+          ollamaAPI.generate(
               OllamaModelType.LLAMA2,
               "What is the capital of France? And what's France's connection with Mona Lisa?",
               new OptionsBuilder().build());
@@ -119,7 +119,7 @@ class TestRealAPIs {
     testEndpointReachability();
     try {
       OllamaResult result =
-          ollamaAPI.ask(
+          ollamaAPI.generate(
               OllamaModelType.LLAMA2,
               "What is the capital of France? And what's France's connection with Mona Lisa?",
               new OptionsBuilder().setTemperature(0.9f).build());
@@ -138,7 +138,7 @@ class TestRealAPIs {
     File imageFile = getImageFileFromClasspath("dog-on-a-boat.jpg");
     try {
       OllamaResult result =
-          ollamaAPI.askWithImageFiles(
+          ollamaAPI.generateWithImageFiles(
               OllamaModelType.LLAVA,
               "What is in this image?",
               List.of(imageFile),
@@ -157,7 +157,7 @@ class TestRealAPIs {
     testEndpointReachability();
     try {
       OllamaResult result =
-          ollamaAPI.askWithImageURLs(
+          ollamaAPI.generateWithImageURLs(
               OllamaModelType.LLAVA,
               "What is in this image?",
               List.of(

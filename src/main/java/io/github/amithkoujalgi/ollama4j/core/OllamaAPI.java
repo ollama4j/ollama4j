@@ -329,7 +329,8 @@ public class OllamaAPI {
   }
 
   /**
-   * Ask a question to a model running on Ollama server. This is a sync/blocking call.
+   * Generate response for a question to a model running on Ollama server. This is a sync/blocking
+   * call.
    *
    * @param model the ollama model to ask the question to
    * @param prompt the prompt/question text
@@ -338,23 +339,23 @@ public class OllamaAPI {
    *     details on the options</a>
    * @return OllamaResult that includes response text and time taken for response
    */
-  public OllamaResult ask(String model, String prompt, Options options)
+  public OllamaResult generate(String model, String prompt, Options options)
       throws OllamaBaseException, IOException, InterruptedException {
     OllamaRequestModel ollamaRequestModel = new OllamaRequestModel(model, prompt);
     ollamaRequestModel.setOptions(options.getOptionsMap());
-    return askSync(ollamaRequestModel);
+    return generateSync(ollamaRequestModel);
   }
 
   /**
-   * Ask a question to a model running on Ollama server and get a callback handle that can be used
-   * to check for status and get the response from the model later. This would be an
-   * async/non-blocking call.
+   * Generate response for a question to a model running on Ollama server and get a callback handle
+   * that can be used to check for status and get the response from the model later. This would be
+   * an async/non-blocking call.
    *
    * @param model the ollama model to ask the question to
    * @param prompt the prompt/question text
    * @return the ollama async result callback handle
    */
-  public OllamaAsyncResultCallback askAsync(String model, String prompt) {
+  public OllamaAsyncResultCallback generateAsync(String model, String prompt) {
     OllamaRequestModel ollamaRequestModel = new OllamaRequestModel(model, prompt);
 
     URI uri = URI.create(this.host + "/api/generate");
@@ -377,7 +378,7 @@ public class OllamaAPI {
    *     details on the options</a>
    * @return OllamaResult that includes response text and time taken for response
    */
-  public OllamaResult askWithImageFiles(
+  public OllamaResult generateWithImageFiles(
       String model, String prompt, List<File> imageFiles, Options options)
       throws OllamaBaseException, IOException, InterruptedException {
     List<String> images = new ArrayList<>();
@@ -386,7 +387,7 @@ public class OllamaAPI {
     }
     OllamaRequestModel ollamaRequestModel = new OllamaRequestModel(model, prompt, images);
     ollamaRequestModel.setOptions(options.getOptionsMap());
-    return askSync(ollamaRequestModel);
+    return generateSync(ollamaRequestModel);
   }
 
   /**
@@ -401,7 +402,7 @@ public class OllamaAPI {
    *     details on the options</a>
    * @return OllamaResult that includes response text and time taken for response
    */
-  public OllamaResult askWithImageURLs(
+  public OllamaResult generateWithImageURLs(
       String model, String prompt, List<String> imageURLs, Options options)
       throws OllamaBaseException, IOException, InterruptedException, URISyntaxException {
     List<String> images = new ArrayList<>();
@@ -410,7 +411,7 @@ public class OllamaAPI {
     }
     OllamaRequestModel ollamaRequestModel = new OllamaRequestModel(model, prompt, images);
     ollamaRequestModel.setOptions(options.getOptionsMap());
-    return askSync(ollamaRequestModel);
+    return generateSync(ollamaRequestModel);
   }
 
   private static String encodeFileToBase64(File file) throws IOException {
@@ -435,7 +436,7 @@ public class OllamaAPI {
     }
   }
 
-  private OllamaResult askSync(OllamaRequestModel ollamaRequestModel)
+  private OllamaResult generateSync(OllamaRequestModel ollamaRequestModel)
       throws OllamaBaseException, IOException, InterruptedException {
     long startTime = System.currentTimeMillis();
     HttpClient httpClient = HttpClient.newHttpClient();
