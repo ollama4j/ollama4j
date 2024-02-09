@@ -4,6 +4,7 @@ import io.github.amithkoujalgi.ollama4j.core.exceptions.OllamaBaseException;
 import io.github.amithkoujalgi.ollama4j.core.models.*;
 import io.github.amithkoujalgi.ollama4j.core.models.chat.OllamaChatMessage;
 import io.github.amithkoujalgi.ollama4j.core.models.chat.OllamaChatRequestModel;
+import io.github.amithkoujalgi.ollama4j.core.models.chat.OllamaChatResult;
 import io.github.amithkoujalgi.ollama4j.core.models.chat.OllamaChatRequestBuilder;
 import io.github.amithkoujalgi.ollama4j.core.models.request.CustomModelFileContentsRequest;
 import io.github.amithkoujalgi.ollama4j.core.models.request.CustomModelFilePathRequest;
@@ -421,14 +422,41 @@ public class OllamaAPI {
 
 
   
-  public OllamaResult chat(String model, List<OllamaChatMessage> messages)  throws OllamaBaseException, IOException, InterruptedException, URISyntaxException{
+  /**
+   * Ask a question to a model based on a given message stack (i.e. a chat history). Creates a synchronous call to the api 
+   * 'api/chat'. 
+   * 
+   * @param model the ollama model to ask the question to
+   * @param messages chat history / message stack to send to the model
+   * @return {@link OllamaChatResult} containing the api response and the message history including the newly aqcuired assistant response.
+     * @throws OllamaBaseException any response code than 200 has been returned
+     * @throws IOException in case the responseStream can not be read
+     * @throws InterruptedException in case the server is not reachable or network issues happen
+   */
+  public OllamaChatResult chat(String model, List<OllamaChatMessage> messages)  throws OllamaBaseException, IOException, InterruptedException{
     OllamaChatRequestBuilder builder = OllamaChatRequestBuilder.getInstance(model);
     return chat(builder.withMessages(messages).build());
   }
 
-  public OllamaResult chat(OllamaChatRequestModel request)  throws OllamaBaseException, IOException, InterruptedException, URISyntaxException{
+  /**
+   * Ask a question to a model using an {@link OllamaChatRequestModel}. This can be constructed using an {@link OllamaChatRequestBuilder}. 
+   * 
+   * Hint: the {@link OllamaChatRequestModel#getStream()} property is not implemented
+   * 
+   * @param request request object to be sent to the server
+   * @return 
+  * @throws OllamaBaseException any response code than 200 has been returned
+  * @throws IOException in case the responseStream can not be read
+  * @throws InterruptedException in case the server is not reachable or network issues happen
+   */
+  public OllamaChatResult chat(OllamaChatRequestModel request)  throws OllamaBaseException, IOException, InterruptedException{
     OllamaChatRequestCaller requestCaller = new OllamaChatRequestCaller(host, basicAuth, requestTimeoutSeconds, verbose);
-    return requestCaller.generateSync(request);
+    //TODO: implement async way
+    if(request.isStream()){
+      throw new UnsupportedOperationException("Streamed chat responses are not implemented yet");
+    }
+    OllamaResult result = requestCaller.generateSync(request);
+    return new OllamaChatResult(result.getResponse(), result.getResponseTime(), result.getHttpStatusCode(), request.getMessages());
   }
 
   // technical private methods //

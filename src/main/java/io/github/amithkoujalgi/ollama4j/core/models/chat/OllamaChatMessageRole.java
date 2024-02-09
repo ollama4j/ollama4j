@@ -8,6 +8,7 @@ public enum OllamaChatMessageRole {
     USER("user"),
     ASSISTANT("assisstant");
 
+    @SuppressWarnings("unused")
     private String roleName;
 
     private OllamaChatMessageRole(String roleName){
