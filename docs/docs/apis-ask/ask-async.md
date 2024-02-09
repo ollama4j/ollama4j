@@ -24,8 +24,8 @@ public class Main {
         while (!callback.isComplete() || !callback.getStream().isEmpty()) {
             // poll for data from the response stream
             String result = callback.getStream().poll();
-            if (response != null) {
-                System.out.print(result.getResponse());
+            if (result != null) {
+                System.out.print(result);
             }
             Thread.sleep(100);
         }
