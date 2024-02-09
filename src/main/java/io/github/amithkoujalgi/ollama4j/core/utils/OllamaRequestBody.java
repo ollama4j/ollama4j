@@ -3,6 +3,7 @@ package io.github.amithkoujalgi.ollama4j.core.utils;
 import java.net.http.HttpRequest.BodyPublisher;
 import java.net.http.HttpRequest.BodyPublishers;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.core.JsonProcessingException;
 
 /**
@@ -15,6 +16,7 @@ public interface OllamaRequestBody {
      * 
      * @return JSON representation of a OllamaRequest
      */
+    @JsonIgnore
     default BodyPublisher getBodyPublisher(){
                 try {
           return BodyPublishers.ofString(
