@@ -7,6 +7,7 @@ import lombok.Data;
 public class Model {
 
   private String name;
+  private String model;
   @JsonProperty("modified_at")
   private String modifiedAt;
   private String digest;
