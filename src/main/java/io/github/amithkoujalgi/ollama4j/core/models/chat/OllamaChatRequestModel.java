@@ -1,14 +1,11 @@
 package io.github.amithkoujalgi.ollama4j.core.models.chat;
 
-import java.net.http.HttpRequest;
-import java.net.http.HttpRequest.BodyPublisher;
 import java.util.List;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 
 import io.github.amithkoujalgi.ollama4j.core.utils.OllamaRequestBody;
 import io.github.amithkoujalgi.ollama4j.core.utils.Options;
-import io.github.amithkoujalgi.ollama4j.core.utils.Utils;
 
 import static io.github.amithkoujalgi.ollama4j.core.utils.Utils.getObjectMapper;
 
@@ -47,15 +44,5 @@ public class OllamaChatRequestModel implements OllamaRequestBody{
       throw new RuntimeException(e);
     }
   }
-
-      @Override
-      public BodyPublisher getBodyPublisher() {
-        try {
-          return HttpRequest.BodyPublishers.ofString(
-                      Utils.getObjectMapper().writeValueAsString(this));
-        } catch (JsonProcessingException e) {
-          throw new IllegalArgumentException("Request not Body convertible.",e);
-        }
-      }
 
 }
