@@ -24,6 +24,9 @@ import io.github.amithkoujalgi.ollama4j.core.models.OllamaResult;
 import io.github.amithkoujalgi.ollama4j.core.utils.OllamaRequestBody;
 import io.github.amithkoujalgi.ollama4j.core.utils.Utils;
 
+/**
+ * Abstract helperclass to call the ollama api server.
+ */
 public abstract class OllamaServerCaller {
     
     private static final Logger LOG = LoggerFactory.getLogger(OllamaAPI.class);
@@ -42,6 +45,15 @@ public abstract class OllamaServerCaller {
 
     protected abstract String getEndpointSuffix();
     
+    /**
+     * Calls the api server on the given host and endpoint suffix asynchronously, aka waiting for the response.
+     * 
+     * @param body POST body payload
+     * @return result answer given by the assistant
+     * @throws OllamaBaseException any response code than 200 has been returned
+     * @throws IOException in case the responseStream can not be read
+     * @throws InterruptedException in case the server is not reachable or network issues happen
+     */
     public OllamaResult generateSync(OllamaRequestBody body)  throws OllamaBaseException, IOException, InterruptedException{
 
         // Create Request
@@ -53,7 +65,7 @@ public abstract class OllamaServerCaller {
             .POST(
                 body.getBodyPublisher());
     HttpRequest request = requestBuilder.build();
-    if (this.verbose) LOG.info("Asking model: " + body.getBodyPublisher());
+    if (this.verbose) LOG.info("Asking model: " + body.toString());
     HttpResponse<InputStream> response =
         httpClient.send(request, HttpResponse.BodyHandlers.ofInputStream());
     
