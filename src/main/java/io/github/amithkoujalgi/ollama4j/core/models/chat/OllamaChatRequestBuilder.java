@@ -32,7 +32,7 @@ public class OllamaChatRequestBuilder {
     }
 
     public OllamaChatRequestBuilder withMessages(List<OllamaChatMessage> messages){
-        this.request.setMessages(messages);
+        this.request.getMessages().addAll(messages);
         return this;
     }
 
