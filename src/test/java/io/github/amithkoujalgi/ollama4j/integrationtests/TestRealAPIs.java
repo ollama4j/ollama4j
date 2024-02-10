@@ -5,7 +5,6 @@ import static org.junit.jupiter.api.Assertions.*;
 import io.github.amithkoujalgi.ollama4j.core.OllamaAPI;
 import io.github.amithkoujalgi.ollama4j.core.exceptions.OllamaBaseException;
 import io.github.amithkoujalgi.ollama4j.core.models.OllamaResult;
-import io.github.amithkoujalgi.ollama4j.core.models.chat.OllamaChatMessage;
 import io.github.amithkoujalgi.ollama4j.core.models.chat.OllamaChatMessageRole;
 import io.github.amithkoujalgi.ollama4j.core.models.chat.OllamaChatRequestBuilder;
 import io.github.amithkoujalgi.ollama4j.core.models.chat.OllamaChatRequestModel;
