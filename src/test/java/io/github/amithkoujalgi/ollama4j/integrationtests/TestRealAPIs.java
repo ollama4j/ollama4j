@@ -5,6 +5,7 @@ import static org.junit.jupiter.api.Assertions.*;
 import io.github.amithkoujalgi.ollama4j.core.OllamaAPI;
 import io.github.amithkoujalgi.ollama4j.core.exceptions.OllamaBaseException;
 import io.github.amithkoujalgi.ollama4j.core.models.OllamaResult;
+import io.github.amithkoujalgi.ollama4j.core.models.chat.OllamaChatMessage;
 import io.github.amithkoujalgi.ollama4j.core.models.chat.OllamaChatMessageRole;
 import io.github.amithkoujalgi.ollama4j.core.models.chat.OllamaChatRequestBuilder;
 import io.github.amithkoujalgi.ollama4j.core.models.chat.OllamaChatRequestModel;
@@ -128,9 +129,9 @@ class TestRealAPIs {
     testEndpointReachability();
     try {
       OllamaChatRequestBuilder builder = OllamaChatRequestBuilder.getInstance(config.getModel());
-      OllamaChatRequestModel requestModel = builder.withMessage(OllamaChatMessageRole.USER, "Say hello to my little friend")
-             .withMessage(OllamaChatMessageRole.ASSISTANT, "Seems to be a Tony Montana montage!")
-             .withMessage(OllamaChatMessageRole.USER,"We need a montage!")
+      OllamaChatRequestModel requestModel = builder.withMessage(OllamaChatMessageRole.USER, "What is the capital of France?")
+             .withMessage(OllamaChatMessageRole.ASSISTANT, "Should be Paris!")
+             .withMessage(OllamaChatMessageRole.USER,"And what is the second larges city?")
              .build();
 
       OllamaChatResult chatResult = ollamaAPI.chat(requestModel);
@@ -149,7 +150,7 @@ class TestRealAPIs {
     try {
       OllamaChatRequestBuilder builder = OllamaChatRequestBuilder.getInstance(config.getModel());
       OllamaChatRequestModel requestModel = builder.withMessage(OllamaChatMessageRole.SYSTEM, "You are a silent bot that only says 'NI'. Do not say anything else under any circumstances!")
-             .withMessage(OllamaChatMessageRole.USER,"We need a montage!")
+             .withMessage(OllamaChatMessageRole.USER,"What is the capital of France? And what's France's connection with Mona Lisa?")
              .build();
 
       OllamaChatResult chatResult = ollamaAPI.chat(requestModel);
