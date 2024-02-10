@@ -10,8 +10,8 @@ import io.github.amithkoujalgi.ollama4j.core.models.request.CustomModelFileConte
 import io.github.amithkoujalgi.ollama4j.core.models.request.CustomModelFilePathRequest;
 import io.github.amithkoujalgi.ollama4j.core.models.request.ModelEmbeddingsRequest;
 import io.github.amithkoujalgi.ollama4j.core.models.request.ModelRequest;
-import io.github.amithkoujalgi.ollama4j.core.models.request.OllamaChatRequestCaller;
-import io.github.amithkoujalgi.ollama4j.core.models.request.OllamaGenerateRequestCaller;
+import io.github.amithkoujalgi.ollama4j.core.models.request.OllamaChatEndpointCaller;
+import io.github.amithkoujalgi.ollama4j.core.models.request.OllamaGenerateEndpointCaller;
 import io.github.amithkoujalgi.ollama4j.core.utils.Options;
 import io.github.amithkoujalgi.ollama4j.core.utils.Utils;
 import java.io.BufferedReader;
@@ -450,7 +450,7 @@ public class OllamaAPI {
   * @throws InterruptedException in case the server is not reachable or network issues happen
    */
   public OllamaChatResult chat(OllamaChatRequestModel request)  throws OllamaBaseException, IOException, InterruptedException{
-    OllamaChatRequestCaller requestCaller = new OllamaChatRequestCaller(host, basicAuth, requestTimeoutSeconds, verbose);
+    OllamaChatEndpointCaller requestCaller = new OllamaChatEndpointCaller(host, basicAuth, requestTimeoutSeconds, verbose);
     //TODO: implement async way
     if(request.isStream()){
       throw new UnsupportedOperationException("Streamed chat responses are not implemented yet");
@@ -485,7 +485,7 @@ public class OllamaAPI {
 
   private OllamaResult generateSyncForOllamaRequestModel(OllamaRequestModel ollamaRequestModel)
       throws OllamaBaseException, IOException, InterruptedException {
-        OllamaGenerateRequestCaller requestCaller = new OllamaGenerateRequestCaller(host, basicAuth, requestTimeoutSeconds, verbose);
+        OllamaGenerateEndpointCaller requestCaller = new OllamaGenerateEndpointCaller(host, basicAuth, requestTimeoutSeconds, verbose);
         return requestCaller.generateSync(ollamaRequestModel);
   }
 
