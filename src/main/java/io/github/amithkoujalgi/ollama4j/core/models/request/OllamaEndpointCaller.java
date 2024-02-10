@@ -19,7 +19,6 @@ import io.github.amithkoujalgi.ollama4j.core.OllamaAPI;
 import io.github.amithkoujalgi.ollama4j.core.exceptions.OllamaBaseException;
 import io.github.amithkoujalgi.ollama4j.core.models.BasicAuth;
 import io.github.amithkoujalgi.ollama4j.core.models.OllamaErrorResponseModel;
-import io.github.amithkoujalgi.ollama4j.core.models.OllamaResponseModel;
 import io.github.amithkoujalgi.ollama4j.core.models.OllamaResult;
 import io.github.amithkoujalgi.ollama4j.core.utils.OllamaRequestBody;
 import io.github.amithkoujalgi.ollama4j.core.utils.Utils;
