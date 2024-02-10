@@ -27,7 +27,7 @@ import io.github.amithkoujalgi.ollama4j.core.utils.Utils;
 /**
  * Abstract helperclass to call the ollama api server.
  */
-public abstract class OllamaServerCaller {
+public abstract class OllamaEndpointCaller {
     
     private static final Logger LOG = LoggerFactory.getLogger(OllamaAPI.class);
 
@@ -36,7 +36,7 @@ public abstract class OllamaServerCaller {
     private long requestTimeoutSeconds;
     private boolean verbose;
 
-    public OllamaServerCaller(String host, BasicAuth basicAuth, long requestTimeoutSeconds, boolean verbose) {
+    public OllamaEndpointCaller(String host, BasicAuth basicAuth, long requestTimeoutSeconds, boolean verbose) {
         this.host = host;
         this.basicAuth = basicAuth;
         this.requestTimeoutSeconds = requestTimeoutSeconds;
@@ -44,6 +44,9 @@ public abstract class OllamaServerCaller {
     }
 
     protected abstract String getEndpointSuffix();
+
+    protected abstract boolean parseResponseAndAddToBuffer(String line, StringBuilder responseBuffer);
+
     
     /**
      * Calls the api server on the given host and endpoint suffix asynchronously, aka waiting for the response.
@@ -89,11 +92,10 @@ public abstract class OllamaServerCaller {
                   .readValue("{\"error\":\"Unauthorized\"}", OllamaErrorResponseModel.class);
           responseBuffer.append(ollamaResponseModel.getError());
         } else {
-          OllamaResponseModel ollamaResponseModel =
-              Utils.getObjectMapper().readValue(line, OllamaResponseModel.class);
-          if (!ollamaResponseModel.isDone()) {
-            responseBuffer.append(ollamaResponseModel.getResponse());
-          }
+          boolean finished = parseResponseAndAddToBuffer(line,responseBuffer);
+            if (finished) {
+              break;
+            }
         }
       }
     }
