@@ -3,6 +3,10 @@ package io.github.amithkoujalgi.ollama4j.core.models.chat;
 import static io.github.amithkoujalgi.ollama4j.core.utils.Utils.getObjectMapper;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+
+import io.github.amithkoujalgi.ollama4j.core.utils.FileToBase64Serializer;
+
 import java.io.File;
 import java.util.List;
 import lombok.AllArgsConstructor;
@@ -28,6 +32,7 @@ public class OllamaChatMessage {
     @NonNull
     private String content;
 
+    @JsonSerialize(using = FileToBase64Serializer.class)
     private List<File> images;
     
       @Override
