@@ -148,15 +148,17 @@ class TestRealAPIs {
     testEndpointReachability();
     try {
       OllamaChatRequestBuilder builder = OllamaChatRequestBuilder.getInstance(config.getModel());
-      OllamaChatRequestModel requestModel = builder.withMessage(OllamaChatMessageRole.SYSTEM, "You are a silent bot that only says 'NI'. Do not say anything else under any circumstances!")
-             .withMessage(OllamaChatMessageRole.USER,"What is the capital of France? And what's France's connection with Mona Lisa?")
-             .build();
+      OllamaChatRequestModel requestModel = builder.withMessage(OllamaChatMessageRole.SYSTEM,
+          "You are a silent bot that only says 'NI'. Do not say anything else under any circumstances!")
+          .withMessage(OllamaChatMessageRole.USER,
+              "What is the capital of France? And what's France's connection with Mona Lisa?")
+          .build();
 
       OllamaChatResult chatResult = ollamaAPI.chat(requestModel);
       assertNotNull(chatResult);
       assertFalse(chatResult.getResponse().isBlank());
       assertTrue(chatResult.getResponse().startsWith("NI"));
-      assertEquals(3,chatResult.getChatHistory().size());
+      assertEquals(3, chatResult.getChatHistory().size());
     } catch (IOException | OllamaBaseException | InterruptedException e) {
       throw new RuntimeException(e);
     }
@@ -164,11 +166,30 @@ class TestRealAPIs {
 
   @Test
   @Order(3)
-  void testChatWithImage() {
+  void testChatWithImageFromFile() {
+    testEndpointReachability();
+    try {
+      OllamaChatRequestBuilder builder =
+          OllamaChatRequestBuilder.getInstance(config.getImageModel());
+      OllamaChatRequestModel requestModel =
+          builder.withMessage(OllamaChatMessageRole.USER, "What's in the picture?",
+              List.of(getImageFileFromClasspath("dog-on-a-boat.jpg"))).build();
+
+      OllamaChatResult chatResult = ollamaAPI.chat(requestModel);
+      assertNotNull(chatResult);
+    } catch (IOException | OllamaBaseException | InterruptedException e) {
+      throw new RuntimeException(e);
+    }
+  }
+
+  @Test
+  @Order(3)
+  void testChatWithImageFromURL() {
     testEndpointReachability();
     try {
       OllamaChatRequestBuilder builder = OllamaChatRequestBuilder.getInstance(config.getImageModel());
-      OllamaChatRequestModel requestModel = builder.withMessage(OllamaChatMessageRole.USER, "What's in the picture?",getImageFileFromClasspath("dog-on-a-boat.jpg"))
+      OllamaChatRequestModel requestModel = builder.withMessage(OllamaChatMessageRole.USER, "What's in the picture?",
+      "https://t3.ftcdn.net/jpg/02/96/63/80/360_F_296638053_0gUVA4WVBKceGsIr7LNqRWSnkusi07dq.jpg")
              .build();
 
       OllamaChatResult chatResult = ollamaAPI.chat(requestModel);
