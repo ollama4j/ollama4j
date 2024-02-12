@@ -1,7 +1,6 @@
 package io.github.amithkoujalgi.ollama4j.core.utils;
 
 import java.io.ByteArrayOutputStream;
-import java.io.File;
 import java.io.IOException;
 import java.io.ObjectOutputStream;
 import java.util.Base64;
@@ -11,13 +10,13 @@ import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.databind.JsonSerializer;
 import com.fasterxml.jackson.databind.SerializerProvider;
 
-public class FileToBase64Serializer extends JsonSerializer<Collection<File>> {
+public class FileToBase64Serializer extends JsonSerializer<Collection<byte[]>> {
 
     @Override
-    public void serialize(Collection<File> value, JsonGenerator jsonGenerator, SerializerProvider serializers) throws IOException {
+    public void serialize(Collection<byte[]> value, JsonGenerator jsonGenerator, SerializerProvider serializers) throws IOException {
         jsonGenerator.writeStartArray();
-        for (File file : value) {
-            jsonGenerator.writeString(Base64.getEncoder().encodeToString(serialize(file)));
+        for (byte[] file : value) {
+            jsonGenerator.writeString(Base64.getEncoder().encodeToString(file));
         }
         jsonGenerator.writeEndArray();
     }

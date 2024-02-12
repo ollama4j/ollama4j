@@ -33,7 +33,7 @@ public class OllamaChatMessage {
     private String content;
 
     @JsonSerialize(using = FileToBase64Serializer.class)
-    private List<File> images;
+    private List<byte[]> images;
     
       @Override
   public String toString() {
