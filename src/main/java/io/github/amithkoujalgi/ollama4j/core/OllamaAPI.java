@@ -3,9 +3,9 @@ package io.github.amithkoujalgi.ollama4j.core;
 import io.github.amithkoujalgi.ollama4j.core.exceptions.OllamaBaseException;
 import io.github.amithkoujalgi.ollama4j.core.models.*;
 import io.github.amithkoujalgi.ollama4j.core.models.chat.OllamaChatMessage;
+import io.github.amithkoujalgi.ollama4j.core.models.chat.OllamaChatRequestBuilder;
 import io.github.amithkoujalgi.ollama4j.core.models.chat.OllamaChatRequestModel;
 import io.github.amithkoujalgi.ollama4j.core.models.chat.OllamaChatResult;
-import io.github.amithkoujalgi.ollama4j.core.models.chat.OllamaChatRequestBuilder;
 import io.github.amithkoujalgi.ollama4j.core.models.request.CustomModelFileContentsRequest;
 import io.github.amithkoujalgi.ollama4j.core.models.request.CustomModelFilePathRequest;
 import io.github.amithkoujalgi.ollama4j.core.models.request.ModelEmbeddingsRequest;
@@ -441,7 +441,7 @@ public class OllamaAPI {
   /**
    * Ask a question to a model using an {@link OllamaChatRequestModel}. This can be constructed using an {@link OllamaChatRequestBuilder}. 
    * 
-   * Hint: the {@link OllamaChatRequestModel#getStream()} property is not implemented
+   * Hint: the OllamaChatRequestModel#getStream() property is not implemented.
    * 
    * @param request request object to be sent to the server
    * @return 

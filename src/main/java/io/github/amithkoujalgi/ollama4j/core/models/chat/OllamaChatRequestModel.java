@@ -16,27 +16,27 @@ import lombok.RequiredArgsConstructor;
 
 /**
  * Defines a Request to use against the ollama /api/chat endpoint.
- * 
- * @see https://github.com/ollama/ollama/blob/main/docs/api.md#generate-a-chat-completion
+ *
+ * @see <a
+ *     href="https://github.com/ollama/ollama/blob/main/docs/api.md#generate-a-chat-completion">Generate
+ *     Chat Completion</a>
  */
 @Data
 @AllArgsConstructor
 @RequiredArgsConstructor
-public class OllamaChatRequestModel implements OllamaRequestBody{
+public class OllamaChatRequestModel implements OllamaRequestBody {
 
-    @NonNull
-    private String model;
+  @NonNull private String model;
 
-    @NonNull
-    private List<OllamaChatMessage> messages;
+  @NonNull private List<OllamaChatMessage> messages;
 
-    private String format;
-    private Options options;
-    private String template;
-    private boolean stream;
-    private String keepAlive;
+  private String format;
+  private Options options;
+  private String template;
+  private boolean stream;
+  private String keepAlive;
 
-      @Override
+  @Override
   public String toString() {
     try {
       return getObjectMapper().writerWithDefaultPrettyPrinter().writeValueAsString(this);
@@ -44,5 +44,4 @@ public class OllamaChatRequestModel implements OllamaRequestBody{
       throw new RuntimeException(e);
     }
   }
-
 }

@@ -1,11 +1,10 @@
 package io.github.amithkoujalgi.ollama4j.core.models.chat;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import static io.github.amithkoujalgi.ollama4j.core.utils.Utils.getObjectMapper;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import java.io.File;
 import java.util.List;
-
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -14,8 +13,8 @@ import lombok.RequiredArgsConstructor;
 
 /**
  * Defines a single Message to be used inside a chat request against the ollama /api/chat endpoint.
- * 
- * @see https://github.com/ollama/ollama/blob/main/docs/api.md#generate-a-chat-completion
+ *
+ * @see <a href="https://github.com/ollama/ollama/blob/main/docs/api.md#generate-a-chat-completion">Generate chat completion</a>
  */
 @Data
 @AllArgsConstructor
