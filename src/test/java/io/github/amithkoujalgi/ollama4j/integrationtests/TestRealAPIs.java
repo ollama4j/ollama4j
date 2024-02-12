@@ -164,6 +164,22 @@ class TestRealAPIs {
 
   @Test
   @Order(3)
+  void testChatWithImage() {
+    testEndpointReachability();
+    try {
+      OllamaChatRequestBuilder builder = OllamaChatRequestBuilder.getInstance(config.getImageModel());
+      OllamaChatRequestModel requestModel = builder.withMessage(OllamaChatMessageRole.USER, "What's in the picture?",getImageFileFromClasspath("dog-on-a-boat.jpg"))
+             .build();
+
+      OllamaChatResult chatResult = ollamaAPI.chat(requestModel);
+      assertNotNull(chatResult);
+    } catch (IOException | OllamaBaseException | InterruptedException e) {
+      throw new RuntimeException(e);
+    }
+  }
+
+  @Test
+  @Order(3)
   void testAskModelWithOptionsAndImageFiles() {
     testEndpointReachability();
     File imageFile = getImageFileFromClasspath("dog-on-a-boat.jpg");
