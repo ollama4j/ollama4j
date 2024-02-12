@@ -2,10 +2,16 @@ package io.github.amithkoujalgi.ollama4j.core;
 
 import io.github.amithkoujalgi.ollama4j.core.exceptions.OllamaBaseException;
 import io.github.amithkoujalgi.ollama4j.core.models.*;
+import io.github.amithkoujalgi.ollama4j.core.models.chat.OllamaChatMessage;
+import io.github.amithkoujalgi.ollama4j.core.models.chat.OllamaChatRequestModel;
+import io.github.amithkoujalgi.ollama4j.core.models.chat.OllamaChatResult;
+import io.github.amithkoujalgi.ollama4j.core.models.chat.OllamaChatRequestBuilder;
 import io.github.amithkoujalgi.ollama4j.core.models.request.CustomModelFileContentsRequest;
 import io.github.amithkoujalgi.ollama4j.core.models.request.CustomModelFilePathRequest;
 import io.github.amithkoujalgi.ollama4j.core.models.request.ModelEmbeddingsRequest;
 import io.github.amithkoujalgi.ollama4j.core.models.request.ModelRequest;
+import io.github.amithkoujalgi.ollama4j.core.models.request.OllamaChatEndpointCaller;
+import io.github.amithkoujalgi.ollama4j.core.models.request.OllamaGenerateEndpointCaller;
 import io.github.amithkoujalgi.ollama4j.core.utils.Options;
 import io.github.amithkoujalgi.ollama4j.core.utils.Utils;
 import java.io.BufferedReader;
@@ -343,7 +349,7 @@ public class OllamaAPI {
       throws OllamaBaseException, IOException, InterruptedException {
     OllamaRequestModel ollamaRequestModel = new OllamaRequestModel(model, prompt);
     ollamaRequestModel.setOptions(options.getOptionsMap());
-    return generateSync(ollamaRequestModel);
+    return generateSyncForOllamaRequestModel(ollamaRequestModel);
   }
 
   /**
@@ -387,7 +393,7 @@ public class OllamaAPI {
     }
     OllamaRequestModel ollamaRequestModel = new OllamaRequestModel(model, prompt, images);
     ollamaRequestModel.setOptions(options.getOptionsMap());
-    return generateSync(ollamaRequestModel);
+    return generateSyncForOllamaRequestModel(ollamaRequestModel);
   }
 
   /**
@@ -411,8 +417,49 @@ public class OllamaAPI {
     }
     OllamaRequestModel ollamaRequestModel = new OllamaRequestModel(model, prompt, images);
     ollamaRequestModel.setOptions(options.getOptionsMap());
-    return generateSync(ollamaRequestModel);
+    return generateSyncForOllamaRequestModel(ollamaRequestModel);
   }
+
+
+  
+  /**
+   * Ask a question to a model based on a given message stack (i.e. a chat history). Creates a synchronous call to the api 
+   * 'api/chat'. 
+   * 
+   * @param model the ollama model to ask the question to
+   * @param messages chat history / message stack to send to the model
+   * @return {@link OllamaChatResult} containing the api response and the message history including the newly aqcuired assistant response.
+     * @throws OllamaBaseException any response code than 200 has been returned
+     * @throws IOException in case the responseStream can not be read
+     * @throws InterruptedException in case the server is not reachable or network issues happen
+   */
+  public OllamaChatResult chat(String model, List<OllamaChatMessage> messages)  throws OllamaBaseException, IOException, InterruptedException{
+    OllamaChatRequestBuilder builder = OllamaChatRequestBuilder.getInstance(model);
+    return chat(builder.withMessages(messages).build());
+  }
+
+  /**
+   * Ask a question to a model using an {@link OllamaChatRequestModel}. This can be constructed using an {@link OllamaChatRequestBuilder}. 
+   * 
+   * Hint: the {@link OllamaChatRequestModel#getStream()} property is not implemented
+   * 
+   * @param request request object to be sent to the server
+   * @return 
+  * @throws OllamaBaseException any response code than 200 has been returned
+  * @throws IOException in case the responseStream can not be read
+  * @throws InterruptedException in case the server is not reachable or network issues happen
+   */
+  public OllamaChatResult chat(OllamaChatRequestModel request)  throws OllamaBaseException, IOException, InterruptedException{
+    OllamaChatEndpointCaller requestCaller = new OllamaChatEndpointCaller(host, basicAuth, requestTimeoutSeconds, verbose);
+    //TODO: implement async way
+    if(request.isStream()){
+      throw new UnsupportedOperationException("Streamed chat responses are not implemented yet");
+    }
+    OllamaResult result = requestCaller.generateSync(request);
+    return new OllamaChatResult(result.getResponse(), result.getResponseTime(), result.getHttpStatusCode(), request.getMessages());
+  }
+
+  // technical private methods //
 
   private static String encodeFileToBase64(File file) throws IOException {
     return Base64.getEncoder().encodeToString(Files.readAllBytes(file.toPath()));
@@ -436,58 +483,10 @@ public class OllamaAPI {
     }
   }
 
-  private OllamaResult generateSync(OllamaRequestModel ollamaRequestModel)
+  private OllamaResult generateSyncForOllamaRequestModel(OllamaRequestModel ollamaRequestModel)
       throws OllamaBaseException, IOException, InterruptedException {
-    long startTime = System.currentTimeMillis();
-    HttpClient httpClient = HttpClient.newHttpClient();
-    URI uri = URI.create(this.host + "/api/generate");
-    HttpRequest.Builder requestBuilder =
-        getRequestBuilderDefault(uri)
-            .POST(
-                HttpRequest.BodyPublishers.ofString(
-                    Utils.getObjectMapper().writeValueAsString(ollamaRequestModel)));
-    HttpRequest request = requestBuilder.build();
-    if (verbose) logger.info("Asking model: " + ollamaRequestModel);
-    HttpResponse<InputStream> response =
-        httpClient.send(request, HttpResponse.BodyHandlers.ofInputStream());
-    int statusCode = response.statusCode();
-    InputStream responseBodyStream = response.body();
-    StringBuilder responseBuffer = new StringBuilder();
-    try (BufferedReader reader =
-        new BufferedReader(new InputStreamReader(responseBodyStream, StandardCharsets.UTF_8))) {
-      String line;
-      while ((line = reader.readLine()) != null) {
-        if (statusCode == 404) {
-          logger.warn("Status code: 404 (Not Found)");
-          OllamaErrorResponseModel ollamaResponseModel =
-              Utils.getObjectMapper().readValue(line, OllamaErrorResponseModel.class);
-          responseBuffer.append(ollamaResponseModel.getError());
-        } else if (statusCode == 401) {
-          logger.warn("Status code: 401 (Unauthorized)");
-          OllamaErrorResponseModel ollamaResponseModel =
-              Utils.getObjectMapper()
-                  .readValue("{\"error\":\"Unauthorized\"}", OllamaErrorResponseModel.class);
-          responseBuffer.append(ollamaResponseModel.getError());
-        } else {
-          OllamaResponseModel ollamaResponseModel =
-              Utils.getObjectMapper().readValue(line, OllamaResponseModel.class);
-          if (!ollamaResponseModel.isDone()) {
-            responseBuffer.append(ollamaResponseModel.getResponse());
-          }
-        }
-      }
-    }
-
-    if (statusCode != 200) {
-      logger.error("Status code " + statusCode);
-      throw new OllamaBaseException(responseBuffer.toString());
-    } else {
-      long endTime = System.currentTimeMillis();
-      OllamaResult ollamaResult =
-          new OllamaResult(responseBuffer.toString().trim(), endTime - startTime, statusCode);
-      if (verbose) logger.info("Model response: " + ollamaResult);
-      return ollamaResult;
-    }
+        OllamaGenerateEndpointCaller requestCaller = new OllamaGenerateEndpointCaller(host, basicAuth, requestTimeoutSeconds, verbose);
+        return requestCaller.generateSync(ollamaRequestModel);
   }
 
   /**

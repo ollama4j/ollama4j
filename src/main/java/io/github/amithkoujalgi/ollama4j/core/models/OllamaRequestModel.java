@@ -3,12 +3,15 @@ package io.github.amithkoujalgi.ollama4j.core.models;
 import static io.github.amithkoujalgi.ollama4j.core.utils.Utils.getObjectMapper;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+
+import io.github.amithkoujalgi.ollama4j.core.utils.OllamaRequestBody;
+
 import java.util.List;
 import java.util.Map;
 import lombok.Data;
 
 @Data
-public class OllamaRequestModel {
+public class OllamaRequestModel implements OllamaRequestBody{
 
   private String model;
   private String prompt;
