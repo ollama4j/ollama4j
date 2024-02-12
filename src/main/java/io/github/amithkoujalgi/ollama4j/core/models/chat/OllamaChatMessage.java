@@ -7,7 +7,6 @@ import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 
 import io.github.amithkoujalgi.ollama4j.core.utils.FileToBase64Serializer;
 
-import java.io.File;
 import java.util.List;
 import lombok.AllArgsConstructor;
 import lombok.Data;
