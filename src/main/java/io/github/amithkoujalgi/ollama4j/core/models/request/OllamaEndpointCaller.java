@@ -46,7 +46,7 @@ public abstract class OllamaEndpointCaller {
 
     protected abstract boolean parseResponseAndAddToBuffer(String line, StringBuilder responseBuffer);
 
-    
+
     /**
      * Calls the api server on the given host and endpoint suffix asynchronously, aka waiting for the response.
      * 
@@ -56,7 +56,7 @@ public abstract class OllamaEndpointCaller {
      * @throws IOException in case the responseStream can not be read
      * @throws InterruptedException in case the server is not reachable or network issues happen
      */
-    public OllamaResult generateSync(OllamaRequestBody body)  throws OllamaBaseException, IOException, InterruptedException{
+    public OllamaResult callSync(OllamaRequestBody body)  throws OllamaBaseException, IOException, InterruptedException{
 
         // Create Request
     long startTime = System.currentTimeMillis();
