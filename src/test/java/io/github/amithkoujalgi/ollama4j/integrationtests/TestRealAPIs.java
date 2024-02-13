@@ -166,7 +166,7 @@ class TestRealAPIs {
 
   @Test
   @Order(3)
-  void testChatWithImageFromFile() {
+  void testChatWithImageFromFileWithHistoryRecognition() {
     testEndpointReachability();
     try {
       OllamaChatRequestBuilder builder =
@@ -177,6 +177,19 @@ class TestRealAPIs {
 
       OllamaChatResult chatResult = ollamaAPI.chat(requestModel);
       assertNotNull(chatResult);
+      assertNotNull(chatResult.getResponse());
+
+      builder.reset();
+
+      requestModel =
+          builder.withMessages(chatResult.getChatHistory())
+            .withMessage(OllamaChatMessageRole.USER, "What's the dogs breed?").build();
+
+      chatResult = ollamaAPI.chat(requestModel);
+      assertNotNull(chatResult);
+      assertNotNull(chatResult.getResponse());
+
+
     } catch (IOException | OllamaBaseException | InterruptedException e) {
       throw new RuntimeException(e);
     }
