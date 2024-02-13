@@ -39,10 +39,6 @@ public class OllamaChatRequestBuilder {
         request = new OllamaChatRequestModel(request.getModel(), new ArrayList<>());
     }
 
-    public OllamaChatRequestBuilder withMessage(OllamaChatMessageRole role, String content){
-        return withMessage(role, content, (String)null);
-    }
-
     public OllamaChatRequestBuilder withMessage(OllamaChatMessageRole role, String content, List<File> images){
         List<OllamaChatMessage> messages = this.request.getMessages();
 
