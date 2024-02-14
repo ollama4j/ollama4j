@@ -15,14 +15,12 @@ import io.github.amithkoujalgi.ollama4j.core.models.request.OllamaGenerateEndpoi
 import io.github.amithkoujalgi.ollama4j.core.utils.Options;
 import io.github.amithkoujalgi.ollama4j.core.utils.Utils;
 import java.io.BufferedReader;
-import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.net.URL;
 import java.net.http.HttpClient;
 import java.net.http.HttpConnectTimeoutException;
 import java.net.http.HttpRequest;
@@ -413,7 +411,7 @@ public class OllamaAPI {
       throws OllamaBaseException, IOException, InterruptedException, URISyntaxException {
     List<String> images = new ArrayList<>();
     for (String imageURL : imageURLs) {
-      images.add(encodeByteArrayToBase64(loadImageBytesFromUrl(imageURL)));
+      images.add(encodeByteArrayToBase64(Utils.loadImageBytesFromUrl(imageURL)));
     }
     OllamaRequestModel ollamaRequestModel = new OllamaRequestModel(model, prompt, images);
     ollamaRequestModel.setOptions(options.getOptionsMap());
@@ -467,20 +465,6 @@ public class OllamaAPI {
 
   private static String encodeByteArrayToBase64(byte[] bytes) {
     return Base64.getEncoder().encodeToString(bytes);
-  }
-
-  private static byte[] loadImageBytesFromUrl(String imageUrl)
-      throws IOException, URISyntaxException {
-    URL url = new URI(imageUrl).toURL();
-    try (InputStream in = url.openStream();
-        ByteArrayOutputStream out = new ByteArrayOutputStream()) {
-      byte[] buffer = new byte[1024];
-      int bytesRead;
-      while ((bytesRead = in.read(buffer)) != -1) {
-        out.write(buffer, 0, bytesRead);
-      }
-      return out.toByteArray();
-    }
   }
 
   private OllamaResult generateSyncForOllamaRequestModel(OllamaRequestModel ollamaRequestModel)

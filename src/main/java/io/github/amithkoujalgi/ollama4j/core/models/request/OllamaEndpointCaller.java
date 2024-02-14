@@ -90,6 +90,11 @@ public abstract class OllamaEndpointCaller {
               Utils.getObjectMapper()
                   .readValue("{\"error\":\"Unauthorized\"}", OllamaErrorResponseModel.class);
           responseBuffer.append(ollamaResponseModel.getError());
+        } else if (statusCode == 400) {
+          LOG.warn("Status code: 400 (Bad Request)");
+          OllamaErrorResponseModel ollamaResponseModel = Utils.getObjectMapper().readValue(line,
+              OllamaErrorResponseModel.class);
+          responseBuffer.append(ollamaResponseModel.getError());
         } else {
           boolean finished = parseResponseAndAddToBuffer(line,responseBuffer);
             if (finished) {
