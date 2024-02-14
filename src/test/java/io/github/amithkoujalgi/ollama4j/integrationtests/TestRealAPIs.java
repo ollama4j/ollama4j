@@ -23,8 +23,13 @@ import lombok.Data;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 class TestRealAPIs {
+
+  private static final Logger LOG = LoggerFactory.getLogger(TestRealAPIs.class);
+
   OllamaAPI ollamaAPI;
   Config config;
 
@@ -159,6 +164,31 @@ class TestRealAPIs {
       assertFalse(chatResult.getResponse().isBlank());
       assertTrue(chatResult.getResponse().startsWith("NI"));
       assertEquals(3, chatResult.getChatHistory().size());
+    } catch (IOException | OllamaBaseException | InterruptedException e) {
+      throw new RuntimeException(e);
+    }
+  }
+
+  @Test
+  @Order(3)
+  void testChatWithStream() {
+    testEndpointReachability();
+    try {
+      OllamaChatRequestBuilder builder = OllamaChatRequestBuilder.getInstance(config.getModel());
+      OllamaChatRequestModel requestModel = builder.withMessage(OllamaChatMessageRole.USER,
+              "What is the capital of France? And what's France's connection with Mona Lisa?")
+          .build();
+
+      StringBuffer sb = new StringBuffer("");
+
+      OllamaChatResult chatResult = ollamaAPI.chat(requestModel,(s) -> {
+        LOG.info(s);
+        String substring = s.substring(sb.toString().length(), s.length()-1);
+        LOG.info(substring);
+        sb.append(substring);
+      });
+      assertNotNull(chatResult);
+      assertEquals(sb.toString().trim(), chatResult.getResponse().trim());
     } catch (IOException | OllamaBaseException | InterruptedException e) {
       throw new RuntimeException(e);
     }

@@ -448,12 +448,31 @@ public class OllamaAPI {
   * @throws InterruptedException in case the server is not reachable or network issues happen
    */
   public OllamaChatResult chat(OllamaChatRequestModel request)  throws OllamaBaseException, IOException, InterruptedException{
+    return chat(request);
+  }
+
+  /**
+   * Ask a question to a model using an {@link OllamaChatRequestModel}. This can be constructed using an {@link OllamaChatRequestBuilder}. 
+   * 
+   * Hint: the OllamaChatRequestModel#getStream() property is not implemented.
+   * 
+   * @param request request object to be sent to the server
+   * @param streamHandler callback handler to handle the last message from stream (caution: all previous messages from stream will be concatenated)
+   * @return 
+  * @throws OllamaBaseException any response code than 200 has been returned
+  * @throws IOException in case the responseStream can not be read
+  * @throws InterruptedException in case the server is not reachable or network issues happen
+   */
+  public OllamaChatResult chat(OllamaChatRequestModel request, OllamaStreamHandler streamHandler)  throws OllamaBaseException, IOException, InterruptedException{
     OllamaChatEndpointCaller requestCaller = new OllamaChatEndpointCaller(host, basicAuth, requestTimeoutSeconds, verbose);
-    //TODO: implement async way
-    if(request.isStream()){
-      throw new UnsupportedOperationException("Streamed chat responses are not implemented yet");
+    OllamaResult result;
+    if(streamHandler != null){
+      request.setStream(true);
+      result = requestCaller.call(request, streamHandler);
     }
-    OllamaResult result = requestCaller.generateSync(request);
+    else {
+     result = requestCaller.callSync(request);
+    }
     return new OllamaChatResult(result.getResponse(), result.getResponseTime(), result.getHttpStatusCode(), request.getMessages());
   }
 
@@ -470,7 +489,7 @@ public class OllamaAPI {
   private OllamaResult generateSyncForOllamaRequestModel(OllamaRequestModel ollamaRequestModel)
       throws OllamaBaseException, IOException, InterruptedException {
         OllamaGenerateEndpointCaller requestCaller = new OllamaGenerateEndpointCaller(host, basicAuth, requestTimeoutSeconds, verbose);
-        return requestCaller.generateSync(ollamaRequestModel);
+        return requestCaller.callSync(ollamaRequestModel);
   }
 
   /**
