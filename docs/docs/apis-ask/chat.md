@@ -69,6 +69,41 @@ You will get a response similar to:
   } ]
 ```
 
+## Create a conversation where the answer is streamed
+
+```java
+public class Main {
+
+    public static void main(String[] args) {
+
+        String host = "http://localhost:11434/";
+
+        OllamaAPI ollamaAPI = new OllamaAPI(host);
+        OllamaChatRequestBuilder builder = OllamaChatRequestBuilder.getInstance(config.getModel());
+        OllamaChatRequestModel requestModel = builder.withMessage(OllamaChatMessageRole.USER,
+                "What is the capital of France? And what's France's connection with Mona Lisa?")
+            .build();
+
+        // define a handler (Consumer<String>)
+        OllamaStreamHandler streamHandler = (s) -> {
+           System.out.println(s);
+        };
+
+        OllamaChatResult chatResult = ollamaAPI.chat(requestModel,streamHandler);
+    }
+}
+```
+You will get a response similar to:
+
+> The
+> The capital
+> The capital of
+> The capital of France
+> The capital of France is 
+> The capital of France is Paris
+> The capital of France is Paris.
+
+
 ## Create a new conversation with individual system prompt
 ```java
 public class Main {
