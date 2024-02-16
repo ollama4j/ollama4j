@@ -1,8 +1,6 @@
 package io.github.amithkoujalgi.ollama4j.core.utils;
 
-import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.io.ObjectOutputStream;
 import java.util.Base64;
 import java.util.Collection;
 
@@ -19,12 +17,5 @@ public class FileToBase64Serializer extends JsonSerializer<Collection<byte[]>> {
             jsonGenerator.writeString(Base64.getEncoder().encodeToString(file));
         }
         jsonGenerator.writeEndArray();
-    }
-
-    public static byte[] serialize(Object obj) throws IOException {
-        ByteArrayOutputStream out = new ByteArrayOutputStream();
-        ObjectOutputStream os = new ObjectOutputStream(out);
-        os.writeObject(obj);
-        return out.toByteArray();
     }
 }
