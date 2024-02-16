@@ -449,7 +449,7 @@ public class OllamaAPI {
   * @throws InterruptedException in case the server is not reachable or network issues happen
    */
   public OllamaChatResult chat(OllamaChatRequestModel request)  throws OllamaBaseException, IOException, InterruptedException{
-    return chat(request);
+    return chat(request,null);
   }
 
   /**
