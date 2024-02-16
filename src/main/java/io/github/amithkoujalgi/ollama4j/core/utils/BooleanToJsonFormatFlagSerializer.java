@@ -10,9 +10,12 @@ public class BooleanToJsonFormatFlagSerializer extends JsonSerializer<Boolean>{
 
     @Override
     public void serialize(Boolean value, JsonGenerator gen, SerializerProvider serializers) throws IOException {
-        if(value){
             gen.writeString("json");
-        }
+    }
+
+    @Override
+    public boolean isEmpty(Boolean value){
+        return !value;
     }
 
 }
