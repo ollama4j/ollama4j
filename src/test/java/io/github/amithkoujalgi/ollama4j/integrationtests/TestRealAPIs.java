@@ -111,6 +111,32 @@ class TestRealAPIs {
 
   @Test
   @Order(3)
+  void testAskModelWithDefaultOptionsStreamed() {
+    testEndpointReachability();
+    try {
+
+      StringBuffer sb = new StringBuffer("");
+
+      OllamaResult result = ollamaAPI.generate(config.getModel(),
+          "What is the capital of France? And what's France's connection with Mona Lisa?",
+          new OptionsBuilder().build(), (s) -> {
+            LOG.info(s);
+            String substring = s.substring(sb.toString().length(), s.length());
+            LOG.info(substring);
+            sb.append(substring);
+          });
+
+      assertNotNull(result);
+      assertNotNull(result.getResponse());
+      assertFalse(result.getResponse().isEmpty());
+      assertEquals(sb.toString().trim(), result.getResponse().trim());
+    } catch (IOException | OllamaBaseException | InterruptedException e) {
+      throw new RuntimeException(e);
+    }
+  }
+
+  @Test
+  @Order(3)
   void testAskModelWithOptions() {
     testEndpointReachability();
     try {
@@ -257,6 +283,30 @@ class TestRealAPIs {
       assertNotNull(result);
       assertNotNull(result.getResponse());
       assertFalse(result.getResponse().isEmpty());
+    } catch (IOException | OllamaBaseException | InterruptedException e) {
+      throw new RuntimeException(e);
+    }
+  }
+
+  @Test
+  @Order(3)
+  void testAskModelWithOptionsAndImageFilesStreamed() {
+    testEndpointReachability();
+    File imageFile = getImageFileFromClasspath("dog-on-a-boat.jpg");
+    try {
+      StringBuffer sb = new StringBuffer("");
+
+      OllamaResult result = ollamaAPI.generateWithImageFiles(config.getImageModel(),
+          "What is in this image?", List.of(imageFile), new OptionsBuilder().build(), (s) -> {
+            LOG.info(s);
+            String substring = s.substring(sb.toString().length(), s.length());
+            LOG.info(substring);
+            sb.append(substring);
+          });
+      assertNotNull(result);
+      assertNotNull(result.getResponse());
+      assertFalse(result.getResponse().isEmpty());
+      assertEquals(sb.toString().trim(), result.getResponse().trim());
     } catch (IOException | OllamaBaseException | InterruptedException e) {
       throw new RuntimeException(e);
     }
