@@ -14,7 +14,7 @@ public class BooleanToJsonFormatFlagSerializer extends JsonSerializer<Boolean>{
     }
 
     @Override
-    public boolean isEmpty(Boolean value){
+    public boolean isEmpty(SerializerProvider provider,Boolean value){
         return !value;
     }
 
