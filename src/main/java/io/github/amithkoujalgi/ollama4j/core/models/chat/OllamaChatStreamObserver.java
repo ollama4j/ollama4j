@@ -2,10 +2,8 @@ package io.github.amithkoujalgi.ollama4j.core.models.chat;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import io.github.amithkoujalgi.ollama4j.core.OllamaStreamHandler;
-import lombok.NonNull;
 
 public class OllamaChatStreamObserver {
 
@@ -13,7 +11,7 @@ public class OllamaChatStreamObserver {
 
     private List<OllamaChatResponseModel> responseParts = new ArrayList<>();
 
-    private String message;
+    private String message = "";
 
     public OllamaChatStreamObserver(OllamaStreamHandler streamHandler) {
         this.streamHandler = streamHandler;
@@ -25,8 +23,7 @@ public class OllamaChatStreamObserver {
     }
     
     protected void handleCurrentResponsePart(OllamaChatResponseModel currentResponsePart){
-        List<@NonNull String> allResponsePartsByNow = responseParts.stream().map(r -> r.getMessage().getContent()).collect(Collectors.toList());
-        message = String.join("", allResponsePartsByNow);
+        message = message + currentResponsePart.getMessage().getContent();
         streamHandler.accept(message);
     }
 

@@ -183,7 +183,7 @@ class TestRealAPIs {
 
       OllamaChatResult chatResult = ollamaAPI.chat(requestModel,(s) -> {
         LOG.info(s);
-        String substring = s.substring(sb.toString().length(), s.length()-1);
+        String substring = s.substring(sb.toString().length(), s.length());
         LOG.info(substring);
         sb.append(substring);
       });
