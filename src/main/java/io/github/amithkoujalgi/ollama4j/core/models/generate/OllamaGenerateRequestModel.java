@@ -1,30 +1,37 @@
-package io.github.amithkoujalgi.ollama4j.core.models;
+package io.github.amithkoujalgi.ollama4j.core.models.generate;
 
 import static io.github.amithkoujalgi.ollama4j.core.utils.Utils.getObjectMapper;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 
+import io.github.amithkoujalgi.ollama4j.core.models.OllamaCommonRequestModel;
 import io.github.amithkoujalgi.ollama4j.core.utils.OllamaRequestBody;
 
 import java.util.List;
-import java.util.Map;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.NonNull;
 
 @Data
-public class OllamaRequestModel implements OllamaRequestBody{
+@EqualsAndHashCode(callSuper = true)
+public class OllamaGenerateRequestModel extends OllamaCommonRequestModel implements OllamaRequestBody{
 
-  private String model;
+  @NonNull
   private String prompt;
   private List<String> images;
-  private Map<String, Object> options;
 
-  public OllamaRequestModel(String model, String prompt) {
-    this.model = model;
+  private String system;
+  private String context;
+  private boolean raw;
+
+
+  public OllamaGenerateRequestModel(String model, String prompt) {
+    super(model);
     this.prompt = prompt;
   }
 
-  public OllamaRequestModel(String model, String prompt, List<String> images) {
-    this.model = model;
+  public OllamaGenerateRequestModel(String model, String prompt, List<String> images) {
+    super(model);
     this.prompt = prompt;
     this.images = images;
   }

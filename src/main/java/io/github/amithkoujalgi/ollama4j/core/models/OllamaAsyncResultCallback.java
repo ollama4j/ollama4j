@@ -1,6 +1,8 @@
 package io.github.amithkoujalgi.ollama4j.core.models;
 
 import io.github.amithkoujalgi.ollama4j.core.exceptions.OllamaBaseException;
+import io.github.amithkoujalgi.ollama4j.core.models.generate.OllamaGenerateRequestModel;
+import io.github.amithkoujalgi.ollama4j.core.models.generate.OllamaGenerateResponseModel;
 import io.github.amithkoujalgi.ollama4j.core.utils.Utils;
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -22,7 +24,7 @@ import lombok.Getter;
 @SuppressWarnings("unused")
 public class OllamaAsyncResultCallback extends Thread {
   private final HttpRequest.Builder requestBuilder;
-  private final OllamaRequestModel ollamaRequestModel;
+  private final OllamaGenerateRequestModel ollamaRequestModel;
   private final Queue<String> queue = new LinkedList<>();
   private String result;
   private boolean isDone;
@@ -47,7 +49,7 @@ public class OllamaAsyncResultCallback extends Thread {
 
   public OllamaAsyncResultCallback(
       HttpRequest.Builder requestBuilder,
-      OllamaRequestModel ollamaRequestModel,
+      OllamaGenerateRequestModel ollamaRequestModel,
       long requestTimeoutSeconds) {
     this.requestBuilder = requestBuilder;
     this.ollamaRequestModel = ollamaRequestModel;
@@ -87,8 +89,8 @@ public class OllamaAsyncResultCallback extends Thread {
             queue.add(ollamaResponseModel.getError());
             responseBuffer.append(ollamaResponseModel.getError());
           } else {
-            OllamaResponseModel ollamaResponseModel =
-                Utils.getObjectMapper().readValue(line, OllamaResponseModel.class);
+            OllamaGenerateResponseModel ollamaResponseModel =
+                Utils.getObjectMapper().readValue(line, OllamaGenerateResponseModel.class);
             queue.add(ollamaResponseModel.getResponse());
             if (!ollamaResponseModel.isDone()) {
               responseBuffer.append(ollamaResponseModel.getResponse());

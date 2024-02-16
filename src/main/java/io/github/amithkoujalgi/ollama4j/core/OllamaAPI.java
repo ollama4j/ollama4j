@@ -6,6 +6,7 @@ import io.github.amithkoujalgi.ollama4j.core.models.chat.OllamaChatMessage;
 import io.github.amithkoujalgi.ollama4j.core.models.chat.OllamaChatRequestBuilder;
 import io.github.amithkoujalgi.ollama4j.core.models.chat.OllamaChatRequestModel;
 import io.github.amithkoujalgi.ollama4j.core.models.chat.OllamaChatResult;
+import io.github.amithkoujalgi.ollama4j.core.models.generate.OllamaGenerateRequestModel;
 import io.github.amithkoujalgi.ollama4j.core.models.request.CustomModelFileContentsRequest;
 import io.github.amithkoujalgi.ollama4j.core.models.request.CustomModelFilePathRequest;
 import io.github.amithkoujalgi.ollama4j.core.models.request.ModelEmbeddingsRequest;
@@ -345,7 +346,7 @@ public class OllamaAPI {
    */
   public OllamaResult generate(String model, String prompt, Options options)
       throws OllamaBaseException, IOException, InterruptedException {
-    OllamaRequestModel ollamaRequestModel = new OllamaRequestModel(model, prompt);
+    OllamaGenerateRequestModel ollamaRequestModel = new OllamaGenerateRequestModel(model, prompt);
     ollamaRequestModel.setOptions(options.getOptionsMap());
     return generateSyncForOllamaRequestModel(ollamaRequestModel);
   }
@@ -360,7 +361,7 @@ public class OllamaAPI {
    * @return the ollama async result callback handle
    */
   public OllamaAsyncResultCallback generateAsync(String model, String prompt) {
-    OllamaRequestModel ollamaRequestModel = new OllamaRequestModel(model, prompt);
+    OllamaGenerateRequestModel ollamaRequestModel = new OllamaGenerateRequestModel(model, prompt);
 
     URI uri = URI.create(this.host + "/api/generate");
     OllamaAsyncResultCallback ollamaAsyncResultCallback =
@@ -389,7 +390,7 @@ public class OllamaAPI {
     for (File imageFile : imageFiles) {
       images.add(encodeFileToBase64(imageFile));
     }
-    OllamaRequestModel ollamaRequestModel = new OllamaRequestModel(model, prompt, images);
+    OllamaGenerateRequestModel ollamaRequestModel = new OllamaGenerateRequestModel(model, prompt, images);
     ollamaRequestModel.setOptions(options.getOptionsMap());
     return generateSyncForOllamaRequestModel(ollamaRequestModel);
   }
@@ -413,7 +414,7 @@ public class OllamaAPI {
     for (String imageURL : imageURLs) {
       images.add(encodeByteArrayToBase64(Utils.loadImageBytesFromUrl(imageURL)));
     }
-    OllamaRequestModel ollamaRequestModel = new OllamaRequestModel(model, prompt, images);
+    OllamaGenerateRequestModel ollamaRequestModel = new OllamaGenerateRequestModel(model, prompt, images);
     ollamaRequestModel.setOptions(options.getOptionsMap());
     return generateSyncForOllamaRequestModel(ollamaRequestModel);
   }
@@ -486,7 +487,7 @@ public class OllamaAPI {
     return Base64.getEncoder().encodeToString(bytes);
   }
 
-  private OllamaResult generateSyncForOllamaRequestModel(OllamaRequestModel ollamaRequestModel)
+  private OllamaResult generateSyncForOllamaRequestModel(OllamaGenerateRequestModel ollamaRequestModel)
       throws OllamaBaseException, IOException, InterruptedException {
         OllamaGenerateEndpointCaller requestCaller = new OllamaGenerateEndpointCaller(host, basicAuth, requestTimeoutSeconds, verbose);
         return requestCaller.callSync(ollamaRequestModel);

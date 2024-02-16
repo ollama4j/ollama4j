@@ -83,12 +83,12 @@ public class OllamaChatRequestBuilder {
     }
 
     public OllamaChatRequestBuilder withOptions(Options options){
-        this.request.setOptions(options);
+        this.request.setOptions(options.getOptionsMap());
         return this;
     }
 
-    public OllamaChatRequestBuilder withFormat(String format){
-        this.request.setFormat(format);
+    public OllamaChatRequestBuilder withGetJsonResponse(){
+        this.request.setReturnFormatJson(true);
         return this;
     }
 

@@ -6,7 +6,7 @@ import org.slf4j.LoggerFactory;
 import com.fasterxml.jackson.core.JsonProcessingException;
 
 import io.github.amithkoujalgi.ollama4j.core.models.BasicAuth;
-import io.github.amithkoujalgi.ollama4j.core.models.OllamaResponseModel;
+import io.github.amithkoujalgi.ollama4j.core.models.generate.OllamaGenerateResponseModel;
 import io.github.amithkoujalgi.ollama4j.core.utils.Utils;
 
 public class OllamaGenerateEndpointCaller extends OllamaEndpointCaller{
@@ -25,7 +25,7 @@ public class OllamaGenerateEndpointCaller extends OllamaEndpointCaller{
     @Override
     protected boolean parseResponseAndAddToBuffer(String line, StringBuilder responseBuffer) {
                 try {
-                    OllamaResponseModel ollamaResponseModel = Utils.getObjectMapper().readValue(line, OllamaResponseModel.class);
+                    OllamaGenerateResponseModel ollamaResponseModel = Utils.getObjectMapper().readValue(line, OllamaGenerateResponseModel.class);
                     responseBuffer.append(ollamaResponseModel.getResponse());
                     return ollamaResponseModel.isDone();
                 } catch (JsonProcessingException e) {
