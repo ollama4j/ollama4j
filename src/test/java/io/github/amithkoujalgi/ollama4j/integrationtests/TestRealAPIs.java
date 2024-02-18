@@ -4,6 +4,7 @@ import static org.junit.jupiter.api.Assertions.*;
 
 import io.github.amithkoujalgi.ollama4j.core.OllamaAPI;
 import io.github.amithkoujalgi.ollama4j.core.exceptions.OllamaBaseException;
+import io.github.amithkoujalgi.ollama4j.core.models.ModelDetail;
 import io.github.amithkoujalgi.ollama4j.core.models.OllamaResult;
 import io.github.amithkoujalgi.ollama4j.core.models.chat.OllamaChatMessageRole;
 import io.github.amithkoujalgi.ollama4j.core.models.chat.OllamaChatRequestBuilder;
@@ -86,6 +87,19 @@ class TestRealAPIs {
           ollamaAPI.listModels().stream()
               .anyMatch(model -> model.getModel().equalsIgnoreCase(config.getModel()));
       assertTrue(found);
+    } catch (IOException | OllamaBaseException | InterruptedException | URISyntaxException e) {
+      throw new RuntimeException(e);
+    }
+  }
+
+  @Test
+  @Order(3)
+  void testListDtails() {
+    testEndpointReachability();
+    try {
+      ModelDetail modelDetails = ollamaAPI.getModelDetails(config.getModel());
+      assertNotNull(modelDetails);
+      System.out.println(modelDetails);
     } catch (IOException | OllamaBaseException | InterruptedException | URISyntaxException e) {
       throw new RuntimeException(e);
     }
