@@ -41,6 +41,41 @@ You will get a response similar to:
 > require
 > natural language understanding and generation capabilities.
 
+## Try asking a question, receiving the answer streamed
+
+```java
+public class Main {
+
+    public static void main(String[] args) {
+
+        String host = "http://localhost:11434/";
+
+        OllamaAPI ollamaAPI = new OllamaAPI(host);
+        // define a stream handler (Consumer<String>)
+        OllamaStreamHandler streamHandler = (s) -> {
+           System.out.println(s);
+        };
+
+        // Should be called using seperate thread to gain non blocking streaming effect.
+        OllamaResult result = ollamaAPI.generate(config.getModel(),
+          "What is the capital of France? And what's France's connection with Mona Lisa?",
+          new OptionsBuilder().build(), streamHandler);
+        
+        System.out.println("Full response: " +result.getResponse());
+    }
+}
+```
+You will get a response similar to:
+
+> The
+> The capital
+> The capital of
+> The capital of France
+> The capital of France is 
+> The capital of France is Paris
+> The capital of France is Paris.
+> Full response: The capital of France is Paris.
+
 ## Try asking a question from general topics.
 
 ```java
