@@ -1,47 +1,39 @@
 package io.github.amithkoujalgi.ollama4j.core.models.chat;
 
 import java.util.List;
-
-import com.fasterxml.jackson.core.JsonProcessingException;
-
+import io.github.amithkoujalgi.ollama4j.core.models.OllamaCommonRequestModel;
 import io.github.amithkoujalgi.ollama4j.core.utils.OllamaRequestBody;
-import io.github.amithkoujalgi.ollama4j.core.utils.Options;
 
-import static io.github.amithkoujalgi.ollama4j.core.utils.Utils.getObjectMapper;
-
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NonNull;
-import lombok.RequiredArgsConstructor;
+import lombok.Getter;
+import lombok.Setter;
 
 /**
  * Defines a Request to use against the ollama /api/chat endpoint.
  *
- * @see <a
- *     href="https://github.com/ollama/ollama/blob/main/docs/api.md#generate-a-chat-completion">Generate
- *     Chat Completion</a>
+ * @see <a href=
+ *      "https://github.com/ollama/ollama/blob/main/docs/api.md#generate-a-chat-completion">Generate
+ *      Chat Completion</a>
  */
-@Data
-@AllArgsConstructor
-@RequiredArgsConstructor
-public class OllamaChatRequestModel implements OllamaRequestBody {
+@Getter
+@Setter
+public class OllamaChatRequestModel extends OllamaCommonRequestModel implements OllamaRequestBody {
 
-  @NonNull private String model;
+  private List<OllamaChatMessage> messages;
 
-  @NonNull private List<OllamaChatMessage> messages;
+  public OllamaChatRequestModel() {}
 
-  private String format;
-  private Options options;
-  private String template;
-  private boolean stream;
-  private String keepAlive;
+  public OllamaChatRequestModel(String model, List<OllamaChatMessage> messages) {
+    this.model = model;
+    this.messages = messages;
+  }
 
   @Override
-  public String toString() {
-    try {
-      return getObjectMapper().writerWithDefaultPrettyPrinter().writeValueAsString(this);
-    } catch (JsonProcessingException e) {
-      throw new RuntimeException(e);
+  public boolean equals(Object o) {
+    if (!(o instanceof OllamaChatRequestModel)) {
+      return false;
     }
+
+    return this.toString().equals(o.toString());
   }
+
 }
