@@ -342,13 +342,24 @@ public class OllamaAPI {
    * @param options the Options object - <a
    *     href="https://github.com/jmorganca/ollama/blob/main/docs/modelfile.md#valid-parameters-and-values">More
    *     details on the options</a>
+   * @param streamHandler optional callback consumer that will be applied every time a streamed response is received. If not set, the stream parameter of the request is set to false.
    * @return OllamaResult that includes response text and time taken for response
    */
-  public OllamaResult generate(String model, String prompt, Options options)
+  public OllamaResult generate(String model, String prompt, Options options, OllamaStreamHandler streamHandler)
       throws OllamaBaseException, IOException, InterruptedException {
     OllamaGenerateRequestModel ollamaRequestModel = new OllamaGenerateRequestModel(model, prompt);
     ollamaRequestModel.setOptions(options.getOptionsMap());
-    return generateSyncForOllamaRequestModel(ollamaRequestModel);
+    return generateSyncForOllamaRequestModel(ollamaRequestModel,streamHandler);
+  }
+
+  /**
+   * Convenience method to call Ollama API without streaming responses.
+   * 
+   * Uses {@link #generate(String, String, Options, OllamaStreamHandler)}
+   */
+  public OllamaResult generate(String model, String prompt, Options options)
+  throws OllamaBaseException, IOException, InterruptedException {
+    return generate(model, prompt, options,null);
   }
 
   /**
@@ -381,10 +392,11 @@ public class OllamaAPI {
    * @param options the Options object - <a
    *     href="https://github.com/jmorganca/ollama/blob/main/docs/modelfile.md#valid-parameters-and-values">More
    *     details on the options</a>
+   * @param streamHandler optional callback consumer that will be applied every time a streamed response is received. If not set, the stream parameter of the request is set to false.
    * @return OllamaResult that includes response text and time taken for response
    */
   public OllamaResult generateWithImageFiles(
-      String model, String prompt, List<File> imageFiles, Options options)
+      String model, String prompt, List<File> imageFiles, Options options, OllamaStreamHandler streamHandler)
       throws OllamaBaseException, IOException, InterruptedException {
     List<String> images = new ArrayList<>();
     for (File imageFile : imageFiles) {
@@ -392,8 +404,19 @@ public class OllamaAPI {
     }
     OllamaGenerateRequestModel ollamaRequestModel = new OllamaGenerateRequestModel(model, prompt, images);
     ollamaRequestModel.setOptions(options.getOptionsMap());
-    return generateSyncForOllamaRequestModel(ollamaRequestModel);
+    return generateSyncForOllamaRequestModel(ollamaRequestModel,streamHandler);
   }
+
+   /**
+   * Convenience method to call Ollama API without streaming responses.
+   * 
+   * Uses {@link #generateWithImageFiles(String, String, List, Options, OllamaStreamHandler)}
+   */
+  public OllamaResult generateWithImageFiles(
+    String model, String prompt, List<File> imageFiles, Options options)
+    throws OllamaBaseException, IOException, InterruptedException{
+      return generateWithImageFiles(model, prompt, imageFiles, options, null);
+}
 
   /**
    * With one or more image URLs, ask a question to a model running on Ollama server. This is a
@@ -405,10 +428,11 @@ public class OllamaAPI {
    * @param options the Options object - <a
    *     href="https://github.com/jmorganca/ollama/blob/main/docs/modelfile.md#valid-parameters-and-values">More
    *     details on the options</a>
+   * @param streamHandler optional callback consumer that will be applied every time a streamed response is received. If not set, the stream parameter of the request is set to false.
    * @return OllamaResult that includes response text and time taken for response
    */
   public OllamaResult generateWithImageURLs(
-      String model, String prompt, List<String> imageURLs, Options options)
+      String model, String prompt, List<String> imageURLs, Options options, OllamaStreamHandler streamHandler)
       throws OllamaBaseException, IOException, InterruptedException, URISyntaxException {
     List<String> images = new ArrayList<>();
     for (String imageURL : imageURLs) {
@@ -416,7 +440,18 @@ public class OllamaAPI {
     }
     OllamaGenerateRequestModel ollamaRequestModel = new OllamaGenerateRequestModel(model, prompt, images);
     ollamaRequestModel.setOptions(options.getOptionsMap());
-    return generateSyncForOllamaRequestModel(ollamaRequestModel);
+    return generateSyncForOllamaRequestModel(ollamaRequestModel,streamHandler);
+  }
+
+  /**
+   * Convenience method to call Ollama API without streaming responses.
+   * 
+   * Uses {@link #generateWithImageURLs(String, String, List, Options, OllamaStreamHandler)}
+   */
+  public OllamaResult generateWithImageURLs(String model, String prompt, List<String> imageURLs,
+      Options options)
+      throws OllamaBaseException, IOException, InterruptedException, URISyntaxException {
+    return generateWithImageURLs(model, prompt, imageURLs, options, null);
   }
 
 
@@ -487,10 +522,19 @@ public class OllamaAPI {
     return Base64.getEncoder().encodeToString(bytes);
   }
 
-  private OllamaResult generateSyncForOllamaRequestModel(OllamaGenerateRequestModel ollamaRequestModel)
+  private OllamaResult generateSyncForOllamaRequestModel(
+      OllamaGenerateRequestModel ollamaRequestModel, OllamaStreamHandler streamHandler)
       throws OllamaBaseException, IOException, InterruptedException {
-        OllamaGenerateEndpointCaller requestCaller = new OllamaGenerateEndpointCaller(host, basicAuth, requestTimeoutSeconds, verbose);
-        return requestCaller.callSync(ollamaRequestModel);
+    OllamaGenerateEndpointCaller requestCaller =
+        new OllamaGenerateEndpointCaller(host, basicAuth, requestTimeoutSeconds, verbose);
+    OllamaResult result;
+    if (streamHandler != null) {
+      ollamaRequestModel.setStream(true);
+      result = requestCaller.call(ollamaRequestModel, streamHandler);
+    } else {
+      result = requestCaller.callSync(ollamaRequestModel);
+    }
+    return result;
   }
 
   /**
