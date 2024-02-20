@@ -1,6 +1,6 @@
 {
-  "label": "APIs - Ask",
-  "position": 10,
+  "label": "APIs - Generate",
+  "position": 3,
   "link": {
     "type": "generated-index",
     "description": "Details of APIs to interact with LLMs."
