@@ -11,7 +11,7 @@ the [completion](https://github.com/jmorganca/ollama/blob/main/docs/api.md#gener
 Use the `OptionBuilder` to build the `Options` object
 with [extra parameters](https://github.com/jmorganca/ollama/blob/main/docs/modelfile.md#valid-parameters-and-values).
 Refer
-to [this](/docs/apis-extras/options-builder).
+to [this](/apis-extras/options-builder).
 
 ## Try asking a question about the model.
 
@@ -53,25 +53,26 @@ public class Main {
         OllamaAPI ollamaAPI = new OllamaAPI(host);
         // define a stream handler (Consumer<String>)
         OllamaStreamHandler streamHandler = (s) -> {
-           System.out.println(s);
+            System.out.println(s);
         };
 
         // Should be called using seperate thread to gain non blocking streaming effect.
         OllamaResult result = ollamaAPI.generate(config.getModel(),
-          "What is the capital of France? And what's France's connection with Mona Lisa?",
-          new OptionsBuilder().build(), streamHandler);
-        
-        System.out.println("Full response: " +result.getResponse());
+                "What is the capital of France? And what's France's connection with Mona Lisa?",
+                new OptionsBuilder().build(), streamHandler);
+
+        System.out.println("Full response: " + result.getResponse());
     }
 }
 ```
+
 You will get a response similar to:
 
 > The
 > The capital
 > The capital of
 > The capital of France
-> The capital of France is 
+> The capital of France is
 > The capital of France is Paris
 > The capital of France is Paris.
 > Full response: The capital of France is Paris.
