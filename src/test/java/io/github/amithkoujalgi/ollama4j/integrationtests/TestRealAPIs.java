@@ -10,6 +10,8 @@ import io.github.amithkoujalgi.ollama4j.core.models.chat.OllamaChatMessageRole;
 import io.github.amithkoujalgi.ollama4j.core.models.chat.OllamaChatRequestBuilder;
 import io.github.amithkoujalgi.ollama4j.core.models.chat.OllamaChatRequestModel;
 import io.github.amithkoujalgi.ollama4j.core.models.chat.OllamaChatResult;
+import io.github.amithkoujalgi.ollama4j.core.models.embeddings.OllamaEmbeddingsRequestModel;
+import io.github.amithkoujalgi.ollama4j.core.models.embeddings.OllamaEmbeddingsRequestBuilder;
 import io.github.amithkoujalgi.ollama4j.core.utils.OptionsBuilder;
 import java.io.File;
 import java.io.IOException;
@@ -61,7 +63,7 @@ class TestRealAPIs {
     } catch (HttpConnectTimeoutException e) {
       fail(e.getMessage());
     } catch (Exception e) {
-      throw new RuntimeException(e);
+      fail(e);
     }
   }
 
@@ -73,7 +75,7 @@ class TestRealAPIs {
       assertNotNull(ollamaAPI.listModels());
       ollamaAPI.listModels().forEach(System.out::println);
     } catch (IOException | OllamaBaseException | InterruptedException | URISyntaxException e) {
-      throw new RuntimeException(e);
+      fail(e);
     }
   }
 
@@ -88,7 +90,7 @@ class TestRealAPIs {
               .anyMatch(model -> model.getModel().equalsIgnoreCase(config.getModel()));
       assertTrue(found);
     } catch (IOException | OllamaBaseException | InterruptedException | URISyntaxException e) {
-      throw new RuntimeException(e);
+      fail(e);
     }
   }
 
@@ -101,7 +103,7 @@ class TestRealAPIs {
       assertNotNull(modelDetails);
       System.out.println(modelDetails);
     } catch (IOException | OllamaBaseException | InterruptedException | URISyntaxException e) {
-      throw new RuntimeException(e);
+      fail(e);
     }
   }
 
@@ -119,7 +121,7 @@ class TestRealAPIs {
       assertNotNull(result.getResponse());
       assertFalse(result.getResponse().isEmpty());
     } catch (IOException | OllamaBaseException | InterruptedException e) {
-      throw new RuntimeException(e);
+      fail(e);
     }
   }
 
@@ -145,7 +147,7 @@ class TestRealAPIs {
       assertFalse(result.getResponse().isEmpty());
       assertEquals(sb.toString().trim(), result.getResponse().trim());
     } catch (IOException | OllamaBaseException | InterruptedException e) {
-      throw new RuntimeException(e);
+      fail(e);
     }
   }
 
@@ -163,7 +165,7 @@ class TestRealAPIs {
       assertNotNull(result.getResponse());
       assertFalse(result.getResponse().isEmpty());
     } catch (IOException | OllamaBaseException | InterruptedException e) {
-      throw new RuntimeException(e);
+      fail(e);
     }
   }
 
@@ -183,7 +185,7 @@ class TestRealAPIs {
       assertFalse(chatResult.getResponse().isBlank());
       assertEquals(4,chatResult.getChatHistory().size());
     } catch (IOException | OllamaBaseException | InterruptedException e) {
-      throw new RuntimeException(e);
+      fail(e);
     }
   }
 
@@ -205,7 +207,7 @@ class TestRealAPIs {
       assertTrue(chatResult.getResponse().startsWith("NI"));
       assertEquals(3, chatResult.getChatHistory().size());
     } catch (IOException | OllamaBaseException | InterruptedException e) {
-      throw new RuntimeException(e);
+      fail(e);
     }
   }
 
@@ -230,7 +232,7 @@ class TestRealAPIs {
       assertNotNull(chatResult);
       assertEquals(sb.toString().trim(), chatResult.getResponse().trim());
     } catch (IOException | OllamaBaseException | InterruptedException e) {
-      throw new RuntimeException(e);
+      fail(e);
     }
   }
 
@@ -261,7 +263,7 @@ class TestRealAPIs {
 
 
     } catch (IOException | OllamaBaseException | InterruptedException e) {
-      throw new RuntimeException(e);
+      fail(e);
     }
   }
 
@@ -278,7 +280,7 @@ class TestRealAPIs {
       OllamaChatResult chatResult = ollamaAPI.chat(requestModel);
       assertNotNull(chatResult);
     } catch (IOException | OllamaBaseException | InterruptedException e) {
-      throw new RuntimeException(e);
+      fail(e);
     }
   }
 
@@ -298,7 +300,7 @@ class TestRealAPIs {
       assertNotNull(result.getResponse());
       assertFalse(result.getResponse().isEmpty());
     } catch (IOException | OllamaBaseException | InterruptedException e) {
-      throw new RuntimeException(e);
+      fail(e);
     }
   }
 
@@ -322,7 +324,7 @@ class TestRealAPIs {
       assertFalse(result.getResponse().isEmpty());
       assertEquals(sb.toString().trim(), result.getResponse().trim());
     } catch (IOException | OllamaBaseException | InterruptedException e) {
-      throw new RuntimeException(e);
+      fail(e);
     }
   }
 
@@ -342,7 +344,24 @@ class TestRealAPIs {
       assertNotNull(result.getResponse());
       assertFalse(result.getResponse().isEmpty());
     } catch (IOException | OllamaBaseException | InterruptedException | URISyntaxException e) {
-      throw new RuntimeException(e);
+      fail(e);
+    }
+  }
+
+  @Test
+  @Order(3)
+  public void testEmbedding() {
+    testEndpointReachability();
+    try {
+      OllamaEmbeddingsRequestModel request = OllamaEmbeddingsRequestBuilder
+          .getInstance(config.getModel(), "What is the capital of France?").build();
+
+      List<Double> embeddings = ollamaAPI.generateEmbeddings(request);
+
+      assertNotNull(embeddings);
+      assertFalse(embeddings.isEmpty());
+    } catch (IOException | OllamaBaseException | InterruptedException e) {
+      fail(e);
     }
   }
 }

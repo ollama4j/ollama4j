@@ -6,10 +6,11 @@ import io.github.amithkoujalgi.ollama4j.core.models.chat.OllamaChatMessage;
 import io.github.amithkoujalgi.ollama4j.core.models.chat.OllamaChatRequestBuilder;
 import io.github.amithkoujalgi.ollama4j.core.models.chat.OllamaChatRequestModel;
 import io.github.amithkoujalgi.ollama4j.core.models.chat.OllamaChatResult;
+import io.github.amithkoujalgi.ollama4j.core.models.embeddings.OllamaEmbeddingResponseModel;
+import io.github.amithkoujalgi.ollama4j.core.models.embeddings.OllamaEmbeddingsRequestModel;
 import io.github.amithkoujalgi.ollama4j.core.models.generate.OllamaGenerateRequestModel;
 import io.github.amithkoujalgi.ollama4j.core.models.request.CustomModelFileContentsRequest;
 import io.github.amithkoujalgi.ollama4j.core.models.request.CustomModelFilePathRequest;
-import io.github.amithkoujalgi.ollama4j.core.models.request.ModelEmbeddingsRequest;
 import io.github.amithkoujalgi.ollama4j.core.models.request.ModelRequest;
 import io.github.amithkoujalgi.ollama4j.core.models.request.OllamaChatEndpointCaller;
 import io.github.amithkoujalgi.ollama4j.core.models.request.OllamaGenerateEndpointCaller;
@@ -313,8 +314,18 @@ public class OllamaAPI {
    */
   public List<Double> generateEmbeddings(String model, String prompt)
       throws IOException, InterruptedException, OllamaBaseException {
+        return generateEmbeddings(new OllamaEmbeddingsRequestModel(model, prompt));
+  }
+
+    /**
+   * Generate embeddings using a {@link OllamaEmbeddingsRequestModel}.
+   *
+   * @param modelRequest request for '/api/embeddings' endpoint
+   * @return embeddings
+   */
+  public List<Double> generateEmbeddings(OllamaEmbeddingsRequestModel modelRequest) throws IOException, InterruptedException, OllamaBaseException{
     URI uri = URI.create(this.host + "/api/embeddings");
-    String jsonData = new ModelEmbeddingsRequest(model, prompt).toString();
+    String jsonData = modelRequest.toString();
     HttpClient httpClient = HttpClient.newHttpClient();
     HttpRequest.Builder requestBuilder =
         getRequestBuilderDefault(uri)
@@ -325,8 +336,8 @@ public class OllamaAPI {
     int statusCode = response.statusCode();
     String responseBody = response.body();
     if (statusCode == 200) {
-      EmbeddingResponse embeddingResponse =
-          Utils.getObjectMapper().readValue(responseBody, EmbeddingResponse.class);
+      OllamaEmbeddingResponseModel embeddingResponse =
+          Utils.getObjectMapper().readValue(responseBody, OllamaEmbeddingResponseModel.class);
       return embeddingResponse.getEmbedding();
     } else {
       throw new OllamaBaseException(statusCode + " - " + responseBody);
