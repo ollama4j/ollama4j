@@ -1,4 +1,4 @@
-package io.github.amithkoujalgi.ollama4j.core.models;
+package io.github.amithkoujalgi.ollama4j.core.models.embeddings;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
@@ -7,7 +7,7 @@ import lombok.Data;
 
 @SuppressWarnings("unused")
 @Data
-public class EmbeddingResponse {
+public class OllamaEmbeddingResponseModel {
     @JsonProperty("embedding")
     private List<Double> embedding;
 }
