@@ -12,23 +12,12 @@ on:
     branches: [ "main" ]
   workflow_dispatch:
 
-
-permissions:
-  contents: read
-  id-token: write
-  packages: write
-
 jobs:
   build:
-
     runs-on: ubuntu-latest
-
     permissions:
       contents: write
       packages: write
-      pull-requests: write
-      repository-projects: write
-
     steps:
       - uses: actions/checkout@v3
       - name: Set up JDK 11
@@ -77,10 +66,3 @@ jobs:
           MAVEN_USERNAME: ${{ secrets.OSSRH_USERNAME }}
           MAVEN_PASSWORD: ${{ secrets.OSSRH_PASSWORD }}
           MAVEN_GPG_PASSPHRASE: ${{ secrets.GPG_PASSPHRASE }}
-
-      - name: Release Assets
-        uses: softprops/action-gh-release@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          files: target/*.jar
