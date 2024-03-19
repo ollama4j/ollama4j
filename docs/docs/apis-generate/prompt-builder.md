@@ -42,7 +42,7 @@ public class AskPhi {
                         .addSeparator()
                         .add("How do I read a file in Go and print its contents to stdout?");
 
-        OllamaResult response = ollamaAPI.generate(model, promptBuilder.build());
+        OllamaResult response = ollamaAPI.generate(model, promptBuilder.build(), new OptionsBuilder().build());
         System.out.println(response.getResponse());
     }
 }
