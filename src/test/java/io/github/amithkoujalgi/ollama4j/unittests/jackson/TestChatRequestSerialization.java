@@ -94,4 +94,11 @@ public class TestChatRequestSerialization extends AbstractRequestSerializationTe
         String jsonRequest = serializeRequest(req);
         assertEqualsAfterUnmarshalling(deserializeRequest(jsonRequest, OllamaChatRequestModel.class), req);
     }
+
+    @Test
+    public void testWithStreaming() {
+        OllamaChatRequestModel req = builder.withStreaming().build();
+        String jsonRequest = serializeRequest(req);
+        assertEquals(deserializeRequest(jsonRequest, OllamaChatRequestModel.class).isStream(), true);
+    }
 }
