@@ -86,4 +86,12 @@ public class TestChatRequestSerialization extends AbstractRequestSerializationTe
         String requestFormatProperty = jsonObject.getString("format");
         assertEquals("json", requestFormatProperty);
     }
+
+    @Test
+    public void testWithTemplate() {
+        OllamaChatRequestModel req = builder.withTemplate("System Template")
+            .build();
+        String jsonRequest = serializeRequest(req);
+        assertEqualsAfterUnmarshalling(deserializeRequest(jsonRequest, OllamaChatRequestModel.class), req);
+    }
 }
