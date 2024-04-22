@@ -51,12 +51,27 @@ public class TestChatRequestSerialization extends AbstractRequestSerializationTe
     public void testRequestWithOptions() {
         OptionsBuilder b = new OptionsBuilder();
         OllamaChatRequestModel req = builder.withMessage(OllamaChatMessageRole.USER, "Some prompt")
-                .withOptions(b.setMirostat(1).build()).build();
+            .withOptions(b.setMirostat(1).build())
+            .withOptions(b.setTemperature(1L).build())
+            .withOptions(b.setMirostatEta(1L).build())
+            .withOptions(b.setMirostatTau(1L).build())
+            .withOptions(b.setNumGpu(1).build())
+            .withOptions(b.setSeed(1).build())
+            .withOptions(b.setTopK(1).build())
+            .withOptions(b.setTopP(1).build())
+            .build();
 
         String jsonRequest = serializeRequest(req);
-        OllamaChatRequestModel deserializeRequest = deserializeRequest(jsonRequest,OllamaChatRequestModel.class);
+        OllamaChatRequestModel deserializeRequest = deserializeRequest(jsonRequest, OllamaChatRequestModel.class);
         assertEqualsAfterUnmarshalling(deserializeRequest, req);
         assertEquals(1, deserializeRequest.getOptions().get("mirostat"));
+        assertEquals(1.0, deserializeRequest.getOptions().get("temperature"));
+        assertEquals(1.0, deserializeRequest.getOptions().get("mirostat_eta"));
+        assertEquals(1.0, deserializeRequest.getOptions().get("mirostat_tau"));
+        assertEquals(1, deserializeRequest.getOptions().get("num_gpu"));
+        assertEquals(1, deserializeRequest.getOptions().get("seed"));
+        assertEquals(1, deserializeRequest.getOptions().get("top_k"));
+        assertEquals(1.0, deserializeRequest.getOptions().get("top_p"));
     }
 
     @Test
@@ -70,5 +85,29 @@ public class TestChatRequestSerialization extends AbstractRequestSerializationTe
         JSONObject jsonObject = new JSONObject(jsonRequest);
         String requestFormatProperty = jsonObject.getString("format");
         assertEquals("json", requestFormatProperty);
+    }
+
+    @Test
+    public void testWithTemplate() {
+        OllamaChatRequestModel req = builder.withTemplate("System Template")
+            .build();
+        String jsonRequest = serializeRequest(req);
+        assertEqualsAfterUnmarshalling(deserializeRequest(jsonRequest, OllamaChatRequestModel.class), req);
+    }
+
+    @Test
+    public void testWithStreaming() {
+        OllamaChatRequestModel req = builder.withStreaming().build();
+        String jsonRequest = serializeRequest(req);
+        assertEquals(deserializeRequest(jsonRequest, OllamaChatRequestModel.class).isStream(), true);
+    }
+
+    @Test
+    public void testWithKeepAlive() {
+        String expectedKeepAlive = "5m";
+        OllamaChatRequestModel req = builder.withKeepAlive(expectedKeepAlive)
+            .build();
+        String jsonRequest = serializeRequest(req);
+        assertEquals(deserializeRequest(jsonRequest, OllamaChatRequestModel.class).getKeepAlive(), expectedKeepAlive);
     }
 }
