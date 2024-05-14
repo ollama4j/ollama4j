@@ -110,6 +110,13 @@ make it
 Releases (newer artifact versions) are done automatically on pushing the code to the `main` branch through GitHub
 Actions CI workflow.
 
+#### Who's using Ollama4j?
+
+- `Datafaker`: a library to generate fake data
+    - https://github.com/datafaker-net/datafaker-experimental/tree/main/ollama-api
+- `Vaadin Web UI`: UI-Tester for Interactions with Ollama via ollama4j
+    - https://github.com/TEAMPB/ollama4j-vaadin-ui
+
 #### Traction
 
 [![Star History Chart](https://api.star-history.com/svg?repos=amithkoujalgi/ollama4j&type=Date)](https://star-history.com/#amithkoujalgi/ollama4j&Date)
