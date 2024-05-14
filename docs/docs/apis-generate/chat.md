@@ -112,7 +112,7 @@ You will get a response similar to:
 
 ## Use a simple Console Output Stream Handler
 
-```
+```java
 import io.github.amithkoujalgi.ollama4j.core.impl.ConsoleOutputStreamHandler;
 
 public class Main {
