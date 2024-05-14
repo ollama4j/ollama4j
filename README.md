@@ -116,6 +116,9 @@ Actions CI workflow.
     - https://github.com/datafaker-net/datafaker-experimental/tree/main/ollama-api
 - `Vaadin Web UI`: UI-Tester for Interactions with Ollama via ollama4j
     - https://github.com/TEAMPB/ollama4j-vaadin-ui
+- `ollama-translator`: Minecraft 1.20.6 spigot plugin allows to easily break language barriers by using ollama on the
+  server to translate all messages into a specfic target language.
+    - https://github.com/liebki/ollama-translator
 
 #### Traction
 
