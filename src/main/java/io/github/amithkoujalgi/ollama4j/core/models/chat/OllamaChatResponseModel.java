@@ -1,14 +1,15 @@
 package io.github.amithkoujalgi.ollama4j.core.models.chat;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import lombok.Data;
 
 import java.util.List;
-import lombok.Data;
 
 @Data
 public class OllamaChatResponseModel {
     private String model;
     private @JsonProperty("created_at") String createdAt;
+    private @JsonProperty("done_reason") String doneReason;
     private OllamaChatMessage message;
     private boolean done;
     private String error;
