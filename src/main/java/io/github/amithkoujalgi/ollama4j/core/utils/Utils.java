@@ -8,10 +8,18 @@ import java.net.URISyntaxException;
 import java.net.URL;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 
 public class Utils {
+
+  private static ObjectMapper objectMapper;
+
   public static ObjectMapper getObjectMapper() {
-    return new ObjectMapper();
+    if(objectMapper == null) {
+      objectMapper = new ObjectMapper();
+      objectMapper.registerModule(new JavaTimeModule());
+    }
+    return objectMapper;
   }
 
   public static byte[] loadImageBytesFromUrl(String imageUrl)
