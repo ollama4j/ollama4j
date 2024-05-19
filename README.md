@@ -87,9 +87,7 @@ dependencies {
 ```groovy
 dependencies {
     implementation("io.github.amithkoujalgi:ollama4j:1.0.70")
-
 }
-
 ```
 
 Latest release:
