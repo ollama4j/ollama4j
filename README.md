@@ -67,8 +67,27 @@ In your Maven project, add this dependency:
 <dependency>
     <groupId>io.github.amithkoujalgi</groupId>
     <artifactId>ollama4j</artifactId>
-    <version>1.0.57</version>
+    <version>1.0.70</version>
 </dependency>
+```
+
+or
+
+In your Gradle project, add the dependency using the Kotlin DSL or the Groovy DSL:
+
+```kotlin
+dependencies {
+
+    val ollama4jVersion = "1.0.70"
+
+    implementation("io.github.amithkoujalgi:ollama4j:$ollama4jVersion")
+}
+ ```
+
+```groovy
+dependencies {
+    implementation("io.github.amithkoujalgi:ollama4j:1.0.70")
+}
 ```
 
 Latest release:
