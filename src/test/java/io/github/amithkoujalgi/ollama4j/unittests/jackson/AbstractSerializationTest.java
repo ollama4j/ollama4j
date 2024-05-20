@@ -6,30 +6,30 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.github.amithkoujalgi.ollama4j.core.utils.Utils;
 
-public abstract class AbstractRequestSerializationTest<T> {
+public abstract class AbstractSerializationTest<T> {
 
     protected ObjectMapper mapper = Utils.getObjectMapper();
 
-    protected String serializeRequest(T req) {
+    protected String serialize(T obj) {
         try {
-            return mapper.writeValueAsString(req);
+            return mapper.writeValueAsString(obj);
         } catch (JsonProcessingException e) {
             fail("Could not serialize request!", e);
             return null;
         }
     }
 
-    protected T deserializeRequest(String jsonRequest, Class<T> requestClass) {
+    protected T deserialize(String jsonObject, Class<T> deserializationClass) {
         try {
-            return mapper.readValue(jsonRequest, requestClass);
+            return mapper.readValue(jsonObject, deserializationClass);
         } catch (JsonProcessingException e) {
-            fail("Could not deserialize jsonRequest!", e);
+            fail("Could not deserialize jsonObject!", e);
             return null;
         }
     }
 
-    protected void assertEqualsAfterUnmarshalling(T unmarshalledRequest,
+    protected void assertEqualsAfterUnmarshalling(T unmarshalledObject,
         T req) {
-        assertEquals(req, unmarshalledRequest);
+        assertEquals(req, unmarshalledObject);
     }
 }

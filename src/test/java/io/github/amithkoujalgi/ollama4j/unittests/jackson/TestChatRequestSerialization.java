@@ -14,7 +14,7 @@ import io.github.amithkoujalgi.ollama4j.core.models.chat.OllamaChatRequestBuilde
 import io.github.amithkoujalgi.ollama4j.core.models.chat.OllamaChatRequestModel;
 import io.github.amithkoujalgi.ollama4j.core.utils.OptionsBuilder;
 
-public class TestChatRequestSerialization extends AbstractRequestSerializationTest<OllamaChatRequestModel>{
+public class TestChatRequestSerialization extends AbstractSerializationTest<OllamaChatRequestModel> {
 
     private OllamaChatRequestBuilder builder;
 
@@ -26,8 +26,8 @@ public class TestChatRequestSerialization extends AbstractRequestSerializationTe
     @Test
     public void testRequestOnlyMandatoryFields() {
         OllamaChatRequestModel req = builder.withMessage(OllamaChatMessageRole.USER, "Some prompt").build();
-        String jsonRequest = serializeRequest(req);
-        assertEqualsAfterUnmarshalling(deserializeRequest(jsonRequest,OllamaChatRequestModel.class), req);
+        String jsonRequest = serialize(req);
+        assertEqualsAfterUnmarshalling(deserialize(jsonRequest,OllamaChatRequestModel.class), req);
     }
 
     @Test
@@ -35,16 +35,16 @@ public class TestChatRequestSerialization extends AbstractRequestSerializationTe
         OllamaChatRequestModel req = builder.withMessage(OllamaChatMessageRole.SYSTEM, "System prompt")
         .withMessage(OllamaChatMessageRole.USER, "Some prompt")
         .build();
-        String jsonRequest = serializeRequest(req);
-        assertEqualsAfterUnmarshalling(deserializeRequest(jsonRequest,OllamaChatRequestModel.class), req);
+        String jsonRequest = serialize(req);
+        assertEqualsAfterUnmarshalling(deserialize(jsonRequest,OllamaChatRequestModel.class), req);
     }
 
     @Test
     public void testRequestWithMessageAndImage() {
         OllamaChatRequestModel req = builder.withMessage(OllamaChatMessageRole.USER, "Some prompt",
                 List.of(new File("src/test/resources/dog-on-a-boat.jpg"))).build();
-        String jsonRequest = serializeRequest(req);
-        assertEqualsAfterUnmarshalling(deserializeRequest(jsonRequest,OllamaChatRequestModel.class), req);
+        String jsonRequest = serialize(req);
+        assertEqualsAfterUnmarshalling(deserialize(jsonRequest,OllamaChatRequestModel.class), req);
     }
 
     @Test
@@ -61,8 +61,8 @@ public class TestChatRequestSerialization extends AbstractRequestSerializationTe
             .withOptions(b.setTopP(1).build())
             .build();
 
-        String jsonRequest = serializeRequest(req);
-        OllamaChatRequestModel deserializeRequest = deserializeRequest(jsonRequest, OllamaChatRequestModel.class);
+        String jsonRequest = serialize(req);
+        OllamaChatRequestModel deserializeRequest = deserialize(jsonRequest, OllamaChatRequestModel.class);
         assertEqualsAfterUnmarshalling(deserializeRequest, req);
         assertEquals(1, deserializeRequest.getOptions().get("mirostat"));
         assertEquals(1.0, deserializeRequest.getOptions().get("temperature"));
@@ -79,7 +79,7 @@ public class TestChatRequestSerialization extends AbstractRequestSerializationTe
         OllamaChatRequestModel req = builder.withMessage(OllamaChatMessageRole.USER, "Some prompt")
                 .withGetJsonResponse().build();
 
-        String jsonRequest = serializeRequest(req);
+        String jsonRequest = serialize(req);
         // no jackson deserialization as format property is not boolean ==> omit as deserialization
         // of request is never used in real code anyways
         JSONObject jsonObject = new JSONObject(jsonRequest);
@@ -91,15 +91,15 @@ public class TestChatRequestSerialization extends AbstractRequestSerializationTe
     public void testWithTemplate() {
         OllamaChatRequestModel req = builder.withTemplate("System Template")
             .build();
-        String jsonRequest = serializeRequest(req);
-        assertEqualsAfterUnmarshalling(deserializeRequest(jsonRequest, OllamaChatRequestModel.class), req);
+        String jsonRequest = serialize(req);
+        assertEqualsAfterUnmarshalling(deserialize(jsonRequest, OllamaChatRequestModel.class), req);
     }
 
     @Test
     public void testWithStreaming() {
         OllamaChatRequestModel req = builder.withStreaming().build();
-        String jsonRequest = serializeRequest(req);
-        assertEquals(deserializeRequest(jsonRequest, OllamaChatRequestModel.class).isStream(), true);
+        String jsonRequest = serialize(req);
+        assertEquals(deserialize(jsonRequest, OllamaChatRequestModel.class).isStream(), true);
     }
 
     @Test
@@ -107,7 +107,7 @@ public class TestChatRequestSerialization extends AbstractRequestSerializationTe
         String expectedKeepAlive = "5m";
         OllamaChatRequestModel req = builder.withKeepAlive(expectedKeepAlive)
             .build();
-        String jsonRequest = serializeRequest(req);
-        assertEquals(deserializeRequest(jsonRequest, OllamaChatRequestModel.class).getKeepAlive(), expectedKeepAlive);
+        String jsonRequest = serialize(req);
+        assertEquals(deserialize(jsonRequest, OllamaChatRequestModel.class).getKeepAlive(), expectedKeepAlive);
     }
 }
