@@ -7,7 +7,7 @@ import io.github.amithkoujalgi.ollama4j.core.models.embeddings.OllamaEmbeddingsR
 import io.github.amithkoujalgi.ollama4j.core.models.embeddings.OllamaEmbeddingsRequestBuilder;
 import io.github.amithkoujalgi.ollama4j.core.utils.OptionsBuilder;
 
-public class TestEmbeddingsRequestSerialization extends AbstractRequestSerializationTest<OllamaEmbeddingsRequestModel>{
+public class TestEmbeddingsRequestSerialization extends AbstractSerializationTest<OllamaEmbeddingsRequestModel> {
 
         private OllamaEmbeddingsRequestBuilder builder;
 
@@ -19,8 +19,8 @@ public class TestEmbeddingsRequestSerialization extends AbstractRequestSerializa
             @Test
     public void testRequestOnlyMandatoryFields() {
         OllamaEmbeddingsRequestModel req = builder.build();
-        String jsonRequest = serializeRequest(req);
-        assertEqualsAfterUnmarshalling(deserializeRequest(jsonRequest,OllamaEmbeddingsRequestModel.class), req);
+        String jsonRequest = serialize(req);
+        assertEqualsAfterUnmarshalling(deserialize(jsonRequest,OllamaEmbeddingsRequestModel.class), req);
     }
 
         @Test
@@ -29,8 +29,8 @@ public class TestEmbeddingsRequestSerialization extends AbstractRequestSerializa
             OllamaEmbeddingsRequestModel req = builder
                     .withOptions(b.setMirostat(1).build()).build();
 
-            String jsonRequest = serializeRequest(req);
-            OllamaEmbeddingsRequestModel deserializeRequest = deserializeRequest(jsonRequest,OllamaEmbeddingsRequestModel.class);
+            String jsonRequest = serialize(req);
+            OllamaEmbeddingsRequestModel deserializeRequest = deserialize(jsonRequest,OllamaEmbeddingsRequestModel.class);
             assertEqualsAfterUnmarshalling(deserializeRequest, req);
             assertEquals(1, deserializeRequest.getOptions().get("mirostat"));
         }

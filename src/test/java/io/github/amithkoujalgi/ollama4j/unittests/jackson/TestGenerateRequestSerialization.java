@@ -11,7 +11,7 @@ import io.github.amithkoujalgi.ollama4j.core.models.generate.OllamaGenerateReque
 import io.github.amithkoujalgi.ollama4j.core.models.generate.OllamaGenerateRequestModel;
 import io.github.amithkoujalgi.ollama4j.core.utils.OptionsBuilder;
 
-public class TestGenerateRequestSerialization extends AbstractRequestSerializationTest<OllamaGenerateRequestModel>{
+public class TestGenerateRequestSerialization extends AbstractSerializationTest<OllamaGenerateRequestModel> {
 
     private OllamaGenerateRequestBuilder builder;
 
@@ -24,8 +24,8 @@ public class TestGenerateRequestSerialization extends AbstractRequestSerializati
     public void testRequestOnlyMandatoryFields() {
         OllamaGenerateRequestModel req = builder.withPrompt("Some prompt").build();
 
-        String jsonRequest = serializeRequest(req);
-        assertEqualsAfterUnmarshalling(deserializeRequest(jsonRequest, OllamaGenerateRequestModel.class), req);
+        String jsonRequest = serialize(req);
+        assertEqualsAfterUnmarshalling(deserialize(jsonRequest, OllamaGenerateRequestModel.class), req);
     }
 
     @Test
@@ -34,8 +34,8 @@ public class TestGenerateRequestSerialization extends AbstractRequestSerializati
         OllamaGenerateRequestModel req =
                 builder.withPrompt("Some prompt").withOptions(b.setMirostat(1).build()).build();
 
-        String jsonRequest = serializeRequest(req);
-        OllamaGenerateRequestModel deserializeRequest = deserializeRequest(jsonRequest, OllamaGenerateRequestModel.class);
+        String jsonRequest = serialize(req);
+        OllamaGenerateRequestModel deserializeRequest = deserialize(jsonRequest, OllamaGenerateRequestModel.class);
         assertEqualsAfterUnmarshalling(deserializeRequest, req);
         assertEquals(1, deserializeRequest.getOptions().get("mirostat"));
     }
@@ -45,7 +45,7 @@ public class TestGenerateRequestSerialization extends AbstractRequestSerializati
         OllamaGenerateRequestModel req =
                 builder.withPrompt("Some prompt").withGetJsonResponse().build();
 
-        String jsonRequest = serializeRequest(req);
+        String jsonRequest = serialize(req);
         // no jackson deserialization as format property is not boolean ==> omit as deserialization
         // of request is never used in real code anyways
         JSONObject jsonObject = new JSONObject(jsonRequest);
