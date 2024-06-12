@@ -79,4 +79,5 @@ public class OllamaModelType {
     public static final String NOTUS = "notus";
     public static final String DUCKDB_NSQL = "duckdb-nsql";
     public static final String ALL_MINILM = "all-minilm";
+    public static final String CODESTRAL = "codestral";
 }
