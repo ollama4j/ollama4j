@@ -196,8 +196,7 @@ make it
 
 #### Releases
 
-Releases (newer artifact versions) are done automatically on pushing the code to the `main` branch through GitHub
-Actions CI workflow.
+Newer artifacts are published via GitHub Actions CI workflow when a new release is created from `main` branch.
 
 #### Who's using Ollama4j?
 
