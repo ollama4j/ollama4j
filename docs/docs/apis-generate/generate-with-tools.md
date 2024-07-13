@@ -1,12 +1,12 @@
 ---
-sidebar_position: 2
+sidebar_position: 3
 ---
 
 # Generate - With Tools
 
 This API lets you perform [function calling](https://docs.mistral.ai/capabilities/function_calling/) using LLMs in a
 synchronous way.
-This API correlates to
+This API corresponds to
 the [generate](https://github.com/ollama/ollama/blob/main/docs/api.md#request-raw-mode) API with `raw` mode.
 
 :::note

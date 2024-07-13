@@ -5,8 +5,8 @@ sidebar_position: 1
 # Generate - Sync
 
 This API lets you ask questions to the LLMs in a synchronous way.
-These APIs correlate to
-the [completion](https://github.com/jmorganca/ollama/blob/main/docs/api.md#generate-a-completion) APIs.
+This API corresponds to
+the [completion](https://github.com/jmorganca/ollama/blob/main/docs/api.md#generate-a-completion) API.
 
 Use the `OptionBuilder` to build the `Options` object
 with [extra parameters](https://github.com/jmorganca/ollama/blob/main/docs/modelfile.md#valid-parameters-and-values).

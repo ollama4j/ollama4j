@@ -3,7 +3,7 @@ package io.github.amithkoujalgi.ollama4j.unittests;
 import io.github.amithkoujalgi.ollama4j.core.OllamaAPI;
 import io.github.amithkoujalgi.ollama4j.core.exceptions.OllamaBaseException;
 import io.github.amithkoujalgi.ollama4j.core.models.ModelDetail;
-import io.github.amithkoujalgi.ollama4j.core.models.OllamaAsyncResultCallback;
+import io.github.amithkoujalgi.ollama4j.core.models.OllamaAsyncResultStreamer;
 import io.github.amithkoujalgi.ollama4j.core.models.OllamaResult;
 import io.github.amithkoujalgi.ollama4j.core.types.OllamaModelType;
 import io.github.amithkoujalgi.ollama4j.core.utils.OptionsBuilder;
@@ -157,7 +157,7 @@ class TestMockedAPIs {
         String model = OllamaModelType.LLAMA2;
         String prompt = "some prompt text";
         when(ollamaAPI.generateAsync(model, prompt, false))
-                .thenReturn(new OllamaAsyncResultCallback(null, null, 3));
+                .thenReturn(new OllamaAsyncResultStreamer(null, null, 3));
         ollamaAPI.generateAsync(model, prompt, false);
         verify(ollamaAPI, times(1)).generateAsync(model, prompt, false);
     }

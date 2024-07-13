@@ -360,15 +360,15 @@ public class OllamaAPI {
     }
 
     /**
-     * Convenience method to call Ollama API without streaming responses.
+     * Generates response using the specified AI model and prompt (in blocking mode).
      * <p>
      * Uses {@link #generate(String, String, boolean, Options, OllamaStreamHandler)}
      *
-     * @param model   Model to use
-     * @param prompt  Prompt text
+     * @param model   The name or identifier of the AI model to use for generating the response.
+     * @param prompt  The input text or prompt to provide to the AI model.
      * @param raw     In some cases, you may wish to bypass the templating system and provide a full prompt. In this case, you can use the raw parameter to disable templating. Also note that raw mode will not return a context.
-     * @param options Additional Options
-     * @return OllamaResult
+     * @param options Additional options or configurations to use when generating the response.
+     * @return {@link OllamaResult}
      */
     public OllamaResult generate(String model, String prompt, boolean raw, Options options)
             throws OllamaBaseException, IOException, InterruptedException {
@@ -376,6 +376,20 @@ public class OllamaAPI {
     }
 
 
+    /**
+     * Generates response using the specified AI model and prompt (in blocking mode), and then invokes a set of tools
+     * on the generated response.
+     *
+     * @param model   The name or identifier of the AI model to use for generating the response.
+     * @param prompt  The input text or prompt to provide to the AI model.
+     * @param raw     In some cases, you may wish to bypass the templating system and provide a full prompt. In this case, you can use the raw parameter to disable templating. Also note that raw mode will not return a context.
+     * @param options Additional options or configurations to use when generating the response.
+     * @return {@link OllamaToolsResult} An OllamaToolsResult object containing the response from the AI model and the results of invoking the tools on that output.
+     * @throws OllamaBaseException  If there is an error related to the Ollama API or service.
+     * @throws IOException          If there is an error related to input/output operations.
+     * @throws InterruptedException If the method is interrupted while waiting for the AI model
+     *                              to generate the response or for the tools to be invoked.
+     */
     public OllamaToolsResult generateWithTools(String model, String prompt, boolean raw, Options options)
             throws OllamaBaseException, IOException, InterruptedException {
         OllamaToolsResult toolResult = new OllamaToolsResult();
@@ -402,15 +416,15 @@ public class OllamaAPI {
      * @param prompt the prompt/question text
      * @return the ollama async result callback handle
      */
-    public OllamaAsyncResultCallback generateAsync(String model, String prompt, boolean raw) {
+    public OllamaAsyncResultStreamer generateAsync(String model, String prompt, boolean raw) {
         OllamaGenerateRequestModel ollamaRequestModel = new OllamaGenerateRequestModel(model, prompt);
         ollamaRequestModel.setRaw(raw);
         URI uri = URI.create(this.host + "/api/generate");
-        OllamaAsyncResultCallback ollamaAsyncResultCallback =
-                new OllamaAsyncResultCallback(
+        OllamaAsyncResultStreamer ollamaAsyncResultStreamer =
+                new OllamaAsyncResultStreamer(
                         getRequestBuilderDefault(uri), ollamaRequestModel, requestTimeoutSeconds);
-        ollamaAsyncResultCallback.start();
-        return ollamaAsyncResultCallback;
+        ollamaAsyncResultStreamer.start();
+        return ollamaAsyncResultStreamer;
     }
 
     /**
@@ -508,7 +522,7 @@ public class OllamaAPI {
      * Hint: the OllamaChatRequestModel#getStream() property is not implemented.
      *
      * @param request request object to be sent to the server
-     * @return
+     * @return {@link OllamaChatResult}
      * @throws OllamaBaseException  any response code than 200 has been returned
      * @throws IOException          in case the responseStream can not be read
      * @throws InterruptedException in case the server is not reachable or network issues happen
@@ -524,7 +538,7 @@ public class OllamaAPI {
      *
      * @param request       request object to be sent to the server
      * @param streamHandler callback handler to handle the last message from stream (caution: all previous messages from stream will be concatenated)
-     * @return
+     * @return {@link OllamaChatResult}
      * @throws OllamaBaseException  any response code than 200 has been returned
      * @throws IOException          in case the responseStream can not be read
      * @throws InterruptedException in case the server is not reachable or network issues happen
@@ -539,6 +553,10 @@ public class OllamaAPI {
             result = requestCaller.callSync(request);
         }
         return new OllamaChatResult(result.getResponse(), result.getResponseTime(), result.getHttpStatusCode(), request.getMessages());
+    }
+
+    public void registerTool(MistralTools.ToolSpecification toolSpecification) {
+        ToolRegistry.addFunction(toolSpecification.getFunctionName(), toolSpecification.getToolDefinition());
     }
 
     // technical private methods //
@@ -602,10 +620,6 @@ public class OllamaAPI {
         return basicAuth != null;
     }
 
-
-    public void registerTool(MistralTools.ToolSpecification toolSpecification) {
-        ToolRegistry.addFunction(toolSpecification.getFunctionName(), toolSpecification.getToolDefinition());
-    }
 
     private Object invokeTool(ToolDef toolDef) {
         try {

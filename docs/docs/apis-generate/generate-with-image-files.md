@@ -5,8 +5,8 @@ sidebar_position: 4
 # Generate - With Image Files
 
 This API lets you ask questions along with the image files to the LLMs.
-These APIs correlate to
-the [completion](https://github.com/jmorganca/ollama/blob/main/docs/api.md#generate-a-completion) APIs.
+This API corresponds to
+the [completion](https://github.com/jmorganca/ollama/blob/main/docs/api.md#generate-a-completion) API.
 
 :::note
 
