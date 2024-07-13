@@ -91,8 +91,8 @@ according to your requirements.
 ```xml
 
 <dependency>
-    <groupId>io.github.amithkoujalgi</groupId>
-    <artifactId>ollama4j</artifactId>
+  <groupId>io.github.amithkoujalgi</groupId>
+  <artifactId>ollama4j</artifactId>
   <version>1.0.74</version>
 </dependency>
 ```
