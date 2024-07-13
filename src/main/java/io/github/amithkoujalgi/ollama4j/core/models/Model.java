@@ -1,5 +1,8 @@
 package io.github.amithkoujalgi.ollama4j.core.models;
 
+import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
+
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import io.github.amithkoujalgi.ollama4j.core.utils.Utils;
@@ -11,7 +14,9 @@ public class Model {
   private String name;
   private String model;
   @JsonProperty("modified_at")
-  private String modifiedAt;
+  private OffsetDateTime modifiedAt;
+  @JsonProperty("expires_at")
+  private OffsetDateTime expiresAt;
   private String digest;
   private long size;
   @JsonProperty("details")
