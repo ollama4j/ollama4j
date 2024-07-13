@@ -9,6 +9,9 @@ package io.github.amithkoujalgi.ollama4j.core.types;
 @SuppressWarnings("ALL")
 public class OllamaModelType {
     public static final String GEMMA = "gemma";
+    public static final String GEMMA2 = "gemma2";
+
+
     public static final String LLAMA2 = "llama2";
     public static final String LLAMA3 = "llama3";
     public static final String MISTRAL = "mistral";
@@ -30,6 +33,8 @@ public class OllamaModelType {
     public static final String ZEPHYR = "zephyr";
     public static final String OPENHERMES = "openhermes";
     public static final String QWEN = "qwen";
+
+    public static final String QWEN2 = "qwen2";
     public static final String WIZARDCODER = "wizardcoder";
     public static final String LLAMA2_CHINESE = "llama2-chinese";
     public static final String TINYLLAMA = "tinyllama";

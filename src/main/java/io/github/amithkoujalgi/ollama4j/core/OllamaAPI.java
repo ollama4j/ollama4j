@@ -10,6 +10,7 @@ import io.github.amithkoujalgi.ollama4j.core.models.embeddings.OllamaEmbeddingRe
 import io.github.amithkoujalgi.ollama4j.core.models.embeddings.OllamaEmbeddingsRequestModel;
 import io.github.amithkoujalgi.ollama4j.core.models.generate.OllamaGenerateRequestModel;
 import io.github.amithkoujalgi.ollama4j.core.models.request.*;
+import io.github.amithkoujalgi.ollama4j.core.tools.*;
 import io.github.amithkoujalgi.ollama4j.core.utils.Options;
 import io.github.amithkoujalgi.ollama4j.core.utils.Utils;
 import org.slf4j.Logger;
@@ -25,9 +26,7 @@ import java.net.http.HttpResponse;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.time.Duration;
-import java.util.ArrayList;
-import java.util.Base64;
-import java.util.List;
+import java.util.*;
 
 /**
  * The base Ollama API class.
@@ -339,6 +338,7 @@ public class OllamaAPI {
         }
     }
 
+
     /**
      * Generate response for a question to a model running on Ollama server. This is a sync/blocking
      * call.
@@ -351,9 +351,10 @@ public class OllamaAPI {
      * @param streamHandler optional callback consumer that will be applied every time a streamed response is received. If not set, the stream parameter of the request is set to false.
      * @return OllamaResult that includes response text and time taken for response
      */
-    public OllamaResult generate(String model, String prompt, Options options, OllamaStreamHandler streamHandler)
+    public OllamaResult generate(String model, String prompt, boolean raw, Options options, OllamaStreamHandler streamHandler)
             throws OllamaBaseException, IOException, InterruptedException {
         OllamaGenerateRequestModel ollamaRequestModel = new OllamaGenerateRequestModel(model, prompt);
+        ollamaRequestModel.setRaw(raw);
         ollamaRequestModel.setOptions(options.getOptionsMap());
         return generateSyncForOllamaRequestModel(ollamaRequestModel, streamHandler);
     }
@@ -361,12 +362,36 @@ public class OllamaAPI {
     /**
      * Convenience method to call Ollama API without streaming responses.
      * <p>
-     * Uses {@link #generate(String, String, Options, OllamaStreamHandler)}
+     * Uses {@link #generate(String, String, boolean, Options, OllamaStreamHandler)}
+     *
+     * @param model   Model to use
+     * @param prompt  Prompt text
+     * @param raw     In some cases, you may wish to bypass the templating system and provide a full prompt. In this case, you can use the raw parameter to disable templating. Also note that raw mode will not return a context.
+     * @param options Additional Options
+     * @return OllamaResult
      */
-    public OllamaResult generate(String model, String prompt, Options options)
+    public OllamaResult generate(String model, String prompt, boolean raw, Options options)
             throws OllamaBaseException, IOException, InterruptedException {
-        return generate(model, prompt, options, null);
+        return generate(model, prompt, raw, options, null);
     }
+
+
+    public OllamaToolsResult generateWithTools(String model, String prompt, boolean raw, Options options)
+            throws OllamaBaseException, IOException, InterruptedException {
+        OllamaToolsResult toolResult = new OllamaToolsResult();
+        Map<ToolDef, Object> toolResults = new HashMap<>();
+
+        OllamaResult result = generate(model, prompt, raw, options, null);
+        toolResult.setModelResult(result);
+
+        List<ToolDef> toolDefs = Utils.getObjectMapper().readValue(result.getResponse(), Utils.getObjectMapper().getTypeFactory().constructCollectionType(List.class, ToolDef.class));
+        for (ToolDef toolDef : toolDefs) {
+            toolResults.put(toolDef, invokeTool(toolDef));
+        }
+        toolResult.setToolResults(toolResults);
+        return toolResult;
+    }
+
 
     /**
      * Generate response for a question to a model running on Ollama server and get a callback handle
@@ -377,9 +402,9 @@ public class OllamaAPI {
      * @param prompt the prompt/question text
      * @return the ollama async result callback handle
      */
-    public OllamaAsyncResultCallback generateAsync(String model, String prompt) {
+    public OllamaAsyncResultCallback generateAsync(String model, String prompt, boolean raw) {
         OllamaGenerateRequestModel ollamaRequestModel = new OllamaGenerateRequestModel(model, prompt);
-
+        ollamaRequestModel.setRaw(raw);
         URI uri = URI.create(this.host + "/api/generate");
         OllamaAsyncResultCallback ollamaAsyncResultCallback =
                 new OllamaAsyncResultCallback(
@@ -575,5 +600,25 @@ public class OllamaAPI {
      */
     private boolean isBasicAuthCredentialsSet() {
         return basicAuth != null;
+    }
+
+
+    public void registerTool(MistralTools.ToolSpecification toolSpecification) {
+        ToolRegistry.addFunction(toolSpecification.getFunctionName(), toolSpecification.getToolDefinition());
+    }
+
+    private Object invokeTool(ToolDef toolDef) {
+        try {
+            String methodName = toolDef.getName();
+            Map<String, Object> arguments = toolDef.getArguments();
+            DynamicFunction function = ToolRegistry.getFunction(methodName);
+            if (function == null) {
+                throw new IllegalArgumentException("No such tool: " + methodName);
+            }
+            return function.apply(arguments);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return "Error calling tool: " + e.getMessage();
+        }
     }
 }
