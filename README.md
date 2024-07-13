@@ -88,7 +88,7 @@ Check the releases [here](https://github.com/amithkoujalgi/ollama4j/releases).
 <dependency>
     <groupId>io.github.amithkoujalgi</groupId>
     <artifactId>ollama4j</artifactId>
-    <version>v1.0.74</version>
+  <version>1.0.74</version>
 </dependency>
 ```
 
