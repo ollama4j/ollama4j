@@ -74,7 +74,9 @@ Find more details on the [website](https://amithkoujalgi.github.io/ollama4j/).
 
 #### Installation
 
-For latest release version, check [here](https://github.com/amithkoujalgi/ollama4j/releases).
+Check the releases [here](https://github.com/amithkoujalgi/ollama4j/releases).
+
+![GitHub Release](https://img.shields.io/github/v/release/amithkoujalgi/ollama4j)
 
 ##### For Maven
 
