@@ -38,7 +38,8 @@ Find more details on the [website](https://amithkoujalgi.github.io/ollama4j/).
 - [How does it work?](#how-does-it-work)
 - [Requirements](#requirements)
 - [Installation](#installation)
-- [API Spec](#api-spec)
+- [API Spec](https://amithkoujalgi.github.io/ollama4j/docs/category/apis---model-management)
+- [Javadoc Spec](https://amithkoujalgi.github.io/ollama4j/apidocs/)
 - [Demo APIs](#try-out-the-apis-with-ollama-server)
 - [Development](#development)
 - [Contributions](#get-involved)
@@ -74,25 +75,66 @@ Find more details on the [website](https://amithkoujalgi.github.io/ollama4j/).
 
 #### Installation
 
-In your Maven project, add this dependency:
+For latest release version, check [here](https://github.com/amithkoujalgi/ollama4j/releases).
+
+##### For Maven
+
+1. In your Maven project, add this dependency:
 
 ```xml
 
 <dependency>
     <groupId>io.github.amithkoujalgi</groupId>
     <artifactId>ollama4j</artifactId>
-    <version>1.0.70</version>
+    <version>v1.0.74</version>
 </dependency>
 ```
 
-or
+2. Add repository to your project's pom.xml:
+
+```xml
+
+<repositories>
+    <repository>
+        <id>github</id>
+        <name>GitHub Apache Maven Packages</name>
+        <url>https://maven.pkg.github.com/amithkoujalgi/ollama4j</url>
+        <releases>
+            <enabled>true</enabled>
+        </releases>
+        <snapshots>
+            <enabled>true</enabled>
+        </snapshots>
+    </repository>
+</repositories>
+```
+
+3. Add GitHub server to settings.xml. (Usually available at ~/.m2/settings.xml)
+
+```xml
+
+<settings xmlns="http://maven.apache.org/SETTINGS/1.0.0"
+          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+          xsi:schemaLocation="http://maven.apache.org/SETTINGS/1.0.0
+                      http://maven.apache.org/xsd/settings-1.0.0.xsd">
+    <servers>
+        <server>
+            <id>github</id>
+            <username>USERNAME</username>
+            <password>TOKEN</password>
+        </server>
+    </servers>
+</settings>
+```
+
+##### For Gradle
 
 In your Gradle project, add the dependency using the Kotlin DSL or the Groovy DSL:
 
 ```kotlin
 dependencies {
 
-    val ollama4jVersion = "1.0.70"
+    val ollama4jVersion = "1.0.74"
 
     implementation("io.github.amithkoujalgi:ollama4j:$ollama4jVersion")
 }
@@ -100,15 +142,19 @@ dependencies {
 
 ```groovy
 dependencies {
-    implementation("io.github.amithkoujalgi:ollama4j:1.0.70")
+    implementation("io.github.amithkoujalgi:ollama4j:1.0.74")
 }
 ```
 
-Latest release:
+[//]: # (Latest release:)
 
-![Maven Central](https://img.shields.io/maven-central/v/io.github.amithkoujalgi/ollama4j)
+[//]: # ()
 
-[![][lib-shield]][lib]
+[//]: # (![Maven Central]&#40;https://img.shields.io/maven-central/v/io.github.amithkoujalgi/ollama4j&#41;)
+
+[//]: # ()
+
+[//]: # ([![][lib-shield]][lib])
 
 [lib]: https://central.sonatype.com/artifact/io.github.amithkoujalgi/ollama4j
 
