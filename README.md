@@ -2,7 +2,10 @@
 
 ### Ollama4j
 
-<img src='https://raw.githubusercontent.com/amithkoujalgi/ollama4j/65a9d526150da8fcd98e2af6a164f055572bf722/ollama4j.jpeg' width='100' alt="ollama4j-icon">
+<p align="center">
+  <img src='https://raw.githubusercontent.com/amithkoujalgi/ollama4j/65a9d526150da8fcd98e2af6a164f055572bf722/ollama4j.jpeg' width='100' alt="ollama4j-icon">
+</p>
+
 
 A Java library (wrapper/binding) for [Ollama](https://ollama.ai/) server.
 
@@ -91,9 +94,9 @@ according to your requirements.
 ```xml
 
 <dependency>
-  <groupId>io.github.amithkoujalgi</groupId>
-  <artifactId>ollama4j</artifactId>
-  <version>1.0.74</version>
+    <groupId>io.github.amithkoujalgi</groupId>
+    <artifactId>ollama4j</artifactId>
+    <version>1.0.74</version>
 </dependency>
 ```
 
