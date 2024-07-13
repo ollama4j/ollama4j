@@ -254,19 +254,16 @@ of contribution is much appreciated.
 The nomenclature and the icon have been adopted from the incredible [Ollama](https://ollama.ai/)
 project.
 
-
-<div style="text-align: center">
-
 **Thanks to the amazing contributors**
 
-<a href="https://github.com/amithkoujalgi/ollama4j/graphs/contributors">
-  <img src="https://contrib.rocks/image?repo=amithkoujalgi/ollama4j" />
-</a>
+<p align="center">
+  <a href="https://github.com/amithkoujalgi/ollama4j/graphs/contributors">
+    <img src="https://contrib.rocks/image?repo=amithkoujalgi/ollama4j" />
+  </a>
+</p>
 
 ### Appreciate my work?
 
-<a href="https://www.buymeacoffee.com/amithkoujalgi" target="_blank"><img src="https://cdn.buymeacoffee.com/buttons/v2/default-yellow.png" alt="Buy Me A Coffee" style="height: 60px !important;width: 217px !important;" ></a>
-
-
-</div>
-
+<p align="center">
+  <a href="https://www.buymeacoffee.com/amithkoujalgi" target="_blank"><img src="https://cdn.buymeacoffee.com/buttons/v2/default-yellow.png" alt="Buy Me A Coffee" style="height: 60px !important;width: 217px !important;" ></a>
+</p>
