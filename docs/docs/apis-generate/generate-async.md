@@ -22,7 +22,7 @@ public class Main {
         OllamaAsyncResultStreamer streamer = ollamaAPI.generateAsync(OllamaModelType.LLAMA3, prompt, false);
 
         // Set the poll interval according to your needs. 
-        // Smaller the poll interval, more frequently you receive the token.
+        // Smaller the poll interval, more frequently you receive the tokens.
         int pollIntervalMilliseconds = 1000;
 
         while (true) {
