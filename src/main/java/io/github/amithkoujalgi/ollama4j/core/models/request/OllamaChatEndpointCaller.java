@@ -1,12 +1,12 @@
 package io.github.amithkoujalgi.ollama4j.core.models.request;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import io.github.amithkoujalgi.ollama4j.core.OllamaStreamHandler;
 import io.github.amithkoujalgi.ollama4j.core.exceptions.OllamaBaseException;
 import io.github.amithkoujalgi.ollama4j.core.models.BasicAuth;
 import io.github.amithkoujalgi.ollama4j.core.models.OllamaResult;
 import io.github.amithkoujalgi.ollama4j.core.models.chat.OllamaChatResponseModel;
 import io.github.amithkoujalgi.ollama4j.core.models.chat.OllamaChatStreamObserver;
+import io.github.amithkoujalgi.ollama4j.core.models.generate.OllamaStreamHandler;
 import io.github.amithkoujalgi.ollama4j.core.utils.OllamaRequestBody;
 import io.github.amithkoujalgi.ollama4j.core.utils.Utils;
 import org.slf4j.Logger;

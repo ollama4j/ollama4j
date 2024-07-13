@@ -9,6 +9,7 @@ import io.github.amithkoujalgi.ollama4j.core.models.chat.OllamaChatResult;
 import io.github.amithkoujalgi.ollama4j.core.models.embeddings.OllamaEmbeddingResponseModel;
 import io.github.amithkoujalgi.ollama4j.core.models.embeddings.OllamaEmbeddingsRequestModel;
 import io.github.amithkoujalgi.ollama4j.core.models.generate.OllamaGenerateRequestModel;
+import io.github.amithkoujalgi.ollama4j.core.models.generate.OllamaStreamHandler;
 import io.github.amithkoujalgi.ollama4j.core.models.request.*;
 import io.github.amithkoujalgi.ollama4j.core.tools.*;
 import io.github.amithkoujalgi.ollama4j.core.utils.Options;

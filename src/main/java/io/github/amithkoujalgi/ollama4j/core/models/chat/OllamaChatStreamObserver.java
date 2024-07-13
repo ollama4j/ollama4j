@@ -1,9 +1,9 @@
 package io.github.amithkoujalgi.ollama4j.core.models.chat;
 
+import io.github.amithkoujalgi.ollama4j.core.models.generate.OllamaStreamHandler;
+
 import java.util.ArrayList;
 import java.util.List;
-
-import io.github.amithkoujalgi.ollama4j.core.OllamaStreamHandler;
 
 public class OllamaChatStreamObserver {
 
@@ -17,12 +17,12 @@ public class OllamaChatStreamObserver {
         this.streamHandler = streamHandler;
     }
 
-    public void notify(OllamaChatResponseModel currentResponsePart){
+    public void notify(OllamaChatResponseModel currentResponsePart) {
         responseParts.add(currentResponsePart);
         handleCurrentResponsePart(currentResponsePart);
     }
-    
-    protected void handleCurrentResponsePart(OllamaChatResponseModel currentResponsePart){
+
+    protected void handleCurrentResponsePart(OllamaChatResponseModel currentResponsePart) {
         message = message + currentResponsePart.getMessage().getContent();
         streamHandler.accept(message);
     }

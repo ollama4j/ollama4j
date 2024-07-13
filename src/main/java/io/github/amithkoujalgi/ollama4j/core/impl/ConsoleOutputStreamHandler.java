@@ -1,6 +1,6 @@
 package io.github.amithkoujalgi.ollama4j.core.impl;
 
-import io.github.amithkoujalgi.ollama4j.core.OllamaStreamHandler;
+import io.github.amithkoujalgi.ollama4j.core.models.generate.OllamaStreamHandler;
 
 public class ConsoleOutputStreamHandler implements OllamaStreamHandler {
     private final StringBuffer response = new StringBuffer();

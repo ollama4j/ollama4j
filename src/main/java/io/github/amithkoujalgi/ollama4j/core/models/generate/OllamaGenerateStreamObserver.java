@@ -3,8 +3,6 @@ package io.github.amithkoujalgi.ollama4j.core.models.generate;
 import java.util.ArrayList;
 import java.util.List;
 
-import io.github.amithkoujalgi.ollama4j.core.OllamaStreamHandler;
-
 public class OllamaGenerateStreamObserver {
 
     private OllamaStreamHandler streamHandler;
@@ -17,12 +15,12 @@ public class OllamaGenerateStreamObserver {
         this.streamHandler = streamHandler;
     }
 
-    public void notify(OllamaGenerateResponseModel currentResponsePart){
+    public void notify(OllamaGenerateResponseModel currentResponsePart) {
         responseParts.add(currentResponsePart);
         handleCurrentResponsePart(currentResponsePart);
     }
-    
-    protected void handleCurrentResponsePart(OllamaGenerateResponseModel currentResponsePart){
+
+    protected void handleCurrentResponsePart(OllamaGenerateResponseModel currentResponsePart) {
         message = message + currentResponsePart.getResponse();
         streamHandler.accept(message);
     }
