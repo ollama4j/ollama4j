@@ -46,6 +46,13 @@ jobs:
       - run: cd docs && npm ci
       - run: cd docs && npm run build
 
+      - name: Find and Replace
+        uses: jacobtomlinson/gha-find-replace@v3
+        with:
+          find: "ollama4j-revision"
+          replace: ${{ github.ref_name }}
+          regex: false
+
       - name: Build with Maven
         run: mvn --file pom.xml -U clean package && cp -r ./target/apidocs/. ./docs/build/apidocs
 
