@@ -63,9 +63,9 @@ Find more details on the [website](https://amithkoujalgi.github.io/ollama4j/).
 
 ![Java](https://img.shields.io/badge/Java-11_+-green.svg?style=just-the-message&labelColor=gray)
 
-[![][ollama-shield]][ollama] **Or** [![][ollama-docker-shield]][ollama-docker]
+[![][ollama-shield]][ollama-link] **Or** [![][ollama-docker-shield]][ollama-docker]
 
-[ollama]: https://ollama.ai/
+[ollama-link]: https://ollama.ai/
 
 [ollama-shield]: https://img.shields.io/badge/Ollama-Local_Installation-blue.svg?style=just-the-message&labelColor=gray
 
@@ -75,9 +75,14 @@ Find more details on the [website](https://amithkoujalgi.github.io/ollama4j/).
 
 #### Installation
 
-Check the releases [here](https://github.com/amithkoujalgi/ollama4j/releases).
+Check the releases [here](https://github.com/amithkoujalgi/ollama4j/releases) and update the dependency version
+according to your requirements.
 
-![GitHub Release](https://img.shields.io/github/v/release/amithkoujalgi/ollama4j?include_prereleases&display_name=release&style=for-the-badge&label=Latest%20Release&link=https%3A%2F%2Fgithub.com%2Famithkoujalgi%2Follama4j%2Freleases)
+[![][ollama4j-releases-shield]][ollama4j-releases-link]
+
+[ollama4j-releases-link]: https://github.com/amithkoujalgi/ollama4j/releases
+
+[ollama4j-releases-shield]: https://img.shields.io/github/v/release/amithkoujalgi/ollama4j?include_prereleases&display_name=release&style=for-the-badge&label=Latest%20Release
 
 ##### For Maven
 
