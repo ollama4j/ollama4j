@@ -40,7 +40,7 @@ Find more details on the [website](https://amithkoujalgi.github.io/ollama4j/).
 - [Requirements](#requirements)
 - [Installation](#installation)
 - [API Spec](https://amithkoujalgi.github.io/ollama4j/docs/category/apis---model-management)
-- [Javadoc Spec](https://amithkoujalgi.github.io/ollama4j/apidocs/)
+- [Javadoc](https://amithkoujalgi.github.io/ollama4j/apidocs/)
 - [Development](#development)
 - [Contributions](#get-involved)
 - [References](#references)
