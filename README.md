@@ -119,8 +119,8 @@ For latest release version, check [here](https://github.com/amithkoujalgi/ollama
     <servers>
         <server>
             <id>github</id>
-            <username>USERNAME</username>
-            <password>TOKEN</password>
+            <username>YOUR-USERNAME</username>
+            <password>YOUR-TOKEN</password>
         </server>
     </servers>
 </settings>
