@@ -204,7 +204,7 @@
         <repository>
             <id>github</id>
             <name>GitHub Packages</name>
-            <url>https://maven.pkg.github.com/amithkoujalgi/NetWatch</url>
+            <url>https://maven.pkg.github.com/amithkoujalgi/ollama4j</url>
         </repository>
     </distributionManagement>
 
