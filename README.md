@@ -212,6 +212,9 @@ Actions CI workflow.
 - [x] Use lombok
 - [x] Update request body creation with Java objects
 - [ ] Async APIs for images
+- [ ] Support for function calling with models like Mistral
+    - [x] generate in sync mode
+    - [ ] generate in async mode
 - [ ] Add custom headers to requests
 - [x] Add additional params for `ask` APIs such as:
     - [x] `options`: additional model parameters for the Modelfile such as `temperature` -
