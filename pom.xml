@@ -200,6 +200,7 @@
     <!--        </repository>-->
     <!--    </distributionManagement>-->
 
+    <!--    Replaced publishing packages to GitHub Packages instead of Maven central -->
     <distributionManagement>
         <repository>
             <id>github</id>
