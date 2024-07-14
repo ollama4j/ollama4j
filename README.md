@@ -1,5 +1,3 @@
-<div style="text-align: center">
-
 ### Ollama4j
 
 <p align="center">
@@ -14,7 +12,7 @@ Find more details on the [website](https://amithkoujalgi.github.io/ollama4j/).
 ![GitHub stars](https://img.shields.io/github/stars/amithkoujalgi/ollama4j)
 ![GitHub forks](https://img.shields.io/github/forks/amithkoujalgi/ollama4j)
 ![GitHub watchers](https://img.shields.io/github/watchers/amithkoujalgi/ollama4j)
-![Contributors](https://img.shields.io/github/contributors/amithkoujalgi/ollama4j)
+![Contributors](https://img.shields.io/github/contributors/amithkoujalgi/ollama4j?style=social)
 ![GitHub License](https://img.shields.io/github/license/amithkoujalgi/ollama4j)
 
 ![GitHub repo size](https://img.shields.io/github/repo-size/amithkoujalgi/ollama4j)
@@ -29,9 +27,6 @@ Find more details on the [website](https://amithkoujalgi.github.io/ollama4j/).
 ![GitHub Discussions](https://img.shields.io/github/discussions/amithkoujalgi/ollama4j)
 
 ![Build Status](https://github.com/amithkoujalgi/ollama4j/actions/workflows/maven-publish.yml/badge.svg)
-
-
-</div>
 
 [//]: # (![Hits]&#40;https://hits.seeyoufarm.com/api/count/incr/badge.svg?url=https%3A%2F%2Fgithub.com%2Famithkoujalgi%2Follama4j&count_bg=%2379C83D&title_bg=%23555555&icon=&icon_color=%23E7E7E7&title=hits&edge_flat=false&#41;)
 
@@ -64,17 +59,17 @@ Find more details on the [website](https://amithkoujalgi.github.io/ollama4j/).
 
 #### Requirements
 
-![Java](https://img.shields.io/badge/Java-11_+-green.svg?style=just-the-message&labelColor=gray)
+![Java](https://img.shields.io/badge/Java-11_+-green.svg?style=for-the-badge&labelColor=gray&label=Java)
 
 [![][ollama-shield]][ollama-link] **Or** [![][ollama-docker-shield]][ollama-docker]
 
 [ollama-link]: https://ollama.ai/
 
-[ollama-shield]: https://img.shields.io/badge/Ollama-Local_Installation-blue.svg?style=just-the-message&labelColor=gray
+[ollama-shield]: https://img.shields.io/badge/Ollama-Local_Installation-blue.svg?style=for-the-badge&labelColor=gray
 
 [ollama-docker]: https://hub.docker.com/r/ollama/ollama
 
-[ollama-docker-shield]: https://img.shields.io/badge/Ollama-Docker-blue.svg?style=just-the-message&labelColor=gray
+[ollama-docker-shield]: https://img.shields.io/badge/Ollama-Docker-blue.svg?style=for-the-badge&labelColor=gray
 
 ## Installation
 
@@ -95,10 +90,10 @@ Find more details on the [website](https://amithkoujalgi.github.io/ollama4j/).
 ```xml
 
 <repositories>
-  <repository>
-    <id>jitpack.io</id>
-    <url>https://jitpack.io</url>
-  </repository>
+    <repository>
+        <id>jitpack.io</id>
+        <url>https://jitpack.io</url>
+    </repository>
 </repositories>
 ```
 
@@ -163,9 +158,9 @@ Find more details on the [website](https://amithkoujalgi.github.io/ollama4j/).
 ```xml
 
 <dependency>
-  <groupId>io.github.amithkoujalgi</groupId>
-  <artifactId>ollama4j</artifactId>
-  <version>1.0.74</version>
+    <groupId>io.github.amithkoujalgi</groupId>
+    <artifactId>ollama4j</artifactId>
+    <version>1.0.74</version>
 </dependency>
 ```
 
@@ -177,11 +172,11 @@ Add it in your root `build.gradle` at the end of repositories:
 
 ```groovy
 dependencyResolutionManagement {
-  repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS)
-  repositories {
-    mavenCentral()
-    maven { url 'https://jitpack.io' }
-  }
+    repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS)
+    repositories {
+        mavenCentral()
+        maven { url 'https://jitpack.io' }
+    }
 }
 ```
 
@@ -189,7 +184,7 @@ dependencyResolutionManagement {
 
 ```groovy
 dependencies {
-  implementation 'com.github.amithkoujalgi:ollama4j:Tag'
+    implementation 'com.github.amithkoujalgi:ollama4j:Tag'
 }
 ```
 
