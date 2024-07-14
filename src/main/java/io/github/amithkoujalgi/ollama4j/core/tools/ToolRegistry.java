@@ -4,14 +4,13 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class ToolRegistry {
-    private static final Map<String, DynamicFunction> functionMap = new HashMap<>();
+    private final Map<String, ToolFunction> functionMap = new HashMap<>();
 
-
-    public static DynamicFunction getFunction(String name) {
+    public ToolFunction getFunction(String name) {
         return functionMap.get(name);
     }
 
-    public static void addFunction(String name, DynamicFunction function) {
+    public void addFunction(String name, ToolFunction function) {
         functionMap.put(name, function);
     }
 }

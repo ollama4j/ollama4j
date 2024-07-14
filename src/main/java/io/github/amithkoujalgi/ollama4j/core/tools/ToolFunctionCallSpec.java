@@ -9,10 +9,8 @@ import java.util.Map;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class ToolDef {
-
+public class ToolFunctionCallSpec {
     private String name;
     private Map<String, Object> arguments;
-
 }
 

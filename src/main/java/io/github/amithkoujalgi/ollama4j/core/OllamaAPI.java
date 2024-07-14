@@ -1,6 +1,8 @@
 package io.github.amithkoujalgi.ollama4j.core;
 
 import io.github.amithkoujalgi.ollama4j.core.exceptions.OllamaBaseException;
+import io.github.amithkoujalgi.ollama4j.core.exceptions.ToolInvocationException;
+import io.github.amithkoujalgi.ollama4j.core.exceptions.ToolNotFoundException;
 import io.github.amithkoujalgi.ollama4j.core.models.*;
 import io.github.amithkoujalgi.ollama4j.core.models.chat.OllamaChatMessage;
 import io.github.amithkoujalgi.ollama4j.core.models.chat.OllamaChatRequestBuilder;
@@ -14,6 +16,7 @@ import io.github.amithkoujalgi.ollama4j.core.models.request.*;
 import io.github.amithkoujalgi.ollama4j.core.tools.*;
 import io.github.amithkoujalgi.ollama4j.core.utils.Options;
 import io.github.amithkoujalgi.ollama4j.core.utils.Utils;
+import lombok.Setter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -37,9 +40,21 @@ public class OllamaAPI {
 
     private static final Logger logger = LoggerFactory.getLogger(OllamaAPI.class);
     private final String host;
+    /**
+     * -- SETTER --
+     * Set request timeout in seconds. Default is 3 seconds.
+     */
+    @Setter
     private long requestTimeoutSeconds = 10;
+    /**
+     * -- SETTER --
+     * Set/unset logging of responses
+     */
+    @Setter
     private boolean verbose = true;
     private BasicAuth basicAuth;
+
+    private final ToolRegistry toolRegistry = new ToolRegistry();
 
     /**
      * Instantiates the Ollama API.
@@ -52,24 +67,6 @@ public class OllamaAPI {
         } else {
             this.host = host;
         }
-    }
-
-    /**
-     * Set request timeout in seconds. Default is 3 seconds.
-     *
-     * @param requestTimeoutSeconds the request timeout in seconds
-     */
-    public void setRequestTimeoutSeconds(long requestTimeoutSeconds) {
-        this.requestTimeoutSeconds = requestTimeoutSeconds;
-    }
-
-    /**
-     * Set/unset logging of responses
-     *
-     * @param verbose true/false
-     */
-    public void setVerbose(boolean verbose) {
-        this.verbose = verbose;
     }
 
     /**
@@ -383,7 +380,6 @@ public class OllamaAPI {
      *
      * @param model   The name or identifier of the AI model to use for generating the response.
      * @param prompt  The input text or prompt to provide to the AI model.
-     * @param raw     In some cases, you may wish to bypass the templating system and provide a full prompt. In this case, you can use the raw parameter to disable templating. Also note that raw mode will not return a context.
      * @param options Additional options or configurations to use when generating the response.
      * @return {@link OllamaToolsResult} An OllamaToolsResult object containing the response from the AI model and the results of invoking the tools on that output.
      * @throws OllamaBaseException  If there is an error related to the Ollama API or service.
@@ -391,17 +387,23 @@ public class OllamaAPI {
      * @throws InterruptedException If the method is interrupted while waiting for the AI model
      *                              to generate the response or for the tools to be invoked.
      */
-    public OllamaToolsResult generateWithTools(String model, String prompt, boolean raw, Options options)
-            throws OllamaBaseException, IOException, InterruptedException {
+    public OllamaToolsResult generateWithTools(String model, String prompt, Options options)
+            throws OllamaBaseException, IOException, InterruptedException, ToolInvocationException {
+        boolean raw = true;
         OllamaToolsResult toolResult = new OllamaToolsResult();
-        Map<ToolDef, Object> toolResults = new HashMap<>();
+        Map<ToolFunctionCallSpec, Object> toolResults = new HashMap<>();
 
         OllamaResult result = generate(model, prompt, raw, options, null);
         toolResult.setModelResult(result);
 
-        List<ToolDef> toolDefs = Utils.getObjectMapper().readValue(result.getResponse(), Utils.getObjectMapper().getTypeFactory().constructCollectionType(List.class, ToolDef.class));
-        for (ToolDef toolDef : toolDefs) {
-            toolResults.put(toolDef, invokeTool(toolDef));
+        String toolsResponse = result.getResponse();
+        if (toolsResponse.contains("[TOOL_CALLS]")) {
+            toolsResponse = toolsResponse.replace("[TOOL_CALLS]", "");
+        }
+
+        List<ToolFunctionCallSpec> toolFunctionCallSpecs = Utils.getObjectMapper().readValue(toolsResponse, Utils.getObjectMapper().getTypeFactory().constructCollectionType(List.class, ToolFunctionCallSpec.class));
+        for (ToolFunctionCallSpec toolFunctionCallSpec : toolFunctionCallSpecs) {
+            toolResults.put(toolFunctionCallSpec, invokeTool(toolFunctionCallSpec));
         }
         toolResult.setToolResults(toolResults);
         return toolResult;
@@ -556,8 +558,8 @@ public class OllamaAPI {
         return new OllamaChatResult(result.getResponse(), result.getResponseTime(), result.getHttpStatusCode(), request.getMessages());
     }
 
-    public void registerTool(MistralTools.ToolSpecification toolSpecification) {
-        ToolRegistry.addFunction(toolSpecification.getFunctionName(), toolSpecification.getToolDefinition());
+    public void registerTool(Tools.ToolSpecification toolSpecification) {
+        toolRegistry.addFunction(toolSpecification.getFunctionName(), toolSpecification.getToolDefinition());
     }
 
     // technical private methods //
@@ -622,18 +624,20 @@ public class OllamaAPI {
     }
 
 
-    private Object invokeTool(ToolDef toolDef) {
+    private Object invokeTool(ToolFunctionCallSpec toolFunctionCallSpec) throws ToolInvocationException {
         try {
-            String methodName = toolDef.getName();
-            Map<String, Object> arguments = toolDef.getArguments();
-            DynamicFunction function = ToolRegistry.getFunction(methodName);
+            String methodName = toolFunctionCallSpec.getName();
+            Map<String, Object> arguments = toolFunctionCallSpec.getArguments();
+            ToolFunction function = toolRegistry.getFunction(methodName);
+            if (verbose) {
+                logger.debug("Invoking function {} with arguments {}", methodName, arguments);
+            }
             if (function == null) {
-                throw new IllegalArgumentException("No such tool: " + methodName);
+                throw new ToolNotFoundException("No such tool: " + methodName);
             }
             return function.apply(arguments);
         } catch (Exception e) {
-            e.printStackTrace();
-            return "Error calling tool: " + e.getMessage();
+            throw new ToolInvocationException("Failed to invoke tool: " + toolFunctionCallSpec.getName(), e);
         }
     }
 }

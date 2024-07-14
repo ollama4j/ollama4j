@@ -14,14 +14,14 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class MistralTools {
+public class Tools {
     @Data
     @Builder
     public static class ToolSpecification {
         private String functionName;
-        private String functionDesc;
-        private Map<String, PromptFuncDefinition.Property> props;
-        private DynamicFunction toolDefinition;
+        private String functionDescription;
+        private Map<String, PromptFuncDefinition.Property> properties;
+        private ToolFunction toolDefinition;
     }
 
     @Data
@@ -90,14 +90,14 @@ public class MistralTools {
 
             PromptFuncDefinition.PromptFuncSpec functionDetail = new PromptFuncDefinition.PromptFuncSpec();
             functionDetail.setName(spec.getFunctionName());
-            functionDetail.setDescription(spec.getFunctionDesc());
+            functionDetail.setDescription(spec.getFunctionDescription());
 
             PromptFuncDefinition.Parameters parameters = new PromptFuncDefinition.Parameters();
             parameters.setType("object");
-            parameters.setProperties(spec.getProps());
+            parameters.setProperties(spec.getProperties());
 
             List<String> requiredValues = new ArrayList<>();
-            for (Map.Entry<String, PromptFuncDefinition.Property> p : spec.getProps().entrySet()) {
+            for (Map.Entry<String, PromptFuncDefinition.Property> p : spec.getProperties().entrySet()) {
                 if (p.getValue().isRequired()) {
                     requiredValues.add(p.getKey());
                 }
@@ -109,31 +109,5 @@ public class MistralTools {
             tools.add(def);
             return this;
         }
-//
-//        public PromptBuilder withToolSpecification(String functionName, String functionDesc, Map<String, PromptFuncDefinition.Property> props) {
-//            PromptFuncDefinition def = new PromptFuncDefinition();
-//            def.setType("function");
-//
-//            PromptFuncDefinition.PromptFuncSpec functionDetail = new PromptFuncDefinition.PromptFuncSpec();
-//            functionDetail.setName(functionName);
-//            functionDetail.setDescription(functionDesc);
-//
-//            PromptFuncDefinition.Parameters parameters = new PromptFuncDefinition.Parameters();
-//            parameters.setType("object");
-//            parameters.setProperties(props);
-//
-//            List<String> requiredValues = new ArrayList<>();
-//            for (Map.Entry<String, PromptFuncDefinition.Property> p : props.entrySet()) {
-//                if (p.getValue().isRequired()) {
-//                    requiredValues.add(p.getKey());
-//                }
-//            }
-//            parameters.setRequired(requiredValues);
-//            functionDetail.setParameters(parameters);
-//            def.setFunction(functionDetail);
-//
-//            tools.add(def);
-//            return this;
-//        }
     }
 }
