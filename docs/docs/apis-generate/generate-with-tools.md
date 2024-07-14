@@ -129,6 +129,7 @@ Register the defined tools (`fuel price` and `weather`) with the OllamaAPI.
 ```shell
 ollamaAPI.registerTool(fuelPriceToolSpecification);
 ollamaAPI.registerTool(weatherToolSpecification);
+ollamaAPI.registerTool(databaseQueryToolSpecification);
 ```
 
 ### Create prompt with Tools
