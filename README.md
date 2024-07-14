@@ -86,7 +86,9 @@ Find more details on the [website](https://amithkoujalgi.github.io/ollama4j/).
 
 #### Using [JitPack](https://jitpack.io/)
 
-[![](https://jitpack.io/v/amithkoujalgi/ollama4j.svg)](https://jitpack.io/#amithkoujalgi/ollama4j)
+[//]: # ([![]&#40;https://jitpack.io/v/amithkoujalgi/ollama4j.svg&#41;]&#40;https://jitpack.io/#amithkoujalgi/ollama4j&#41;)
+
+![JitPack](https://img.shields.io/jitpack/version/io.github.amithkoujalgi/ollama4j?style=for-the-badge&label=From%20JitPack)
 
 1. Add `jitpack.io` repository to your project's `pom.xml` or your `settings.xml`:
 
@@ -117,7 +119,7 @@ Find more details on the [website](https://amithkoujalgi.github.io/ollama4j/).
 
 [ollama4j-releases-link]: https://github.com/amithkoujalgi/ollama4j/releases
 
-[ollama4j-releases-shield]: https://img.shields.io/github/v/release/amithkoujalgi/ollama4j?display_name=release&style=for-the-badge&label=GitHub%20Packages%20Release
+[ollama4j-releases-shield]: https://img.shields.io/github/v/release/amithkoujalgi/ollama4j?display_name=release&style=for-the-badge&label=From%20GitHub%20Packages%20
 
 1. Add `GitHub Maven Packages` repository to your project's `pom.xml` or your `settings.xml`:
 
