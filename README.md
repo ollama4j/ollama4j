@@ -77,6 +77,10 @@ Find more details on the [website](https://amithkoujalgi.github.io/ollama4j/).
 > Check the releases [here](https://github.com/amithkoujalgi/ollama4j/releases) and update the dependency version
 > according to your requirements.
 
+> [!WARNING]  
+> We have migrated the package repository from Maven Central to GitHub package repository due to technical issues with
+> publishing.
+
 ### For Maven
 
 #### Using [JitPack](https://jitpack.io/)
