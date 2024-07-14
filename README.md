@@ -173,7 +173,8 @@ dependencies {
 
 #### API Spec
 
-Find the full API specifications on the [website](https://amithkoujalgi.github.io/ollama4j/).
+> [!TIP]
+> Find the full API specifications on the [website](https://amithkoujalgi.github.io/ollama4j/).
 
 #### Development
 
