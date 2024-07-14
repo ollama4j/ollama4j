@@ -75,8 +75,9 @@ Find more details on the [website](https://amithkoujalgi.github.io/ollama4j/).
 
 > [!NOTE]
 > We have migrated the package repository from Maven Central to GitHub package repository due to technical issues with
-> publishing. Please update your repository settings to get latest version of Ollama4j
-> Check the releases [here](https://github.com/amithkoujalgi/ollama4j/releases) and update the dependency version
+> publishing. Please update your repository settings to get latest version of Ollama4j.
+>
+> Track the releases [here](https://github.com/amithkoujalgi/ollama4j/releases) and update the dependency version
 > according to your requirements.
 
 
