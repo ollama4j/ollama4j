@@ -59,7 +59,7 @@ Find more details on the [website](https://amithkoujalgi.github.io/ollama4j/).
 
 #### Requirements
 
-![Java](https://img.shields.io/badge/Java-11_+-green.svg?style=for-the-badge&labelColor=gray&label=Java)
+![Java](https://img.shields.io/badge/Java-11_+-green.svg?style=for-the-badge&labelColor=gray&label=Java&color=orange)
 
 [![][ollama-shield]][ollama-link] **Or** [![][ollama-docker-shield]][ollama-docker]
 
