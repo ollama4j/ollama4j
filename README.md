@@ -78,14 +78,15 @@ Find more details on the [website](https://amithkoujalgi.github.io/ollama4j/).
 
 #### Installation
 
-Check the releases [here](https://github.com/amithkoujalgi/ollama4j/releases) and update the dependency version
-according to your requirements.
-
 [![][ollama4j-releases-shield]][ollama4j-releases-link]
 
 [ollama4j-releases-link]: https://github.com/amithkoujalgi/ollama4j/releases
 
 [ollama4j-releases-shield]: https://img.shields.io/github/v/release/amithkoujalgi/ollama4j?include_prereleases&display_name=release&style=for-the-badge&label=Latest%20Release
+
+> [!NOTE]
+> Check the releases [here](https://github.com/amithkoujalgi/ollama4j/releases) and update the dependency version
+> according to your requirements.
 
 ##### For Maven
 
