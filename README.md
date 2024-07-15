@@ -26,6 +26,8 @@ Find more details on the [website](https://amithkoujalgi.github.io/ollama4j/).
 ![GitHub Issues or Pull Requests](https://img.shields.io/github/issues-pr-closed-raw/amithkoujalgi/ollama4j)
 ![GitHub Discussions](https://img.shields.io/github/discussions/amithkoujalgi/ollama4j)
 
+![JitPack Downloads this month Badge](https://img.shields.io/badge/dynamic/json?url=https%3A%2F%2Fjitpack.io%2Fapi%2Fdownloads%2Fio.github.amithkoujalgi%2Follama4j&query=%24.month&label=JitPack%20Downloads%20-%20This%20Month)
+
 ![Build Status](https://github.com/amithkoujalgi/ollama4j/actions/workflows/maven-publish.yml/badge.svg)
 
 [//]: # (![Hits]&#40;https://hits.seeyoufarm.com/api/count/incr/badge.svg?url=https%3A%2F%2Fgithub.com%2Famithkoujalgi%2Follama4j&count_bg=%2379C83D&title_bg=%23555555&icon=&icon_color=%23E7E7E7&title=hits&edge_flat=false&#41;)
