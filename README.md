@@ -15,22 +15,19 @@ Find more details on the [website](https://amithkoujalgi.github.io/ollama4j/).
 ![Contributors](https://img.shields.io/github/contributors/amithkoujalgi/ollama4j?style=social)
 ![GitHub License](https://img.shields.io/github/license/amithkoujalgi/ollama4j)
 
-![GitHub repo size](https://img.shields.io/github/repo-size/amithkoujalgi/ollama4j)
-![GitHub top language](https://img.shields.io/github/languages/top/amithkoujalgi/ollama4j)
-![GitHub last commit](https://img.shields.io/github/last-commit/amithkoujalgi/ollama4j?color=green)
-[![codecov](https://codecov.io/gh/amithkoujalgi/ollama4j/graph/badge.svg?token=U0TE7BGP8L)](https://codecov.io/gh/amithkoujalgi/ollama4j)
+[//]: # (![GitHub repo size]&#40;https://img.shields.io/github/repo-size/amithkoujalgi/ollama4j&#41;)
 
-![GitHub Issues or Pull Requests](https://img.shields.io/github/issues-raw/amithkoujalgi/ollama4j)
-![GitHub Issues or Pull Requests](https://img.shields.io/github/issues-closed-raw/amithkoujalgi/ollama4j)
-![GitHub Issues or Pull Requests](https://img.shields.io/github/issues-pr-raw/amithkoujalgi/ollama4j)
-![GitHub Issues or Pull Requests](https://img.shields.io/github/issues-pr-closed-raw/amithkoujalgi/ollama4j)
-![GitHub Discussions](https://img.shields.io/github/discussions/amithkoujalgi/ollama4j)
+[//]: # (![GitHub top language]&#40;https://img.shields.io/github/languages/top/amithkoujalgi/ollama4j&#41;)
+
 
 ![JitPack Downloads This Month Badge](https://img.shields.io/badge/dynamic/json?url=https%3A%2F%2Fjitpack.io%2Fapi%2Fdownloads%2Fio.github.amithkoujalgi%2Follama4j&query=%24.month&label=JitPack%20Downloads%20-%20This%20Month)
 ![JitPack Downloads This Month Week](https://img.shields.io/badge/dynamic/json?url=https%3A%2F%2Fjitpack.io%2Fapi%2Fdownloads%2Fio.github.amithkoujalgi%2Follama4j&query=%24.week&label=JitPack%20Downloads%20-%20This%20Week)
 ![GitHub Downloads (all assets, all releases)](https://img.shields.io/github/downloads/amithkoujalgi/ollama4j/total?label=GitHub%20Package%20Downloads)
 
+![GitHub last commit](https://img.shields.io/github/last-commit/amithkoujalgi/ollama4j?color=green)
+[![codecov](https://codecov.io/gh/amithkoujalgi/ollama4j/graph/badge.svg?token=U0TE7BGP8L)](https://codecov.io/gh/amithkoujalgi/ollama4j)
 ![Build Status](https://github.com/amithkoujalgi/ollama4j/actions/workflows/maven-publish.yml/badge.svg)
+
 
 [//]: # (![Hits]&#40;https://hits.seeyoufarm.com/api/count/incr/badge.svg?url=https%3A%2F%2Fgithub.com%2Famithkoujalgi%2Follama4j&count_bg=%2379C83D&title_bg=%23555555&icon=&icon_color=%23E7E7E7&title=hits&edge_flat=false&#41;)
 
@@ -83,7 +80,6 @@ Find more details on the [website](https://amithkoujalgi.github.io/ollama4j/).
 >
 > Track the releases [here](https://github.com/amithkoujalgi/ollama4j/releases) and update the dependency version
 > according to your requirements.
-
 
 ### For Maven
 
@@ -280,6 +276,28 @@ Newer artifacts are published via GitHub Actions CI workflow when a new release 
 - [ ] Handle exceptions better (maybe throw more appropriate exceptions)
 
 ### Get Involved
+
+<div align="center">
+
+<a href="">![Open Issues](https://img.shields.io/github/issues-raw/amithkoujalgi/ollama4j)</a>
+<a href="">![Closed Issues](https://img.shields.io/github/issues-closed-raw/amithkoujalgi/ollama4j)</a>
+<a href="">![Open PRs](https://img.shields.io/github/issues-pr-raw/amithkoujalgi/ollama4j)</a>
+<a href="">![Closed PRs](https://img.shields.io/github/issues-pr-closed-raw/amithkoujalgi/ollama4j)</a>
+<a href="">![Discussions](https://img.shields.io/github/discussions/amithkoujalgi/ollama4j)</a>
+
+</div>
+
+
+[//]: # (![GitHub Issues or Pull Requests]&#40;https://img.shields.io/github/issues-raw/amithkoujalgi/ollama4j&#41;)
+
+[//]: # (![GitHub Issues or Pull Requests]&#40;https://img.shields.io/github/issues-closed-raw/amithkoujalgi/ollama4j&#41;)
+
+[//]: # (![GitHub Issues or Pull Requests]&#40;https://img.shields.io/github/issues-pr-raw/amithkoujalgi/ollama4j&#41;)
+
+[//]: # (![GitHub Issues or Pull Requests]&#40;https://img.shields.io/github/issues-pr-closed-raw/amithkoujalgi/ollama4j&#41;)
+
+[//]: # (![GitHub Discussions]&#40;https://img.shields.io/github/discussions/amithkoujalgi/ollama4j&#41;)
+
 
 Contributions are most welcome! Whether it's reporting a bug, proposing an enhancement, or helping
 with code - any sort
