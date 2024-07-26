@@ -86,6 +86,12 @@ Find more details on the [website](https://ollama4j.github.io/ollama4j/).
 
 #### Using [Maven Central](https://central.sonatype.com/)
 
+[![][ollama4j-mvn-releases-shield]][ollama4j-mvn-releases-link]
+
+[ollama4j-mvn-releases-link]: https://github.com/ollama4j/ollama4j/releases
+
+[ollama4j-mvn-releases-shield]: https://img.shields.io/maven-central/v/io.github.ollama4j/ollama4j?display_name=release&style=for-the-badge&label=From%20Maven%20Central%20
+
 1In your Maven project, add this dependency:
 
 ```xml
@@ -101,7 +107,7 @@ Find more details on the [website](https://ollama4j.github.io/ollama4j/).
 
 [![][ollama4j-releases-shield]][ollama4j-releases-link]
 
-[ollama4j-releases-link]: https://github.com/ollama4j/ollama4j/releases
+[ollama4j-releases-link]: https://central.sonatype.com/artifact/io.github.ollama4j/ollama4j/overview
 
 [ollama4j-releases-shield]: https://img.shields.io/github/v/release/ollama4j/ollama4j?display_name=release&style=for-the-badge&label=From%20GitHub%20Packages%20
 
