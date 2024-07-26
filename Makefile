@@ -1,10 +1,10 @@
 build:
 	mvn -B clean install
 
-ut:
+unit-tests:
 	mvn clean test -Punit-tests
 
-it:
+integration-tests:
 	mvn clean verify -Pintegration-tests
 
 doxygen:

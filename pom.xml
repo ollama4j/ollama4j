@@ -204,7 +204,7 @@
                         <extensions>true</extensions>
                         <configuration>
                             <publishingServerId>mvn-repo-id</publishingServerId>
-                            <autoPublish>false</autoPublish>
+                            <autoPublish>true</autoPublish>
                         </configuration>
                     </plugin>
                 </plugins>
