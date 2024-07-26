@@ -76,8 +76,7 @@ Find more details on the [website](https://ollama4j.github.io/ollama4j/).
 ## Installation
 
 > [!NOTE]
-> We have migrated the package repository from Maven Central to GitHub package repository due to technical issues with
-> publishing. Please update your repository settings to get latest version of Ollama4j.
+> We are now publishing the artifacts to both Maven Central and GitHub package repositories.
 >
 > Track the releases [here](https://github.com/ollama4j/ollama4j/releases) and update the dependency version
 > according to your requirements.
