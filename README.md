@@ -39,7 +39,7 @@ Find more details on the [website](https://ollama4j.github.io/ollama4j/).
 - [How does it work?](#how-does-it-work)
 - [Requirements](#requirements)
 - [Installation](#installation)
-- [API Spec](https://ollama4j.github.io/ollama4j/docs/category/apis---model-management)
+- [API Spec](https://ollama4j.github.io/ollama4j/category/apis---model-management)
 - [Javadoc](https://ollama4j.github.io/ollama4j/apidocs/)
 - [Development](#development)
 - [Contributions](#get-involved)
