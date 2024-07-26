@@ -84,7 +84,7 @@ Add the dependency to your project's `pom.xml`.
 </dependency>
 ```
 
-Find the latest version of the library [here](https://central.sonatype.com/artifact/io.github.amithkoujalgi/ollama4j).
+Find the latest version of the library [here](https://central.sonatype.com/artifact/io.github.ollama4j/ollama4j).
 
 You might want to include an implementation of [SL4J](https://www.slf4j.org/) logger in your `pom.xml` file. For
 example,
