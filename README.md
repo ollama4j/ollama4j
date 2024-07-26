@@ -159,7 +159,7 @@ Find more details on the [website](https://ollama4j.github.io/ollama4j/).
 
 ```groovy
 dependencies {
-    implementation 'com.github.ollama4j:ollama4j:Tag'
+  implementation 'com.github.ollama4j:ollama4j:1.0.78'
 }
 ```
 
