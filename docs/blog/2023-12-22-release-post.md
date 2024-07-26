@@ -11,7 +11,7 @@ Hey there, my fellow Java Developers! 🚀
 I am glad to announce the release of Ollama4j, a library that unites Ollama (an LLM manager and runner) and your Java
 applications! 🌐🚀
 
-👉 GitHub Repository: Ollama4j on GitHub (https://github.com/amithkoujalgi/ollama4j)
+👉 GitHub Repository: Ollama4j on GitHub (https://github.com/ollama4j/ollama4j)
 
 🌟 Key Features:
 

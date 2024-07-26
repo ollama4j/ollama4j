@@ -31,7 +31,7 @@ Link to [source](https://github.com/jmorganca/ollama/blob/main/docs/modelfile.md
 
 Also, see how to set those Ollama parameters using
 the `OptionsBuilder`
-from [javadoc](https://amithkoujalgi.github.io/ollama4j/apidocs/io/github/amithkoujalgi/ollama4j/core/utils/OptionsBuilder.html).
+from [javadoc](https://ollama4j.github.io/ollama4j/apidocs/io/github/ollama4j/ollama4j/core/utils/OptionsBuilder.html).
 
 ## Build an empty `Options` object
 

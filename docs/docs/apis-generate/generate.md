@@ -141,7 +141,7 @@ public class Main {
 ```
 
 _Note: Here I've used
-a [sample prompt](https://github.com/amithkoujalgi/ollama4j/blob/main/src/main/resources/sample-db-prompt-template.txt)
+a [sample prompt](https://github.com/ollama4j/ollama4j/blob/main/src/main/resources/sample-db-prompt-template.txt)
 containing a database schema from within this library for demonstration purposes._
 
 You'd then get a response from the model:

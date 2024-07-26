@@ -20,7 +20,7 @@ const config = {
 
     // GitHub pages deployment config.
     // If you aren't using GitHub pages, you don't need these.
-    organizationName: 'amithkoujalgi', // Usually your GitHub org/user name.
+    organizationName: 'ollama4j', // Usually your GitHub org/user name.
     projectName: 'ollama4j', // Usually your repo name.
 
     onBrokenLinks: 'throw',
@@ -46,14 +46,14 @@ const config = {
                     // Please change this to your repo.
                     // Remove this to remove the "edit this page" links.
                     editUrl:
-                        'https://github.com/amithkoujalgi/ollama4j/blob/main/docs',
+                        'https://github.com/ollama4j/ollama4j/blob/main/docs',
                 },
                 blog: {
                     showReadingTime: true,
                     // Please change this to your repo.
                     // Remove this to remove the "edit this page" links.
                     editUrl:
-                        'https://github.com/amithkoujalgi/ollama4j/blob/main/docs',
+                        'https://github.com/ollama4j/ollama4j/blob/main/docs',
                 },
                 theme: {
                     customCss: './src/css/custom.css',
@@ -80,11 +80,11 @@ const config = {
                         position: 'left',
                         label: 'Docs',
                     },
-                    {to: 'https://amithkoujalgi.github.io/ollama4j/apidocs/', label: 'Javadoc', position: 'left'},
-                    {to: 'https://amithkoujalgi.github.io/ollama4j/doxygen/html/', label: 'Doxygen', position: 'left'},
+                    {to: 'https://ollama4j.github.io/ollama4j/apidocs/', label: 'Javadoc', position: 'left'},
+                    {to: 'https://ollama4j.github.io/ollama4j/doxygen/html/', label: 'Doxygen', position: 'left'},
                     {to: '/blog', label: 'Blog', position: 'left'},
                     {
-                        href: 'https://github.com/amithkoujalgi/ollama4j',
+                        href: 'https://github.com/ollama4j/ollama4j',
                         label: 'GitHub',
                         position: 'right',
                     },
@@ -124,7 +124,7 @@ const config = {
                             },
                             {
                                 label: 'GitHub',
-                                href: 'https://github.com/amithkoujalgi/ollama4j',
+                                href: 'https://github.com/ollama4j/ollama4j',
                             },
                         ],
                     },
