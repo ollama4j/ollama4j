@@ -70,38 +70,36 @@ Find more details on the [website](https://ollama4j.github.io/ollama4j/).
 
 ![Java](https://img.shields.io/badge/Java-11_+-green.svg?style=for-the-badge&labelColor=gray&label=Java&color=orange)
 
+![Ollama](https://img.shields.io/badge/v0.3.0-green.svg?style=for-the-badge&labelColor=gray&label=Ollama&color=blue)
+
+
 <table>
 <tr>
 <td> 
 
-[![][ollama-shield]][ollama-link]
+<a href="https://ollama.ai/">Local Installation</a>
 
 </td> 
 
 <td> 
 
-[![][ollama-docker-shield]][ollama-docker]
+<a href="https://hub.docker.com/r/ollama/ollama">Docker Installation</a>
 
 </td>
 </tr>
 <tr>
 <td>
 
+<a href="https://ollama.com/download/Ollama-darwin.zip">Download for macOS</a>
 
+<a href="https://ollama.com/download/OllamaSetup.exe">Download for Windows</a>
 
-macOS
-
-https://ollama.com/download/Ollama-darwin.zip
-
-Linux
+Install on Linux
 
 ```shell 
 curl -fsSL https://ollama.com/install.sh \| sh
 ```
 
-Windows
-
-https://ollama.com/download/OllamaSetup.exe
 
 
 </td>
@@ -132,13 +130,6 @@ docker run -d -p 11434:11434 \
 </tr>
 </table>
 
-[ollama-link]: https://ollama.ai/
-
-[ollama-shield]: https://img.shields.io/badge/Ollama-Local_Installation-blue.svg?style=for-the-badge&labelColor=gray
-
-[ollama-docker]: https://hub.docker.com/r/ollama/ollama
-
-[ollama-docker-shield]: https://img.shields.io/badge/Ollama-Docker-blue.svg?style=for-the-badge&labelColor=gray
 
 ## Installation
 
