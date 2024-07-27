@@ -71,7 +71,7 @@ Find more details on the [website](https://ollama4j.github.io/ollama4j/).
 ![Java](https://img.shields.io/badge/Java-11_+-green.svg?style=for-the-badge&labelColor=gray&label=Java&color=orange)
 
 
-<a href="https://ollama.com/">
+<a href="https://ollama.com/" target="_blank">
   <img src="https://img.shields.io/badge/v0.3.0-green.svg?style=for-the-badge&labelColor=gray&label=Ollama&color=blue" alt=""/>
 </a>
 
@@ -79,27 +79,27 @@ Find more details on the [website](https://ollama4j.github.io/ollama4j/).
 <tr>
 <td> 
 
-<a href="https://ollama.ai/">Local Installation</a>
+<a href="https://ollama.ai/" target="_blank">Local Installation</a>
 
 </td> 
 
 <td> 
 
-<a href="https://hub.docker.com/r/ollama/ollama">Docker Installation</a>
+<a href="https://hub.docker.com/r/ollama/ollama" target="_blank">Docker Installation</a>
 
 </td>
 </tr>
 <tr>
 <td>
 
-<a href="https://ollama.com/download/Ollama-darwin.zip">Download for macOS</a>
+<a href="https://ollama.com/download/Ollama-darwin.zip" target="_blank">Download for macOS</a>
 
-<a href="https://ollama.com/download/OllamaSetup.exe">Download for Windows</a>
+<a href="https://ollama.com/download/OllamaSetup.exe" target="_blank">Download for Windows</a>
 
 Install on Linux
 
 ```shell 
-curl -fsSL https://ollama.com/install.sh \| sh
+curl -fsSL https://ollama.com/install.sh | sh
 ```
 
 </td>
@@ -325,7 +325,7 @@ project.
 
 <p align="center">
   <a href="https://github.com/ollama4j/ollama4j/graphs/contributors">
-    <img src="https://contrib.rocks/image?repo=ollama4j/ollama4j" />
+    <img src="https://contrib.rocks/image?repo=ollama4j/ollama4j"  alt=""/>
   </a>
 </p>
 
