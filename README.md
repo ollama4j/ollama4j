@@ -70,7 +70,6 @@ Find more details on the [website](https://ollama4j.github.io/ollama4j/).
 
 ![Java](https://img.shields.io/badge/Java-11_+-green.svg?style=for-the-badge&labelColor=gray&label=Java&color=orange)
 
-
 <table>
 <tr>
 <td> 
