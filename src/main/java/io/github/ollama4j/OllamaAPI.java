@@ -113,7 +113,7 @@ public class OllamaAPI {
     }
 
     /**
-     * List models that are currently loaded into memory.
+     * Provides a list of running models and details about each model currently loaded into memory.
      *
      * @return ModelsProcessResponse
      */
