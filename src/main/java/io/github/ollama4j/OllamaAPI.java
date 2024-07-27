@@ -1,5 +1,6 @@
 package io.github.ollama4j;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import io.github.ollama4j.exceptions.OllamaBaseException;
 import io.github.ollama4j.exceptions.ToolInvocationException;
 import io.github.ollama4j.exceptions.ToolNotFoundException;
@@ -12,6 +13,7 @@ import io.github.ollama4j.models.embeddings.OllamaEmbeddingResponseModel;
 import io.github.ollama4j.models.embeddings.OllamaEmbeddingsRequestModel;
 import io.github.ollama4j.models.generate.OllamaGenerateRequestModel;
 import io.github.ollama4j.models.generate.OllamaStreamHandler;
+import io.github.ollama4j.models.ps.ModelsProcessResponse;
 import io.github.ollama4j.models.request.*;
 import io.github.ollama4j.tools.*;
 import io.github.ollama4j.utils.Options;
@@ -108,6 +110,37 @@ public class OllamaAPI {
         }
         int statusCode = response.statusCode();
         return statusCode == 200;
+    }
+
+    /**
+     * List models that are currently loaded into memory.
+     *
+     * @return ModelsProcessResponse
+     */
+    public ModelsProcessResponse ps() throws IOException, InterruptedException, OllamaBaseException {
+        String url = this.host + "/api/ps";
+        HttpClient httpClient = HttpClient.newHttpClient();
+        HttpRequest httpRequest = null;
+        try {
+            httpRequest =
+                    getRequestBuilderDefault(new URI(url))
+                            .header("Accept", "application/json")
+                            .header("Content-type", "application/json")
+                            .GET()
+                            .build();
+        } catch (URISyntaxException e) {
+            throw new RuntimeException(e);
+        }
+        HttpResponse<String> response = null;
+        response = httpClient.send(httpRequest, HttpResponse.BodyHandlers.ofString());
+        int statusCode = response.statusCode();
+        String responseString = response.body();
+        if (statusCode == 200) {
+            return Utils.getObjectMapper()
+                    .readValue(responseString, ModelsProcessResponse.class);
+        } else {
+            throw new OllamaBaseException(statusCode + " - " + responseString);
+        }
     }
 
     /**
