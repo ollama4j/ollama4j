@@ -287,7 +287,7 @@ Newer artifacts are published via GitHub Actions CI workflow when a new release 
 - `ollama-translator`: Minecraft 1.20.6 spigot plugin allows to easily break language barriers by using ollama on the
   server to translate all messages into a specfic target language.
     - https://github.com/liebki/ollama-translator
-- `Ollama4j UI`: A web UI for Ollama written in Java using Spring Boot and Vaadin framework and
+- `Ollama4j Web UI`: A web UI for Ollama written in Java using Spring Boot and Vaadin framework and
   Ollama4j. https://github.com/ollama4j/ollama4j-web-ui
 
 #### Traction
