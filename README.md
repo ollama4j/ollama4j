@@ -21,9 +21,12 @@ Find more details on the [website](https://ollama4j.github.io/ollama4j/).
 
 
 [//]: # (![JitPack Downloads This Month Badge]&#40;https://img.shields.io/badge/dynamic/json?url=https%3A%2F%2Fjitpack.io%2Fapi%2Fdownloads%2Fio.github.ollama4j%2Follama4j&query=%24.month&label=JitPack%20Downloads%20-%20This%20Month&#41;)
+
 [//]: # (![JitPack Downloads This Week Badge]&#40;https://img.shields.io/badge/dynamic/json?url=https%3A%2F%2Fjitpack.io%2Fapi%2Fdownloads%2Fio.github.ollama4j%2Follama4j&query=%24.week&label=JitPack%20Downloads%20-%20This%20Week&#41;)
+
 [//]: # (![JitPack Downloads Per Month Badge]&#40;https://jitpack.io/v/ollama4j/ollama4j/month.svg&#41;)
-![GitHub Downloads (all assets, all releases)](https://img.shields.io/github/downloads/ollama4j/ollama4j/total?label=GitHub%20Package%20Downloads)
+
+[//]: # (![GitHub Downloads &#40;all assets, all releases&#41;]&#40;https://img.shields.io/github/downloads/ollama4j/ollama4j/total?label=GitHub%20Package%20Downloads&#41;)
 
 ![GitHub last commit](https://img.shields.io/github/last-commit/ollama4j/ollama4j?color=green)
 [![codecov](https://codecov.io/gh/ollama4j/ollama4j/graph/badge.svg?token=U0TE7BGP8L)](https://codecov.io/gh/ollama4j/ollama4j)
@@ -63,7 +66,13 @@ Find more details on the [website](https://ollama4j.github.io/ollama4j/).
 
 ![Java](https://img.shields.io/badge/Java-11_+-green.svg?style=for-the-badge&labelColor=gray&label=Java&color=orange)
 
-[![][ollama-shield]][ollama-link] **Or** [![][ollama-docker-shield]][ollama-docker]
+<div style="width: 100%; box-sizing: border-box;" >
+
+| Direct Installation               | Docker Installation                        |
+|-----------------------------------|--------------------------------------------|
+| [![][ollama-shield]][ollama-link] | [![][ollama-docker-shield]][ollama-docker] |
+
+</div>
 
 [ollama-link]: https://ollama.ai/
 
