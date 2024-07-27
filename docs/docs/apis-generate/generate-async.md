@@ -13,7 +13,7 @@ the [completion](https://github.com/jmorganca/ollama/blob/main/docs/api.md#gener
 
 ```java
 import io.github.ollama4j.OllamaAPI;
-import io.github.ollama4j.models.OllamaAsyncResultStreamer;
+import io.github.ollama4j.models.response.OllamaAsyncResultStreamer;
 import io.github.ollama4j.types.OllamaModelType;
 
 public class Main {

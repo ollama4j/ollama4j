@@ -3,22 +3,22 @@ package io.github.ollama4j.models.generate;
 import io.github.ollama4j.utils.Options;
 
 /**
- * Helper class for creating {@link OllamaGenerateRequestModel}
+ * Helper class for creating {@link OllamaGenerateRequest}
  * objects using the builder-pattern.
  */
 public class OllamaGenerateRequestBuilder {
 
     private OllamaGenerateRequestBuilder(String model, String prompt){
-        request = new OllamaGenerateRequestModel(model, prompt);
+        request = new OllamaGenerateRequest(model, prompt);
     }
 
-    private OllamaGenerateRequestModel request;
+    private OllamaGenerateRequest request;
 
     public static OllamaGenerateRequestBuilder getInstance(String model){
         return new OllamaGenerateRequestBuilder(model,"");
     }
 
-    public OllamaGenerateRequestModel build(){
+    public OllamaGenerateRequest build(){
         return request;
     }
 

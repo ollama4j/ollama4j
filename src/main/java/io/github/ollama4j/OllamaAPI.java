@@ -1,20 +1,19 @@
 package io.github.ollama4j;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import io.github.ollama4j.exceptions.OllamaBaseException;
 import io.github.ollama4j.exceptions.ToolInvocationException;
 import io.github.ollama4j.exceptions.ToolNotFoundException;
-import io.github.ollama4j.models.*;
 import io.github.ollama4j.models.chat.OllamaChatMessage;
+import io.github.ollama4j.models.chat.OllamaChatRequest;
 import io.github.ollama4j.models.chat.OllamaChatRequestBuilder;
-import io.github.ollama4j.models.chat.OllamaChatRequestModel;
 import io.github.ollama4j.models.chat.OllamaChatResult;
 import io.github.ollama4j.models.embeddings.OllamaEmbeddingResponseModel;
 import io.github.ollama4j.models.embeddings.OllamaEmbeddingsRequestModel;
-import io.github.ollama4j.models.generate.OllamaGenerateRequestModel;
+import io.github.ollama4j.models.generate.OllamaGenerateRequest;
 import io.github.ollama4j.models.generate.OllamaStreamHandler;
 import io.github.ollama4j.models.ps.ModelsProcessResponse;
 import io.github.ollama4j.models.request.*;
+import io.github.ollama4j.models.response.*;
 import io.github.ollama4j.tools.*;
 import io.github.ollama4j.utils.Options;
 import io.github.ollama4j.utils.Utils;
@@ -384,7 +383,7 @@ public class OllamaAPI {
      */
     public OllamaResult generate(String model, String prompt, boolean raw, Options options, OllamaStreamHandler streamHandler)
             throws OllamaBaseException, IOException, InterruptedException {
-        OllamaGenerateRequestModel ollamaRequestModel = new OllamaGenerateRequestModel(model, prompt);
+        OllamaGenerateRequest ollamaRequestModel = new OllamaGenerateRequest(model, prompt);
         ollamaRequestModel.setRaw(raw);
         ollamaRequestModel.setOptions(options.getOptionsMap());
         return generateSyncForOllamaRequestModel(ollamaRequestModel, streamHandler);
@@ -453,7 +452,7 @@ public class OllamaAPI {
      * @return the ollama async result callback handle
      */
     public OllamaAsyncResultStreamer generateAsync(String model, String prompt, boolean raw) {
-        OllamaGenerateRequestModel ollamaRequestModel = new OllamaGenerateRequestModel(model, prompt);
+        OllamaGenerateRequest ollamaRequestModel = new OllamaGenerateRequest(model, prompt);
         ollamaRequestModel.setRaw(raw);
         URI uri = URI.create(this.host + "/api/generate");
         OllamaAsyncResultStreamer ollamaAsyncResultStreamer =
@@ -483,7 +482,7 @@ public class OllamaAPI {
         for (File imageFile : imageFiles) {
             images.add(encodeFileToBase64(imageFile));
         }
-        OllamaGenerateRequestModel ollamaRequestModel = new OllamaGenerateRequestModel(model, prompt, images);
+        OllamaGenerateRequest ollamaRequestModel = new OllamaGenerateRequest(model, prompt, images);
         ollamaRequestModel.setOptions(options.getOptionsMap());
         return generateSyncForOllamaRequestModel(ollamaRequestModel, streamHandler);
     }
@@ -519,7 +518,7 @@ public class OllamaAPI {
         for (String imageURL : imageURLs) {
             images.add(encodeByteArrayToBase64(Utils.loadImageBytesFromUrl(imageURL)));
         }
-        OllamaGenerateRequestModel ollamaRequestModel = new OllamaGenerateRequestModel(model, prompt, images);
+        OllamaGenerateRequest ollamaRequestModel = new OllamaGenerateRequest(model, prompt, images);
         ollamaRequestModel.setOptions(options.getOptionsMap());
         return generateSyncForOllamaRequestModel(ollamaRequestModel, streamHandler);
     }
@@ -553,7 +552,7 @@ public class OllamaAPI {
     }
 
     /**
-     * Ask a question to a model using an {@link OllamaChatRequestModel}. This can be constructed using an {@link OllamaChatRequestBuilder}.
+     * Ask a question to a model using an {@link OllamaChatRequest}. This can be constructed using an {@link OllamaChatRequestBuilder}.
      * <p>
      * Hint: the OllamaChatRequestModel#getStream() property is not implemented.
      *
@@ -563,12 +562,12 @@ public class OllamaAPI {
      * @throws IOException          in case the responseStream can not be read
      * @throws InterruptedException in case the server is not reachable or network issues happen
      */
-    public OllamaChatResult chat(OllamaChatRequestModel request) throws OllamaBaseException, IOException, InterruptedException {
+    public OllamaChatResult chat(OllamaChatRequest request) throws OllamaBaseException, IOException, InterruptedException {
         return chat(request, null);
     }
 
     /**
-     * Ask a question to a model using an {@link OllamaChatRequestModel}. This can be constructed using an {@link OllamaChatRequestBuilder}.
+     * Ask a question to a model using an {@link OllamaChatRequest}. This can be constructed using an {@link OllamaChatRequestBuilder}.
      * <p>
      * Hint: the OllamaChatRequestModel#getStream() property is not implemented.
      *
@@ -579,7 +578,7 @@ public class OllamaAPI {
      * @throws IOException          in case the responseStream can not be read
      * @throws InterruptedException in case the server is not reachable or network issues happen
      */
-    public OllamaChatResult chat(OllamaChatRequestModel request, OllamaStreamHandler streamHandler) throws OllamaBaseException, IOException, InterruptedException {
+    public OllamaChatResult chat(OllamaChatRequest request, OllamaStreamHandler streamHandler) throws OllamaBaseException, IOException, InterruptedException {
         OllamaChatEndpointCaller requestCaller = new OllamaChatEndpointCaller(host, basicAuth, requestTimeoutSeconds, verbose);
         OllamaResult result;
         if (streamHandler != null) {
@@ -606,7 +605,7 @@ public class OllamaAPI {
     }
 
     private OllamaResult generateSyncForOllamaRequestModel(
-            OllamaGenerateRequestModel ollamaRequestModel, OllamaStreamHandler streamHandler)
+            OllamaGenerateRequest ollamaRequestModel, OllamaStreamHandler streamHandler)
             throws OllamaBaseException, IOException, InterruptedException {
         OllamaGenerateEndpointCaller requestCaller =
                 new OllamaGenerateEndpointCaller(host, basicAuth, requestTimeoutSeconds, verbose);

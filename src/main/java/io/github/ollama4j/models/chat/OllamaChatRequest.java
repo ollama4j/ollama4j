@@ -2,7 +2,7 @@ package io.github.ollama4j.models.chat;
 
 import java.util.List;
 
-import io.github.ollama4j.models.OllamaCommonRequestModel;
+import io.github.ollama4j.models.request.OllamaCommonRequest;
 import io.github.ollama4j.utils.OllamaRequestBody;
 
 import lombok.Getter;
@@ -17,20 +17,20 @@ import lombok.Setter;
  */
 @Getter
 @Setter
-public class OllamaChatRequestModel extends OllamaCommonRequestModel implements OllamaRequestBody {
+public class OllamaChatRequest extends OllamaCommonRequest implements OllamaRequestBody {
 
   private List<OllamaChatMessage> messages;
 
-  public OllamaChatRequestModel() {}
+  public OllamaChatRequest() {}
 
-  public OllamaChatRequestModel(String model, List<OllamaChatMessage> messages) {
+  public OllamaChatRequest(String model, List<OllamaChatMessage> messages) {
     this.model = model;
     this.messages = messages;
   }
 
   @Override
   public boolean equals(Object o) {
-    if (!(o instanceof OllamaChatRequestModel)) {
+    if (!(o instanceof OllamaChatRequest)) {
       return false;
     }
 

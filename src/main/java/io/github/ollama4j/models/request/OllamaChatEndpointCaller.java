@@ -2,8 +2,7 @@ package io.github.ollama4j.models.request;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import io.github.ollama4j.exceptions.OllamaBaseException;
-import io.github.ollama4j.models.BasicAuth;
-import io.github.ollama4j.models.OllamaResult;
+import io.github.ollama4j.models.response.OllamaResult;
 import io.github.ollama4j.models.chat.OllamaChatResponseModel;
 import io.github.ollama4j.models.chat.OllamaChatStreamObserver;
 import io.github.ollama4j.models.generate.OllamaStreamHandler;

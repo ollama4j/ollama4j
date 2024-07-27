@@ -1,7 +1,7 @@
 package io.github.ollama4j.models.generate;
 
 
-import io.github.ollama4j.models.OllamaCommonRequestModel;
+import io.github.ollama4j.models.request.OllamaCommonRequest;
 import io.github.ollama4j.utils.OllamaRequestBody;
 
 import java.util.List;
@@ -11,7 +11,7 @@ import lombok.Setter;
 
 @Getter
 @Setter
-public class OllamaGenerateRequestModel extends OllamaCommonRequestModel implements OllamaRequestBody{
+public class OllamaGenerateRequest extends OllamaCommonRequest implements OllamaRequestBody{
 
   private String prompt;
   private List<String> images;
@@ -20,15 +20,15 @@ public class OllamaGenerateRequestModel extends OllamaCommonRequestModel impleme
   private String context;
   private boolean raw;
 
-  public OllamaGenerateRequestModel() {
+  public OllamaGenerateRequest() {
   }
 
-  public OllamaGenerateRequestModel(String model, String prompt) {
+  public OllamaGenerateRequest(String model, String prompt) {
     this.model = model;
     this.prompt = prompt;
   }
 
-  public OllamaGenerateRequestModel(String model, String prompt, List<String> images) {
+  public OllamaGenerateRequest(String model, String prompt, List<String> images) {
     this.model = model;
     this.prompt = prompt;
     this.images = images;
@@ -36,7 +36,7 @@ public class OllamaGenerateRequestModel extends OllamaCommonRequestModel impleme
 
     @Override
   public boolean equals(Object o) {
-    if (!(o instanceof OllamaGenerateRequestModel)) {
+    if (!(o instanceof OllamaGenerateRequest)) {
       return false;
     }
 

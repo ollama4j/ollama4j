@@ -2,9 +2,8 @@ package io.github.ollama4j.models.request;
 
 import io.github.ollama4j.OllamaAPI;
 import io.github.ollama4j.exceptions.OllamaBaseException;
-import io.github.ollama4j.models.BasicAuth;
-import io.github.ollama4j.models.OllamaErrorResponseModel;
-import io.github.ollama4j.models.OllamaResult;
+import io.github.ollama4j.models.response.OllamaErrorResponse;
+import io.github.ollama4j.models.response.OllamaResult;
 import io.github.ollama4j.utils.OllamaRequestBody;
 import io.github.ollama4j.utils.Utils;
 import org.slf4j.Logger;
@@ -78,19 +77,19 @@ public abstract class OllamaEndpointCaller {
             while ((line = reader.readLine()) != null) {
                 if (statusCode == 404) {
                     LOG.warn("Status code: 404 (Not Found)");
-                    OllamaErrorResponseModel ollamaResponseModel =
-                            Utils.getObjectMapper().readValue(line, OllamaErrorResponseModel.class);
+                    OllamaErrorResponse ollamaResponseModel =
+                            Utils.getObjectMapper().readValue(line, OllamaErrorResponse.class);
                     responseBuffer.append(ollamaResponseModel.getError());
                 } else if (statusCode == 401) {
                     LOG.warn("Status code: 401 (Unauthorized)");
-                    OllamaErrorResponseModel ollamaResponseModel =
+                    OllamaErrorResponse ollamaResponseModel =
                             Utils.getObjectMapper()
-                                    .readValue("{\"error\":\"Unauthorized\"}", OllamaErrorResponseModel.class);
+                                    .readValue("{\"error\":\"Unauthorized\"}", OllamaErrorResponse.class);
                     responseBuffer.append(ollamaResponseModel.getError());
                 } else if (statusCode == 400) {
                     LOG.warn("Status code: 400 (Bad Request)");
-                    OllamaErrorResponseModel ollamaResponseModel = Utils.getObjectMapper().readValue(line,
-                            OllamaErrorResponseModel.class);
+                    OllamaErrorResponse ollamaResponseModel = Utils.getObjectMapper().readValue(line,
+                            OllamaErrorResponse.class);
                     responseBuffer.append(ollamaResponseModel.getError());
                 } else {
                     boolean finished = parseResponseAndAddToBuffer(line, responseBuffer);

@@ -2,11 +2,11 @@ package io.github.ollama4j.integrationtests;
 
 import io.github.ollama4j.OllamaAPI;
 import io.github.ollama4j.exceptions.OllamaBaseException;
-import io.github.ollama4j.models.ModelDetail;
-import io.github.ollama4j.models.OllamaResult;
+import io.github.ollama4j.models.response.ModelDetail;
+import io.github.ollama4j.models.chat.OllamaChatRequest;
+import io.github.ollama4j.models.response.OllamaResult;
 import io.github.ollama4j.models.chat.OllamaChatMessageRole;
 import io.github.ollama4j.models.chat.OllamaChatRequestBuilder;
-import io.github.ollama4j.models.chat.OllamaChatRequestModel;
 import io.github.ollama4j.models.chat.OllamaChatResult;
 import io.github.ollama4j.models.embeddings.OllamaEmbeddingsRequestBuilder;
 import io.github.ollama4j.models.embeddings.OllamaEmbeddingsRequestModel;
@@ -177,7 +177,7 @@ class TestRealAPIs {
         testEndpointReachability();
         try {
             OllamaChatRequestBuilder builder = OllamaChatRequestBuilder.getInstance(config.getModel());
-            OllamaChatRequestModel requestModel = builder.withMessage(OllamaChatMessageRole.USER, "What is the capital of France?")
+            OllamaChatRequest requestModel = builder.withMessage(OllamaChatMessageRole.USER, "What is the capital of France?")
                     .withMessage(OllamaChatMessageRole.ASSISTANT, "Should be Paris!")
                     .withMessage(OllamaChatMessageRole.USER, "And what is the second larges city?")
                     .build();
@@ -197,7 +197,7 @@ class TestRealAPIs {
         testEndpointReachability();
         try {
             OllamaChatRequestBuilder builder = OllamaChatRequestBuilder.getInstance(config.getModel());
-            OllamaChatRequestModel requestModel = builder.withMessage(OllamaChatMessageRole.SYSTEM,
+            OllamaChatRequest requestModel = builder.withMessage(OllamaChatMessageRole.SYSTEM,
                             "You are a silent bot that only says 'NI'. Do not say anything else under any circumstances!")
                     .withMessage(OllamaChatMessageRole.USER,
                             "What is the capital of France? And what's France's connection with Mona Lisa?")
@@ -219,7 +219,7 @@ class TestRealAPIs {
         testEndpointReachability();
         try {
             OllamaChatRequestBuilder builder = OllamaChatRequestBuilder.getInstance(config.getModel());
-            OllamaChatRequestModel requestModel = builder.withMessage(OllamaChatMessageRole.USER,
+            OllamaChatRequest requestModel = builder.withMessage(OllamaChatMessageRole.USER,
                             "What is the capital of France? And what's France's connection with Mona Lisa?")
                     .build();
 
@@ -245,7 +245,7 @@ class TestRealAPIs {
         try {
             OllamaChatRequestBuilder builder =
                     OllamaChatRequestBuilder.getInstance(config.getImageModel());
-            OllamaChatRequestModel requestModel =
+            OllamaChatRequest requestModel =
                     builder.withMessage(OllamaChatMessageRole.USER, "What's in the picture?",
                             List.of(getImageFileFromClasspath("dog-on-a-boat.jpg"))).build();
 
@@ -275,7 +275,7 @@ class TestRealAPIs {
         testEndpointReachability();
         try {
             OllamaChatRequestBuilder builder = OllamaChatRequestBuilder.getInstance(config.getImageModel());
-            OllamaChatRequestModel requestModel = builder.withMessage(OllamaChatMessageRole.USER, "What's in the picture?",
+            OllamaChatRequest requestModel = builder.withMessage(OllamaChatMessageRole.USER, "What's in the picture?",
                             "https://t3.ftcdn.net/jpg/02/96/63/80/360_F_296638053_0gUVA4WVBKceGsIr7LNqRWSnkusi07dq.jpg")
                     .build();
 

@@ -1,6 +1,6 @@
 package io.github.ollama4j.tools;
 
-import io.github.ollama4j.models.OllamaResult;
+import io.github.ollama4j.models.response.OllamaResult;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;

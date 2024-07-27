@@ -2,9 +2,9 @@ package io.github.ollama4j.unittests;
 
 import io.github.ollama4j.OllamaAPI;
 import io.github.ollama4j.exceptions.OllamaBaseException;
-import io.github.ollama4j.models.ModelDetail;
-import io.github.ollama4j.models.OllamaAsyncResultStreamer;
-import io.github.ollama4j.models.OllamaResult;
+import io.github.ollama4j.models.response.ModelDetail;
+import io.github.ollama4j.models.response.OllamaAsyncResultStreamer;
+import io.github.ollama4j.models.response.OllamaResult;
 import io.github.ollama4j.types.OllamaModelType;
 import io.github.ollama4j.utils.OptionsBuilder;
 import org.junit.jupiter.api.Test;

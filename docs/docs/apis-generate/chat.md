@@ -13,7 +13,7 @@ information using the history of already asked questions and the respective answ
 import io.github.ollama4j.OllamaAPI;
 import io.github.ollama4j.models.chat.OllamaChatMessageRole;
 import io.github.ollama4j.models.chat.OllamaChatRequestBuilder;
-import io.github.ollama4j.models.chat.OllamaChatRequestModel;
+import io.github.ollama4j.models.chat.OllamaChatRequest;
 import io.github.ollama4j.models.chat.OllamaChatResult;
 import io.github.ollama4j.types.OllamaModelType;
 
@@ -27,7 +27,7 @@ public class Main {
         OllamaChatRequestBuilder builder = OllamaChatRequestBuilder.getInstance(OllamaModelType.LLAMA2);
 
         // create first user question
-        OllamaChatRequestModel requestModel = builder.withMessage(OllamaChatMessageRole.USER, "What is the capital of France?")
+        OllamaChatRequest requestModel = builder.withMessage(OllamaChatMessageRole.USER, "What is the capital of France?")
                 .build();
 
         // start conversation with model
@@ -87,8 +87,8 @@ You will get a response similar to:
 ```java
 import io.github.ollama4j.OllamaAPI;
 import io.github.ollama4j.models.chat.OllamaChatMessageRole;
+import io.github.ollama4j.models.chat.OllamaChatRequest;
 import io.github.ollama4j.models.chat.OllamaChatRequestBuilder;
-import io.github.ollama4j.models.chat.OllamaChatRequestModel;
 import io.github.ollama4j.models.chat.OllamaChatResult;
 import io.github.ollama4j.models.generate.OllamaStreamHandler;
 
@@ -101,7 +101,7 @@ public class Main {
 
         OllamaAPI ollamaAPI = new OllamaAPI(host);
         OllamaChatRequestBuilder builder = OllamaChatRequestBuilder.getInstance(config.getModel());
-        OllamaChatRequestModel requestModel = builder.withMessage(OllamaChatMessageRole.USER,
+        OllamaChatRequest requestModel = builder.withMessage(OllamaChatMessageRole.USER,
                         "What is the capital of France? And what's France's connection with Mona Lisa?")
                 .build();
 
@@ -132,7 +132,7 @@ import io.github.ollama4j.OllamaAPI;
 import io.github.ollama4j.impl.ConsoleOutputStreamHandler;
 import io.github.ollama4j.models.chat.OllamaChatMessageRole;
 import io.github.ollama4j.models.chat.OllamaChatRequestBuilder;
-import io.github.ollama4j.models.chat.OllamaChatRequestModel;
+import io.github.ollama4j.models.chat.OllamaChatRequest;
 import io.github.ollama4j.models.generate.OllamaStreamHandler;
 import io.github.ollama4j.types.OllamaModelType;
 
@@ -142,7 +142,7 @@ public class Main {
         OllamaAPI ollamaAPI = new OllamaAPI(host);
 
         OllamaChatRequestBuilder builder = OllamaChatRequestBuilder.getInstance(OllamaModelType.LLAMA2);
-        OllamaChatRequestModel requestModel = builder.withMessage(OllamaChatMessageRole.USER, "List all cricket world cup teams of 2019. Name the teams!")
+        OllamaChatRequest requestModel = builder.withMessage(OllamaChatMessageRole.USER, "List all cricket world cup teams of 2019. Name the teams!")
                 .build();
         OllamaStreamHandler streamHandler = new ConsoleOutputStreamHandler();
         ollamaAPI.chat(requestModel, streamHandler);
@@ -156,7 +156,7 @@ public class Main {
 import io.github.ollama4j.OllamaAPI;
 import io.github.ollama4j.models.chat.OllamaChatMessageRole;
 import io.github.ollama4j.models.chat.OllamaChatRequestBuilder;
-import io.github.ollama4j.models.chat.OllamaChatRequestModel;
+import io.github.ollama4j.models.chat.OllamaChatRequest;
 import io.github.ollama4j.models.chat.OllamaChatResult;
 import io.github.ollama4j.types.OllamaModelType;
 
@@ -171,7 +171,7 @@ public class Main {
         OllamaChatRequestBuilder builder = OllamaChatRequestBuilder.getInstance(OllamaModelType.LLAMA2);
 
         // create request with system-prompt (overriding the model defaults) and user question
-        OllamaChatRequestModel requestModel = builder.withMessage(OllamaChatMessageRole.SYSTEM, "You are a silent bot that only says 'NI'. Do not say anything else under any circumstances!")
+        OllamaChatRequest requestModel = builder.withMessage(OllamaChatMessageRole.SYSTEM, "You are a silent bot that only says 'NI'. Do not say anything else under any circumstances!")
                 .withMessage(OllamaChatMessageRole.USER, "What is the capital of France? And what's France's connection with Mona Lisa?")
                 .build();
 
@@ -193,8 +193,8 @@ You will get a response similar to:
 ```java
 import io.github.ollama4j.OllamaAPI;
 import io.github.ollama4j.models.chat.OllamaChatMessageRole;
+import io.github.ollama4j.models.chat.OllamaChatRequest;
 import io.github.ollama4j.models.chat.OllamaChatRequestBuilder;
-import io.github.ollama4j.models.chat.OllamaChatRequestModel;
 import io.github.ollama4j.models.chat.OllamaChatResult;
 import io.github.ollama4j.types.OllamaModelType;
 
@@ -211,7 +211,7 @@ public class Main {
         OllamaChatRequestBuilder builder = OllamaChatRequestBuilder.getInstance(OllamaModelType.LLAVA);
 
         // Load Image from File and attach to user message (alternatively images could also be added via URL)
-        OllamaChatRequestModel requestModel =
+        OllamaChatRequest requestModel =
                 builder.withMessage(OllamaChatMessageRole.USER, "What's in the picture?",
                         List.of(
                                 new File("/path/to/image"))).build();

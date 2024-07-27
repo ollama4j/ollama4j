@@ -1,4 +1,4 @@
-package io.github.ollama4j.models;
+package io.github.ollama4j.models.request;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;

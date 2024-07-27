@@ -1,4 +1,4 @@
-package io.github.ollama4j;
+package io.github.ollama4j.models.response;
 
 import java.util.Iterator;
 import java.util.LinkedList;

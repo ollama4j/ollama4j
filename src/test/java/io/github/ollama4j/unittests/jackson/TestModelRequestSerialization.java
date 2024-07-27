@@ -1,6 +1,6 @@
 package io.github.ollama4j.unittests.jackson;
 
-import io.github.ollama4j.models.Model;
+import io.github.ollama4j.models.response.Model;
 import org.junit.jupiter.api.Test;
 
 public class TestModelRequestSerialization extends AbstractSerializationTest<Model> {

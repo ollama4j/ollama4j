@@ -1,4 +1,4 @@
-package io.github.ollama4j.models;
+package io.github.ollama4j.models.response;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.Data;

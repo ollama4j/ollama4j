@@ -1,4 +1,4 @@
-package io.github.ollama4j.models;
+package io.github.ollama4j.models.request;
 
 import java.util.Map;
 import com.fasterxml.jackson.annotation.JsonInclude;
@@ -12,7 +12,7 @@ import lombok.Data;
 
 @Data
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public abstract class OllamaCommonRequestModel {
+public abstract class OllamaCommonRequest {
   
   protected String model;  
   @JsonSerialize(using = BooleanToJsonFormatFlagSerializer.class)

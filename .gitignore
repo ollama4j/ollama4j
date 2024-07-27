@@ -39,3 +39,5 @@ build/
 /.idea/
 pom.xml.*
 release.properties
+
+src/main/java/io/github/ollama4j/localtests

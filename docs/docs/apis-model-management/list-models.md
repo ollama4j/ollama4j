@@ -8,7 +8,7 @@ This API lets you list available models on the Ollama server.
 
 ```java title="ListModels.java"
 import io.github.ollama4j.OllamaAPI;
-import io.github.ollama4j.models.Model;
+import io.github.ollama4j.models.response.Model;
 
 import java.util.List;
 

@@ -1,8 +1,7 @@
-package io.github.ollama4j.models;
+package io.github.ollama4j.models.response;
 
-import io.github.ollama4j.OllamaResultStream;
 import io.github.ollama4j.exceptions.OllamaBaseException;
-import io.github.ollama4j.models.generate.OllamaGenerateRequestModel;
+import io.github.ollama4j.models.generate.OllamaGenerateRequest;
 import io.github.ollama4j.models.generate.OllamaGenerateResponseModel;
 import io.github.ollama4j.utils.Utils;
 import lombok.Data;
@@ -25,7 +24,7 @@ import java.time.Duration;
 @SuppressWarnings("unused")
 public class OllamaAsyncResultStreamer extends Thread {
     private final HttpRequest.Builder requestBuilder;
-    private final OllamaGenerateRequestModel ollamaRequestModel;
+    private final OllamaGenerateRequest ollamaRequestModel;
     private final OllamaResultStream stream = new OllamaResultStream();
     private String completeResponse;
 
@@ -56,7 +55,7 @@ public class OllamaAsyncResultStreamer extends Thread {
 
     public OllamaAsyncResultStreamer(
             HttpRequest.Builder requestBuilder,
-            OllamaGenerateRequestModel ollamaRequestModel,
+            OllamaGenerateRequest ollamaRequestModel,
             long requestTimeoutSeconds) {
         this.requestBuilder = requestBuilder;
         this.ollamaRequestModel = ollamaRequestModel;
@@ -91,8 +90,8 @@ public class OllamaAsyncResultStreamer extends Thread {
                 StringBuilder responseBuffer = new StringBuilder();
                 while ((line = reader.readLine()) != null) {
                     if (statusCode == 404) {
-                        OllamaErrorResponseModel ollamaResponseModel =
-                                Utils.getObjectMapper().readValue(line, OllamaErrorResponseModel.class);
+                        OllamaErrorResponse ollamaResponseModel =
+                                Utils.getObjectMapper().readValue(line, OllamaErrorResponse.class);
                         stream.add(ollamaResponseModel.getError());
                         responseBuffer.append(ollamaResponseModel.getError());
                     } else {

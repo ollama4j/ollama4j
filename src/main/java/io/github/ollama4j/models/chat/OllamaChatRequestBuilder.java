@@ -15,28 +15,28 @@ import io.github.ollama4j.utils.Options;
 import io.github.ollama4j.utils.Utils;
 
 /**
- * Helper class for creating {@link OllamaChatRequestModel} objects using the builder-pattern.
+ * Helper class for creating {@link OllamaChatRequest} objects using the builder-pattern.
  */
 public class OllamaChatRequestBuilder {
 
     private static final Logger LOG = LoggerFactory.getLogger(OllamaChatRequestBuilder.class);
 
     private OllamaChatRequestBuilder(String model, List<OllamaChatMessage> messages){
-        request = new OllamaChatRequestModel(model, messages);
+        request = new OllamaChatRequest(model, messages);
     }
 
-    private OllamaChatRequestModel request;
+    private OllamaChatRequest request;
 
     public static OllamaChatRequestBuilder getInstance(String model){
         return new OllamaChatRequestBuilder(model, new ArrayList<>());
     }
 
-    public OllamaChatRequestModel build(){
+    public OllamaChatRequest build(){
         return request;
     }
 
     public void reset(){
-        request = new OllamaChatRequestModel(request.getModel(), new ArrayList<>());
+        request = new OllamaChatRequest(request.getModel(), new ArrayList<>());
     }
 
     public OllamaChatRequestBuilder withMessage(OllamaChatMessageRole role, String content, List<File> images){

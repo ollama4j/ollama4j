@@ -1,4 +1,4 @@
-package io.github.ollama4j.models;
+package io.github.ollama4j.models.response;
 
 import static io.github.ollama4j.utils.Utils.getObjectMapper;
 

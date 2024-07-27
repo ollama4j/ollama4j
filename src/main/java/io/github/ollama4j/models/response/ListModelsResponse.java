@@ -1,6 +1,7 @@
-package io.github.ollama4j.models;
+package io.github.ollama4j.models.response;
 
 import java.util.List;
+
 import lombok.Data;
 
 @Data
