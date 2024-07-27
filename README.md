@@ -294,32 +294,6 @@ Newer artifacts are published via GitHub Actions CI workflow when a new release 
 
 [![Star History Chart](https://api.star-history.com/svg?repos=ollama4j/ollama4j&type=Date)](https://star-history.com/#ollama4j/ollama4j&Date)
 
-### Areas of improvement
-
-- [x] Use Java-naming conventions for attributes in the request/response models instead of the
-  snake-case conventions. (
-  possibly with Jackson-mapper's `@JsonProperty`)
-- [x] Fix deprecated HTTP client code
-- [x] Setup logging
-- [x] Use lombok
-- [x] Update request body creation with Java objects
-- [ ] Async APIs for images
-- [ ] Support for function calling with models like Mistral
-    - [x] generate in sync mode
-    - [ ] generate in async mode
-- [ ] Add custom headers to requests
-- [x] Add additional params for `ask` APIs such as:
-    - [x] `options`: additional model parameters for the Modelfile such as `temperature` -
-      Supported [params](https://github.com/jmorganca/ollama/blob/main/docs/modelfile.md#valid-parameters-and-values).
-    - [x] `system`: system prompt to (overrides what is defined in the Modelfile)
-    - [x] `template`: the full prompt or prompt template (overrides what is defined in the Modelfile)
-    - [x] `context`: the context parameter returned from a previous request, which can be used to keep a
-      short
-      conversational memory
-    - [x] `stream`: Add support for streaming responses from the model
-- [ ] Add test cases
-- [ ] Handle exceptions better (maybe throw more appropriate exceptions)
-
 ### Get Involved
 
 <div align="center">
