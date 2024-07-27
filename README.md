@@ -66,13 +66,61 @@ Find more details on the [website](https://ollama4j.github.io/ollama4j/).
 
 ![Java](https://img.shields.io/badge/Java-11_+-green.svg?style=for-the-badge&labelColor=gray&label=Java&color=orange)
 
-<div style="width: 100%; box-sizing: border-box;" >
 
-| Direct Installation               | Docker Installation                        |
-|-----------------------------------|--------------------------------------------|
-| [![][ollama-shield]][ollama-link] | [![][ollama-docker-shield]][ollama-docker] |
+<table>
+<tr>
+<td> 
 
-</div>
+[![][ollama-shield]][ollama-link]
+
+</td> 
+
+<td> 
+
+[![][ollama-docker-shield]][ollama-docker]
+
+</td>
+</tr>
+<tr>
+<td>
+
+
+
+macOS
+
+https://ollama.com/download/Ollama-darwin.zip
+
+Linux
+
+```shell 
+curl -fsSL https://ollama.com/install.sh \| sh
+```
+
+Windows
+
+https://ollama.com/download/OllamaSetup.exe
+
+
+</td>
+<td>
+
+
+
+CPU only
+
+```shell
+docker run  -d -v ollama:/root/.ollama -p 11434:11434 --name ollama ollama/ollama
+```
+
+NVIDIA GPU
+
+```shell
+docker run -d --gpus=all -v ollama:/root/.ollama -p 11434:11434 --name ollama ollama/ollama
+```
+
+</td>
+</tr>
+</table>
 
 [ollama-link]: https://ollama.ai/
 
