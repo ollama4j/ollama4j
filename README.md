@@ -222,7 +222,7 @@ In your Maven project, add this dependency:
 </dependency>
 ```
 
-##### For Gradle
+### For Gradle
 
 1. Add the dependency
 
