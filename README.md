@@ -70,8 +70,10 @@ Find more details on the [website](https://ollama4j.github.io/ollama4j/).
 
 ![Java](https://img.shields.io/badge/Java-11_+-green.svg?style=for-the-badge&labelColor=gray&label=Java&color=orange)
 
-![Ollama](https://img.shields.io/badge/v0.3.0-green.svg?style=for-the-badge&labelColor=gray&label=Ollama&color=blue)
 
+<a href="https://ollama.com/">
+  <img src="https://img.shields.io/badge/v0.3.0-green.svg?style=for-the-badge&labelColor=gray&label=Ollama&color=blue" alt=""/>
+</a>
 
 <table>
 <tr>
@@ -100,8 +102,6 @@ Install on Linux
 curl -fsSL https://ollama.com/install.sh \| sh
 ```
 
-
-
 </td>
 <td>
 
@@ -129,7 +129,6 @@ docker run -d -p 11434:11434 \
 </td>
 </tr>
 </table>
-
 
 ## Installation
 
