@@ -37,6 +37,5 @@ build/
 ### Mac OS ###
 .DS_Store
 /.idea/
-/src/main/java/io/github/amithkoujalgi/ollama4j/core/localtests/
 pom.xml.*
 release.properties

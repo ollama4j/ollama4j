@@ -78,9 +78,9 @@ Add the dependency to your project's `pom.xml`.
 ```xml
 
 <dependency>
-    <groupId>io.github.amithkoujalgi</groupId>
+    <groupId>io.github.ollama4j</groupId>
     <artifactId>ollama4j</artifactId>
-    <version>1.0.27</version>
+    <version>1.0.78</version>
 </dependency>
 ```
 
@@ -116,6 +116,8 @@ or use other suitable implementations.
 Create a new Java class in your project and add this code.
 
 ```java
+import io.github.ollama4j.OllamaAPI;
+
 public class OllamaAPITest {
 
     public static void main(String[] args) {

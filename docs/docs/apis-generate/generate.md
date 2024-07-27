@@ -16,6 +16,11 @@ to [this](/apis-extras/options-builder).
 ## Try asking a question about the model.
 
 ```java
+import io.github.ollama4j.OllamaAPI;
+import io.github.ollama4j.models.OllamaResult;
+import io.github.ollama4j.types.OllamaModelType;
+import io.github.ollama4j.utils.OptionsBuilder;
+
 public class Main {
 
     public static void main(String[] args) {
@@ -44,6 +49,11 @@ You will get a response similar to:
 ## Try asking a question, receiving the answer streamed
 
 ```java
+import io.github.ollama4j.OllamaAPI;
+import io.github.ollama4j.models.OllamaResult;
+import io.github.ollama4j.models.generate.OllamaStreamHandler;
+import io.github.ollama4j.utils.OptionsBuilder;
+
 public class Main {
 
     public static void main(String[] args) {
@@ -80,6 +90,11 @@ You will get a response similar to:
 ## Try asking a question from general topics.
 
 ```java
+import io.github.ollama4j.OllamaAPI;
+import io.github.ollama4j.models.OllamaResult;
+import io.github.ollama4j.types.OllamaModelType;
+import io.github.ollama4j.utils.OptionsBuilder;
+
 public class Main {
 
     public static void main(String[] args) {
@@ -123,6 +138,12 @@ You'd then get a response from the model:
 ## Try asking for a Database query for your data schema.
 
 ```java
+import io.github.ollama4j.OllamaAPI;
+import io.github.ollama4j.models.OllamaResult;
+import io.github.ollama4j.types.OllamaModelType;
+import io.github.ollama4j.utils.OptionsBuilder;
+import io.github.ollama4j.utils.SamplePrompts;
+
 public class Main {
 
     public static void main(String[] args) {

@@ -7,6 +7,8 @@ sidebar_position: 3
 This API lets you check the reachability of Ollama server.
 
 ```java
+import io.github.ollama4j.OllamaAPI;
+
 public class Main {
 
     public static void main(String[] args) {

@@ -10,6 +10,13 @@ information using the history of already asked questions and the respective answ
 ## Create a new conversation and use chat history to augment follow up questions
 
 ```java
+import io.github.ollama4j.OllamaAPI;
+import io.github.ollama4j.models.chat.OllamaChatMessageRole;
+import io.github.ollama4j.models.chat.OllamaChatRequestBuilder;
+import io.github.ollama4j.models.chat.OllamaChatRequestModel;
+import io.github.ollama4j.models.chat.OllamaChatResult;
+import io.github.ollama4j.types.OllamaModelType;
+
 public class Main {
 
     public static void main(String[] args) {
@@ -78,6 +85,14 @@ You will get a response similar to:
 ## Create a conversation where the answer is streamed
 
 ```java
+import io.github.ollama4j.OllamaAPI;
+import io.github.ollama4j.models.chat.OllamaChatMessageRole;
+import io.github.ollama4j.models.chat.OllamaChatRequestBuilder;
+import io.github.ollama4j.models.chat.OllamaChatRequestModel;
+import io.github.ollama4j.models.chat.OllamaChatResult;
+import io.github.ollama4j.models.generate.OllamaStreamHandler;
+
+
 public class Main {
 
     public static void main(String[] args) {
@@ -113,7 +128,13 @@ You will get a response similar to:
 ## Use a simple Console Output Stream Handler
 
 ```java
-import io.github.amithkoujalgi.ollama4j.core.impl.ConsoleOutputStreamHandler;
+import io.github.ollama4j.OllamaAPI;
+import io.github.ollama4j.impl.ConsoleOutputStreamHandler;
+import io.github.ollama4j.models.chat.OllamaChatMessageRole;
+import io.github.ollama4j.models.chat.OllamaChatRequestBuilder;
+import io.github.ollama4j.models.chat.OllamaChatRequestModel;
+import io.github.ollama4j.models.generate.OllamaStreamHandler;
+import io.github.ollama4j.types.OllamaModelType;
 
 public class Main {
     public static void main(String[] args) throws Exception {
@@ -132,6 +153,14 @@ public class Main {
 ## Create a new conversation with individual system prompt
 
 ```java
+import io.github.ollama4j.OllamaAPI;
+import io.github.ollama4j.models.chat.OllamaChatMessageRole;
+import io.github.ollama4j.models.chat.OllamaChatRequestBuilder;
+import io.github.ollama4j.models.chat.OllamaChatRequestModel;
+import io.github.ollama4j.models.chat.OllamaChatResult;
+import io.github.ollama4j.types.OllamaModelType;
+
+
 public class Main {
 
     public static void main(String[] args) {
@@ -162,6 +191,16 @@ You will get a response similar to:
 ## Create a conversation about an image (requires model with image recognition skills)
 
 ```java
+import io.github.ollama4j.OllamaAPI;
+import io.github.ollama4j.models.chat.OllamaChatMessageRole;
+import io.github.ollama4j.models.chat.OllamaChatRequestBuilder;
+import io.github.ollama4j.models.chat.OllamaChatRequestModel;
+import io.github.ollama4j.models.chat.OllamaChatResult;
+import io.github.ollama4j.types.OllamaModelType;
+
+import java.io.File;
+import java.util.List;
+
 public class Main {
 
     public static void main(String[] args) {
@@ -174,7 +213,8 @@ public class Main {
         // Load Image from File and attach to user message (alternatively images could also be added via URL)
         OllamaChatRequestModel requestModel =
                 builder.withMessage(OllamaChatMessageRole.USER, "What's in the picture?",
-                        List.of(getImageFileFromClasspath("dog-on-a-boat.jpg"))).build();
+                        List.of(
+                                new File("/path/to/image"))).build();
 
         OllamaChatResult chatResult = ollamaAPI.chat(requestModel);
         System.out.println("First answer: " + chatResult.getResponse());

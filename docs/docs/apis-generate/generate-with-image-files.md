@@ -22,6 +22,13 @@ If you have this image downloaded and you pass the path to the downloaded image 
 ![Img](https://t3.ftcdn.net/jpg/02/96/63/80/360_F_296638053_0gUVA4WVBKceGsIr7LNqRWSnkusi07dq.jpg)
 
 ```java
+import io.github.ollama4j.OllamaAPI;
+import io.github.ollama4j.models.OllamaResult;
+import io.github.ollama4j.types.OllamaModelType;
+import io.github.ollama4j.utils.OptionsBuilder;
+import java.io.File;
+import java.util.List;
+
 public class Main {
 
     public static void main(String[] args) {
@@ -32,7 +39,9 @@ public class Main {
         OllamaResult result = ollamaAPI.generateWithImageFiles(OllamaModelType.LLAVA,
                 "What's in this image?",
                 List.of(
-                        new File("/path/to/image")));
+                        new File("/path/to/image")),
+                new OptionsBuilder().build()
+        );
         System.out.println(result.getResponse());
     }
 }

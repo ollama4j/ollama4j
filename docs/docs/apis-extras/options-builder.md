@@ -36,8 +36,9 @@ from [javadoc](https://ollama4j.github.io/ollama4j/apidocs/io/github/ollama4j/ol
 ## Build an empty `Options` object
 
 ```java
-import io.github.amithkoujalgi.ollama4j.core.utils.Options;
-import io.github.amithkoujalgi.ollama4j.core.utils.OptionsBuilder;
+import io.github.ollama4j.OllamaAPI;
+import io.github.ollama4j.utils.Options;
+import io.github.ollama4j.utils.OptionsBuilder;
 
 public class Main {
 
@@ -55,8 +56,8 @@ public class Main {
 ## Build the `Options` object with values
 
 ```java
-import io.github.amithkoujalgi.ollama4j.core.utils.Options;
-import io.github.amithkoujalgi.ollama4j.core.utils.OptionsBuilder;
+import io.github.ollama4j.utils.Options;
+import io.github.ollama4j.utils.OptionsBuilder;
 
 public class Main {
 

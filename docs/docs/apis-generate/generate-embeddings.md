@@ -12,6 +12,10 @@ Parameters:
 - `prompt`: text to generate embeddings for
 
 ```java
+import io.github.ollama4j.OllamaAPI;
+import io.github.ollama4j.types.OllamaModelType;
+import java.util.List;
+
 public class Main {
 
     public static void main(String[] args) {

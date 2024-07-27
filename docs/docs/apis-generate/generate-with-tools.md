@@ -29,6 +29,8 @@ You could do that with ease with the `function calling` capabilities of the mode
 
 ### Create Functions
 
+We can create static functions as our tools.
+
 This function takes the arguments `location` and `fuelType` and performs an operation with these arguments and returns
 fuel price value.
 
@@ -49,6 +51,8 @@ public static String getCurrentWeather(Map<String, Object> arguments) {
     return "Currently " + location + "'s weather is nice.";
 }
 ```
+
+Another way to create our tools is by creating classes by extending `ToolFunction`.
 
 This function takes the argument `employee-name` and performs an operation with the argument and returns employee
 details.
@@ -211,13 +215,13 @@ Rahul Kumar, Address: King St, Hyderabad, India, Phone: 9876543210}`
 ### Full Example
 
 ```java
-import io.github.amithkoujalgi.ollama4j.core.OllamaAPI;
-import io.github.amithkoujalgi.ollama4j.core.exceptions.OllamaBaseException;
-import io.github.amithkoujalgi.ollama4j.core.exceptions.ToolInvocationException;
-import io.github.amithkoujalgi.ollama4j.core.tools.OllamaToolsResult;
-import io.github.amithkoujalgi.ollama4j.core.tools.ToolFunction;
-import io.github.amithkoujalgi.ollama4j.core.tools.Tools;
-import io.github.amithkoujalgi.ollama4j.core.utils.OptionsBuilder;
+import io.github.ollama4j.OllamaAPI;
+import io.github.ollama4j.exceptions.OllamaBaseException;
+import io.github.ollama4j.exceptions.ToolInvocationException;
+import io.github.ollama4j.tools.OllamaToolsResult;
+import io.github.ollama4j.tools.ToolFunction;
+import io.github.ollama4j.tools.Tools;
+import io.github.ollama4j.utils.OptionsBuilder;
 
 import java.io.IOException;
 import java.util.Arrays;
@@ -341,7 +345,7 @@ Rahul Kumar, Address: King St, Hyderabad, India, Phone: 9876543210}`
 
 ::::
 
-### Room for improvement
+### Potential Improvements
 
 Instead of explicitly registering `ollamaAPI.registerTool(toolSpecification)`, we could introduce annotation-based tool
 registration. For example:

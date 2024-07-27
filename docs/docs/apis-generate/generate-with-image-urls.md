@@ -22,6 +22,12 @@ Passing the link of this image the following code:
 ![Img](https://t3.ftcdn.net/jpg/02/96/63/80/360_F_296638053_0gUVA4WVBKceGsIr7LNqRWSnkusi07dq.jpg)
 
 ```java
+import io.github.ollama4j.OllamaAPI;
+import io.github.ollama4j.models.OllamaResult;
+import io.github.ollama4j.types.OllamaModelType;
+import io.github.ollama4j.utils.OptionsBuilder;
+import java.util.List;
+
 public class Main {
 
     public static void main(String[] args) {
@@ -32,7 +38,9 @@ public class Main {
         OllamaResult result = ollamaAPI.generateWithImageURLs(OllamaModelType.LLAVA,
                 "What's in this image?",
                 List.of(
-                        "https://t3.ftcdn.net/jpg/02/96/63/80/360_F_296638053_0gUVA4WVBKceGsIr7LNqRWSnkusi07dq.jpg"));
+                        "https://t3.ftcdn.net/jpg/02/96/63/80/360_F_296638053_0gUVA4WVBKceGsIr7LNqRWSnkusi07dq.jpg"),
+                new OptionsBuilder().build()
+        );
         System.out.println(result.getResponse());
     }
 }

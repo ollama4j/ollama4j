@@ -58,9 +58,9 @@ elevate your projects.
 
 I look forward to seeing the incredible applications/projects you'll build with Ollama4j! 🌟
 
-Find the full API spec here: https://amithkoujalgi.github.io/ollama4j/
+Find the full API spec here: https://ollama4j.github.io/ollama4j/
 
-Find the Javadoc here: https://amithkoujalgi.github.io/ollama4j/apidocs/
+Find the Javadoc here: https://ollama4j.github.io/ollama4j/apidocs/
 
 Ollama4j Docs is powered by [Docusaurus](https://docusaurus.io).
 

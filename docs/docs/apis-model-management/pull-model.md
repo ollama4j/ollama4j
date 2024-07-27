@@ -7,10 +7,13 @@ sidebar_position: 2
 This API lets you pull a model on the Ollama server.
 
 ```java title="PullModel.java"
+import io.github.ollama4j.OllamaAPI;
+import io.github.ollama4j.types.OllamaModelType;
+
 public class Main {
 
     public static void main(String[] args) {
-        
+
         String host = "http://localhost:11434/";
 
         OllamaAPI ollamaAPI = new OllamaAPI(host);

@@ -9,6 +9,8 @@ This API lets you create a custom model on the Ollama server.
 ### Create a model from an existing Modelfile in the Ollama server
 
 ```java title="CreateModel.java"
+import io.github.ollama4j.OllamaAPI;
+
 public class CreateModel {
 
     public static void main(String[] args) {

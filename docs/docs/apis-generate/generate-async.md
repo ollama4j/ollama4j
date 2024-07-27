@@ -12,6 +12,10 @@ This API corresponds to
 the [completion](https://github.com/jmorganca/ollama/blob/main/docs/api.md#generate-a-completion) API.
 
 ```java
+import io.github.ollama4j.OllamaAPI;
+import io.github.ollama4j.models.OllamaAsyncResultStreamer;
+import io.github.ollama4j.types.OllamaModelType;
+
 public class Main {
 
     public static void main(String[] args) throws Exception {
@@ -38,9 +42,7 @@ public class Main {
         System.out.println("Complete Response:");
         System.out.println("------------------------");
 
-        System.out.println(streamer.getResult());
+        System.out.println(streamer.getCompleteResponse());
     }
 }
 ```
-
-You will get a steaming response.

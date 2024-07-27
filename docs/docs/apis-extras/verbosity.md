@@ -9,6 +9,8 @@ This API lets you set the verbosity of the Ollama client.
 ## Try asking a question about the model.
 
 ```java
+import io.github.ollama4j.OllamaAPI;
+
 public class Main {
 
     public static void main(String[] args) {

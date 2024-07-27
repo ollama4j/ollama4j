@@ -7,6 +7,8 @@ sidebar_position: 5
 This API lets you create a delete a model from the Ollama server.
 
 ```java title="DeleteModel.java"
+import io.github.ollama4j.OllamaAPI;
+
 public class Main {
 
     public static void main(String[] args) {

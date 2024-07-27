@@ -7,6 +7,10 @@ sidebar_position: 3
 This API lets you get the details of a model on the Ollama server.
 
 ```java title="GetModelDetails.java"
+import io.github.ollama4j.OllamaAPI;
+import io.github.ollama4j.models.ModelDetail;
+import io.github.ollama4j.types.OllamaModelType;
+
 public class Main {
 
     public static void main(String[] args) {
