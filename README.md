@@ -109,9 +109,8 @@ https://ollama.com/download/OllamaSetup.exe
 CPU only
 
 ```shell
-docker run -d \
+docker run -d -p 11434:11434 \
   -v ollama:/root/.ollama \
-  -p 11434:11434 \
   --name ollama \
   ollama/ollama
 ```
@@ -119,10 +118,9 @@ docker run -d \
 NVIDIA GPU
 
 ```shell
-docker run -d \
+docker run -d -p 11434:11434 \
   --gpus=all \
   -v ollama:/root/.ollama \
-  -p 11434:11434 \
   --name ollama \
   ollama/ollama
 ```
