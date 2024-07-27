@@ -39,5 +39,6 @@ build/
 /.idea/
 pom.xml.*
 release.properties
+!.idea/icon.svg
 
 src/main/java/io/github/ollama4j/localtests
