@@ -1,5 +1,6 @@
 package io.github.ollama4j.models.ps;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -7,6 +8,7 @@ import java.util.List;
 
 @Data
 @NoArgsConstructor
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class ModelsProcessResponse {
     private List<ModelProcess> models;
 

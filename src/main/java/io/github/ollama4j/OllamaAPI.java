@@ -58,7 +58,14 @@ public class OllamaAPI {
     private final ToolRegistry toolRegistry = new ToolRegistry();
 
     /**
-     * Instantiates the Ollama API.
+     * Instantiates the Ollama API with default Ollama host: <a href="http://localhost:11434">http://localhost:11434</a>
+     **/
+    public OllamaAPI() {
+        this.host = "http://localhost:11434";
+    }
+
+    /**
+     * Instantiates the Ollama API with specified Ollama host address.
      *
      * @param host the host address of Ollama server
      */
