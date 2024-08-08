@@ -82,6 +82,33 @@ You will get a response similar to:
 ]
 ```
 
+## Conversational loop
+
+```java
+public class Main {
+
+    public static void main(String[] args) {
+
+        OllamaAPI ollamaAPI = new OllamaAPI();
+        ollamaAPI.setRequestTimeoutSeconds(60);
+
+        OllamaChatRequestBuilder builder = OllamaChatRequestBuilder.getInstance("<your-model>");
+
+        OllamaChatRequest requestModel = builder.withMessage(OllamaChatMessageRole.USER, "<your-first-message>").build();
+        OllamaChatResult initialChatResult = ollamaAPI.chat(requestModel);
+        System.out.println(initialChatResult.getResponse());
+
+        List<OllamaChatMessage> history = initialChatResult.getChatHistory();
+
+        while (true) {
+            OllamaChatResult chatResult = ollamaAPI.chat(builder.withMessages(history).withMessage(OllamaChatMessageRole.USER, "<your-new-message").build());
+            System.out.println(chatResult.getResponse());
+            history = chatResult.getChatHistory();
+        }
+    }
+}
+```
+
 ## Create a conversation where the answer is streamed
 
 ```java
