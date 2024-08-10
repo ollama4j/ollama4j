@@ -221,7 +221,7 @@ In your Maven project, add this dependency:
 
 ```groovy
 dependencies {
-    implementation 'com.github.ollama4j:ollama4j:1.0.79'
+    implementation 'io.github.ollama4j:ollama4j:1.0.79'
 }
 ```
 
