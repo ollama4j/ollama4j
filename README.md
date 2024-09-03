@@ -278,7 +278,10 @@ Newer artifacts are published via GitHub Actions CI workflow when a new release 
   server to translate all messages into a specfic target language.
     - https://github.com/liebki/ollama-translator
 - `Ollama4j Web UI`: A web UI for Ollama written in Java using Spring Boot and Vaadin framework and
-  Ollama4j. https://github.com/ollama4j/ollama4j-web-ui
+  Ollama4j.
+    - https://github.com/ollama4j/ollama4j-web-ui
+- `JnsCLI`: A command-line tool for Jenkins that manages jobs, builds, and configurations directly from the terminal while offering AI-powered error analysis for quick troubleshooting.
+    -  https://github.com/mirum8/jnscli
 
 #### Traction
 
