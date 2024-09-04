@@ -6,6 +6,7 @@ import HomepageFeatures from '@site/src/components/HomepageFeatures';
 import BuyMeACoffee from '@site/src/components/BuyMeACoffee';
 import Heading from '@theme/Heading';
 import styles from './index.module.css';
+import BrowserOnly from '@docusaurus/BrowserOnly';
 
 function HomepageHeader() {
   const {siteConfig} = useDocusaurusContext();
@@ -36,7 +37,9 @@ export default function Home() {
     <HomepageHeader/>
     <main>
       <HomepageFeatures/>
-      <BuyMeACoffee/>
+      <BrowserOnly>
+        {() => <BuyMeACoffee />}
+      </BrowserOnly>
     </main>
   </Layout>);
 }
