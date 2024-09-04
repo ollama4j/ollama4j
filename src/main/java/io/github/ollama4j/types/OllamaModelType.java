@@ -14,6 +14,8 @@ public class OllamaModelType {
 
     public static final String LLAMA2 = "llama2";
     public static final String LLAMA3 = "llama3";
+    public static final String LLAMA3_1 = "llama3.1";
+
     public static final String MISTRAL = "mistral";
     public static final String MIXTRAL = "mixtral";
     public static final String LLAVA = "llava";
