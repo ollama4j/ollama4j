@@ -38,3 +38,11 @@ header > h1,
 h2 > a {
     font-size: 2rem !important;
 }
+
+#bmc-wbtn{
+    bottom: 15px;
+}
+
+#bmc-wbtn + div{
+    bottom:15px;
+}
