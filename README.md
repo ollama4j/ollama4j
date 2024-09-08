@@ -5,7 +5,7 @@
 </p>
 
 <div align="center">
-A Java library (wrapper/binding) for [Ollama](https://ollama.ai/) server.
+A Java library (wrapper/binding) for Ollama server.
 
 Find more details on the [website](https://ollama4j.github.io/ollama4j/).
 
