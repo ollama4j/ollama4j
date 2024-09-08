@@ -4,12 +4,11 @@
   <img src='https://raw.githubusercontent.com/ollama4j/ollama4j/65a9d526150da8fcd98e2af6a164f055572bf722/ollama4j.jpeg' width='100' alt="ollama4j-icon">
 </p>
 
-
+<div align="center">
 A Java library (wrapper/binding) for [Ollama](https://ollama.ai/) server.
 
 Find more details on the [website](https://ollama4j.github.io/ollama4j/).
 
-<div align="center">
 
 ![GitHub stars](https://img.shields.io/github/stars/ollama4j/ollama4j)
 ![GitHub forks](https://img.shields.io/github/forks/ollama4j/ollama4j)
