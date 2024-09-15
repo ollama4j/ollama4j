@@ -282,7 +282,8 @@ Newer artifacts are published via GitHub Actions CI workflow when a new release 
     - https://github.com/ollama4j/ollama4j-web-ui
 - `JnsCLI`: A command-line tool for Jenkins that manages jobs, builds, and configurations directly from the terminal while offering AI-powered error analysis for quick troubleshooting.
     -  https://github.com/mirum8/jnscli
-- `Katie Backend`: https://github.com/wyona/katie-backend
+- `Katie Backend`: Katie is an Open Source AI-based question-answering platform that helps companies and organizations make their private domain knowledge accessible and useful to their employees and customers.
+    - https://github.com/wyona/katie-backend
 
 #### Traction
 
