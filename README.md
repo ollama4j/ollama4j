@@ -284,6 +284,8 @@ Newer artifacts are published via GitHub Actions CI workflow when a new release 
     -  https://github.com/mirum8/jnscli
 - `Katie Backend`: An Open Source AI-based question-answering platform that helps companies and organizations make their private domain knowledge accessible and useful to their employees and customers.
     - https://github.com/wyona/katie-backend
+- `TeleLlama3 Bot`: A Question-Answering Telegram Bot.
+    - https://git.hiast.edu.sy/mohamadbashar.disoki/telellama3-bot
 
 #### Traction
 
