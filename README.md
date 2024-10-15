@@ -270,7 +270,7 @@ Newer artifacts are published via GitHub Actions CI workflow when a new release 
 ## ⭐ Give us a Star!
 If you like or are using this project to build your own, please give us a star. It's a free way to show your support.
 
-#### Who's using Ollama4j?
+## Who's using Ollama4j?
 
 - `Datafaker`: a library to generate fake data
     - https://github.com/datafaker-net/datafaker-experimental/tree/main/ollama-api
@@ -290,11 +290,11 @@ If you like or are using this project to build your own, please give us a star. 
 - `TeleLlama3 Bot`: A Question-Answering Telegram Bot.
     - https://git.hiast.edu.sy/mohamadbashar.disoki/telellama3-bot
 
-#### Traction
+## Traction
 
 [![Star History Chart](https://api.star-history.com/svg?repos=ollama4j/ollama4j&type=Date)](https://star-history.com/#ollama4j/ollama4j&Date)
 
-### Get Involved
+## Get Involved
 
 <div align="center">
 
