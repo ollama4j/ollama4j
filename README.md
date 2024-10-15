@@ -267,6 +267,9 @@ make integration-tests
 
 Newer artifacts are published via GitHub Actions CI workflow when a new release is created from `main` branch.
 
+## ⭐ Give us a Star!
+If you like or are using this project to build your own, please give us a star. It's a free way to show your support.
+
 #### Who's using Ollama4j?
 
 - `Datafaker`: a library to generate fake data
@@ -318,6 +321,23 @@ Newer artifacts are published via GitHub Actions CI workflow when a new release 
 Contributions are most welcome! Whether it's reporting a bug, proposing an enhancement, or helping
 with code - any sort
 of contribution is much appreciated.
+
+## 🏷️ License and Citation
+
+The code is available under [MIT License](./LICENSE).
+
+If you find this project helpful in your research, please cite this work at
+
+```
+@misc{ollama4j2024,
+    author       = {Amith Koujalgi},
+    title        = {Ollama4j: A Java Library (Wrapper/Binding) for Ollama Server},
+    year         = {2024},
+    month        = {January},
+    url          = {https://github.com/ollama4j/ollama4j},
+    note         = {Accessed: YYYY-MM-DD} % Replace with the date you accessed the URL
+}
+```
 
 ### References
 
