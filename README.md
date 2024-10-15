@@ -334,8 +334,7 @@ If you find this project helpful in your research, please cite this work at
     title        = {Ollama4j: A Java Library (Wrapper/Binding) for Ollama Server},
     year         = {2024},
     month        = {January},
-    url          = {https://github.com/ollama4j/ollama4j},
-    note         = {Accessed: YYYY-MM-DD} % Replace with the date you accessed the URL
+    url          = {https://github.com/ollama4j/ollama4j}
 }
 ```
 
