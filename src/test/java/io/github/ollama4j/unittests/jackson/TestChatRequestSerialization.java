@@ -1,14 +1,13 @@
 package io.github.ollama4j.unittests.jackson;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrowsExactly;
 
 import java.io.File;
-import java.security.InvalidParameterException;
 import java.util.List;
 
 import io.github.ollama4j.models.chat.OllamaChatRequest;
 import org.json.JSONObject;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -87,7 +86,7 @@ public class TestChatRequestSerialization extends AbstractSerializationTest<Olla
     @Test
     public void testRequestWithInvalidCustomOption() {
         OptionsBuilder b = new OptionsBuilder();
-        Assertions.assertThrowsExactly(IllegalArgumentException.class, () -> {
+        assertThrowsExactly(IllegalArgumentException.class, () -> {
                 OllamaChatRequest req = builder.withMessage(OllamaChatMessageRole.USER, "Some prompt")
                 .withOptions(b.setCustomOption("cust_obj", new Object()).build())
                 .build();
