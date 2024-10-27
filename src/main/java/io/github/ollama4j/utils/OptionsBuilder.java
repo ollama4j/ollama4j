@@ -1,5 +1,6 @@
 package io.github.ollama4j.utils;
 
+import java.io.IOException;
 import java.util.HashMap;
 
 /** Builder class for creating options for Ollama model. */
@@ -208,6 +209,34 @@ public class OptionsBuilder {
   }
 
   /**
+   * Alternative to the top_p, and aims to ensure a balance of qualityand variety. The parameter p
+   * represents the minimum probability for a token to be considered, relative to the probability
+   * of the most likely token. For example, with p=0.05 and the most likely token having a
+   * probability of 0.9, logits with a value less than 0.045 are filtered out. (Default: 0.0)
+   */
+  public OptionsBuilder setMinP(float value) {
+    options.getOptionsMap().put("min_p", value);
+    return this;
+  }
+
+  /**
+   * Allows passing an option not formally supported by the library
+   * @param name The option name for the parameter.
+   * @param value The value for the "{name}" parameter.
+   * @return The updated OptionsBuilder.
+   * @throws IllegalArgumentException if parameter has an unsupported type
+   */
+  public OptionsBuilder setCustomOption(String name, Object value) throws IllegalArgumentException {
+    if (!(value instanceof Integer || value instanceof Float || value instanceof String)) {
+      throw new IllegalArgumentException("Invalid type for parameter. Allowed types are: Integer, Float, or String.");
+    }
+    options.getOptionsMap().put(name, value);
+    return this;
+  }
+
+
+
+  /**
    * Builds the options map.
    *
    * @return The populated options map.
@@ -215,4 +244,6 @@ public class OptionsBuilder {
   public Options build() {
     return options;
   }
+
+
 }

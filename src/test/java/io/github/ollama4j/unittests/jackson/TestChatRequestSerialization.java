@@ -1,6 +1,7 @@
 package io.github.ollama4j.unittests.jackson;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrowsExactly;
 
 import java.io.File;
 import java.util.List;
@@ -59,6 +60,10 @@ public class TestChatRequestSerialization extends AbstractSerializationTest<Olla
             .withOptions(b.setSeed(1).build())
             .withOptions(b.setTopK(1).build())
             .withOptions(b.setTopP(1).build())
+            .withOptions(b.setMinP(1).build())
+            .withOptions(b.setCustomOption("cust_float", 1.0f).build())
+            .withOptions(b.setCustomOption("cust_int", 1).build())
+            .withOptions(b.setCustomOption("cust_str", "custom").build())
             .build();
 
         String jsonRequest = serialize(req);
@@ -72,6 +77,20 @@ public class TestChatRequestSerialization extends AbstractSerializationTest<Olla
         assertEquals(1, deserializeRequest.getOptions().get("seed"));
         assertEquals(1, deserializeRequest.getOptions().get("top_k"));
         assertEquals(1.0, deserializeRequest.getOptions().get("top_p"));
+        assertEquals(1.0, deserializeRequest.getOptions().get("min_p"));
+        assertEquals(1.0, deserializeRequest.getOptions().get("cust_float"));
+        assertEquals(1, deserializeRequest.getOptions().get("cust_int"));
+        assertEquals("custom", deserializeRequest.getOptions().get("cust_str"));
+    }
+
+    @Test
+    public void testRequestWithInvalidCustomOption() {
+        OptionsBuilder b = new OptionsBuilder();
+        assertThrowsExactly(IllegalArgumentException.class, () -> {
+                OllamaChatRequest req = builder.withMessage(OllamaChatMessageRole.USER, "Some prompt")
+                .withOptions(b.setCustomOption("cust_obj", new Object()).build())
+                .build();
+        });
     }
 
     @Test
