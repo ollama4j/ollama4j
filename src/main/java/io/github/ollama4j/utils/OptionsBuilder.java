@@ -1,5 +1,6 @@
 package io.github.ollama4j.utils;
 
+import java.io.IOException;
 import java.util.HashMap;
 
 /** Builder class for creating options for Ollama model. */
@@ -223,6 +224,7 @@ public class OptionsBuilder {
    * @param name The option name for the parameter.
    * @param value The value for the "{name}" parameter.
    * @return The updated OptionsBuilder.
+   * @throws IllegalArgumentException if parameter has an unsupported type
    */
   public OptionsBuilder setCustomOption(String name, Object value) throws IllegalArgumentException {
     if (!(value instanceof Integer || value instanceof Float || value instanceof String)) {
