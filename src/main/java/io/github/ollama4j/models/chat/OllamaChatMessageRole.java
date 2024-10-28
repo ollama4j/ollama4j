@@ -8,7 +8,8 @@ import com.fasterxml.jackson.annotation.JsonValue;
 public enum OllamaChatMessageRole {
     SYSTEM("system"),
     USER("user"),
-    ASSISTANT("assistant");
+    ASSISTANT("assistant"),
+    TOOL("tool");
 
     @JsonValue
     private String roleName;
