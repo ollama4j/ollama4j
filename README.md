@@ -291,6 +291,8 @@ If you like or are using this project to build your own, please give us a star. 
     - https://github.com/wyona/katie-backend
 - `TeleLlama3 Bot`: A Question-Answering Telegram Bot.
     - https://git.hiast.edu.sy/mohamadbashar.disoki/telellama3-bot
+- `moqui-wechat`: A wechat plugin
+    - https://github.com/heguangyong/moqui-wechat
 
 ## Traction
 
