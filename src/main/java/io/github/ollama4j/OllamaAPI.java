@@ -7,8 +7,10 @@ import io.github.ollama4j.models.chat.OllamaChatMessage;
 import io.github.ollama4j.models.chat.OllamaChatRequest;
 import io.github.ollama4j.models.chat.OllamaChatRequestBuilder;
 import io.github.ollama4j.models.chat.OllamaChatResult;
+import io.github.ollama4j.models.embeddings.OllamaEmbedRequestModel;
 import io.github.ollama4j.models.embeddings.OllamaEmbeddingResponseModel;
 import io.github.ollama4j.models.embeddings.OllamaEmbeddingsRequestModel;
+import io.github.ollama4j.models.embeddings.OllamaEmbedResponseModel;
 import io.github.ollama4j.models.generate.OllamaGenerateRequest;
 import io.github.ollama4j.models.generate.OllamaStreamHandler;
 import io.github.ollama4j.models.ps.ModelsProcessResponse;
@@ -342,7 +344,9 @@ public class OllamaAPI {
      * @param model  name of model to generate embeddings from
      * @param prompt text to generate embeddings for
      * @return embeddings
+     * @deprecated Use {@link #embed(String, List<String>)} instead.
      */
+    @Deprecated
     public List<Double> generateEmbeddings(String model, String prompt)
             throws IOException, InterruptedException, OllamaBaseException {
         return generateEmbeddings(new OllamaEmbeddingsRequestModel(model, prompt));
@@ -353,7 +357,9 @@ public class OllamaAPI {
      *
      * @param modelRequest request for '/api/embeddings' endpoint
      * @return embeddings
+     * @deprecated Use {@link #embed(OllamaEmbedRequestModel)} instead.
      */
+    @Deprecated
     public List<Double> generateEmbeddings(OllamaEmbeddingsRequestModel modelRequest) throws IOException, InterruptedException, OllamaBaseException {
         URI uri = URI.create(this.host + "/api/embeddings");
         String jsonData = modelRequest.toString();
@@ -375,6 +381,47 @@ public class OllamaAPI {
         }
     }
 
+    /**
+     * Generate embeddings for a given text from a model
+     *
+     * @param model  name of model to generate embeddings from
+     * @param inputs text/s to generate embeddings for
+     * @return embeddings
+     */
+    public OllamaEmbedResponseModel embed(String model, List<String> inputs)
+            throws IOException, InterruptedException, OllamaBaseException {
+        return embed(new OllamaEmbedRequestModel(model, inputs));
+    }
+
+    /**
+     * Generate embeddings using a {@link OllamaEmbedRequestModel}.
+     *
+     * @param modelRequest request for '/api/embed' endpoint
+     * @return embeddings
+     */
+    public OllamaEmbedResponseModel embed(OllamaEmbedRequestModel modelRequest)
+            throws IOException, InterruptedException, OllamaBaseException {
+        URI uri = URI.create(this.host + "/api/embed");
+        String jsonData = Utils.getObjectMapper().writeValueAsString(modelRequest);
+        HttpClient httpClient = HttpClient.newHttpClient();
+
+        HttpRequest request = HttpRequest.newBuilder(uri)
+                .header("Accept", "application/json")
+                .POST(HttpRequest.BodyPublishers.ofString(jsonData))
+                .build();
+
+        HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
+        int statusCode = response.statusCode();
+        String responseBody = response.body();
+
+        if (statusCode == 200) {
+            OllamaEmbedResponseModel embeddingResponse =
+                    Utils.getObjectMapper().readValue(responseBody, OllamaEmbedResponseModel.class);
+            return embeddingResponse;
+        } else {
+            throw new OllamaBaseException(statusCode + " - " + responseBody);
+        }
+    }
 
     /**
      * Generate response for a question to a model running on Ollama server. This is a sync/blocking
