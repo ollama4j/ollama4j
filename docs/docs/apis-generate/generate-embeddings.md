@@ -35,7 +35,7 @@ public class Main {
 }
 ```
 
-Or, using the `OllamaEmbedResponseModel`:
+Or, using the `OllamaEmbedRequestModel`:
 
 ```java
 import io.github.ollama4j.OllamaAPI;
