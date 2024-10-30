@@ -322,7 +322,7 @@ public class OllamaAPI {
      * @throws OllamaBaseException  if the response indicates an error status
      * @throws IOException          if an I/O error occurs during the HTTP request
      * @throws InterruptedException if the operation is interrupted
-     * @deprecated Use {@link #embed(String, List<String>)} instead.
+     * @deprecated Use {@link #embed(String, List)} instead.
      */
     @Deprecated
     public List<Double> generateEmbeddings(String model, String prompt) throws IOException, InterruptedException, OllamaBaseException {
