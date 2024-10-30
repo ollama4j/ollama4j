@@ -392,8 +392,7 @@ public class OllamaAPI {
         String responseBody = response.body();
 
         if (statusCode == 200) {
-            OllamaEmbedResponseModel embeddingResponse = Utils.getObjectMapper().readValue(responseBody, OllamaEmbedResponseModel.class);
-            return embeddingResponse;
+            return Utils.getObjectMapper().readValue(responseBody, OllamaEmbedResponseModel.class);
         } else {
             throw new OllamaBaseException(statusCode + " - " + responseBody);
         }
@@ -561,6 +560,7 @@ public class OllamaAPI {
      * Convenience method to call Ollama API without streaming responses.
      * <p>
      * Uses {@link #generateWithImageURLs(String, String, List, Options, OllamaStreamHandler)}
+     *
      * @throws OllamaBaseException  if the response indicates an error status
      * @throws IOException          if an I/O error occurs during the HTTP request
      * @throws InterruptedException if the operation is interrupted
