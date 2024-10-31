@@ -11,9 +11,9 @@ doxygen:
 	doxygen Doxyfile
 
 list-releases:
-	curl 'https://central.sonatype.com/api/internal/browse/component/versions?sortField=normalizedVersion&sortDirection=asc&page=0&size=12&filter=namespace%3Aio.github.amithkoujalgi%2Cname%3Aollama4j' \
+	curl 'https://central.sonatype.com/api/internal/browse/component/versions?sortField=normalizedVersion&sortDirection=desc&page=0&size=20&filter=namespace%3Aio.github.ollama4j%2Cname%3Aollama4j' \
       --compressed \
-      --silent | jq '.components[].version'
+      --silent | jq -r '.components[].version'
 
 build-docs:
 	npm i --prefix docs && npm run build --prefix docs

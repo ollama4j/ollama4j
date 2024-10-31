@@ -12,7 +12,7 @@ import java.util.List;
  */
 @Getter
 public class OllamaChatMessageRole {
-    private static final List<OllamaChatMessageRole> ROLES = new ArrayList<>();
+    private static final List<OllamaChatMessageRole> roles = new ArrayList<>();
 
     public static final OllamaChatMessageRole SYSTEM = new OllamaChatMessageRole("system");
     public static final OllamaChatMessageRole USER = new OllamaChatMessageRole("user");
@@ -24,21 +24,21 @@ public class OllamaChatMessageRole {
 
     private OllamaChatMessageRole(String roleName) {
         this.roleName = roleName;
-        ROLES.add(this);
+        roles.add(this);
     }
 
     public static OllamaChatMessageRole newCustomRole(String roleName) {
         OllamaChatMessageRole customRole = new OllamaChatMessageRole(roleName);
-        ROLES.add(customRole);
+        roles.add(customRole);
         return customRole;
     }
 
     public static List<OllamaChatMessageRole> getRoles() {
-        return new ArrayList<>(ROLES);
+        return new ArrayList<>(roles);
     }
 
     public static OllamaChatMessageRole getRole(String roleName) throws RoleNotFoundException {
-        for (OllamaChatMessageRole role : ROLES) {
+        for (OllamaChatMessageRole role : roles) {
             if (role.roleName.equals(roleName)) {
                 return role;
             }

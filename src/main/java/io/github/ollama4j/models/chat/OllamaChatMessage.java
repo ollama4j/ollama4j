@@ -8,6 +8,7 @@ import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import io.github.ollama4j.utils.FileToBase64Serializer;
 
 import java.util.List;
+
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -33,13 +34,13 @@ public class OllamaChatMessage {
 
     @JsonSerialize(using = FileToBase64Serializer.class)
     private List<byte[]> images;
-    
-      @Override
-  public String toString() {
-    try {
-      return getObjectMapper().writerWithDefaultPrettyPrinter().writeValueAsString(this);
-    } catch (JsonProcessingException e) {
-      throw new RuntimeException(e);
+
+    @Override
+    public String toString() {
+        try {
+            return getObjectMapper().writerWithDefaultPrettyPrinter().writeValueAsString(this);
+        } catch (JsonProcessingException e) {
+            throw new RuntimeException(e);
+        }
     }
-  }
 }
