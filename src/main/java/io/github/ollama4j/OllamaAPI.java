@@ -1,12 +1,10 @@
 package io.github.ollama4j;
 
 import io.github.ollama4j.exceptions.OllamaBaseException;
+import io.github.ollama4j.exceptions.RoleNotFoundException;
 import io.github.ollama4j.exceptions.ToolInvocationException;
 import io.github.ollama4j.exceptions.ToolNotFoundException;
-import io.github.ollama4j.models.chat.OllamaChatMessage;
-import io.github.ollama4j.models.chat.OllamaChatRequest;
-import io.github.ollama4j.models.chat.OllamaChatRequestBuilder;
-import io.github.ollama4j.models.chat.OllamaChatResult;
+import io.github.ollama4j.models.chat.*;
 import io.github.ollama4j.models.embeddings.OllamaEmbedRequestModel;
 import io.github.ollama4j.models.embeddings.OllamaEmbeddingResponseModel;
 import io.github.ollama4j.models.embeddings.OllamaEmbeddingsRequestModel;
@@ -165,7 +163,6 @@ public class OllamaAPI {
             throw new OllamaBaseException(statusCode + " - " + responseString);
         }
     }
-
 
     /**
      * Pull a model on the Ollama server from the list of <a
@@ -471,7 +468,6 @@ public class OllamaAPI {
         return toolResult;
     }
 
-
     /**
      * Generate response for a question to a model running on Ollama server and get a callback handle
      * that can be used to check for status and get the response from the model later. This would be
@@ -570,7 +566,6 @@ public class OllamaAPI {
         return generateWithImageURLs(model, prompt, imageURLs, options, null);
     }
 
-
     /**
      * Ask a question to a model based on a given message stack (i.e. a chat history). Creates a synchronous call to the api
      * 'api/chat'.
@@ -639,6 +634,25 @@ public class OllamaAPI {
         toolRegistry.addFunction(toolSpecification.getFunctionName(), toolSpecification.getToolDefinition());
     }
 
+    /**
+     * @param roleName - Custom role to be added
+     * @return OllamaChatMessageRole
+     */
+    public OllamaChatMessageRole addCustomRole(String roleName) {
+        return OllamaChatMessageRole.newCustomRole(roleName);
+    }
+
+    /**
+     * @return - available roles
+     */
+    public List<OllamaChatMessageRole> listRoles() {
+        return OllamaChatMessageRole.getRoles();
+    }
+
+    public OllamaChatMessageRole getRole(String roleName) throws RoleNotFoundException {
+        return OllamaChatMessageRole.getRole(roleName);
+    }
+
     // technical private methods //
 
     private static String encodeFileToBase64(File file) throws IOException {
@@ -693,7 +707,6 @@ public class OllamaAPI {
     private boolean isBasicAuthCredentialsSet() {
         return basicAuth != null;
     }
-
 
     private Object invokeTool(ToolFunctionCallSpec toolFunctionCallSpec) throws ToolInvocationException {
         try {
