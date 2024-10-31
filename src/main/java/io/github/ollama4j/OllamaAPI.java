@@ -635,23 +635,35 @@ public class OllamaAPI {
     }
 
     /**
-     * @param roleName - Custom role to be added
-     * @return OllamaChatMessageRole
+     * Adds a custom role.
+     *
+     * @param roleName the name of the custom role to be added
+     * @return the newly created OllamaChatMessageRole
      */
     public OllamaChatMessageRole addCustomRole(String roleName) {
         return OllamaChatMessageRole.newCustomRole(roleName);
     }
 
     /**
-     * @return - available roles
+     * Lists all available roles.
+     *
+     * @return a list of available OllamaChatMessageRole objects
      */
     public List<OllamaChatMessageRole> listRoles() {
         return OllamaChatMessageRole.getRoles();
     }
 
+    /**
+     * Retrieves a specific role by name.
+     *
+     * @param roleName the name of the role to retrieve
+     * @return the OllamaChatMessageRole associated with the given name
+     * @throws RoleNotFoundException if the role with the specified name does not exist
+     */
     public OllamaChatMessageRole getRole(String roleName) throws RoleNotFoundException {
         return OllamaChatMessageRole.getRole(roleName);
     }
+
 
     // technical private methods //
 
