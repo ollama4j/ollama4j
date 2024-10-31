@@ -6,6 +6,9 @@ sidebar_position: 8
 
 Allows to manage custom roles (apart from the base roles) for chat interactions with the models.
 
+_Particularly helpful when you would need to use different roles that the newer models support other than the base
+roles._
+
 _Base roles are `SYSTEM`, `USER`, `ASSISTANT`, `TOOL`._
 
 ### Usage
