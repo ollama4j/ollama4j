@@ -18,8 +18,6 @@ import io.github.ollama4j.tools.*;
 import io.github.ollama4j.utils.Options;
 import io.github.ollama4j.utils.Utils;
 import lombok.Setter;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.io.*;
 import java.net.URI;
@@ -32,6 +30,14 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.time.Duration;
 import java.util.*;
+import java.util.stream.Collectors;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.jsoup.Jsoup;
+import org.jsoup.nodes.Document;
+import org.jsoup.nodes.Element;
+import org.jsoup.select.Elements;
 
 /**
  * The base Ollama API class.
@@ -159,6 +165,48 @@ public class OllamaAPI {
         String responseString = response.body();
         if (statusCode == 200) {
             return Utils.getObjectMapper().readValue(responseString, ListModelsResponse.class).getModels();
+        } else {
+            throw new OllamaBaseException(statusCode + " - " + responseString);
+        }
+    }
+
+    /**
+     * Retrieves a list of models from the Ollama library. This method fetches the available models directly from Ollama
+     * library page, including model details such as the name, pull count, popular tags, tag count, and the time when model was updated.
+     *
+     * @return A list of {@link LibraryModel} objects representing the models available in the Ollama library.
+     * @throws OllamaBaseException  If the HTTP request fails or the response is not successful (non-200 status code).
+     * @throws IOException          If an I/O error occurs during the HTTP request or response processing.
+     * @throws InterruptedException If the thread executing the request is interrupted.
+     * @throws URISyntaxException   If there is an error creating the URI for the HTTP request.
+     */
+    public List<LibraryModel> listModelsFromLibrary() throws OllamaBaseException, IOException, InterruptedException, URISyntaxException {
+        String url = "https://ollama.com/library";
+        HttpClient httpClient = HttpClient.newHttpClient();
+        HttpRequest httpRequest = getRequestBuilderDefault(new URI(url)).header("Accept", "application/json").header("Content-type", "application/json").GET().build();
+        HttpResponse<String> response = httpClient.send(httpRequest, HttpResponse.BodyHandlers.ofString());
+        int statusCode = response.statusCode();
+        String responseString = response.body();
+        List<LibraryModel> models = new ArrayList<>();
+        if (statusCode == 200) {
+            Document doc = Jsoup.parse(responseString);
+            Elements modelSections = doc.selectXpath("//*[@id='repo']/ul/li/a");
+            for (Element e : modelSections) {
+                LibraryModel model = new LibraryModel();
+                Elements names = e.select("div > h2 > span");
+                Elements pullCounts = e.select("div:nth-of-type(2) > p > span:first-of-type > span:first-of-type");
+                Elements popularTags = e.select("div > div > span");
+                Elements tagCount = e.select("div:nth-of-type(2) > p > span:nth-of-type(2) > span:first-of-type");
+                Elements updatedAt = e.select("div:nth-of-type(2) > p > span:nth-of-type(3) > span:nth-of-type(2)");
+
+                model.setName(names.first().text());
+                model.setPullCount(pullCounts.first().text());
+                model.setPopularTags(popularTags.stream().map(Element::text).collect(Collectors.toList()));
+                model.setNumTags(Integer.parseInt(tagCount.first().text()));
+                model.setUpdatedAt(updatedAt.first().text());
+                models.add(model);
+            }
+            return models;
         } else {
             throw new OllamaBaseException(statusCode + " - " + responseString);
         }
