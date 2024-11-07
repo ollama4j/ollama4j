@@ -154,7 +154,7 @@ In your Maven project, add this dependency:
 <dependency>
     <groupId>io.github.ollama4j</groupId>
     <artifactId>ollama4j</artifactId>
-    <version>1.0.79</version>
+    <version>1.0.87</version>
 </dependency>
 ```
 
