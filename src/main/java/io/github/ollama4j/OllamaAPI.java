@@ -164,6 +164,20 @@ public class OllamaAPI {
         }
     }
 
+    public List<String> listDownloadableModels() throws OllamaBaseException, IOException, InterruptedException, URISyntaxException {
+        String url = "https://ollama.com/library";
+        HttpClient httpClient = HttpClient.newHttpClient();
+        HttpRequest httpRequest = getRequestBuilderDefault(new URI(url)).header("Accept", "application/json").header("Content-type", "application/json").GET().build();
+        HttpResponse<String> response = httpClient.send(httpRequest, HttpResponse.BodyHandlers.ofString());
+        int statusCode = response.statusCode();
+        String responseString = response.body();
+        if (statusCode == 200) {
+            return null;
+        } else {
+            throw new OllamaBaseException(statusCode + " - " + responseString);
+        }
+    }
+
     /**
      * Pull a model on the Ollama server from the list of <a
      * href="https://ollama.ai/library">available models</a>.
