@@ -204,18 +204,11 @@ public class OllamaAPI {
                     // if name cannot be extracted, skip.
                     continue;
                 }
-                Optional.ofNullable(names.first())
-                        .map(Element::text)
-                        .ifPresent(model::setName);
+                Optional.ofNullable(names.first()).map(Element::text).ifPresent(model::setName);
                 model.setDescription(Optional.ofNullable(desc.first()).map(Element::text).orElse(""));
-                model.setPopularTags(Optional.of(popularTags)
-                        .map(tags -> tags.stream().map(Element::text).collect(Collectors.toList()))
-                        .orElse(new ArrayList<>()));
+                model.setPopularTags(Optional.of(popularTags).map(tags -> tags.stream().map(Element::text).collect(Collectors.toList())).orElse(new ArrayList<>()));
                 model.setPullCount(Optional.ofNullable(pullCounts.first()).map(Element::text).orElse(""));
-                model.setTotalTags(Optional.ofNullable(totalTags.first())
-                        .map(Element::text)
-                        .map(Integer::parseInt)
-                        .orElse(0));
+                model.setTotalTags(Optional.ofNullable(totalTags.first()).map(Element::text).map(Integer::parseInt).orElse(0));
                 model.setLastUpdated(Optional.ofNullable(lastUpdatedTime.first()).map(Element::text).orElse(""));
 
                 models.add(model);
@@ -263,19 +256,9 @@ public class OllamaAPI {
                     continue;
                 }
                 libraryModelTag.setName(libraryModel.getName());
-                Optional.ofNullable(tags.first())
-                        .map(Element::text)
-                        .ifPresent(libraryModelTag::setTag);
-                libraryModelTag.setSize(Optional.ofNullable(tagsMetas.first())
-                        .map(element -> element.text().split("•"))
-                        .filter(parts -> parts.length > 1)
-                        .map(parts -> parts[1].trim())
-                        .orElse(""));
-                libraryModelTag.setLastUpdated(Optional.ofNullable(tagsMetas.first())
-                        .map(element -> element.text().split("•"))
-                        .filter(parts -> parts.length > 1)
-                        .map(parts -> parts[2].trim())
-                        .orElse(""));
+                Optional.ofNullable(tags.first()).map(Element::text).ifPresent(libraryModelTag::setTag);
+                libraryModelTag.setSize(Optional.ofNullable(tagsMetas.first()).map(element -> element.text().split("•")).filter(parts -> parts.length > 1).map(parts -> parts[1].trim()).orElse(""));
+                libraryModelTag.setLastUpdated(Optional.ofNullable(tagsMetas.first()).map(element -> element.text().split("•")).filter(parts -> parts.length > 1).map(parts -> parts[2].trim()).orElse(""));
                 libraryModelTags.add(libraryModelTag);
             }
             LibraryModelDetail libraryModelDetail = new LibraryModelDetail();
@@ -285,6 +268,30 @@ public class OllamaAPI {
         } else {
             throw new OllamaBaseException(statusCode + " - " + responseString);
         }
+    }
+
+    /**
+     * Finds a specific model using model name and tag from Ollama library.
+     * <p>
+     * This method retrieves the model from the Ollama library by its name, then fetches its tags.
+     * It searches through the tags of the model to find one that matches the specified tag name.
+     * If the model or the tag is not found, it throws a {@link NoSuchElementException}.
+     *
+     * @param modelName The name of the model to search for in the library.
+     * @param tag       The tag name to search for within the specified model.
+     * @return The {@link LibraryModelTag} associated with the specified model and tag.
+     * @throws OllamaBaseException    If there is a problem with the Ollama library operations.
+     * @throws IOException            If an I/O error occurs during the operation.
+     * @throws URISyntaxException     If there is an error with the URI syntax.
+     * @throws InterruptedException   If the operation is interrupted.
+     * @throws NoSuchElementException If the model or the tag is not found.
+     */
+    public LibraryModelTag findModelTagFromLibrary(String modelName, String tag) throws OllamaBaseException, IOException, URISyntaxException, InterruptedException {
+        List<LibraryModel> libraryModels = this.listModelsFromLibrary();
+        LibraryModel libraryModel = libraryModels.stream().filter(model -> model.getName().equals(modelName)).findFirst().orElseThrow(() -> new NoSuchElementException(String.format("Model by name '%s' not found", modelName)));
+        LibraryModelDetail libraryModelDetail = this.getLibraryModelDetails(libraryModel);
+        LibraryModelTag libraryModelTag = libraryModelDetail.getTags().stream().filter(tagName -> tagName.getTag().equals(tag)).findFirst().orElseThrow(() -> new NoSuchElementException(String.format("Tag '%s' for model '%s' not found", tag, modelName)));
+        return libraryModelTag;
     }
 
     /**

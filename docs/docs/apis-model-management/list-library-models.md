@@ -1,11 +1,15 @@
 ---
-sidebar_position: 6
+sidebar_position: 1
 ---
 
-# List Models from Ollama Library
+# Models from Ollama Library
 
-This API retrieves a list of models from the Ollama library. It fetches available models directly from the Ollama
-library page, including details such as the model's name, pull count, popular tags, tag count, and the last update time.
+These API retrieves a list of models directly from the Ollama library.
+
+### List Models from Ollama Library
+
+This API fetches available models from the Ollama library page, including details such as the model's name, pull count,
+popular tags, tag count, and the last update time.
 
 ```java title="ListLibraryModels.java"
 import io.github.ollama4j.OllamaAPI;
@@ -28,7 +32,7 @@ public class Main {
 }
 ```
 
-The following is the sample response:
+The following is the sample output:
 
 ```
 [
@@ -37,7 +41,7 @@ The following is the sample response:
 ]
 ```
 
-# Get Tags of a Library Model
+### Get Tags of a Library Model
 
 This API Fetches the tags associated with a specific model from Ollama library.
 
@@ -63,6 +67,8 @@ public class Main {
 }
 ```
 
+The following is the sample output:
+
 ```
 LibraryModelDetail(
   model=LibraryModel(name=llama3.2-vision, description=Llama 3.2 Vision is a collection of instruction-tuned image reasoning generative models in 11B and 90B sizes., pullCount=21.1K, totalTags=9, popularTags=[vision, 11b, 90b], lastUpdated=yesterday), 
@@ -74,12 +80,12 @@ LibraryModelDetail(
 )
 ```
 
-You can use this information to pull models into Ollama server.
+### Find a model from Ollama library
 
-```java title="PullLibraryModelTags.java"
+This API finds a specific model using model `name` and `tag` from Ollama library.
+
+```java title="FindLibraryModel.java"
 import io.github.ollama4j.OllamaAPI;
-import io.github.ollama4j.models.response.LibraryModel;
-import io.github.ollama4j.models.response.LibraryModelDetail;
 import io.github.ollama4j.models.response.LibraryModelTag;
 
 public class Main {
@@ -90,11 +96,36 @@ public class Main {
 
         OllamaAPI ollamaAPI = new OllamaAPI(host);
 
-        List<LibraryModel> libraryModels = ollamaAPI.listModelsFromLibrary();
+        LibraryModelTag libraryModelTag = ollamaAPI.findModelTagFromLibrary("qwen2.5", "7b");
 
-        LibraryModelDetail libraryModelDetail = ollamaAPI.getLibraryModelDetails(libraryModels.get(0));
+        System.out.println(libraryModelTag);
+    }
+}
+```
 
-        LibraryModelTag libraryModelTag = libraryModelDetail.getTags().get(0);
+The following is the sample output:
+
+```
+LibraryModelTag(name=qwen2.5, tag=7b, size=4.7GB, lastUpdated=7 weeks ago)
+```
+
+### Pull model using `LibraryModelTag`
+
+You can use `LibraryModelTag` to pull models into Ollama server.
+
+```java title="PullLibraryModelTags.java"
+import io.github.ollama4j.OllamaAPI;
+import io.github.ollama4j.models.response.LibraryModelTag;
+
+public class Main {
+
+    public static void main(String[] args) {
+
+        String host = "http://localhost:11434/";
+
+        OllamaAPI ollamaAPI = new OllamaAPI(host);
+
+        LibraryModelTag libraryModelTag = ollamaAPI.findModelTagFromLibrary("qwen2.5", "7b");
 
         ollamaAPI.pullModel(libraryModelTag);
     }

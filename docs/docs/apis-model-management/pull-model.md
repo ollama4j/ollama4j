@@ -1,5 +1,5 @@
 ---
-sidebar_position: 2
+sidebar_position: 3
 ---
 
 # Pull Model
@@ -24,3 +24,11 @@ public class Main {
 ```
 
 Once downloaded, you can see them when you use [list models](./list-models) API.
+
+:::info
+
+You can even pull models using Ollama model library APIs. This looks up the models directly on the Ollama model library page. Refer
+to [this](./list-library-models#pull-model-using-librarymodeltag).
+
+:::
+

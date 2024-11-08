@@ -1,8 +1,8 @@
 ---
-sidebar_position: 1
+sidebar_position: 2
 ---
 
-# List Models
+# List Local Models
 
 This API lets you list downloaded/available models on the Ollama server.
 
