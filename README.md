@@ -9,7 +9,6 @@ A Java library (wrapper/binding) for Ollama server.
 
 Find more details on the [website](https://ollama4j.github.io/ollama4j/).
 
-
 ![GitHub stars](https://img.shields.io/github/stars/ollama4j/ollama4j)
 ![GitHub forks](https://img.shields.io/github/forks/ollama4j/ollama4j)
 ![GitHub watchers](https://img.shields.io/github/watchers/ollama4j/ollama4j)
@@ -154,7 +153,7 @@ In your Maven project, add this dependency:
 <dependency>
     <groupId>io.github.ollama4j</groupId>
     <artifactId>ollama4j</artifactId>
-    <version>1.0.87</version>
+    <version>1.0.89</version>
 </dependency>
 ```
 
@@ -210,7 +209,7 @@ In your Maven project, add this dependency:
 <dependency>
     <groupId>io.github.ollama4j</groupId>
     <artifactId>ollama4j</artifactId>
-    <version>1.0.79</version>
+    <version>1.0.89</version>
 </dependency>
 ```
 
@@ -268,31 +267,22 @@ make integration-tests
 Newer artifacts are published via GitHub Actions CI workflow when a new release is created from `main` branch.
 
 ## ⭐ Give us a Star!
+
 If you like or are using this project to build your own, please give us a star. It's a free way to show your support.
 
 ## Who's using Ollama4j?
 
-- `Datafaker`: a library to generate fake data
-    - https://github.com/datafaker-net/datafaker-experimental/tree/main/ollama-api
-- `Vaadin Web UI`: UI-Tester for Interactions with Ollama via ollama4j
-    - https://github.com/TEAMPB/ollama4j-vaadin-ui
-- `ollama-translator`: Minecraft 1.20.6 spigot plugin allows to easily break language barriers by using ollama on the
-  server to translate all messages into a specfic target language.
-    - https://github.com/liebki/ollama-translator
-- `AI Player`: A minecraft mod which aims to add a "second player" into the game which will actually be intelligent.
-    - https://github.com/shasankp000/AI-Player
-    - https://www.reddit.com/r/fabricmc/comments/1e65x5s/comment/ldr2vcf/
-- `Ollama4j Web UI`: A web UI for Ollama written in Java using Spring Boot and Vaadin framework and
-  Ollama4j.
-    - https://github.com/ollama4j/ollama4j-web-ui
-- `JnsCLI`: A command-line tool for Jenkins that manages jobs, builds, and configurations directly from the terminal while offering AI-powered error analysis for quick troubleshooting.
-    -  https://github.com/mirum8/jnscli
-- `Katie Backend`: An Open Source AI-based question-answering platform that helps companies and organizations make their private domain knowledge accessible and useful to their employees and customers.
-    - https://github.com/wyona/katie-backend
-- `TeleLlama3 Bot`: A Question-Answering Telegram Bot.
-    - https://git.hiast.edu.sy/mohamadbashar.disoki/telellama3-bot
-- `moqui-wechat`: A wechat plugin
-    - https://github.com/heguangyong/moqui-wechat
+| # | Project Name      | Description                                                                                                   | Link                                                                                                                                           |
+|---|-------------------|---------------------------------------------------------------------------------------------------------------|------------------------------------------------------------------------------------------------------------------------------------------------|
+| 1 | Datafaker         | A library to generate fake data                                                                               | [GitHub](https://github.com/datafaker-net/datafaker-experimental/tree/main/ollama-api)                                                         |
+| 2 | Vaadin Web UI     | UI-Tester for interactions with Ollama via ollama4j                                                           | [GitHub](https://github.com/TEAMPB/ollama4j-vaadin-ui)                                                                                         |
+| 3 | ollama-translator | A Minecraft 1.20.6 Spigot plugin that translates all messages into a specific target language via Ollama      | [GitHub](https://github.com/liebki/ollama-translator)                                                                                          |
+| 4 | AI Player         | A Minecraft mod that adds an intelligent "second player" to the game                                          | [GitHub](https://github.com/shasankp000/AI-Player), <br/> [Reddit Thread](https://www.reddit.com/r/fabricmc/comments/1e65x5s/comment/ldr2vcf/) |
+| 5 | Ollama4j Web UI   | A web UI for Ollama written in Java using Spring Boot, Vaadin, and Ollama4j                                   | [GitHub](https://github.com/ollama4j/ollama4j-web-ui)                                                                                          |
+| 6 | JnsCLI            | A command-line tool for Jenkins that manages jobs, builds, and configurations, with AI-powered error analysis | [GitHub](https://github.com/mirum8/jnscli)                                                                                                     |
+| 7 | Katie Backend     | An open-source AI-based question-answering platform for accessing private domain knowledge                    | [GitHub](https://github.com/wyona/katie-backend)                                                                                               |
+| 8 | TeleLlama3 Bot    | A question-answering Telegram bot                                                                             | [Repo](https://git.hiast.edu.sy/mohamadbashar.disoki/telellama3-bot)                                                                           |
+| 9 | moqui-wechat      | A moqui-wechat component                                                                                      | [GitHub](https://github.com/heguangyong/moqui-wechat)                                                                                          |
 
 ## Traction
 
