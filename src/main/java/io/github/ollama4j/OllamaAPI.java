@@ -227,6 +227,67 @@ public class OllamaAPI {
     }
 
     /**
+     * Fetches the tags associated with a specific model from Ollama library.
+     * This method fetches the available model tags directly from Ollama library model page, including model tag name, size and time when model was last updated
+     * into a list of {@link LibraryModelTag} objects.
+     *
+     * @param libraryModel the {@link LibraryModel} object which contains the name of the library model
+     *                     for which the tags need to be fetched.
+     * @return a list of {@link LibraryModelTag} objects containing the extracted tags and their associated metadata.
+     * @throws OllamaBaseException  if the HTTP response status code indicates an error (i.e., not 200 OK),
+     *                              or if there is any other issue during the request or response processing.
+     * @throws IOException          if an input/output exception occurs during the HTTP request or response handling.
+     * @throws InterruptedException if the thread is interrupted while waiting for the HTTP response.
+     * @throws URISyntaxException   if the URI format is incorrect or invalid.
+     */
+    public LibraryModelDetail getLibraryModelDetails(LibraryModel libraryModel) throws OllamaBaseException, IOException, InterruptedException, URISyntaxException {
+        String url = String.format("https://ollama.com/library/%s/tags", libraryModel.getName());
+        HttpClient httpClient = HttpClient.newHttpClient();
+        HttpRequest httpRequest = getRequestBuilderDefault(new URI(url)).header("Accept", "application/json").header("Content-type", "application/json").GET().build();
+        HttpResponse<String> response = httpClient.send(httpRequest, HttpResponse.BodyHandlers.ofString());
+        int statusCode = response.statusCode();
+        String responseString = response.body();
+
+        List<LibraryModelTag> libraryModelTags = new ArrayList<>();
+        if (statusCode == 200) {
+            Document doc = Jsoup.parse(responseString);
+            Elements tagSections = doc.select("html > body > main > div > section > div > div > div:nth-child(n+2) > div");
+            for (Element e : tagSections) {
+                Elements tags = e.select("div > a > div");
+                Elements tagsMetas = e.select("div > span");
+
+                LibraryModelTag libraryModelTag = new LibraryModelTag();
+
+                if (tags.first() == null || tags.isEmpty()) {
+                    // if tag cannot be extracted, skip.
+                    continue;
+                }
+                libraryModelTag.setName(libraryModel.getName());
+                Optional.ofNullable(tags.first())
+                        .map(Element::text)
+                        .ifPresent(libraryModelTag::setTag);
+                libraryModelTag.setSize(Optional.ofNullable(tagsMetas.first())
+                        .map(element -> element.text().split("•"))
+                        .filter(parts -> parts.length > 1)
+                        .map(parts -> parts[1].trim())
+                        .orElse(""));
+                libraryModelTag.setLastUpdated(Optional.ofNullable(tagsMetas.first())
+                        .map(element -> element.text().split("•"))
+                        .filter(parts -> parts.length > 1)
+                        .map(parts -> parts[2].trim())
+                        .orElse(""));
+                libraryModelTags.add(libraryModelTag);
+            }
+            LibraryModelDetail libraryModelDetail = new LibraryModelDetail();
+            libraryModelDetail.setModel(libraryModel);
+            libraryModelDetail.setTags(libraryModelTags);
+            return libraryModelDetail;
+        } else {
+            throw new OllamaBaseException(statusCode + " - " + responseString);
+        }
+    }
+
+    /**
      * Pull a model on the Ollama server from the list of <a
      * href="https://ollama.ai/library">available models</a>.
      *
@@ -257,6 +318,23 @@ public class OllamaAPI {
         if (statusCode != 200) {
             throw new OllamaBaseException(statusCode + " - " + responseString);
         }
+    }
+
+    /**
+     * Pulls a model using the specified Ollama library model tag.
+     * The model is identified by a name and a tag, which are combined into a single identifier
+     * in the format "name:tag" to pull the corresponding model.
+     *
+     * @param libraryModelTag the {@link LibraryModelTag} object containing the name and tag
+     *                        of the model to be pulled.
+     * @throws OllamaBaseException  if the response indicates an error status
+     * @throws IOException          if an I/O error occurs during the HTTP request
+     * @throws InterruptedException if the operation is interrupted
+     * @throws URISyntaxException   if the URI for the request is malformed
+     */
+    public void pullModel(LibraryModelTag libraryModelTag) throws OllamaBaseException, IOException, URISyntaxException, InterruptedException {
+        String tagToPull = String.format("%s:%s", libraryModelTag.getName(), libraryModelTag.getTag());
+        pullModel(tagToPull);
     }
 
     /**

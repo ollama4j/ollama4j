@@ -4,7 +4,7 @@ sidebar_position: 1
 
 # List Models
 
-This API lets you list available models on the Ollama server.
+This API lets you list downloaded/available models on the Ollama server.
 
 ```java title="ListModels.java"
 import io.github.ollama4j.OllamaAPI;
