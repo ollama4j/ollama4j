@@ -194,16 +194,30 @@ public class OllamaAPI {
             for (Element e : modelSections) {
                 LibraryModel model = new LibraryModel();
                 Elements names = e.select("div > h2 > span");
+                Elements desc = e.select("div > p");
                 Elements pullCounts = e.select("div:nth-of-type(2) > p > span:first-of-type > span:first-of-type");
                 Elements popularTags = e.select("div > div > span");
-                Elements tagCount = e.select("div:nth-of-type(2) > p > span:nth-of-type(2) > span:first-of-type");
-                Elements updatedAt = e.select("div:nth-of-type(2) > p > span:nth-of-type(3) > span:nth-of-type(2)");
+                Elements totalTags = e.select("div:nth-of-type(2) > p > span:nth-of-type(2) > span:first-of-type");
+                Elements lastUpdatedTime = e.select("div:nth-of-type(2) > p > span:nth-of-type(3) > span:nth-of-type(2)");
 
-                model.setName(names.first().text());
-                model.setPullCount(pullCounts.first().text());
-                model.setPopularTags(popularTags.stream().map(Element::text).collect(Collectors.toList()));
-                model.setNumTags(Integer.parseInt(tagCount.first().text()));
-                model.setUpdatedAt(updatedAt.first().text());
+                if (names.first() == null || names.isEmpty()) {
+                    // if name cannot be extracted, skip.
+                    continue;
+                }
+                Optional.ofNullable(names.first())
+                        .map(Element::text)
+                        .ifPresent(model::setName);
+                model.setDescription(Optional.ofNullable(desc.first()).map(Element::text).orElse(""));
+                model.setPopularTags(Optional.of(popularTags)
+                        .map(tags -> tags.stream().map(Element::text).collect(Collectors.toList()))
+                        .orElse(new ArrayList<>()));
+                model.setPullCount(Optional.ofNullable(pullCounts.first()).map(Element::text).orElse(""));
+                model.setTotalTags(Optional.ofNullable(totalTags.first())
+                        .map(Element::text)
+                        .map(Integer::parseInt)
+                        .orElse(0));
+                model.setLastUpdated(Optional.ofNullable(lastUpdatedTime.first()).map(Element::text).orElse(""));
+
                 models.add(model);
             }
             return models;

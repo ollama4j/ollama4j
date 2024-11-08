@@ -8,8 +8,9 @@ import lombok.Data;
 public class LibraryModel {
 
     private String name;
+    private String description;
     private String pullCount;
-    private int numTags;
+    private int totalTags;
     private List<String> popularTags = new ArrayList<>();
-    private String updatedAt;
+    private String lastUpdated;
 }
