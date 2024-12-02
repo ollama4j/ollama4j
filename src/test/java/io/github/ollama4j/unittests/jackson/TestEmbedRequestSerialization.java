@@ -1,36 +1,37 @@
 package io.github.ollama4j.unittests.jackson;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+
+import io.github.ollama4j.models.embeddings.OllamaEmbedRequestBuilder;
+import io.github.ollama4j.models.embeddings.OllamaEmbedRequestModel;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import io.github.ollama4j.models.embeddings.OllamaEmbeddingsRequestModel;
-import io.github.ollama4j.models.embeddings.OllamaEmbeddingsRequestBuilder;
 import io.github.ollama4j.utils.OptionsBuilder;
 
-public class TestEmbeddingsRequestSerialization extends AbstractSerializationTest<OllamaEmbeddingsRequestModel> {
+public class TestEmbedRequestSerialization extends AbstractSerializationTest<OllamaEmbedRequestModel> {
 
-        private OllamaEmbeddingsRequestBuilder builder;
+        private OllamaEmbedRequestBuilder builder;
 
         @BeforeEach
         public void init() {
-            builder = OllamaEmbeddingsRequestBuilder.getInstance("DummyModel","DummyPrompt");
+            builder = OllamaEmbedRequestBuilder.getInstance("DummyModel","DummyPrompt");
         }
 
             @Test
     public void testRequestOnlyMandatoryFields() {
-        OllamaEmbeddingsRequestModel req = builder.build();
+        OllamaEmbedRequestModel req = builder.build();
         String jsonRequest = serialize(req);
-        assertEqualsAfterUnmarshalling(deserialize(jsonRequest,OllamaEmbeddingsRequestModel.class), req);
+        assertEqualsAfterUnmarshalling(deserialize(jsonRequest,OllamaEmbedRequestModel.class), req);
     }
 
         @Test
         public void testRequestWithOptions() {
             OptionsBuilder b = new OptionsBuilder();
-            OllamaEmbeddingsRequestModel req = builder
+            OllamaEmbedRequestModel req = builder
                     .withOptions(b.setMirostat(1).build()).build();
 
             String jsonRequest = serialize(req);
-            OllamaEmbeddingsRequestModel deserializeRequest = deserialize(jsonRequest,OllamaEmbeddingsRequestModel.class);
+            OllamaEmbedRequestModel deserializeRequest = deserialize(jsonRequest,OllamaEmbedRequestModel.class);
             assertEqualsAfterUnmarshalling(deserializeRequest, req);
             assertEquals(1, deserializeRequest.getOptions().get("mirostat"));
         }
