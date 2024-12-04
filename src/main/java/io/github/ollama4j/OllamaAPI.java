@@ -774,11 +774,15 @@ public class OllamaAPI {
         } else {
             result = requestCaller.callSync(request);
         }
+
+        //add registered Tools to Request
+
+
         return new OllamaChatResult(result.getResponse(), result.getResponseTime(), result.getHttpStatusCode(), request.getMessages());
     }
 
     public void registerTool(Tools.ToolSpecification toolSpecification) {
-        toolRegistry.addFunction(toolSpecification.getFunctionName(), toolSpecification.getToolDefinition());
+        toolRegistry.addTool(toolSpecification.getFunctionName(), toolSpecification);
     }
 
     /**
@@ -871,7 +875,7 @@ public class OllamaAPI {
         try {
             String methodName = toolFunctionCallSpec.getName();
             Map<String, Object> arguments = toolFunctionCallSpec.getArguments();
-            ToolFunction function = toolRegistry.getFunction(methodName);
+            ToolFunction function = toolRegistry.getToolFunction(methodName);
             if (verbose) {
                 logger.debug("Invoking function {} with arguments {}", methodName, arguments);
             }

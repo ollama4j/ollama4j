@@ -4,13 +4,14 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class ToolRegistry {
-    private final Map<String, ToolFunction> functionMap = new HashMap<>();
+    private final Map<String, Tools.ToolSpecification> tools = new HashMap<>();
 
-    public ToolFunction getFunction(String name) {
-        return functionMap.get(name);
+    public ToolFunction getToolFunction(String name) {
+        final Tools.ToolSpecification toolSpecification = tools.get(name);
+        return toolSpecification !=null ? toolSpecification.getToolFunction() : null ;
     }
 
-    public void addFunction(String name, ToolFunction function) {
-        functionMap.put(name, function);
+    public void addTool (String name, Tools.ToolSpecification specification) {
+        tools.put(name, specification);
     }
 }
