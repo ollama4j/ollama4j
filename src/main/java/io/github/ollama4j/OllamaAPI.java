@@ -775,8 +775,8 @@ public class OllamaAPI {
             result = requestCaller.callSync(request);
         }
 
-        //add registered Tools to Request
-
+        // add all registered tools to Request
+        request.setTools(toolRegistry.getRegisteredSpecs().stream().map(Tools.ToolSpecification::getToolPrompt).collect(Collectors.toList()));
 
         return new OllamaChatResult(result.getResponse(), result.getResponseTime(), result.getHttpStatusCode(), request.getMessages());
     }

@@ -1,5 +1,6 @@
 package io.github.ollama4j.tools;
 
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -13,5 +14,9 @@ public class ToolRegistry {
 
     public void addTool (String name, Tools.ToolSpecification specification) {
         tools.put(name, specification);
+    }
+
+    public Collection<Tools.ToolSpecification> getRegisteredSpecs(){
+        return tools.values();
     }
 }

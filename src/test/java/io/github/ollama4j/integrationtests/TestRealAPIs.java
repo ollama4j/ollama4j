@@ -227,6 +227,28 @@ class TestRealAPIs {
 
     @Test
     @Order(3)
+    void testChatWithTools() {
+        testEndpointReachability();
+        try {
+            OllamaChatRequestBuilder builder = OllamaChatRequestBuilder.getInstance(config.getModel());
+            OllamaChatRequest requestModel = builder.withMessage(OllamaChatMessageRole.SYSTEM,
+                            "You are a silent bot that only says 'NI'. Do not say anything else under any circumstances!")
+                    .withMessage(OllamaChatMessageRole.USER,
+                            "What is the capital of France? And what's France's connection with Mona Lisa?")
+                    .build();
+
+            OllamaChatResult chatResult = ollamaAPI.chat(requestModel);
+            assertNotNull(chatResult);
+            assertFalse(chatResult.getResponse().isBlank());
+            assertTrue(chatResult.getResponse().startsWith("NI"));
+            assertEquals(3, chatResult.getChatHistory().size());
+        } catch (IOException | OllamaBaseException | InterruptedException e) {
+            fail(e);
+        }
+    }
+
+    @Test
+    @Order(3)
     void testChatWithStream() {
         testEndpointReachability();
         try {
