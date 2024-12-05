@@ -82,6 +82,18 @@ class TestRealAPIs {
 
     @Test
     @Order(2)
+    void testListModelsFromLibrary() {
+        testEndpointReachability();
+        try {
+            assertNotNull(ollamaAPI.listModelsFromLibrary());
+            ollamaAPI.listModelsFromLibrary().forEach(System.out::println);
+        } catch (IOException | OllamaBaseException | InterruptedException | URISyntaxException e) {
+            fail(e);
+        }
+    }
+
+    @Test
+    @Order(2)
     void testPullModel() {
         testEndpointReachability();
         try {

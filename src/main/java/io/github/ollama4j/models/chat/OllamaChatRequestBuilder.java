@@ -45,7 +45,7 @@ public class OllamaChatRequestBuilder {
             try {
                 return Files.readAllBytes(file.toPath());
             } catch (IOException e) {
-                LOG.warn(String.format("File '%s' could not be accessed, will not add to message!", file.toPath()), e);
+                LOG.warn("File '{}' could not be accessed, will not add to message!", file.toPath(), e);
                 return new byte[0];
             }
         }).collect(Collectors.toList());
@@ -63,9 +63,9 @@ public class OllamaChatRequestBuilder {
                 try {
                     binaryImages.add(Utils.loadImageBytesFromUrl(imageUrl));
                 } catch (URISyntaxException e) {
-                    LOG.warn(String.format("URL '%s' could not be accessed, will not add to message!", imageUrl), e);
+                    LOG.warn("URL '{}' could not be accessed, will not add to message!", imageUrl, e);
                 } catch (IOException e) {
-                    LOG.warn(String.format("Content of URL '%s' could not be read, will not add to message!", imageUrl), e);
+                    LOG.warn("Content of URL '{}' could not be read, will not add to message!", imageUrl, e);
                 }
             }
         }

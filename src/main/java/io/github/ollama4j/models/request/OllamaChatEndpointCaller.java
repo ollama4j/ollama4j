@@ -1,7 +1,9 @@
 package io.github.ollama4j.models.request;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.core.type.TypeReference;
 import io.github.ollama4j.exceptions.OllamaBaseException;
+import io.github.ollama4j.models.chat.OllamaChatMessage;
 import io.github.ollama4j.models.response.OllamaResult;
 import io.github.ollama4j.models.chat.OllamaChatResponseModel;
 import io.github.ollama4j.models.chat.OllamaChatStreamObserver;
@@ -31,13 +33,29 @@ public class OllamaChatEndpointCaller extends OllamaEndpointCaller {
         return "/api/chat";
     }
 
+    /**
+     * Parses streamed Response line from ollama chat.
+     * Using {@link com.fasterxml.jackson.databind.ObjectMapper#readValue(String, TypeReference)} should throw
+     * {@link IllegalArgumentException} in case of null line or {@link com.fasterxml.jackson.core.JsonParseException}
+     * in case the JSON Object cannot be parsed to a {@link OllamaChatResponseModel}. Thus, the ResponseModel should
+     * never be null.
+     *
+     * @param line streamed line of ollama stream response
+     * @param responseBuffer Stringbuffer to add latest response message part to
+     * @return TRUE, if ollama-Response has 'done' state
+     */
     @Override
     protected boolean parseResponseAndAddToBuffer(String line, StringBuilder responseBuffer) {
         try {
             OllamaChatResponseModel ollamaResponseModel = Utils.getObjectMapper().readValue(line, OllamaChatResponseModel.class);
-            responseBuffer.append(ollamaResponseModel.getMessage().getContent());
-            if (streamObserver != null) {
-                streamObserver.notify(ollamaResponseModel);
+            // it seems that under heavy load ollama responds with an empty chat message part in the streamed response
+            // thus, we null check the message and hope that the next streamed response has some message content again
+            OllamaChatMessage message = ollamaResponseModel.getMessage();
+            if(message != null) {
+                responseBuffer.append(message.getContent());
+                if (streamObserver != null) {
+                    streamObserver.notify(ollamaResponseModel);
+                }
             }
             return ollamaResponseModel.isDone();
         } catch (JsonProcessingException e) {

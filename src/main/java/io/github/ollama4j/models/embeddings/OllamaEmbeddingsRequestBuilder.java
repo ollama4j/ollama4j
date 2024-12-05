@@ -2,6 +2,7 @@ package io.github.ollama4j.models.embeddings;
 
 import io.github.ollama4j.utils.Options;
 
+@Deprecated(since="1.0.90")
 public class OllamaEmbeddingsRequestBuilder {
 
     private OllamaEmbeddingsRequestBuilder(String model, String prompt){

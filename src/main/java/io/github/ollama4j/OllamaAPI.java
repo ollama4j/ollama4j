@@ -193,7 +193,7 @@ public class OllamaAPI {
             Elements modelSections = doc.selectXpath("//*[@id='repo']/ul/li/a");
             for (Element e : modelSections) {
                 LibraryModel model = new LibraryModel();
-                Elements names = e.select("div > h2 > span");
+                Elements names = e.select("div > h2 > div > span");
                 Elements desc = e.select("div > p");
                 Elements pullCounts = e.select("div:nth-of-type(2) > p > span:first-of-type > span:first-of-type");
                 Elements popularTags = e.select("div > div > span");
