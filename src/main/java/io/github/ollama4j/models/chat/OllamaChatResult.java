@@ -3,7 +3,6 @@ package io.github.ollama4j.models.chat;
 import java.util.List;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import io.github.ollama4j.models.response.OllamaResult;
 import lombok.Getter;
 
 import static io.github.ollama4j.utils.Utils.getObjectMapper;
@@ -18,12 +17,12 @@ public class OllamaChatResult {
 
     private List<OllamaChatMessage> chatHistory;
 
-    private OllamaChatResponseModel response;
+    private OllamaChatResponseModel responseModel;
 
-    public OllamaChatResult(OllamaChatResponseModel response, List<OllamaChatMessage> chatHistory) {
+    public OllamaChatResult(OllamaChatResponseModel responseModel, List<OllamaChatMessage> chatHistory) {
         this.chatHistory = chatHistory;
-        this.response = response;
-        appendAnswerToChatHistory(response);
+        this.responseModel = responseModel;
+        appendAnswerToChatHistory(responseModel);
     }
 
     private void appendAnswerToChatHistory(OllamaChatResponseModel response) {
@@ -37,5 +36,20 @@ public class OllamaChatResult {
         } catch (JsonProcessingException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    @Deprecated
+    public String getResponse(){
+        return responseModel != null ? responseModel.getMessage().getContent() : "";
+    }
+
+    @Deprecated
+    public int getHttpStatusCode(){
+        return 200;
+    }
+
+    @Deprecated
+    public long getResponseTime(){
+        return responseModel != null ? responseModel.getTotalDuration() : 0L;
     }
 }
