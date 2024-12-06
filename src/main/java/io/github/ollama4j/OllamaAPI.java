@@ -602,7 +602,7 @@ public class OllamaAPI {
         OllamaResult result = generate(model, prompt, raw, options, null);
         toolResult.setModelResult(result);
 
-        String toolsResponse = result.getContent();
+        String toolsResponse = result.getResponse();
         if (toolsResponse.contains("[TOOL_CALLS]")) {
             toolsResponse = toolsResponse.replace("[TOOL_CALLS]", "");
         }
@@ -767,7 +767,7 @@ public class OllamaAPI {
      */
     public OllamaChatResult chat(OllamaChatRequest request, OllamaStreamHandler streamHandler) throws OllamaBaseException, IOException, InterruptedException {
         OllamaChatEndpointCaller requestCaller = new OllamaChatEndpointCaller(host, basicAuth, requestTimeoutSeconds, verbose);
-        OllamaResult result;
+        OllamaChatResult result;
 
         // add all registered tools to Request
         request.setTools(toolRegistry.getRegisteredSpecs().stream().map(Tools.ToolSpecification::getToolPrompt).collect(Collectors.toList()));
@@ -779,7 +779,7 @@ public class OllamaAPI {
             result = requestCaller.callSync(request);
         }
 
-        return new OllamaChatResult(result.getContent(), result.getResponseTime(), result.getHttpStatusCode(), request.getMessages());
+        return result;
     }
 
     public void registerTool(Tools.ToolSpecification toolSpecification) {

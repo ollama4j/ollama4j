@@ -10,6 +10,7 @@ import java.io.IOException;
 import java.net.URISyntaxException;
 import java.nio.file.Files;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -36,6 +37,10 @@ public class OllamaChatRequestBuilder {
 
     public void reset() {
         request = new OllamaChatRequest(request.getModel(), new ArrayList<>());
+    }
+
+    public OllamaChatRequestBuilder withMessage(OllamaChatMessageRole role, String content){
+        return withMessage(role,content, Collections.emptyList());
     }
 
     public OllamaChatRequestBuilder withMessage(OllamaChatMessageRole role, String content, List<OllamaChatToolCalls> toolCalls,List<File> images) {

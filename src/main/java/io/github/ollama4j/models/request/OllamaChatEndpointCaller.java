@@ -4,6 +4,9 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import io.github.ollama4j.exceptions.OllamaBaseException;
 import io.github.ollama4j.models.chat.OllamaChatMessage;
+import io.github.ollama4j.models.chat.OllamaChatRequest;
+import io.github.ollama4j.models.chat.OllamaChatResult;
+import io.github.ollama4j.models.response.OllamaErrorResponse;
 import io.github.ollama4j.models.response.OllamaResult;
 import io.github.ollama4j.models.chat.OllamaChatResponseModel;
 import io.github.ollama4j.models.chat.OllamaChatStreamObserver;
@@ -13,7 +16,15 @@ import io.github.ollama4j.utils.Utils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.net.URI;
+import java.net.http.HttpClient;
+import java.net.http.HttpRequest;
+import java.net.http.HttpResponse;
+import java.nio.charset.StandardCharsets;
 
 /**
  * Specialization class for requests
@@ -64,9 +75,68 @@ public class OllamaChatEndpointCaller extends OllamaEndpointCaller {
         }
     }
 
-    public OllamaResult call(OllamaRequestBody body, OllamaStreamHandler streamHandler)
+    public OllamaChatResult call(OllamaChatRequest body, OllamaStreamHandler streamHandler)
             throws OllamaBaseException, IOException, InterruptedException {
         streamObserver = new OllamaChatStreamObserver(streamHandler);
-        return super.callSync(body);
+        return callSync(body);
+    }
+
+    public OllamaChatResult callSync(OllamaChatRequest body) throws OllamaBaseException, IOException, InterruptedException {
+        // Create Request
+        HttpClient httpClient = HttpClient.newHttpClient();
+        URI uri = URI.create(getHost() + getEndpointSuffix());
+        HttpRequest.Builder requestBuilder =
+                getRequestBuilderDefault(uri)
+                        .POST(
+                                body.getBodyPublisher());
+        HttpRequest request = requestBuilder.build();
+        if (isVerbose()) LOG.info("Asking model: " + body.toString());
+        HttpResponse<InputStream> response =
+                httpClient.send(request, HttpResponse.BodyHandlers.ofInputStream());
+
+        int statusCode = response.statusCode();
+        InputStream responseBodyStream = response.body();
+        StringBuilder responseBuffer = new StringBuilder();
+        OllamaChatResponseModel ollamaChatResponseModel = null;
+        try (BufferedReader reader =
+                     new BufferedReader(new InputStreamReader(responseBodyStream, StandardCharsets.UTF_8))) {
+
+            String line;
+            while ((line = reader.readLine()) != null) {
+                if (statusCode == 404) {
+                    LOG.warn("Status code: 404 (Not Found)");
+                    OllamaErrorResponse ollamaResponseModel =
+                            Utils.getObjectMapper().readValue(line, OllamaErrorResponse.class);
+                    responseBuffer.append(ollamaResponseModel.getError());
+                } else if (statusCode == 401) {
+                    LOG.warn("Status code: 401 (Unauthorized)");
+                    OllamaErrorResponse ollamaResponseModel =
+                            Utils.getObjectMapper()
+                                    .readValue("{\"error\":\"Unauthorized\"}", OllamaErrorResponse.class);
+                    responseBuffer.append(ollamaResponseModel.getError());
+                } else if (statusCode == 400) {
+                    LOG.warn("Status code: 400 (Bad Request)");
+                    OllamaErrorResponse ollamaResponseModel = Utils.getObjectMapper().readValue(line,
+                            OllamaErrorResponse.class);
+                    responseBuffer.append(ollamaResponseModel.getError());
+                } else {
+                    boolean finished = parseResponseAndAddToBuffer(line, responseBuffer);
+                        ollamaChatResponseModel = Utils.getObjectMapper().readValue(line, OllamaChatResponseModel.class);
+                    if (finished && body.stream) {
+                        ollamaChatResponseModel.getMessage().setContent(responseBuffer.toString());
+                        break;
+                    }
+                }
+            }
+        }
+        if (statusCode != 200) {
+            LOG.error("Status code " + statusCode);
+            throw new OllamaBaseException(responseBuffer.toString());
+        } else {
+            OllamaChatResult ollamaResult =
+                    new OllamaChatResult(ollamaChatResponseModel,body.getMessages());
+            if (isVerbose()) LOG.info("Model response: " + ollamaResult);
+            return ollamaResult;
+        }
     }
 }
