@@ -17,7 +17,7 @@ public class OllamaResult {
    *
    * @return String completion/response text
    */
-  private final String response;
+  private final String content;
 
   /**
    * -- GETTER --
@@ -35,8 +35,8 @@ public class OllamaResult {
    */
   private long responseTime = 0;
 
-  public OllamaResult(String response, long responseTime, int httpStatusCode) {
-    this.response = response;
+  public OllamaResult(String content, long responseTime, int httpStatusCode) {
+    this.content = content;
     this.responseTime = responseTime;
     this.httpStatusCode = httpStatusCode;
   }

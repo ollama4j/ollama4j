@@ -38,7 +38,7 @@ public class OllamaChatRequestBuilder {
         request = new OllamaChatRequest(request.getModel(), new ArrayList<>());
     }
 
-    public OllamaChatRequestBuilder withMessage(OllamaChatMessageRole role, String content, List<File> images) {
+    public OllamaChatRequestBuilder withMessage(OllamaChatMessageRole role, String content, List<OllamaChatToolCalls> toolCalls,List<File> images) {
         List<OllamaChatMessage> messages = this.request.getMessages();
 
         List<byte[]> binaryImages = images.stream().map(file -> {
@@ -50,11 +50,11 @@ public class OllamaChatRequestBuilder {
             }
         }).collect(Collectors.toList());
 
-        messages.add(new OllamaChatMessage(role, content, binaryImages));
+        messages.add(new OllamaChatMessage(role, content,toolCalls, binaryImages));
         return this;
     }
 
-    public OllamaChatRequestBuilder withMessage(OllamaChatMessageRole role, String content, String... imageUrls) {
+    public OllamaChatRequestBuilder withMessage(OllamaChatMessageRole role, String content,List<OllamaChatToolCalls> toolCalls, String... imageUrls) {
         List<OllamaChatMessage> messages = this.request.getMessages();
         List<byte[]> binaryImages = null;
         if (imageUrls.length > 0) {
@@ -70,7 +70,7 @@ public class OllamaChatRequestBuilder {
             }
         }
 
-        messages.add(new OllamaChatMessage(role, content, binaryImages));
+        messages.add(new OllamaChatMessage(role, content,toolCalls, binaryImages));
         return this;
     }
 
