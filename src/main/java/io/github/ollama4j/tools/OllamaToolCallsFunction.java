@@ -12,5 +12,5 @@ import java.util.Map;
 public class OllamaToolCallsFunction
 {
     private String name;
-    private Map<String,String> arguments;
+    private Map<String,Object> arguments;
 }

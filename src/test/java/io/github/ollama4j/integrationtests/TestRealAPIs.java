@@ -273,14 +273,16 @@ class TestRealAPIs {
             assertNotNull(chatResult.getResponseModel());
             assertNotNull(chatResult.getResponseModel().getMessage());
             assertEquals(OllamaChatMessageRole.ASSISTANT.getRoleName(),chatResult.getResponseModel().getMessage().getRole().getRoleName());
-            List<OllamaChatToolCalls> toolCalls = chatResult.getResponseModel().getMessage().getToolCalls();
+            List<OllamaChatToolCalls> toolCalls = chatResult.getChatHistory().get(1).getToolCalls();
             assertEquals(1, toolCalls.size());
             assertEquals("get-employee-details",toolCalls.get(0).getFunction().getName());
             assertEquals(1, toolCalls.get(0).getFunction().getArguments().size());
-            String employeeName = toolCalls.get(0).getFunction().getArguments().get("employee-name");
+            Object employeeName = toolCalls.get(0).getFunction().getArguments().get("employee-name");
             assertNotNull(employeeName);
             assertEquals("Rahul Kumar",employeeName);
-            assertEquals(2, chatResult.getChatHistory().size());
+            assertTrue(chatResult.getChatHistory().size()>2);
+            List<OllamaChatToolCalls> finalToolCalls = chatResult.getResponseModel().getMessage().getToolCalls();
+            assertNull(finalToolCalls);
         } catch (IOException | OllamaBaseException | InterruptedException e) {
             fail(e);
         }
@@ -448,7 +450,7 @@ class DBQueryFunction implements ToolFunction {
     @Override
     public Object apply(Map<String, Object> arguments) {
         // perform DB operations here
-        return String.format("Employee Details {ID: %s, Name: %s, Address: %s, Phone: %s}", UUID.randomUUID(), arguments.get("employee-name").toString(), arguments.get("employee-address").toString(), arguments.get("employee-phone").toString());
+        return String.format("Employee Details {ID: %s, Name: %s, Address: %s, Phone: %s}", UUID.randomUUID(), arguments.get("employee-name"), arguments.get("employee-address"), arguments.get("employee-phone"));
     }
 }
 
