@@ -2,6 +2,7 @@ package io.github.ollama4j.models.chat;
 
 import static io.github.ollama4j.utils.Utils.getObjectMapper;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 
@@ -31,6 +32,8 @@ public class OllamaChatMessage {
 
     @NonNull
     private String content;
+
+    private @JsonProperty("tool_calls") List<OllamaChatToolCalls> toolCalls;
 
     @JsonSerialize(using = FileToBase64Serializer.class)
     private List<byte[]> images;

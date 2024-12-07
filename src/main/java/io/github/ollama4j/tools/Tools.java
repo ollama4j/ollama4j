@@ -6,8 +6,10 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import io.github.ollama4j.utils.Utils;
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -20,17 +22,23 @@ public class Tools {
     public static class ToolSpecification {
         private String functionName;
         private String functionDescription;
-        private Map<String, PromptFuncDefinition.Property> properties;
-        private ToolFunction toolDefinition;
+        private PromptFuncDefinition toolPrompt;
+        private ToolFunction toolFunction;
     }
 
     @Data
     @JsonIgnoreProperties(ignoreUnknown = true)
+    @Builder
+    @NoArgsConstructor
+    @AllArgsConstructor
     public static class PromptFuncDefinition {
         private String type;
         private PromptFuncSpec function;
 
         @Data
+        @Builder
+        @NoArgsConstructor
+        @AllArgsConstructor
         public static class PromptFuncSpec {
             private String name;
             private String description;
@@ -38,6 +46,9 @@ public class Tools {
         }
 
         @Data
+        @Builder
+        @NoArgsConstructor
+        @AllArgsConstructor
         public static class Parameters {
             private String type;
             private Map<String, Property> properties;
@@ -46,6 +57,8 @@ public class Tools {
 
         @Data
         @Builder
+        @NoArgsConstructor
+        @AllArgsConstructor
         public static class Property {
             private String type;
             private String description;
@@ -94,10 +107,10 @@ public class Tools {
 
             PromptFuncDefinition.Parameters parameters = new PromptFuncDefinition.Parameters();
             parameters.setType("object");
-            parameters.setProperties(spec.getProperties());
+            parameters.setProperties(spec.getToolPrompt().getFunction().parameters.getProperties());
 
             List<String> requiredValues = new ArrayList<>();
-            for (Map.Entry<String, PromptFuncDefinition.Property> p : spec.getProperties().entrySet()) {
+            for (Map.Entry<String, PromptFuncDefinition.Property> p : spec.getToolPrompt().getFunction().getParameters().getProperties().entrySet()) {
                 if (p.getValue().isRequired()) {
                     requiredValues.add(p.getKey());
                 }

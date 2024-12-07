@@ -767,18 +767,39 @@ public class OllamaAPI {
      */
     public OllamaChatResult chat(OllamaChatRequest request, OllamaStreamHandler streamHandler) throws OllamaBaseException, IOException, InterruptedException {
         OllamaChatEndpointCaller requestCaller = new OllamaChatEndpointCaller(host, basicAuth, requestTimeoutSeconds, verbose);
-        OllamaResult result;
+        OllamaChatResult result;
+
+        // add all registered tools to Request
+        request.setTools(toolRegistry.getRegisteredSpecs().stream().map(Tools.ToolSpecification::getToolPrompt).collect(Collectors.toList()));
+
         if (streamHandler != null) {
             request.setStream(true);
             result = requestCaller.call(request, streamHandler);
         } else {
             result = requestCaller.callSync(request);
+            // check if toolCallIsWanted
+            List<OllamaChatToolCalls> toolCalls = result.getResponseModel().getMessage().getToolCalls();
+            int toolCallTries = 0;
+            while(toolCalls != null && !toolCalls.isEmpty() && toolCallTries <3){
+                for (OllamaChatToolCalls toolCall : toolCalls){
+                    String toolName = toolCall.getFunction().getName();
+                    ToolFunction toolFunction = toolRegistry.getToolFunction(toolName);
+                    Map<String, Object> arguments = toolCall.getFunction().getArguments();
+                    Object res = toolFunction.apply(arguments);
+                    request.getMessages().add(new OllamaChatMessage(OllamaChatMessageRole.TOOL,"[ToolCall-Result]" + toolName + "(" + arguments.keySet() +") : " + res + "[/ToolCall-Result]"));
+                }
+                result = requestCaller.callSync(request);
+                toolCalls = result.getResponseModel().getMessage().getToolCalls();
+                toolCallTries++;
+            }
+
         }
-        return new OllamaChatResult(result.getResponse(), result.getResponseTime(), result.getHttpStatusCode(), request.getMessages());
+
+        return result;
     }
 
     public void registerTool(Tools.ToolSpecification toolSpecification) {
-        toolRegistry.addFunction(toolSpecification.getFunctionName(), toolSpecification.getToolDefinition());
+        toolRegistry.addTool(toolSpecification.getFunctionName(), toolSpecification);
     }
 
     /**
@@ -871,7 +892,7 @@ public class OllamaAPI {
         try {
             String methodName = toolFunctionCallSpec.getName();
             Map<String, Object> arguments = toolFunctionCallSpec.getArguments();
-            ToolFunction function = toolRegistry.getFunction(methodName);
+            ToolFunction function = toolRegistry.getToolFunction(methodName);
             if (verbose) {
                 logger.debug("Invoking function {} with arguments {}", methodName, arguments);
             }
