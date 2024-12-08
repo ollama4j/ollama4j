@@ -32,6 +32,7 @@ import java.time.Duration;
 import java.util.*;
 import java.util.stream.Collectors;
 
+import lombok.val;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.jsoup.Jsoup;
@@ -551,6 +552,27 @@ public class OllamaAPI {
      * @param options       the Options object - <a
      *                      href="https://github.com/jmorganca/ollama/blob/main/docs/modelfile.md#valid-parameters-and-values">More
      *                      details on the options</a>
+     * @return OllamaResult that includes response text and time taken for response
+     * @throws OllamaBaseException  if the response indicates an error status
+     * @throws IOException          if an I/O error occurs during the HTTP request
+     * @throws InterruptedException if the operation is interrupted
+     */
+    public OllamaResult generate(String model, String prompt, boolean raw, Options options) throws OllamaBaseException, IOException, InterruptedException {
+        OllamaGenerateRequest ollamaRequestModel = new OllamaGenerateRequest(model, prompt);
+        ollamaRequestModel.setRaw(raw);
+        ollamaRequestModel.setOptions(options.getOptionsMap());
+        return generateSyncForOllamaRequestModel(ollamaRequestModel, null);
+    }
+
+    /**
+     * Generate response for a question to a model running on Ollama server. This is a sync/blocking
+     * call.
+     *
+     * @param model         the ollama model to ask the question to
+     * @param prompt        the prompt/question text
+     * @param options       the Options object - <a
+     *                      href="https://github.com/jmorganca/ollama/blob/main/docs/modelfile.md#valid-parameters-and-values">More
+     *                      details on the options</a>
      * @param streamHandler optional callback consumer that will be applied every time a streamed response is received. If not set, the stream parameter of the request is set to false.
      * @return OllamaResult that includes response text and time taken for response
      * @throws OllamaBaseException  if the response indicates an error status
@@ -565,6 +587,30 @@ public class OllamaAPI {
     }
 
     /**
+     * Generate response for a question to a model running on Ollama server. This is a sync/blocking
+     * call.
+     *
+     * @param model         the ollama model to ask the question to
+     * @param prompt        the prompt/question text
+     * @param options       the Options object - <a
+     *                      href="https://github.com/jmorganca/ollama/blob/main/docs/modelfile.md#valid-parameters-and-values">More
+     *                      details on the options</a>
+     * @param streamHandler optional callback consumer that will be applied every time a streamed response is received. If not set, the stream parameter of the request is set to false.
+     * @param format        Class used as a marshalling model during structured output generation.
+     * @return OllamaResult that includes response text and time taken for response
+     * @throws OllamaBaseException  if the response indicates an error status
+     * @throws IOException          if an I/O error occurs during the HTTP request
+     * @throws InterruptedException if the operation is interrupted
+     */
+    public OllamaResult generate(String model, String prompt, boolean raw, Options options, OllamaStreamHandler streamHandler, Class<?> format) throws OllamaBaseException, IOException, InterruptedException {
+        OllamaGenerateRequest ollamaRequestModel = new OllamaGenerateRequest(model, prompt);
+        ollamaRequestModel.setRaw(raw);
+        ollamaRequestModel.setOptions(options.getOptionsMap());
+        ollamaRequestModel.setResponseClass(format);
+        return generateSyncForOllamaRequestModel(ollamaRequestModel, streamHandler);
+    }
+
+    /**
      * Generates response using the specified AI model and prompt (in blocking mode).
      * <p>
      * Uses {@link #generate(String, String, boolean, Options, OllamaStreamHandler)}
@@ -573,13 +619,14 @@ public class OllamaAPI {
      * @param prompt  The input text or prompt to provide to the AI model.
      * @param raw     In some cases, you may wish to bypass the templating system and provide a full prompt. In this case, you can use the raw parameter to disable templating. Also note that raw mode will not return a context.
      * @param options Additional options or configurations to use when generating the response.
+     * @param format  Class used as a marshalling model during structured output generation.
      * @return {@link OllamaResult}
      * @throws OllamaBaseException  if the response indicates an error status
      * @throws IOException          if an I/O error occurs during the HTTP request
      * @throws InterruptedException if the operation is interrupted
      */
-    public OllamaResult generate(String model, String prompt, boolean raw, Options options) throws OllamaBaseException, IOException, InterruptedException {
-        return generate(model, prompt, raw, options, null);
+    public OllamaResult generate(String model, String prompt, boolean raw, Options options, Class<?> format) throws OllamaBaseException, IOException, InterruptedException {
+        return generate(model, prompt, raw, options, null, format);
     }
 
     /**
@@ -599,7 +646,7 @@ public class OllamaAPI {
         OllamaToolsResult toolResult = new OllamaToolsResult();
         Map<ToolFunctionCallSpec, Object> toolResults = new HashMap<>();
 
-        OllamaResult result = generate(model, prompt, raw, options, null);
+        OllamaResult result = generate(model, prompt, raw, options, null, null);
         toolResult.setModelResult(result);
 
         String toolsResponse = result.getResponse();
@@ -768,13 +815,18 @@ public class OllamaAPI {
     public OllamaChatResult chat(OllamaChatRequest request, OllamaStreamHandler streamHandler) throws OllamaBaseException, IOException, InterruptedException {
         OllamaChatEndpointCaller requestCaller = new OllamaChatEndpointCaller(host, basicAuth, requestTimeoutSeconds, verbose);
         OllamaResult result;
+        Class<?> requestClass = request.getResponseClass();
         if (streamHandler != null) {
             request.setStream(true);
             result = requestCaller.call(request, streamHandler);
         } else {
             result = requestCaller.callSync(request);
         }
-        return new OllamaChatResult(result.getResponse(), result.getResponseTime(), result.getHttpStatusCode(), request.getMessages());
+        if(requestClass != null) {
+            return new OllamaChatResult(result.getResponse(), requestClass, result.getResponseTime(), result.getHttpStatusCode(), request.getMessages());
+        } else {
+            return new OllamaChatResult(result.getResponse(), result.getResponseTime(), result.getHttpStatusCode(), request.getMessages());
+        }
     }
 
     public void registerTool(Tools.ToolSpecification toolSpecification) {

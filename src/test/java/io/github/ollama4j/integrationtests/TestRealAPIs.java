@@ -2,6 +2,8 @@ package io.github.ollama4j.integrationtests;
 
 import io.github.ollama4j.OllamaAPI;
 import io.github.ollama4j.exceptions.OllamaBaseException;
+import io.github.ollama4j.models.generate.OllamaGenerateRequest;
+import io.github.ollama4j.models.generate.OllamaGenerateRequestBuilder;
 import io.github.ollama4j.models.response.ModelDetail;
 import io.github.ollama4j.models.chat.OllamaChatRequest;
 import io.github.ollama4j.models.response.OllamaResult;
@@ -31,6 +33,22 @@ import java.util.Properties;
 import static org.junit.jupiter.api.Assertions.*;
 
 class TestRealAPIs {
+
+    class SimpleClass {
+        private String parameter;
+
+        public SimpleClass() {
+            parameter = "test";
+        }
+
+        public String getParameter() {
+            return parameter;
+        }
+
+        public void setParameter(String parameter) {
+            this.parameter = parameter;
+        }
+    }
 
     private static final Logger LOG = LoggerFactory.getLogger(TestRealAPIs.class);
 
@@ -177,6 +195,25 @@ class TestRealAPIs {
                             new OptionsBuilder().setTemperature(0.9f).build());
             assertNotNull(result);
             assertNotNull(result.getResponse());
+            assertFalse(result.getResponse().isEmpty());
+        } catch (IOException | OllamaBaseException | InterruptedException e) {
+            fail(e);
+        }
+    }
+
+    void testAskModelWithStructuredOutput() {
+        testEndpointReachability();
+        try {
+            OllamaResult result =
+                    ollamaAPI.generate(
+                            config.getModel(),
+                            "What is the capital of France? And what's France's connection with Mona Lisa?",
+                            true,
+                            new OptionsBuilder().build(),
+                            SimpleClass.class);
+            assertNotNull(result);
+            assertNotNull(result.getResponse());
+            assertNotNull(result.getStructuredResponse());
             assertFalse(result.getResponse().isEmpty());
         } catch (IOException | OllamaBaseException | InterruptedException e) {
             fail(e);
