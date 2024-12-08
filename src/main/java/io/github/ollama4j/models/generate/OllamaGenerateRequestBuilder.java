@@ -1,6 +1,7 @@
 package io.github.ollama4j.models.generate;
 
 import io.github.ollama4j.utils.Options;
+import org.json.JSONObject;
 
 /**
  * Helper class for creating {@link OllamaGenerateRequest}
@@ -27,8 +28,8 @@ public class OllamaGenerateRequestBuilder {
         return this;
     }
     
-    public OllamaGenerateRequestBuilder withGetJsonResponse(){
-        this.request.setReturnFormatJson(true);
+    public OllamaGenerateRequestBuilder withFormat(JSONObject format){
+        this.request.setFormat(format);
         return this;
     }
 

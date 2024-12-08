@@ -7,6 +7,7 @@ import io.github.ollama4j.utils.OllamaRequestBody;
 
 import lombok.Getter;
 import lombok.Setter;
+import org.json.JSONObject;
 
 /**
  * Defines a Request to use against the ollama /api/chat endpoint.
@@ -26,6 +27,12 @@ public class OllamaChatRequest extends OllamaCommonRequest implements OllamaRequ
   public OllamaChatRequest(String model, List<OllamaChatMessage> messages) {
     this.model = model;
     this.messages = messages;
+  }
+
+  public OllamaChatRequest(String model, List<OllamaChatMessage> messages, JSONObject format) {
+    this.model = model;
+    this.messages = messages;
+    this.format = format;
   }
 
   @Override

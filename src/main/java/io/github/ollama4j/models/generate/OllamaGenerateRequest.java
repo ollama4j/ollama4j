@@ -8,6 +8,7 @@ import java.util.List;
 
 import lombok.Getter;
 import lombok.Setter;
+import org.json.JSONObject;
 
 @Getter
 @Setter
@@ -33,6 +34,20 @@ public class OllamaGenerateRequest extends OllamaCommonRequest implements Ollama
     this.prompt = prompt;
     this.images = images;
   }
+
+  public OllamaGenerateRequest(String model, String prompt, JSONObject format) {
+    this.model = model;
+    this.prompt = prompt;
+    this.format = format;
+  }
+
+  public OllamaGenerateRequest(String model, String prompt, List<String> images, JSONObject format) {
+    this.model = model;
+    this.prompt = prompt;
+    this.images = images;
+    this.format = format;
+  }
+
 
     @Override
   public boolean equals(Object o) {

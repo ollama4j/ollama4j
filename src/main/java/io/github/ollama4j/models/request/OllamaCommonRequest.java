@@ -4,20 +4,17 @@ import java.util.Map;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 
-import io.github.ollama4j.utils.BooleanToJsonFormatFlagSerializer;
 import io.github.ollama4j.utils.Utils;
 import lombok.Data;
+import org.json.JSONObject;
 
 @Data
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public abstract class OllamaCommonRequest {
-  
-  protected String model;  
-  @JsonSerialize(using = BooleanToJsonFormatFlagSerializer.class)
-  @JsonProperty(value = "format")
-  protected Boolean returnFormatJson;
+
+  protected String model;
+  protected JSONObject format;
   protected Map<String, Object> options;
   protected String template;
   protected boolean stream;

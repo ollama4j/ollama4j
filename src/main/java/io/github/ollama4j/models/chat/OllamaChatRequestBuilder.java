@@ -2,6 +2,7 @@ package io.github.ollama4j.models.chat;
 
 import io.github.ollama4j.utils.Options;
 import io.github.ollama4j.utils.Utils;
+import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -83,8 +84,8 @@ public class OllamaChatRequestBuilder {
         return this;
     }
 
-    public OllamaChatRequestBuilder withGetJsonResponse() {
-        this.request.setReturnFormatJson(true);
+    public OllamaChatRequestBuilder withFormat(JSONObject format) {
+        this.request.setFormat(format);
         return this;
     }
 
