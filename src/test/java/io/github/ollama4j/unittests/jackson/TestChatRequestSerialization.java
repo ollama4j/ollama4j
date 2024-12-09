@@ -94,19 +94,6 @@ public class TestChatRequestSerialization extends AbstractSerializationTest<Olla
     }
 
     @Test
-    public void testWithJsonFormat() {
-        OllamaChatRequest req = builder.withMessage(OllamaChatMessageRole.USER, "Some prompt")
-                .withGetJsonResponse().build();
-
-        String jsonRequest = serialize(req);
-        // no jackson deserialization as format property is not boolean ==> omit as deserialization
-        // of request is never used in real code anyways
-        JSONObject jsonObject = new JSONObject(jsonRequest);
-        String requestFormatProperty = jsonObject.getString("format");
-        assertEquals("json", requestFormatProperty);
-    }
-
-    @Test
     public void testWithTemplate() {
         OllamaChatRequest req = builder.withTemplate("System Template")
             .build();

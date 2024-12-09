@@ -17,7 +17,7 @@ public class OllamaResult {
    *
    * @return String completion/response text
    */
-  private final String response;
+  protected final String response;
 
   /**
    * -- GETTER --
@@ -25,7 +25,7 @@ public class OllamaResult {
    *
    * @return int - response status code
    */
-  private int httpStatusCode;
+  protected int httpStatusCode;
 
   /**
    * -- GETTER --
@@ -33,7 +33,7 @@ public class OllamaResult {
    *
    * @return long - response time in milliseconds
    */
-  private long responseTime = 0;
+  protected long responseTime = 0;
 
   public OllamaResult(String response, long responseTime, int httpStatusCode) {
     this.response = response;

@@ -40,17 +40,4 @@ public class TestGenerateRequestSerialization extends AbstractSerializationTest<
         assertEquals(1, deserializeRequest.getOptions().get("mirostat"));
     }
 
-    @Test
-    public void testWithJsonFormat() {
-        OllamaGenerateRequest req =
-                builder.withPrompt("Some prompt").withGetJsonResponse().build();
-
-        String jsonRequest = serialize(req);
-        // no jackson deserialization as format property is not boolean ==> omit as deserialization
-        // of request is never used in real code anyways
-        JSONObject jsonObject = new JSONObject(jsonRequest);
-        String requestFormatProperty = jsonObject.getString("format");
-        assertEquals("json", requestFormatProperty);
-    }
-
 }

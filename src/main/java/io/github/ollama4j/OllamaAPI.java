@@ -32,6 +32,7 @@ import java.time.Duration;
 import java.util.*;
 import java.util.stream.Collectors;
 
+import lombok.val;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.jsoup.Jsoup;
@@ -768,13 +769,18 @@ public class OllamaAPI {
     public OllamaChatResult chat(OllamaChatRequest request, OllamaStreamHandler streamHandler) throws OllamaBaseException, IOException, InterruptedException {
         OllamaChatEndpointCaller requestCaller = new OllamaChatEndpointCaller(host, basicAuth, requestTimeoutSeconds, verbose);
         OllamaResult result;
+        Class<?> requestClass = request.getResponseClass();
         if (streamHandler != null) {
             request.setStream(true);
             result = requestCaller.call(request, streamHandler);
         } else {
             result = requestCaller.callSync(request);
         }
-        return new OllamaChatResult(result.getResponse(), result.getResponseTime(), result.getHttpStatusCode(), request.getMessages());
+        if(requestClass != null) {
+            return new OllamaChatResult(result.getResponse(), result.getResponseTime(), result.getHttpStatusCode(), request.getMessages(), requestClass);
+        } else {
+            return new OllamaChatResult(result.getResponse(), result.getResponseTime(), result.getHttpStatusCode(), request.getMessages());
+        }
     }
 
     public void registerTool(Tools.ToolSpecification toolSpecification) {
