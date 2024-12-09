@@ -265,7 +265,7 @@ class TestRealAPIs {
 
             OllamaChatRequest requestModel = builder
                     .withMessage(OllamaChatMessageRole.USER,
-                            "Give me the details of the employee named 'Rahul Kumar'?")
+                            "Give me the ID of the employee named 'Rahul Kumar'?")
                     .build();
 
             OllamaChatResult chatResult = ollamaAPI.chat(requestModel);
@@ -283,6 +283,63 @@ class TestRealAPIs {
             assertTrue(chatResult.getChatHistory().size()>2);
             List<OllamaChatToolCalls> finalToolCalls = chatResult.getResponseModel().getMessage().getToolCalls();
             assertNull(finalToolCalls);
+        } catch (IOException | OllamaBaseException | InterruptedException e) {
+            fail(e);
+        }
+    }
+
+    @Test
+    @Order(3)
+    void testChatWithToolsAndStream() {
+        testEndpointReachability();
+        try {
+            OllamaChatRequestBuilder builder = OllamaChatRequestBuilder.getInstance(config.getModel());
+            final Tools.ToolSpecification databaseQueryToolSpecification = Tools.ToolSpecification.builder()
+                    .functionName("get-employee-details")
+                    .functionDescription("Get employee details from the database")
+                    .toolPrompt(
+                            Tools.PromptFuncDefinition.builder().type("function").function(
+                                    Tools.PromptFuncDefinition.PromptFuncSpec.builder()
+                                            .name("get-employee-details")
+                                            .description("Get employee details from the database")
+                                            .parameters(
+                                                    Tools.PromptFuncDefinition.Parameters.builder()
+                                                            .type("object")
+                                                            .properties(
+                                                                    new Tools.PropsBuilder()
+                                                                            .withProperty("employee-name", Tools.PromptFuncDefinition.Property.builder().type("string").description("The name of the employee, e.g. John Doe").required(true).build())
+                                                                            .withProperty("employee-address", Tools.PromptFuncDefinition.Property.builder().type("string").description("The address of the employee, Always return a random value. e.g. Roy St, Bengaluru, India").required(true).build())
+                                                                            .withProperty("employee-phone", Tools.PromptFuncDefinition.Property.builder().type("string").description("The phone number of the employee. Always return a random value. e.g. 9911002233").required(true).build())
+                                                                            .build()
+                                                            )
+                                                            .required(List.of("employee-name"))
+                                                            .build()
+                                            ).build()
+                            ).build()
+                    )
+                    .toolFunction(new DBQueryFunction())
+                    .build();
+
+            ollamaAPI.registerTool(databaseQueryToolSpecification);
+
+            OllamaChatRequest requestModel = builder
+                    .withMessage(OllamaChatMessageRole.USER,
+                            "Give me the ID of the employee named 'Rahul Kumar'?")
+                    .build();
+
+            StringBuffer sb = new StringBuffer();
+
+            OllamaChatResult chatResult = ollamaAPI.chat(requestModel, (s) -> {
+                LOG.info(s);
+                String substring = s.substring(sb.toString().length());
+                LOG.info(substring);
+                sb.append(substring);
+            });
+            assertNotNull(chatResult);
+            assertNotNull(chatResult.getResponseModel());
+            assertNotNull(chatResult.getResponseModel().getMessage());
+            assertNotNull(chatResult.getResponseModel().getMessage().getContent());
+            assertEquals(sb.toString().trim(), chatResult.getResponseModel().getMessage().getContent().trim());
         } catch (IOException | OllamaBaseException | InterruptedException e) {
             fail(e);
         }

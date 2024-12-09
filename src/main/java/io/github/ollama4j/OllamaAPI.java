@@ -777,22 +777,27 @@ public class OllamaAPI {
             result = requestCaller.call(request, streamHandler);
         } else {
             result = requestCaller.callSync(request);
-            // check if toolCallIsWanted
-            List<OllamaChatToolCalls> toolCalls = result.getResponseModel().getMessage().getToolCalls();
-            int toolCallTries = 0;
-            while(toolCalls != null && !toolCalls.isEmpty() && toolCallTries <3){
-                for (OllamaChatToolCalls toolCall : toolCalls){
-                    String toolName = toolCall.getFunction().getName();
-                    ToolFunction toolFunction = toolRegistry.getToolFunction(toolName);
-                    Map<String, Object> arguments = toolCall.getFunction().getArguments();
-                    Object res = toolFunction.apply(arguments);
-                    request.getMessages().add(new OllamaChatMessage(OllamaChatMessageRole.TOOL,"[ToolCall-Result]" + toolName + "(" + arguments.keySet() +") : " + res + "[/ToolCall-Result]"));
-                }
-                result = requestCaller.callSync(request);
-                toolCalls = result.getResponseModel().getMessage().getToolCalls();
-                toolCallTries++;
+        }
+
+        // check if toolCallIsWanted
+        List<OllamaChatToolCalls> toolCalls = result.getResponseModel().getMessage().getToolCalls();
+        int toolCallTries = 0;
+        while(toolCalls != null && !toolCalls.isEmpty() && toolCallTries <3){
+            for (OllamaChatToolCalls toolCall : toolCalls){
+                String toolName = toolCall.getFunction().getName();
+                ToolFunction toolFunction = toolRegistry.getToolFunction(toolName);
+                Map<String, Object> arguments = toolCall.getFunction().getArguments();
+                Object res = toolFunction.apply(arguments);
+                request.getMessages().add(new OllamaChatMessage(OllamaChatMessageRole.TOOL,"[TOOL_RESULTS]" + toolName + "(" + arguments.keySet() +") : " + res + "[/TOOL_RESULTS]"));
             }
 
+            if (streamHandler != null) {
+                result = requestCaller.call(request, streamHandler);
+            } else {
+                result = requestCaller.callSync(request);
+            }
+            toolCalls = result.getResponseModel().getMessage().getToolCalls();
+            toolCallTries++;
         }
 
         return result;
