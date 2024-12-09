@@ -59,6 +59,10 @@ public class OllamaAPI {
      */
     @Setter
     private boolean verbose = true;
+
+    @Setter
+    private int maxChatToolCallRetries = 3;
+
     private BasicAuth basicAuth;
 
     private final ToolRegistry toolRegistry = new ToolRegistry();
@@ -782,7 +786,7 @@ public class OllamaAPI {
         // check if toolCallIsWanted
         List<OllamaChatToolCalls> toolCalls = result.getResponseModel().getMessage().getToolCalls();
         int toolCallTries = 0;
-        while(toolCalls != null && !toolCalls.isEmpty() && toolCallTries <3){
+        while(toolCalls != null && !toolCalls.isEmpty() && toolCallTries < maxChatToolCallRetries){
             for (OllamaChatToolCalls toolCall : toolCalls){
                 String toolName = toolCall.getFunction().getName();
                 ToolFunction toolFunction = toolRegistry.getToolFunction(toolName);
