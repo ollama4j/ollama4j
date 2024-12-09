@@ -2,28 +2,54 @@ package io.github.ollama4j.models.chat;
 
 import java.util.List;
 
-import io.github.ollama4j.models.response.OllamaResult;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import lombok.Getter;
+
+import static io.github.ollama4j.utils.Utils.getObjectMapper;
 
 /**
  * Specific chat-API result that contains the chat history sent to the model and appends the answer as {@link OllamaChatResult} given by the
  * {@link OllamaChatMessageRole#ASSISTANT} role.
  */
-public class OllamaChatResult extends OllamaResult {
+@Getter
+public class OllamaChatResult {
+
 
     private List<OllamaChatMessage> chatHistory;
 
-    public OllamaChatResult(String response, long responseTime, int httpStatusCode, List<OllamaChatMessage> chatHistory) {
-        super(response, responseTime, httpStatusCode);
+    private OllamaChatResponseModel responseModel;
+
+    public OllamaChatResult(OllamaChatResponseModel responseModel, List<OllamaChatMessage> chatHistory) {
         this.chatHistory = chatHistory;
-        appendAnswerToChatHistory(response);
+        this.responseModel = responseModel;
+        appendAnswerToChatHistory(responseModel);
     }
 
-    public List<OllamaChatMessage> getChatHistory() {
-        return chatHistory;
+    private void appendAnswerToChatHistory(OllamaChatResponseModel response) {
+        this.chatHistory.add(response.getMessage());
     }
 
-    private void appendAnswerToChatHistory(String answer) {
-        OllamaChatMessage assistantMessage = new OllamaChatMessage(OllamaChatMessageRole.ASSISTANT, answer);
-        this.chatHistory.add(assistantMessage);
+    @Override
+    public String toString() {
+        try {
+            return getObjectMapper().writerWithDefaultPrettyPrinter().writeValueAsString(this);
+        } catch (JsonProcessingException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    @Deprecated
+    public String getResponse(){
+        return responseModel != null ? responseModel.getMessage().getContent() : "";
+    }
+
+    @Deprecated
+    public int getHttpStatusCode(){
+        return 200;
+    }
+
+    @Deprecated
+    public long getResponseTime(){
+        return responseModel != null ? responseModel.getTotalDuration() : 0L;
     }
 }

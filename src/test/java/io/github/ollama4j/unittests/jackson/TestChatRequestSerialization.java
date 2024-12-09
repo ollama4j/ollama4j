@@ -4,6 +4,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrowsExactly;
 
 import java.io.File;
+import java.util.Collections;
 import java.util.List;
 
 import io.github.ollama4j.models.chat.OllamaChatRequest;
@@ -42,7 +43,7 @@ public class TestChatRequestSerialization extends AbstractSerializationTest<Olla
 
     @Test
     public void testRequestWithMessageAndImage() {
-        OllamaChatRequest req = builder.withMessage(OllamaChatMessageRole.USER, "Some prompt",
+        OllamaChatRequest req = builder.withMessage(OllamaChatMessageRole.USER, "Some prompt", Collections.emptyList(),
                 List.of(new File("src/test/resources/dog-on-a-boat.jpg"))).build();
         String jsonRequest = serialize(req);
         assertEqualsAfterUnmarshalling(deserialize(jsonRequest, OllamaChatRequest.class), req);
