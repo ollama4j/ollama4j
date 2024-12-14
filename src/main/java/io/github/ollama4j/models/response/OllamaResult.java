@@ -74,18 +74,14 @@ public class OllamaResult {
    * @throws IllegalStateException  if an attempt is made to get structured response when format was not supplied during initial request
    * @throws RuntimeException       if the parameterized type supplied for unmarshalling is incompatible with the type supplied on initial request
    */
-  public <T> T getStructuredResponse() {
-    if (this.responseType == null) {
-      throw new IllegalStateException("Response class was not set in the original request; response cannot be structured.");
-    }
-
-    if (this.response == null) {
-      throw new IllegalStateException("Response is null; cannot structure a response.");
+  public <T> T getStructuredResponse(Class<T> responseType) {
+    if (this.response == null || responseType == null) {
+      throw new IllegalStateException("Response or responseType is null; cannot structure a response.");
     }
 
     try {
       @SuppressWarnings("unchecked")
-      T deserializedValue = (T) getObjectMapper().readValue(response, responseType);
+      T deserializedValue = getObjectMapper().readValue(response, responseType);
       return deserializedValue;
     } catch (JsonProcessingException e) {
       throw new RuntimeException("Failed to parse response into type: " + responseType.getName(), e);
