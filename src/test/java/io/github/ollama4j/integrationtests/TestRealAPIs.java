@@ -213,7 +213,7 @@ class TestRealAPIs {
                             SimpleClass.class);
             assertNotNull(result);
             assertNotNull(result.getResponse());
-            assertNotNull(result.getStructuredResponse());
+            assertNotNull(result.getStructuredResponse(SimpleClass.class));
             assertFalse(result.getResponse().isEmpty());
         } catch (IOException | OllamaBaseException | InterruptedException e) {
             fail(e);
