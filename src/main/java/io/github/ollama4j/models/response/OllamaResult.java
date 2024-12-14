@@ -30,14 +30,6 @@ public class OllamaResult {
 
   /**
    * -- GETTER --
-   *  Get the response class of the structured response
-   *
-   * @return Class<?> completion/response text
-   */
-  protected Class<?> responseType;
-
-  /**
-   * -- GETTER --
    *  Get the response status code.
    *
    * @return int - response status code
@@ -54,13 +46,6 @@ public class OllamaResult {
 
   public OllamaResult(String response, long responseTime, int httpStatusCode) {
     this.response = response;
-    this.responseTime = responseTime;
-    this.httpStatusCode = httpStatusCode;
-  }
-
-  public OllamaResult(String response, Class<?> responseType, long responseTime, int httpStatusCode) {
-    this.response = response;
-    this.responseType = responseType;
     this.responseTime = responseTime;
     this.httpStatusCode = httpStatusCode;
   }

@@ -822,11 +822,7 @@ public class OllamaAPI {
         } else {
             result = requestCaller.callSync(request);
         }
-        if(requestClass != null) {
-            return new OllamaChatResult(result.getResponse(), requestClass, result.getResponseTime(), result.getHttpStatusCode(), request.getMessages());
-        } else {
-            return new OllamaChatResult(result.getResponse(), result.getResponseTime(), result.getHttpStatusCode(), request.getMessages());
-        }
+        return new OllamaChatResult(result.getResponse(), result.getResponseTime(), result.getHttpStatusCode(), request.getMessages());
     }
 
     public void registerTool(Tools.ToolSpecification toolSpecification) {
