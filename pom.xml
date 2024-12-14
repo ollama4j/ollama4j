@@ -184,6 +184,11 @@
             <version>20240205</version>
             <scope>test</scope>
         </dependency>
+        <dependency>
+            <groupId>com.github.victools</groupId>
+            <artifactId>jsonschema-generator</artifactId>
+            <version>4.37.0</version>
+        </dependency>
     </dependencies>
 
     <distributionManagement>

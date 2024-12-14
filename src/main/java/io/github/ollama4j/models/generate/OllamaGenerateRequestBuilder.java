@@ -26,11 +26,6 @@ public class OllamaGenerateRequestBuilder {
         request.setPrompt(prompt);
         return this;
     }
-    
-    public OllamaGenerateRequestBuilder withGetJsonResponse(){
-        this.request.setReturnFormatJson(true);
-        return this;
-    }
 
     public OllamaGenerateRequestBuilder withOptions(Options options){
         this.request.setOptions(options.getOptionsMap());
@@ -52,4 +47,8 @@ public class OllamaGenerateRequestBuilder {
         return this;
     }
 
+    public OllamaGenerateRequestBuilder withResponseClass(Class<?> responseType) {
+        this.request.setResponseClass(responseType);
+        return this;
+    }
 }

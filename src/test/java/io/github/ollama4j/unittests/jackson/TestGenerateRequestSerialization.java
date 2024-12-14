@@ -1,8 +1,12 @@
 package io.github.ollama4j.unittests.jackson;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
+import com.fasterxml.jackson.databind.JsonNode;
+import io.github.ollama4j.models.chat.OllamaChatRequest;
 import io.github.ollama4j.models.generate.OllamaGenerateRequest;
+import io.github.ollama4j.utils.Utils;
 import org.json.JSONObject;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -41,16 +45,30 @@ public class TestGenerateRequestSerialization extends AbstractSerializationTest<
     }
 
     @Test
-    public void testWithJsonFormat() {
-        OllamaGenerateRequest req =
-                builder.withPrompt("Some prompt").withGetJsonResponse().build();
+    public void testOllamaRequestSerialization() throws Exception {
 
+        class SimpleClass {
+            private String parameter;
+
+            public SimpleClass() {
+                parameter = "test";
+            }
+
+            public String getParameter() {
+                return parameter;
+            }
+
+            public void setParameter(String parameter) {
+                this.parameter = parameter;
+            }
+        }
+
+        OllamaGenerateRequest req = builder.withPrompt("Some prompt").withResponseClass(SimpleClass.class).build();
         String jsonRequest = serialize(req);
-        // no jackson deserialization as format property is not boolean ==> omit as deserialization
-        // of request is never used in real code anyways
-        JSONObject jsonObject = new JSONObject(jsonRequest);
-        String requestFormatProperty = jsonObject.getString("format");
-        assertEquals("json", requestFormatProperty);
+
+        JsonNode rootNode = Utils.getObjectMapper().readTree(jsonRequest);
+        assertNotNull(rootNode.get("format"),
+                "Request should contain a 'format' property when responseClass is provided");
     }
 
 }

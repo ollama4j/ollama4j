@@ -1,19 +1,19 @@
 package io.github.ollama4j.unittests.jackson;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrowsExactly;
-
 import java.io.File;
 import java.util.List;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import io.github.ollama4j.models.chat.OllamaChatRequest;
-import org.json.JSONObject;
+import io.github.ollama4j.utils.Utils;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import io.github.ollama4j.models.chat.OllamaChatMessageRole;
 import io.github.ollama4j.models.chat.OllamaChatRequestBuilder;
 import io.github.ollama4j.utils.OptionsBuilder;
+
+import static org.junit.jupiter.api.Assertions.*;
 
 public class TestChatRequestSerialization extends AbstractSerializationTest<OllamaChatRequest> {
 
@@ -94,19 +94,6 @@ public class TestChatRequestSerialization extends AbstractSerializationTest<Olla
     }
 
     @Test
-    public void testWithJsonFormat() {
-        OllamaChatRequest req = builder.withMessage(OllamaChatMessageRole.USER, "Some prompt")
-                .withGetJsonResponse().build();
-
-        String jsonRequest = serialize(req);
-        // no jackson deserialization as format property is not boolean ==> omit as deserialization
-        // of request is never used in real code anyways
-        JSONObject jsonObject = new JSONObject(jsonRequest);
-        String requestFormatProperty = jsonObject.getString("format");
-        assertEquals("json", requestFormatProperty);
-    }
-
-    @Test
     public void testWithTemplate() {
         OllamaChatRequest req = builder.withTemplate("System Template")
             .build();
@@ -128,5 +115,32 @@ public class TestChatRequestSerialization extends AbstractSerializationTest<Olla
             .build();
         String jsonRequest = serialize(req);
         assertEquals(deserialize(jsonRequest, OllamaChatRequest.class).getKeepAlive(), expectedKeepAlive);
+    }
+
+    @Test
+    public void testOllamaRequestSerialization() throws Exception {
+
+        class SimpleClass {
+            private String parameter;
+
+            public SimpleClass() {
+                parameter = "test";
+            }
+
+            public String getParameter() {
+                return parameter;
+            }
+
+            public void setParameter(String parameter) {
+                this.parameter = parameter;
+            }
+        }
+
+        OllamaChatRequest req = builder.withResponseClass(SimpleClass.class).build();
+        String jsonRequest = serialize(req);
+
+        JsonNode rootNode = Utils.getObjectMapper().readTree(jsonRequest);
+        assertNotNull(rootNode.get("format"),
+                "Request should contain a 'format' property when responseClass is provided");
     }
 }

@@ -12,6 +12,10 @@ public class OllamaChatResult extends OllamaResult {
 
     private List<OllamaChatMessage> chatHistory;
 
+    public OllamaChatResult(String response, long responseTime, int httpStatusCode) {
+        super(response, responseTime, httpStatusCode);
+    }
+
     public OllamaChatResult(String response, long responseTime, int httpStatusCode, List<OllamaChatMessage> chatHistory) {
         super(response, responseTime, httpStatusCode);
         this.chatHistory = chatHistory;
