@@ -33,7 +33,7 @@ public class Main {
         // start conversation with model
         OllamaChatResult chatResult = ollamaAPI.chat(requestModel);
 
-        System.out.println("First answer: " + chatResult.getResponse());
+        System.out.println("First answer: " + chatResult.getResponseModel().getMessage().getContent());
 
         // create next userQuestion
         requestModel = builder.withMessages(chatResult.getChatHistory()).withMessage(OllamaChatMessageRole.USER, "And what is the second largest city?").build();
@@ -41,7 +41,7 @@ public class Main {
         // "continue" conversation with model
         chatResult = ollamaAPI.chat(requestModel);
 
-        System.out.println("Second answer: " + chatResult.getResponse());
+        System.out.println("Second answer: " + chatResult.getResponseModel().getMessage().getContent());
 
         System.out.println("Chat History: " + chatResult.getChatHistory());
     }
@@ -205,7 +205,7 @@ public class Main {
         // start conversation with model
         OllamaChatResult chatResult = ollamaAPI.chat(requestModel);
 
-        System.out.println(chatResult.getResponse());
+        System.out.println(chatResult.getResponseModel());
     }
 }
 
@@ -244,7 +244,7 @@ public class Main {
                                 new File("/path/to/image"))).build();
 
         OllamaChatResult chatResult = ollamaAPI.chat(requestModel);
-        System.out.println("First answer: " + chatResult.getResponse());
+        System.out.println("First answer: " + chatResult.getResponseModel());
 
         builder.reset();
 
@@ -254,7 +254,7 @@ public class Main {
                         .withMessage(OllamaChatMessageRole.USER, "What's the dogs breed?").build();
 
         chatResult = ollamaAPI.chat(requestModel);
-        System.out.println("Second answer: " + chatResult.getResponse());
+        System.out.println("Second answer: " + chatResult.getResponseModel());
     }
 }
 ```
