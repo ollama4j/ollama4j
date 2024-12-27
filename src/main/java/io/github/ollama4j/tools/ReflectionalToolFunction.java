@@ -5,6 +5,7 @@ import lombok.Getter;
 import lombok.Setter;
 
 import java.lang.reflect.Method;
+import java.math.BigDecimal;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
@@ -38,14 +39,15 @@ public class ReflectionalToolFunction implements ToolFunction{
             return null;
         }
         String inputValueString = inputValue.toString();
-        if("java.lang.Integer".equals(className)){
-            return Integer.parseInt(inputValueString);
-        }
-        if("java.lang.Boolean".equals(className)){
-            return Boolean.valueOf(inputValueString);
-        }
-        else {
-            return inputValueString;
+        switch (className) {
+            case "java.lang.Integer":
+                return Integer.parseInt(inputValueString);
+            case "java.lang.Boolean":
+                return Boolean.valueOf(inputValueString);
+            case "java.math.BigDecimal":
+                return new BigDecimal(inputValueString);
+            default:
+                return inputValueString;
         }
     }
 
