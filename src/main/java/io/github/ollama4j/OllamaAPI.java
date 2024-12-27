@@ -842,7 +842,6 @@ public class OllamaAPI {
         Class<?>[] providers = ollamaToolServiceAnnotation.providers();
 
         for(Class<?> provider : providers){
-            System.err.println("Provider: " + provider.getName());
             Method[] methods = provider.getMethods();
             for(Method m : methods) {
                 ToolSpec toolSpec = m.getDeclaredAnnotation(ToolSpec.class);
@@ -851,7 +850,6 @@ public class OllamaAPI {
                 }
                 String operationName = !toolSpec.name().isBlank() ? toolSpec.name() : m.getName();
                 String operationDesc = !toolSpec.desc().isBlank() ? toolSpec.desc() : operationName;
-                System.err.println("Method: " + operationName);
 
                 final Tools.PropsBuilder propsBuilder = new Tools.PropsBuilder();
                 LinkedHashMap<String,String> methodParams = new LinkedHashMap<>();
