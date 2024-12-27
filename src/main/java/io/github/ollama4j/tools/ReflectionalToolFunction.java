@@ -8,6 +8,9 @@ import java.lang.reflect.Method;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
+/**
+ * Specification of a {@link ToolFunction} that provides the implementation via java reflection calling.
+ */
 @Setter
 @Getter
 @AllArgsConstructor
