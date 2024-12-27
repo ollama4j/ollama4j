@@ -317,7 +317,7 @@ class TestRealAPIs {
             List<OllamaChatToolCalls> toolCalls = chatResult.getChatHistory().get(1).getToolCalls();
             assertEquals(1, toolCalls.size());
             OllamaToolCallsFunction function = toolCalls.get(0).getFunction();
-            assertEquals("computeMkeConstant", function.getName());
+            assertEquals("computeImportantConstant", function.getName());
             assertEquals(1, function.getArguments().size());
             Object noOfDigits = function.getArguments().get("noOfDigits");
             assertNotNull(noOfDigits);

@@ -8,7 +8,7 @@ import java.math.BigDecimal;
 public class AnnotatedTool {
 
     @ToolSpec(desc = "Computes the most important constant all around the globe!")
-    public String computeMkeConstant(@ToolProperty(name = "noOfDigits",desc = "Number of digits that shall be returned") Integer noOfDigits ){
+    public String computeImportantConstant(@ToolProperty(name = "noOfDigits",desc = "Number of digits that shall be returned") Integer noOfDigits ){
         return BigDecimal.valueOf((long)(Math.random()*1000000L),noOfDigits).toString();
     }
 
