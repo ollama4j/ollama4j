@@ -464,20 +464,154 @@ A typical final response of the above could be:
 
 This tool calling can also be done using the streaming API.
 
-### Potential Improvements
+### Using Annotation based Tool Registration
 
-Instead of explicitly registering `ollamaAPI.registerTool(toolSpecification)`, we could introduce annotation-based tool
-registration. For example:
+Instead of explicitly registering each tool, ollama4j supports declarative tool specification and registration via java 
+Annotations and reflection calling.
+
+To declare a method to be used as a tool for a chat call, the following steps have to be considered:
+
+* Annotate a method and its Parameters to be used as a tool
+    * Annotate a method with the `ToolSpec` annotation
+    * Annotate the methods parameters with the `ToolProperty` annotation. Only the following datatypes are supported for now:
+        * `java.lang.String`
+        * `java.lang.Integer`
+        * `java.lang.Boolean`
+        * `java.math.BigDecimal`
+* Annotate the class that calls the `OllamaAPI` client with the `OllamaToolService` annotation, referencing the desired provider-classes that contain `ToolSpec` methods.
+* Before calling the `OllamaAPI` chat request, call the method `OllamaAPI.registerAnnotatedTools()` method to add tools to the chat.
+
+#### Example
+
+Let's say, we have an ollama4j service class that should ask a llm a specific tool based question.
+
+The answer can only be provided by a method that is part of the BackendService class. To provide a tool for the llm, the following annotations can be used:
 
 ```java
+public class BackendService{
+    
+    public BackendService(){}
 
-@ToolSpec(name = "current-fuel-price", desc = "Get current fuel price")
-public String getCurrentFuelPrice(Map<String, Object> arguments) {
-    String location = arguments.get("location").toString();
-    String fuelType = arguments.get("fuelType").toString();
-    return "Current price of " + fuelType + " in " + location + " is Rs.103/L";
+    @ToolSpec(desc = "Computes the most important constant all around the globe!")
+    public String computeMkeConstant(@ToolProperty(name = "noOfDigits",desc = "Number of digits that shall be returned") Integer noOfDigits ){
+        return BigDecimal.valueOf((long)(Math.random()*1000000L),noOfDigits).toString();
+    }
 }
 ```
+
+The caller API can then be written as:
+```java
+import io.github.ollama4j.tools.annotations.OllamaToolService;
+
+@OllamaToolService(providers = BackendService.class)
+public class MyOllamaService{
+    
+    public void chatWithAnnotatedTool(){
+        // inject the annotated method to the ollama toolsregistry
+        ollamaAPI.registerAnnotatedTools();
+
+        OllamaChatRequest requestModel = builder
+                .withMessage(OllamaChatMessageRole.USER,
+                        "Compute the most important constant in the world using 5 digits")
+                .build();
+
+        OllamaChatResult chatResult = ollamaAPI.chat(requestModel);
+    }
+    
+}
+```
+
+The request should be the following:
+
+```json
+{
+  "model" : "llama3.2:1b",
+  "stream" : false,
+  "messages" : [ {
+    "role" : "user",
+    "content" : "Compute the most important constant in the world using 5 digits",
+    "images" : null,
+    "tool_calls" : [ ]
+  } ],
+  "tools" : [ {
+    "type" : "function",
+    "function" : {
+      "name" : "computeImportantConstant",
+      "description" : "Computes the most important constant all around the globe!",
+      "parameters" : {
+        "type" : "object",
+        "properties" : {
+          "noOfDigits" : {
+            "type" : "java.lang.Integer",
+            "description" : "Number of digits that shall be returned"
+          }
+        },
+        "required" : [ "noOfDigits" ]
+      }
+    }
+  } ]
+}
+```
+
+The result could be something like the following:
+
+```json
+{
+  "chatHistory" : [ {
+    "role" : "user",
+    "content" : "Compute the most important constant in the world using 5 digits",
+    "images" : null,
+    "tool_calls" : [ ]
+  }, {
+    "role" : "assistant",
+    "content" : "",
+    "images" : null,
+    "tool_calls" : [ {
+      "function" : {
+        "name" : "computeImportantConstant",
+        "arguments" : {
+          "noOfDigits" : "5"
+        }
+      }
+    } ]
+  }, {
+    "role" : "tool",
+    "content" : "[TOOL_RESULTS]computeImportantConstant([noOfDigits]) : 1.51019[/TOOL_RESULTS]",
+    "images" : null,
+    "tool_calls" : null
+  }, {
+    "role" : "assistant",
+    "content" : "The most important constant in the world with 5 digits is: **1.51019**",
+    "images" : null,
+    "tool_calls" : null
+  } ],
+  "responseModel" : {
+    "model" : "llama3.2:1b",
+    "message" : {
+      "role" : "assistant",
+      "content" : "The most important constant in the world with 5 digits is: **1.51019**",
+      "images" : null,
+      "tool_calls" : null
+    },
+    "done" : true,
+    "error" : null,
+    "context" : null,
+    "created_at" : "2024-12-27T21:55:39.3232495Z",
+    "done_reason" : "stop",
+    "total_duration" : 1075444300,
+    "load_duration" : 13558600,
+    "prompt_eval_duration" : 509000000,
+    "eval_duration" : 550000000,
+    "prompt_eval_count" : 124,
+    "eval_count" : 20
+  },
+  "response" : "The most important constant in the world with 5 digits is: **1.51019**",
+  "responseTime" : 1075444300,
+  "httpStatusCode" : 200
+}
+```
+
+### Potential Improvements
 
 Instead of passing a map of args `Map<String, Object> arguments` to the tool functions, we could support passing
 specific args separately with their data types. For example:
