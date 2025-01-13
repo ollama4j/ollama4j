@@ -284,6 +284,8 @@ If you like or are using this project to build your own, please give us a star. 
 | 8 | TeleLlama3 Bot    | A question-answering Telegram bot                                                                             | [Repo](https://git.hiast.edu.sy/mohamadbashar.disoki/telellama3-bot)                                                                           |
 | 9 | moqui-wechat      | A moqui-wechat component                                                                                      | [GitHub](https://github.com/heguangyong/moqui-wechat)                                                                                          |
 
+https://www.b4x.com/android/forum/threads/ollama4j-library-pnd_ollama4j-your-local-offline-llm-like-chatgpt.165003/
+
 ## Traction
 
 [![Star History Chart](https://api.star-history.com/svg?repos=ollama4j/ollama4j&type=Date)](https://star-history.com/#ollama4j/ollama4j&Date)
