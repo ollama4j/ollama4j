@@ -15,11 +15,17 @@ import io.github.ollama4j.models.ps.ModelsProcessResponse;
 import io.github.ollama4j.models.request.*;
 import io.github.ollama4j.models.response.*;
 import io.github.ollama4j.tools.*;
+import io.github.ollama4j.tools.annotations.OllamaToolService;
+import io.github.ollama4j.tools.annotations.ToolProperty;
+import io.github.ollama4j.tools.annotations.ToolSpec;
 import io.github.ollama4j.utils.Options;
 import io.github.ollama4j.utils.Utils;
 import lombok.Setter;
 
 import java.io.*;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+import java.lang.reflect.Parameter;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.http.HttpClient;
@@ -59,6 +65,10 @@ public class OllamaAPI {
      */
     @Setter
     private boolean verbose = true;
+
+    @Setter
+    private int maxChatToolCallRetries = 3;
+
     private BasicAuth basicAuth;
 
     private final ToolRegistry toolRegistry = new ToolRegistry();
@@ -193,7 +203,7 @@ public class OllamaAPI {
             Elements modelSections = doc.selectXpath("//*[@id='repo']/ul/li/a");
             for (Element e : modelSections) {
                 LibraryModel model = new LibraryModel();
-                Elements names = e.select("div > h2 > span");
+                Elements names = e.select("div > h2 > div > span");
                 Elements desc = e.select("div > p");
                 Elements pullCounts = e.select("div:nth-of-type(2) > p > span:first-of-type > span:first-of-type");
                 Elements popularTags = e.select("div > div > span");
@@ -599,6 +609,15 @@ public class OllamaAPI {
         OllamaToolsResult toolResult = new OllamaToolsResult();
         Map<ToolFunctionCallSpec, Object> toolResults = new HashMap<>();
 
+        if(!prompt.startsWith("[AVAILABLE_TOOLS]")){
+            final Tools.PromptBuilder promptBuilder = new Tools.PromptBuilder();
+            for(Tools.ToolSpecification spec :  toolRegistry.getRegisteredSpecs()) {
+                promptBuilder.withToolSpecification(spec);
+            }
+            promptBuilder.withPrompt(prompt);
+            prompt = promptBuilder.build();
+        }
+
         OllamaResult result = generate(model, prompt, raw, options, null);
         toolResult.setModelResult(result);
 
@@ -767,18 +786,130 @@ public class OllamaAPI {
      */
     public OllamaChatResult chat(OllamaChatRequest request, OllamaStreamHandler streamHandler) throws OllamaBaseException, IOException, InterruptedException {
         OllamaChatEndpointCaller requestCaller = new OllamaChatEndpointCaller(host, basicAuth, requestTimeoutSeconds, verbose);
-        OllamaResult result;
+        OllamaChatResult result;
+
+        // add all registered tools to Request
+        request.setTools(toolRegistry.getRegisteredSpecs().stream().map(Tools.ToolSpecification::getToolPrompt).collect(Collectors.toList()));
+
         if (streamHandler != null) {
             request.setStream(true);
             result = requestCaller.call(request, streamHandler);
         } else {
             result = requestCaller.callSync(request);
         }
-        return new OllamaChatResult(result.getResponse(), result.getResponseTime(), result.getHttpStatusCode(), request.getMessages());
+
+        // check if toolCallIsWanted
+        List<OllamaChatToolCalls> toolCalls = result.getResponseModel().getMessage().getToolCalls();
+        int toolCallTries = 0;
+        while(toolCalls != null && !toolCalls.isEmpty() && toolCallTries < maxChatToolCallRetries){
+            for (OllamaChatToolCalls toolCall : toolCalls){
+                String toolName = toolCall.getFunction().getName();
+                ToolFunction toolFunction = toolRegistry.getToolFunction(toolName);
+                Map<String, Object> arguments = toolCall.getFunction().getArguments();
+                Object res = toolFunction.apply(arguments);
+                request.getMessages().add(new OllamaChatMessage(OllamaChatMessageRole.TOOL,"[TOOL_RESULTS]" + toolName + "(" + arguments.keySet() +") : " + res + "[/TOOL_RESULTS]"));
+            }
+
+            if (streamHandler != null) {
+                result = requestCaller.call(request, streamHandler);
+            } else {
+                result = requestCaller.callSync(request);
+            }
+            toolCalls = result.getResponseModel().getMessage().getToolCalls();
+            toolCallTries++;
+        }
+
+        return result;
     }
 
     public void registerTool(Tools.ToolSpecification toolSpecification) {
-        toolRegistry.addFunction(toolSpecification.getFunctionName(), toolSpecification.getToolDefinition());
+        toolRegistry.addTool(toolSpecification.getFunctionName(), toolSpecification);
+    }
+
+    public void registerAnnotatedTools()  {
+        Class<?> callerClass = null;
+        try {
+            callerClass = Class.forName(Thread.currentThread().getStackTrace()[2].getClassName());
+        } catch (ClassNotFoundException e) {
+            throw new RuntimeException(e);
+        }
+
+        OllamaToolService ollamaToolServiceAnnotation = callerClass.getDeclaredAnnotation(OllamaToolService.class);
+        if(ollamaToolServiceAnnotation == null) {
+            throw new IllegalStateException(callerClass + " is not annotated as " + OllamaToolService.class);
+        }
+
+        Class<?>[] providers = ollamaToolServiceAnnotation.providers();
+
+        for(Class<?> provider : providers){
+            Method[] methods = provider.getMethods();
+            for(Method m : methods) {
+                ToolSpec toolSpec = m.getDeclaredAnnotation(ToolSpec.class);
+                if(toolSpec == null){
+                    continue;
+                }
+                String operationName = !toolSpec.name().isBlank() ? toolSpec.name() : m.getName();
+                String operationDesc = !toolSpec.desc().isBlank() ? toolSpec.desc() : operationName;
+
+                final Tools.PropsBuilder propsBuilder = new Tools.PropsBuilder();
+                LinkedHashMap<String,String> methodParams = new LinkedHashMap<>();
+                for (Parameter parameter : m.getParameters()) {
+                    final ToolProperty toolPropertyAnn = parameter.getDeclaredAnnotation(ToolProperty.class);
+                    String propType = parameter.getType().getTypeName();
+                    if(toolPropertyAnn == null) {
+                        methodParams.put(parameter.getName(),null);
+                        continue;
+                    }
+                    String propName = !toolPropertyAnn.name().isBlank() ? toolPropertyAnn.name() : parameter.getName();
+                    methodParams.put(propName,propType);
+                    propsBuilder.withProperty(propName,Tools.PromptFuncDefinition.Property.builder()
+                            .type(propType)
+                            .description(toolPropertyAnn.desc())
+                            .required(toolPropertyAnn.required())
+                            .build());
+                }
+                final Map<String, Tools.PromptFuncDefinition.Property> params = propsBuilder.build();
+                List<String> reqProps = params.entrySet().stream()
+                        .filter(e -> e.getValue().isRequired())
+                        .map(Map.Entry::getKey)
+                        .collect(Collectors.toList());
+
+                Tools.ToolSpecification toolSpecification = Tools.ToolSpecification.builder()
+                        .functionName(operationName)
+                        .functionDescription(operationDesc)
+                        .toolPrompt(
+                                Tools.PromptFuncDefinition.builder().type("function").function(
+                                        Tools.PromptFuncDefinition.PromptFuncSpec.builder()
+                                                .name(operationName)
+                                                .description(operationDesc)
+                                                .parameters(
+                                                        Tools.PromptFuncDefinition.Parameters.builder()
+                                                                .type("object")
+                                                                .properties(
+                                                                        params
+                                                                )
+                                                                .required(reqProps)
+                                                                .build()
+                                                ).build()
+                                ).build()
+                        )
+                        .build();
+
+                try {
+                    ReflectionalToolFunction reflectionalToolFunction =
+                            new ReflectionalToolFunction(provider.getDeclaredConstructor().newInstance()
+                                    ,m
+                                    ,methodParams);
+
+                    toolSpecification.setToolFunction(reflectionalToolFunction);
+                    toolRegistry.addTool(toolSpecification.getFunctionName(),toolSpecification);
+                } catch (InstantiationException | IllegalAccessException | InvocationTargetException |
+                         NoSuchMethodException e) {
+                    throw new RuntimeException(e);
+                }
+            }
+        }
+
     }
 
     /**
@@ -871,7 +1002,7 @@ public class OllamaAPI {
         try {
             String methodName = toolFunctionCallSpec.getName();
             Map<String, Object> arguments = toolFunctionCallSpec.getArguments();
-            ToolFunction function = toolRegistry.getFunction(methodName);
+            ToolFunction function = toolRegistry.getToolFunction(methodName);
             if (verbose) {
                 logger.debug("Invoking function {} with arguments {}", methodName, arguments);
             }

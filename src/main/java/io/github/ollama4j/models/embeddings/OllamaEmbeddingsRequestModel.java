@@ -12,6 +12,7 @@ import lombok.RequiredArgsConstructor;
 @Data
 @RequiredArgsConstructor
 @NoArgsConstructor
+@Deprecated(since="1.0.90")
 public class OllamaEmbeddingsRequestModel {
   @NonNull
   private String model;

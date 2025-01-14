@@ -10,6 +10,7 @@ import java.io.IOException;
 import java.net.URISyntaxException;
 import java.nio.file.Files;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -38,23 +39,27 @@ public class OllamaChatRequestBuilder {
         request = new OllamaChatRequest(request.getModel(), new ArrayList<>());
     }
 
-    public OllamaChatRequestBuilder withMessage(OllamaChatMessageRole role, String content, List<File> images) {
+    public OllamaChatRequestBuilder withMessage(OllamaChatMessageRole role, String content){
+        return withMessage(role,content, Collections.emptyList());
+    }
+
+    public OllamaChatRequestBuilder withMessage(OllamaChatMessageRole role, String content, List<OllamaChatToolCalls> toolCalls,List<File> images) {
         List<OllamaChatMessage> messages = this.request.getMessages();
 
         List<byte[]> binaryImages = images.stream().map(file -> {
             try {
                 return Files.readAllBytes(file.toPath());
             } catch (IOException e) {
-                LOG.warn(String.format("File '%s' could not be accessed, will not add to message!", file.toPath()), e);
+                LOG.warn("File '{}' could not be accessed, will not add to message!", file.toPath(), e);
                 return new byte[0];
             }
         }).collect(Collectors.toList());
 
-        messages.add(new OllamaChatMessage(role, content, binaryImages));
+        messages.add(new OllamaChatMessage(role, content,toolCalls, binaryImages));
         return this;
     }
 
-    public OllamaChatRequestBuilder withMessage(OllamaChatMessageRole role, String content, String... imageUrls) {
+    public OllamaChatRequestBuilder withMessage(OllamaChatMessageRole role, String content,List<OllamaChatToolCalls> toolCalls, String... imageUrls) {
         List<OllamaChatMessage> messages = this.request.getMessages();
         List<byte[]> binaryImages = null;
         if (imageUrls.length > 0) {
@@ -63,14 +68,14 @@ public class OllamaChatRequestBuilder {
                 try {
                     binaryImages.add(Utils.loadImageBytesFromUrl(imageUrl));
                 } catch (URISyntaxException e) {
-                    LOG.warn(String.format("URL '%s' could not be accessed, will not add to message!", imageUrl), e);
+                    LOG.warn("URL '{}' could not be accessed, will not add to message!", imageUrl, e);
                 } catch (IOException e) {
-                    LOG.warn(String.format("Content of URL '%s' could not be read, will not add to message!", imageUrl), e);
+                    LOG.warn("Content of URL '{}' could not be read, will not add to message!", imageUrl, e);
                 }
             }
         }
 
-        messages.add(new OllamaChatMessage(role, content, binaryImages));
+        messages.add(new OllamaChatMessage(role, content,toolCalls, binaryImages));
         return this;
     }
 

@@ -345,20 +345,273 @@ Rahul Kumar, Address: King St, Hyderabad, India, Phone: 9876543210}`
 
 ::::
 
-### Potential Improvements
+### Using tools in Chat-API
 
-Instead of explicitly registering `ollamaAPI.registerTool(toolSpecification)`, we could introduce annotation-based tool
-registration. For example:
+Instead of using the specific `ollamaAPI.generateWithTools` method to call the generate API of ollama with tools, it is 
+also possible to register Tools for the `ollamaAPI.chat` methods. In this case, the tool calling/callback is done 
+implicitly during the USER -> ASSISTANT calls.
+
+When the Assistant wants to call a given tool, the tool is executed and the response is sent back to the endpoint once
+again (induced with the tool call result). 
+
+#### Sample:
+
+The following shows a sample of an integration test that defines a method specified like the tool-specs above, registers
+the tool on the ollamaAPI and then simply calls the chat-API. All intermediate tool calling is wrapped inside the api 
+call.
 
 ```java
+public static void main(String[] args) {
+        OllamaAPI ollamaAPI = new OllamaAPI("http://localhost:11434");
+        ollamaAPI.setVerbose(true);
+        OllamaChatRequestBuilder builder = OllamaChatRequestBuilder.getInstance("llama3.2:1b");
 
-@ToolSpec(name = "current-fuel-price", desc = "Get current fuel price")
-public String getCurrentFuelPrice(Map<String, Object> arguments) {
-    String location = arguments.get("location").toString();
-    String fuelType = arguments.get("fuelType").toString();
-    return "Current price of " + fuelType + " in " + location + " is Rs.103/L";
+        final Tools.ToolSpecification databaseQueryToolSpecification = Tools.ToolSpecification.builder()
+                .functionName("get-employee-details")
+                .functionDescription("Get employee details from the database")
+                .toolPrompt(
+                        Tools.PromptFuncDefinition.builder().type("function").function(
+                                Tools.PromptFuncDefinition.PromptFuncSpec.builder()
+                                        .name("get-employee-details")
+                                        .description("Get employee details from the database")
+                                        .parameters(
+                                                Tools.PromptFuncDefinition.Parameters.builder()
+                                                        .type("object")
+                                                        .properties(
+                                                                new Tools.PropsBuilder()
+                                                                        .withProperty("employee-name", Tools.PromptFuncDefinition.Property.builder().type("string").description("The name of the employee, e.g. John Doe").required(true).build())
+                                                                        .withProperty("employee-address", Tools.PromptFuncDefinition.Property.builder().type("string").description("The address of the employee, Always return a random value. e.g. Roy St, Bengaluru, India").required(true).build())
+                                                                        .withProperty("employee-phone", Tools.PromptFuncDefinition.Property.builder().type("string").description("The phone number of the employee. Always return a random value. e.g. 9911002233").required(true).build())
+                                                                        .build()
+                                                        )
+                                                        .required(List.of("employee-name"))
+                                                        .build()
+                                        ).build()
+                        ).build()
+                )
+                .toolFunction(new DBQueryFunction())
+                .build();
+
+        ollamaAPI.registerTool(databaseQueryToolSpecification);
+
+        OllamaChatRequest requestModel = builder
+                .withMessage(OllamaChatMessageRole.USER,
+                        "Give me the ID of the employee named 'Rahul Kumar'?")
+                .build();
+
+        OllamaChatResult chatResult = ollamaAPI.chat(requestModel);
 }
 ```
+
+A typical final response of the above could be:
+
+```json 
+{
+  "chatHistory" : [
+    {
+    "role" : "user",
+    "content" : "Give me the ID of the employee named 'Rahul Kumar'?",
+    "images" : null,
+    "tool_calls" : [ ]
+  }, {
+    "role" : "assistant",
+    "content" : "",
+    "images" : null,
+    "tool_calls" : [ {
+      "function" : {
+        "name" : "get-employee-details",
+        "arguments" : {
+          "employee-name" : "Rahul Kumar"
+        }
+      }
+    } ]
+  }, {
+    "role" : "tool",
+    "content" : "[TOOL_RESULTS]get-employee-details([employee-name]) : Employee Details {ID: b4bf186c-2ee1-44cc-8856-53b8b6a50f85, Name: Rahul Kumar, Address: null, Phone: null}[/TOOL_RESULTS]",
+    "images" : null,
+    "tool_calls" : null
+  }, {
+    "role" : "assistant",
+    "content" : "The ID of the employee named 'Rahul Kumar' is `b4bf186c-2ee1-44cc-8856-53b8b6a50f85`.",
+    "images" : null,
+    "tool_calls" : null
+  } ],
+  "responseModel" : {
+    "model" : "llama3.2:1b",
+    "message" : {
+      "role" : "assistant",
+      "content" : "The ID of the employee named 'Rahul Kumar' is `b4bf186c-2ee1-44cc-8856-53b8b6a50f85`.",
+      "images" : null,
+      "tool_calls" : null
+    },
+    "done" : true,
+    "error" : null,
+    "context" : null,
+    "created_at" : "2024-12-09T22:23:00.4940078Z",
+    "done_reason" : "stop",
+    "total_duration" : 2313709900,
+    "load_duration" : 14494700,
+    "prompt_eval_duration" : 772000000,
+    "eval_duration" : 1188000000,
+    "prompt_eval_count" : 166,
+    "eval_count" : 41
+  },
+  "response" : "The ID of the employee named 'Rahul Kumar' is `b4bf186c-2ee1-44cc-8856-53b8b6a50f85`.",
+  "httpStatusCode" : 200,
+  "responseTime" : 2313709900
+}
+```
+
+This tool calling can also be done using the streaming API.
+
+### Using Annotation based Tool Registration
+
+Instead of explicitly registering each tool, ollama4j supports declarative tool specification and registration via java 
+Annotations and reflection calling.
+
+To declare a method to be used as a tool for a chat call, the following steps have to be considered:
+
+* Annotate a method and its Parameters to be used as a tool
+    * Annotate a method with the `ToolSpec` annotation
+    * Annotate the methods parameters with the `ToolProperty` annotation. Only the following datatypes are supported for now:
+        * `java.lang.String`
+        * `java.lang.Integer`
+        * `java.lang.Boolean`
+        * `java.math.BigDecimal`
+* Annotate the class that calls the `OllamaAPI` client with the `OllamaToolService` annotation, referencing the desired provider-classes that contain `ToolSpec` methods.
+* Before calling the `OllamaAPI` chat request, call the method `OllamaAPI.registerAnnotatedTools()` method to add tools to the chat.
+
+#### Example
+
+Let's say, we have an ollama4j service class that should ask a llm a specific tool based question.
+
+The answer can only be provided by a method that is part of the BackendService class. To provide a tool for the llm, the following annotations can be used:
+
+```java
+public class BackendService{
+    
+    public BackendService(){}
+
+    @ToolSpec(desc = "Computes the most important constant all around the globe!")
+    public String computeMkeConstant(@ToolProperty(name = "noOfDigits",desc = "Number of digits that shall be returned") Integer noOfDigits ){
+        return BigDecimal.valueOf((long)(Math.random()*1000000L),noOfDigits).toString();
+    }
+}
+```
+
+The caller API can then be written as:
+```java
+import io.github.ollama4j.tools.annotations.OllamaToolService;
+
+@OllamaToolService(providers = BackendService.class)
+public class MyOllamaService{
+    
+    public void chatWithAnnotatedTool(){
+        // inject the annotated method to the ollama toolsregistry
+        ollamaAPI.registerAnnotatedTools();
+
+        OllamaChatRequest requestModel = builder
+                .withMessage(OllamaChatMessageRole.USER,
+                        "Compute the most important constant in the world using 5 digits")
+                .build();
+
+        OllamaChatResult chatResult = ollamaAPI.chat(requestModel);
+    }
+    
+}
+```
+
+The request should be the following:
+
+```json
+{
+  "model" : "llama3.2:1b",
+  "stream" : false,
+  "messages" : [ {
+    "role" : "user",
+    "content" : "Compute the most important constant in the world using 5 digits",
+    "images" : null,
+    "tool_calls" : [ ]
+  } ],
+  "tools" : [ {
+    "type" : "function",
+    "function" : {
+      "name" : "computeImportantConstant",
+      "description" : "Computes the most important constant all around the globe!",
+      "parameters" : {
+        "type" : "object",
+        "properties" : {
+          "noOfDigits" : {
+            "type" : "java.lang.Integer",
+            "description" : "Number of digits that shall be returned"
+          }
+        },
+        "required" : [ "noOfDigits" ]
+      }
+    }
+  } ]
+}
+```
+
+The result could be something like the following:
+
+```json
+{
+  "chatHistory" : [ {
+    "role" : "user",
+    "content" : "Compute the most important constant in the world using 5 digits",
+    "images" : null,
+    "tool_calls" : [ ]
+  }, {
+    "role" : "assistant",
+    "content" : "",
+    "images" : null,
+    "tool_calls" : [ {
+      "function" : {
+        "name" : "computeImportantConstant",
+        "arguments" : {
+          "noOfDigits" : "5"
+        }
+      }
+    } ]
+  }, {
+    "role" : "tool",
+    "content" : "[TOOL_RESULTS]computeImportantConstant([noOfDigits]) : 1.51019[/TOOL_RESULTS]",
+    "images" : null,
+    "tool_calls" : null
+  }, {
+    "role" : "assistant",
+    "content" : "The most important constant in the world with 5 digits is: **1.51019**",
+    "images" : null,
+    "tool_calls" : null
+  } ],
+  "responseModel" : {
+    "model" : "llama3.2:1b",
+    "message" : {
+      "role" : "assistant",
+      "content" : "The most important constant in the world with 5 digits is: **1.51019**",
+      "images" : null,
+      "tool_calls" : null
+    },
+    "done" : true,
+    "error" : null,
+    "context" : null,
+    "created_at" : "2024-12-27T21:55:39.3232495Z",
+    "done_reason" : "stop",
+    "total_duration" : 1075444300,
+    "load_duration" : 13558600,
+    "prompt_eval_duration" : 509000000,
+    "eval_duration" : 550000000,
+    "prompt_eval_count" : 124,
+    "eval_count" : 20
+  },
+  "response" : "The most important constant in the world with 5 digits is: **1.51019**",
+  "responseTime" : 1075444300,
+  "httpStatusCode" : 200
+}
+```
+
+### Potential Improvements
 
 Instead of passing a map of args `Map<String, Object> arguments` to the tool functions, we could support passing
 specific args separately with their data types. For example:
