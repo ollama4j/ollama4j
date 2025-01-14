@@ -283,8 +283,8 @@ If you like or are using this project to build your own, please give us a star. 
 | 7 | Katie Backend     | An open-source AI-based question-answering platform for accessing private domain knowledge                    | [GitHub](https://github.com/wyona/katie-backend)                                                                                               |
 | 8 | TeleLlama3 Bot    | A question-answering Telegram bot                                                                             | [Repo](https://git.hiast.edu.sy/mohamadbashar.disoki/telellama3-bot)                                                                           |
 | 9 | moqui-wechat      | A moqui-wechat component                                                                                      | [GitHub](https://github.com/heguangyong/moqui-wechat)                                                                                          |
+| 10 | B4X      | A set of simple and powerful RAD tool for Desktop and Server development                                              | [Website](https://www.b4x.com/android/forum/threads/ollama4j-library-pnd_ollama4j-your-local-offline-llm-like-chatgpt.165003/)     |                                                              
 
-https://www.b4x.com/android/forum/threads/ollama4j-library-pnd_ollama4j-your-local-offline-llm-like-chatgpt.165003/
 
 ## Traction
 
