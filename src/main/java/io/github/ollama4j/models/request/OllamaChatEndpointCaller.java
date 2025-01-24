@@ -4,9 +4,8 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import io.github.ollama4j.exceptions.OllamaBaseException;
 import io.github.ollama4j.models.chat.*;
+import io.github.ollama4j.models.generate.OllamaTokenHandler;
 import io.github.ollama4j.models.response.OllamaErrorResponse;
-import io.github.ollama4j.models.generate.OllamaStreamHandler;
-import io.github.ollama4j.tools.Tools;
 import io.github.ollama4j.utils.Utils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -29,7 +28,7 @@ public class OllamaChatEndpointCaller extends OllamaEndpointCaller {
 
     private static final Logger LOG = LoggerFactory.getLogger(OllamaChatEndpointCaller.class);
 
-    private OllamaChatStreamObserver streamObserver;
+    private OllamaTokenHandler tokenHandler;
 
     public OllamaChatEndpointCaller(String host, BasicAuth basicAuth, long requestTimeoutSeconds, boolean verbose) {
         super(host, basicAuth, requestTimeoutSeconds, verbose);
@@ -60,8 +59,8 @@ public class OllamaChatEndpointCaller extends OllamaEndpointCaller {
             OllamaChatMessage message = ollamaResponseModel.getMessage();
             if(message != null) {
                 responseBuffer.append(message.getContent());
-                if (streamObserver != null) {
-                    streamObserver.notify(ollamaResponseModel);
+                if (tokenHandler != null) {
+                    tokenHandler.accept(ollamaResponseModel);
                 }
             }
             return ollamaResponseModel.isDone();
@@ -71,9 +70,9 @@ public class OllamaChatEndpointCaller extends OllamaEndpointCaller {
         }
     }
 
-    public OllamaChatResult call(OllamaChatRequest body, OllamaStreamHandler streamHandler)
+    public OllamaChatResult call(OllamaChatRequest body, OllamaTokenHandler tokenHandler)
             throws OllamaBaseException, IOException, InterruptedException {
-        streamObserver = new OllamaChatStreamObserver(streamHandler);
+        this.tokenHandler = tokenHandler;
         return callSync(body);
     }
 
@@ -86,7 +85,7 @@ public class OllamaChatEndpointCaller extends OllamaEndpointCaller {
                         .POST(
                                 body.getBodyPublisher());
         HttpRequest request = requestBuilder.build();
-        if (isVerbose()) LOG.info("Asking model: " + body.toString());
+        if (isVerbose()) LOG.info("Asking model: " + body);
         HttpResponse<InputStream> response =
                 httpClient.send(request, HttpResponse.BodyHandlers.ofInputStream());
 
