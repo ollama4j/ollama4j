@@ -521,6 +521,23 @@ public class MyOllamaService{
 }
 ```
 
+Or, if one needs to provide an object instance directly:
+```java
+public class MyOllamaService{
+    
+    public void chatWithAnnotatedTool(){
+        ollamaAPI.registerAnnotatedTools(new BackendService());
+        OllamaChatRequest requestModel = builder
+                .withMessage(OllamaChatMessageRole.USER,
+                        "Compute the most important constant in the world using 5 digits")
+                .build();
+
+        OllamaChatResult chatResult = ollamaAPI.chat(requestModel);
+    }
+    
+}
+```
+
 The request should be the following:
 
 ```json
