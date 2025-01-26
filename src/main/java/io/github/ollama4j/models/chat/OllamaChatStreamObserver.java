@@ -1,31 +1,19 @@
 package io.github.ollama4j.models.chat;
 
 import io.github.ollama4j.models.generate.OllamaStreamHandler;
+import io.github.ollama4j.models.generate.OllamaTokenHandler;
+import lombok.RequiredArgsConstructor;
 
-import java.util.ArrayList;
-import java.util.List;
-
-public class OllamaChatStreamObserver {
-
-    private OllamaStreamHandler streamHandler;
-
-    private List<OllamaChatResponseModel> responseParts = new ArrayList<>();
-
+@RequiredArgsConstructor
+public class OllamaChatStreamObserver implements OllamaTokenHandler {
+    private final OllamaStreamHandler streamHandler;
     private String message = "";
 
-    public OllamaChatStreamObserver(OllamaStreamHandler streamHandler) {
-        this.streamHandler = streamHandler;
+    @Override
+    public void accept(OllamaChatResponseModel token) {
+        if (streamHandler != null) {
+            message += token.getMessage().getContent();
+            streamHandler.accept(message);
+        }
     }
-
-    public void notify(OllamaChatResponseModel currentResponsePart) {
-        responseParts.add(currentResponsePart);
-        handleCurrentResponsePart(currentResponsePart);
-    }
-
-    protected void handleCurrentResponsePart(OllamaChatResponseModel currentResponsePart) {
-        message = message + currentResponsePart.getMessage().getContent();
-        streamHandler.accept(message);
-    }
-
-
 }

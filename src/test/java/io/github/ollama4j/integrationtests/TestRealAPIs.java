@@ -321,7 +321,7 @@ class TestRealAPIs {
             assertEquals(1, function.getArguments().size());
             Object noOfDigits = function.getArguments().get("noOfDigits");
             assertNotNull(noOfDigits);
-            assertEquals("5",noOfDigits);
+            assertEquals("5", noOfDigits.toString());
             assertTrue(chatResult.getChatHistory().size()>2);
             List<OllamaChatToolCalls> finalToolCalls = chatResult.getResponseModel().getMessage().getToolCalls();
             assertNull(finalToolCalls);
