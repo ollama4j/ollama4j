@@ -338,7 +338,7 @@ class TestRealAPIs {
             ollamaAPI.setVerbose(true);
             OllamaChatRequestBuilder builder = OllamaChatRequestBuilder.getInstance(config.getModel());
 
-            ollamaAPI.registerAnnotatedTools();
+            ollamaAPI.registerAnnotatedTools(new AnnotatedTool());
 
             OllamaChatRequest requestModel = builder
                     .withMessage(OllamaChatMessageRole.USER,
