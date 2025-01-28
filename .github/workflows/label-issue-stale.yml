@@ -5,6 +5,11 @@ on:
   schedule:
     - cron: '0 0 * * *'  # Runs every day at midnight
 
+permissions:
+  contents: write # only for delete-branch option
+  issues: write
+  pull-requests: write
+
 jobs:
   stale:
     runs-on: ubuntu-latest
@@ -12,7 +17,7 @@ jobs:
       - name: Mark stale issues and pull requests
         uses: actions/stale@v8
         with:
-          repo-token: ${{ secrets.GITHUB_TOKEN }}
+          repo-token: ${{ github.token }}
           days-before-stale: 15
           stale-issue-message: 'This issue has been automatically marked as stale because it has not had recent activity. It will be closed if no further activity occurs.'
           stale-pr-message: 'This pull request has been automatically marked as stale because it has not had recent activity. It will be closed if no further activity occurs.'
