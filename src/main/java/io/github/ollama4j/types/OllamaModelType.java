@@ -15,6 +15,7 @@ public class OllamaModelType {
     public static final String LLAMA3_1 = "llama3.1";
     public static final String MISTRAL = "mistral";
     public static final String MIXTRAL = "mixtral";
+    public static final String DEEPSEEK_R1 = "deepseek-r1";
     public static final String LLAVA = "llava";
     public static final String LLAVA_PHI3 = "llava-phi3";
     public static final String NEURAL_CHAT = "neural-chat";
