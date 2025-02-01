@@ -1,4 +1,4 @@
-name: Mark stale issues and pull requests
+name: Mark stale issues
 
 on:
   workflow_dispatch: # for manual run
@@ -8,21 +8,17 @@ on:
 permissions:
   contents: write # only for delete-branch option
   issues: write
-  pull-requests: write
 
 jobs:
   stale:
     runs-on: ubuntu-latest
     steps:
-      - name: Mark stale issues and pull requests
+      - name: Mark stale issues
         uses: actions/stale@v8
         with:
           repo-token: ${{ github.token }}
           days-before-stale: 15
           stale-issue-message: 'This issue has been automatically marked as stale because it has not had recent activity. It will be closed if no further activity occurs.'
-          stale-pr-message: 'This pull request has been automatically marked as stale because it has not had recent activity. It will be closed if no further activity occurs.'
           days-before-close: 7
           stale-issue-label: 'stale'
           exempt-issue-labels: 'pinned,security'
-          stale-pr-label: 'stale'
-          exempt-pr-labels: 'work-in-progress'
