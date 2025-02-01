@@ -153,7 +153,7 @@ In your Maven project, add this dependency:
 <dependency>
     <groupId>io.github.ollama4j</groupId>
     <artifactId>ollama4j</artifactId>
-    <version>1.0.89</version>
+    <version>1.0.93</version>
 </dependency>
 ```
 
@@ -209,7 +209,7 @@ In your Maven project, add this dependency:
 <dependency>
     <groupId>io.github.ollama4j</groupId>
     <artifactId>ollama4j</artifactId>
-    <version>1.0.89</version>
+    <version>1.0.93</version>
 </dependency>
 ```
 
@@ -219,7 +219,7 @@ In your Maven project, add this dependency:
 
 ```groovy
 dependencies {
-    implementation 'io.github.ollama4j:ollama4j:1.0.79'
+    implementation 'io.github.ollama4j:ollama4j:1.0.93'
 }
 ```
 
