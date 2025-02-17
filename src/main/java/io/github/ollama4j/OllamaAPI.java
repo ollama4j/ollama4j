@@ -391,6 +391,7 @@ public class OllamaAPI {
      * @throws InterruptedException if the operation is interrupted
      * @throws URISyntaxException   if the URI for the request is malformed
      */
+    @Deprecated
     public void createModelWithFilePath(String modelName, String modelFilePath) throws IOException, InterruptedException, OllamaBaseException, URISyntaxException {
         String url = this.host + "/api/create";
         String jsonData = new CustomModelFilePathRequest(modelName, modelFilePath).toString();
@@ -423,9 +424,39 @@ public class OllamaAPI {
      * @throws InterruptedException if the operation is interrupted
      * @throws URISyntaxException   if the URI for the request is malformed
      */
+    @Deprecated
     public void createModelWithModelFileContents(String modelName, String modelFileContents) throws IOException, InterruptedException, OllamaBaseException, URISyntaxException {
         String url = this.host + "/api/create";
         String jsonData = new CustomModelFileContentsRequest(modelName, modelFileContents).toString();
+        HttpRequest request = getRequestBuilderDefault(new URI(url)).header("Accept", "application/json").header("Content-Type", "application/json").POST(HttpRequest.BodyPublishers.ofString(jsonData, StandardCharsets.UTF_8)).build();
+        HttpClient client = HttpClient.newHttpClient();
+        HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
+        int statusCode = response.statusCode();
+        String responseString = response.body();
+        if (statusCode != 200) {
+            throw new OllamaBaseException(statusCode + " - " + responseString);
+        }
+        if (responseString.contains("error")) {
+            throw new OllamaBaseException(responseString);
+        }
+        if (verbose) {
+            logger.info(responseString);
+        }
+    }
+
+    /**
+     * Create a custom model. Read more about custom model creation <a
+     * href="https://github.com/ollama/ollama/blob/main/docs/api.md#create-a-model">here</a>.
+     *
+     * @param customModelRequest custom model spec
+     * @throws OllamaBaseException  if the response indicates an error status
+     * @throws IOException          if an I/O error occurs during the HTTP request
+     * @throws InterruptedException if the operation is interrupted
+     * @throws URISyntaxException   if the URI for the request is malformed
+     */
+    public void createModel(CustomModelRequest customModelRequest) throws IOException, InterruptedException, OllamaBaseException, URISyntaxException {
+        String url = this.host + "/api/create";
+        String jsonData = customModelRequest.toString();
         HttpRequest request = getRequestBuilderDefault(new URI(url)).header("Accept", "application/json").header("Content-Type", "application/json").POST(HttpRequest.BodyPublishers.ofString(jsonData, StandardCharsets.UTF_8)).build();
         HttpClient client = HttpClient.newHttpClient();
         HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());

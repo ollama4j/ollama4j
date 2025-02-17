@@ -5,7 +5,7 @@ import io.github.ollama4j.utils.Options;
 import java.util.List;
 
 /**
- * Builderclass to easily create Requests for Embedding models using ollama.
+ * Builder class to easily create Requests for Embedding models using ollama.
  */
 public class OllamaEmbedRequestBuilder {
 

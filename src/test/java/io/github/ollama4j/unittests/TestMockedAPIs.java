@@ -6,6 +6,7 @@ import io.github.ollama4j.exceptions.RoleNotFoundException;
 import io.github.ollama4j.models.chat.OllamaChatMessageRole;
 import io.github.ollama4j.models.embeddings.OllamaEmbedRequestModel;
 import io.github.ollama4j.models.embeddings.OllamaEmbedResponseModel;
+import io.github.ollama4j.models.request.CustomModelRequest;
 import io.github.ollama4j.models.response.ModelDetail;
 import io.github.ollama4j.models.response.OllamaAsyncResultStreamer;
 import io.github.ollama4j.models.response.OllamaResult;
@@ -52,12 +53,11 @@ class TestMockedAPIs {
     @Test
     void testCreateModel() {
         OllamaAPI ollamaAPI = Mockito.mock(OllamaAPI.class);
-        String model = OllamaModelType.LLAMA2;
-        String modelFilePath = "FROM llama2\nSYSTEM You are mario from Super Mario Bros.";
+        CustomModelRequest customModelRequest = CustomModelRequest.builder().model("mario").from("llama3.2:latest").system("You are Mario from Super Mario Bros.").build();
         try {
-            doNothing().when(ollamaAPI).createModelWithModelFileContents(model, modelFilePath);
-            ollamaAPI.createModelWithModelFileContents(model, modelFilePath);
-            verify(ollamaAPI, times(1)).createModelWithModelFileContents(model, modelFilePath);
+            doNothing().when(ollamaAPI).createModel(customModelRequest);
+            ollamaAPI.createModel(customModelRequest);
+            verify(ollamaAPI, times(1)).createModel(customModelRequest);
         } catch (IOException | OllamaBaseException | InterruptedException | URISyntaxException e) {
             throw new RuntimeException(e);
         }
