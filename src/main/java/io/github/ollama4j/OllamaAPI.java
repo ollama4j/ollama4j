@@ -891,6 +891,7 @@ public class OllamaAPI {
      *                           contains information about a tool, such as its function name.
      */
     public void registerTools(List<Tools.ToolSpecification> toolSpecifications) {
+        toolRegistry.clearTools();
         for (Tools.ToolSpecification toolSpecification : toolSpecifications) {
             toolRegistry.addTool(toolSpecification.getFunctionName(), toolSpecification);
         }

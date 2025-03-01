@@ -19,4 +19,9 @@ public class ToolRegistry {
     public Collection<Tools.ToolSpecification> getRegisteredSpecs(){
         return tools.values();
     }
+
+    public void clearTools() {
+        tools.clear();
+    }
+
 }
