@@ -14,10 +14,9 @@ import static io.github.ollama4j.utils.Utils.getObjectMapper;
 @Getter
 public class OllamaChatResult {
 
+    private final List<OllamaChatMessage> chatHistory;
 
-    private List<OllamaChatMessage> chatHistory;
-
-    private OllamaChatResponseModel responseModel;
+    private final OllamaChatResponseModel responseModel;
 
     public OllamaChatResult(OllamaChatResponseModel responseModel, List<OllamaChatMessage> chatHistory) {
         this.chatHistory = chatHistory;

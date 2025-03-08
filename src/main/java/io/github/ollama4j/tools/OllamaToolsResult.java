@@ -18,6 +18,9 @@ public class OllamaToolsResult {
 
     public List<ToolResult> getToolResults() {
         List<ToolResult> results = new ArrayList<>();
+        if (this.toolResults == null) {
+            return results;
+        }
         for (Map.Entry<ToolFunctionCallSpec, Object> r : this.toolResults.entrySet()) {
             results.add(new ToolResult(r.getKey().getName(), r.getKey().getArguments(), r.getValue()));
         }

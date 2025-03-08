@@ -28,9 +28,9 @@ public class OllamaChatMessageRole {
     }
 
     public static OllamaChatMessageRole newCustomRole(String roleName) {
-        OllamaChatMessageRole customRole = new OllamaChatMessageRole(roleName);
-        roles.add(customRole);
-        return customRole;
+//        OllamaChatMessageRole customRole = new OllamaChatMessageRole(roleName);
+//        roles.add(customRole);
+        return new OllamaChatMessageRole(roleName);
     }
 
     public static List<OllamaChatMessageRole> getRoles() {

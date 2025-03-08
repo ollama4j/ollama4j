@@ -1,14 +1,17 @@
 package io.github.ollama4j;
 
+import com.fasterxml.jackson.core.JsonParseException;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import io.github.ollama4j.exceptions.OllamaBaseException;
 import io.github.ollama4j.exceptions.RoleNotFoundException;
 import io.github.ollama4j.exceptions.ToolInvocationException;
 import io.github.ollama4j.exceptions.ToolNotFoundException;
 import io.github.ollama4j.models.chat.*;
 import io.github.ollama4j.models.embeddings.OllamaEmbedRequestModel;
+import io.github.ollama4j.models.embeddings.OllamaEmbedResponseModel;
 import io.github.ollama4j.models.embeddings.OllamaEmbeddingResponseModel;
 import io.github.ollama4j.models.embeddings.OllamaEmbeddingsRequestModel;
-import io.github.ollama4j.models.embeddings.OllamaEmbedResponseModel;
 import io.github.ollama4j.models.generate.OllamaGenerateRequest;
 import io.github.ollama4j.models.generate.OllamaStreamHandler;
 import io.github.ollama4j.models.generate.OllamaTokenHandler;
@@ -22,6 +25,12 @@ import io.github.ollama4j.tools.annotations.ToolSpec;
 import io.github.ollama4j.utils.Options;
 import io.github.ollama4j.utils.Utils;
 import lombok.Setter;
+import org.jsoup.Jsoup;
+import org.jsoup.nodes.Document;
+import org.jsoup.nodes.Element;
+import org.jsoup.select.Elements;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.*;
 import java.lang.reflect.InvocationTargetException;
@@ -38,13 +47,6 @@ import java.nio.file.Files;
 import java.time.Duration;
 import java.util.*;
 import java.util.stream.Collectors;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.jsoup.Jsoup;
-import org.jsoup.nodes.Document;
-import org.jsoup.nodes.Element;
-import org.jsoup.select.Elements;
 
 /**
  * The base Ollama API class.
@@ -91,6 +93,9 @@ public class OllamaAPI {
             this.host = host.substring(0, host.length() - 1);
         } else {
             this.host = host;
+        }
+        if (this.verbose) {
+            logger.info("Ollama API initialized with host: " + this.host);
         }
     }
 
@@ -658,7 +663,22 @@ public class OllamaAPI {
             toolsResponse = toolsResponse.replace("[TOOL_CALLS]", "");
         }
 
-        List<ToolFunctionCallSpec> toolFunctionCallSpecs = Utils.getObjectMapper().readValue(toolsResponse, Utils.getObjectMapper().getTypeFactory().constructCollectionType(List.class, ToolFunctionCallSpec.class));
+        List<ToolFunctionCallSpec> toolFunctionCallSpecs = new ArrayList<>();
+        ObjectMapper objectMapper = Utils.getObjectMapper();
+
+        if (!toolsResponse.isEmpty()) {
+            try {
+                // Try to parse the string to see if it's a valid JSON
+                JsonNode jsonNode = objectMapper.readTree(toolsResponse);
+            } catch (JsonParseException e) {
+                logger.warn("Response from model does not contain any tool calls. Returning the response as is.");
+                return toolResult;
+            }
+            toolFunctionCallSpecs = objectMapper.readValue(
+                    toolsResponse,
+                    objectMapper.getTypeFactory().constructCollectionType(List.class, ToolFunctionCallSpec.class)
+            );
+        }
         for (ToolFunctionCallSpec toolFunctionCallSpec : toolFunctionCallSpecs) {
             toolResults.put(toolFunctionCallSpec, invokeTool(toolFunctionCallSpec));
         }
@@ -881,6 +901,9 @@ public class OllamaAPI {
      */
     public void registerTool(Tools.ToolSpecification toolSpecification) {
         toolRegistry.addTool(toolSpecification.getFunctionName(), toolSpecification);
+        if (this.verbose) {
+            logger.debug("Registered tool: {}", toolSpecification.getFunctionName());
+        }
     }
 
     /**
@@ -1093,7 +1116,7 @@ public class OllamaAPI {
                 logger.debug("Invoking function {} with arguments {}", methodName, arguments);
             }
             if (function == null) {
-                throw new ToolNotFoundException("No such tool: " + methodName);
+                throw new ToolNotFoundException("No such tool: " + methodName + ". Please register the tool before invoking it.");
             }
             return function.apply(arguments);
         } catch (Exception e) {
