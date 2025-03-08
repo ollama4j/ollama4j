@@ -7,6 +7,8 @@ sidebar_position: 7
 This API lets you create a conversation with LLMs. Using this API enables you to ask questions to the model including
 information using the history of already asked questions and the respective answers.
 
+
+
 ## Create a new conversation and use chat history to augment follow up questions
 
 ```java
@@ -270,3 +272,11 @@ You will get a response similar to:
 > appears to be medium-sized with a short coat and a brown coloration, which might suggest that it is a Golden Retriever
 > or a similar breed. Without more details like ear shape and tail length, it's not possible to identify the exact breed
 > confidently.
+
+
+[//]: # (Generated using: https://emgithub.com/)
+<iframe style={{ width: '100%', height: '919px', border: 'none' }} allow="clipboard-write" src="https://emgithub.com/iframe.html?target=https%3A%2F%2Fgithub.com%2Follama4j%2Follama4j-examples%2Fblob%2Fmain%2Fsrc%2Fmain%2Fjava%2Fio%2Fgithub%2Follama4j%2Fexamples%2FChatExample.java&style=default&type=code&showBorder=on&showLineNumbers=on&showFileMeta=on&showFullPath=on&showCopy=on" />
+
+<a href="https://github.com/ollama4j/ollama4j-examples/blob/main/src/main/java/io/github/ollama4j/examples/ChatExample.java" target="_blank">
+  View ChatExample.java on GitHub
+</a>
