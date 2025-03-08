@@ -84,6 +84,7 @@ const config = {
                         position: 'left',
                         label: 'Docs',
                     },
+                    {to: 'https://github.com/ollama4j/ollama4j-examples', label: 'Examples', position: 'left'},
                     {to: 'https://ollama4j.github.io/ollama4j/apidocs/', label: 'Javadoc', position: 'left'},
                     {to: 'https://ollama4j.github.io/ollama4j/doxygen/html/', label: 'Doxygen', position: 'left'},
                     {to: '/blog', label: 'Blog', position: 'left'},
@@ -103,6 +104,15 @@ const config = {
                             {
                                 label: 'Tutorial',
                                 to: '/intro',
+                            },
+                        ],
+                    },
+                    {
+                        title: 'Usage',
+                        items: [
+                            {
+                                label: 'Examples',
+                                to: 'https://github.com/ollama4j/ollama4j-examples',
                             },
                         ],
                     },
