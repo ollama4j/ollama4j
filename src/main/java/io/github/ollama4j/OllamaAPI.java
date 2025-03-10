@@ -323,22 +323,54 @@ public class OllamaAPI {
     public void pullModel(String modelName) throws OllamaBaseException, IOException, URISyntaxException, InterruptedException {
         String url = this.host + "/api/pull";
         String jsonData = new ModelRequest(modelName).toString();
-        HttpRequest request = getRequestBuilderDefault(new URI(url)).POST(HttpRequest.BodyPublishers.ofString(jsonData)).header("Accept", "application/json").header("Content-type", "application/json").build();
+        HttpRequest request = getRequestBuilderDefault(new URI(url))
+                .POST(HttpRequest.BodyPublishers.ofString(jsonData))
+                .header("Accept", "application/json")
+                .header("Content-type", "application/json")
+                .build();
         HttpClient client = HttpClient.newHttpClient();
         HttpResponse<InputStream> response = client.send(request, HttpResponse.BodyHandlers.ofInputStream());
         int statusCode = response.statusCode();
         InputStream responseBodyStream = response.body();
         String responseString = "";
+        boolean success = false; // Flag to check the pull success.
         try (BufferedReader reader = new BufferedReader(new InputStreamReader(responseBodyStream, StandardCharsets.UTF_8))) {
             String line;
             while ((line = reader.readLine()) != null) {
                 ModelPullResponse modelPullResponse = Utils.getObjectMapper().readValue(line, ModelPullResponse.class);
-                if (verbose) {
-                    logger.info(modelPullResponse.getStatus());
+                if (modelPullResponse != null && modelPullResponse.getStatus() != null) {
+                    if (verbose) {
+                        logger.info(modelName + ": " + modelPullResponse.getStatus());
+                    }
+                    // Check if status is "success" and set success flag to true.
+                    if ("success".equalsIgnoreCase(modelPullResponse.getStatus())) {
+                        success = true;
+                    }
+                } else {
+                    logger.error("Received null or invalid status for model pull.");
                 }
             }
         }
+        if (!success) {
+            logger.error("Model pull failed or returned invalid status.");
+            throw new OllamaBaseException("Model pull failed or returned invalid status.");
+        }
         if (statusCode != 200) {
+            throw new OllamaBaseException(statusCode + " - " + responseString);
+        }
+    }
+
+
+    public String getVersion() throws URISyntaxException, IOException, InterruptedException, OllamaBaseException {
+        String url = this.host + "/api/version";
+        HttpClient httpClient = HttpClient.newHttpClient();
+        HttpRequest httpRequest = getRequestBuilderDefault(new URI(url)).header("Accept", "application/json").header("Content-type", "application/json").GET().build();
+        HttpResponse<String> response = httpClient.send(httpRequest, HttpResponse.BodyHandlers.ofString());
+        int statusCode = response.statusCode();
+        String responseString = response.body();
+        if (statusCode == 200) {
+            return Utils.getObjectMapper().readValue(responseString, OllamaVersion.class).getVersion();
+        } else {
             throw new OllamaBaseException(statusCode + " - " + responseString);
         }
     }

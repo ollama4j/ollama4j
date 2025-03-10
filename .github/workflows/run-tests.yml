@@ -27,3 +27,6 @@ jobs:
 
       - name: Run unit tests
         run: mvn clean test -Punit-tests
+
+      - name: Run integration tests
+        run: mvn clean verify -Pintegration-tests
