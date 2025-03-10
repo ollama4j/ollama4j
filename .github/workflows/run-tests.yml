@@ -1,6 +1,10 @@
 name: Run Unit and Integration Tests
 
 on:
+  push:
+    branches:
+      - main
+
   workflow_dispatch:
     inputs:
       branch:

@@ -31,7 +31,10 @@ Find more details on the [website](https://ollama4j.github.io/ollama4j/).
 
 ![GitHub last commit](https://img.shields.io/github/last-commit/ollama4j/ollama4j?color=green)
 [![codecov](https://codecov.io/gh/ollama4j/ollama4j/graph/badge.svg?token=U0TE7BGP8L)](https://codecov.io/gh/ollama4j/ollama4j)
+
+[![Run Unit and Integration Tests](https://github.com/ollama4j/ollama4j/actions/workflows/run-tests.yml/badge.svg)](https://github.com/ollama4j/ollama4j/actions/workflows/run-tests.yml)
 ![Build Status](https://github.com/ollama4j/ollama4j/actions/workflows/maven-publish.yml/badge.svg)
+
 
 </div>
 
