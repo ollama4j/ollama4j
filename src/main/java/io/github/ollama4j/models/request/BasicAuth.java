@@ -7,9 +7,8 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Data
-@NoArgsConstructor
 @AllArgsConstructor
-public class BasicAuth {
+public class BasicAuth extends Auth {
   private String username;
   private String password;
 
@@ -18,7 +17,7 @@ public class BasicAuth {
    *
    * @return basic authentication header value (encoded credentials)
    */
-  public String getBasicAuthHeaderValue() {
+  public String getAuthHeaderValue() {
       final String credentialsToEncode = this.getUsername() + ":" + this.getPassword();
       return "Basic " + Base64.getEncoder().encodeToString(credentialsToEncode.getBytes());
   }

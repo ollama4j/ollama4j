@@ -19,13 +19,13 @@ public abstract class OllamaEndpointCaller {
     private static final Logger LOG = LoggerFactory.getLogger(OllamaAPI.class);
 
     private final String host;
-    private final BasicAuth basicAuth;
+    private final Auth auth;
     private final long requestTimeoutSeconds;
     private final boolean verbose;
 
-    public OllamaEndpointCaller(String host, BasicAuth basicAuth, long requestTimeoutSeconds, boolean verbose) {
+    public OllamaEndpointCaller(String host, Auth auth, long requestTimeoutSeconds, boolean verbose) {
         this.host = host;
-        this.basicAuth = basicAuth;
+        this.auth = auth;
         this.requestTimeoutSeconds = requestTimeoutSeconds;
         this.verbose = verbose;
     }
@@ -46,19 +46,19 @@ public abstract class OllamaEndpointCaller {
                 HttpRequest.newBuilder(uri)
                         .header("Content-Type", "application/json")
                         .timeout(Duration.ofSeconds(this.requestTimeoutSeconds));
-        if (isBasicAuthCredentialsSet()) {
-            requestBuilder.header("Authorization", this.basicAuth.getBasicAuthHeaderValue());
+        if (isAuthCredentialsSet()) {
+            requestBuilder.header("Authorization", this.auth.getAuthHeaderValue());
         }
         return requestBuilder;
     }
 
     /**
-     * Check if Basic Auth credentials set.
+     * Check if Auth credentials set.
      *
-     * @return true when Basic Auth credentials set
+     * @return true when Auth credentials set
      */
-    protected boolean isBasicAuthCredentialsSet() {
-        return this.basicAuth != null;
+    protected boolean isAuthCredentialsSet() {
+        return this.auth != null;
     }
 
 }

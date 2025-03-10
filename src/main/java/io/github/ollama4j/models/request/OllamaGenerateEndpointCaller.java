@@ -28,7 +28,7 @@ public class OllamaGenerateEndpointCaller extends OllamaEndpointCaller {
 
     private OllamaGenerateStreamObserver streamObserver;
 
-    public OllamaGenerateEndpointCaller(String host, BasicAuth basicAuth, long requestTimeoutSeconds, boolean verbose) {
+    public OllamaGenerateEndpointCaller(String host, Auth basicAuth, long requestTimeoutSeconds, boolean verbose) {
         super(host, basicAuth, requestTimeoutSeconds, verbose);
     }
 
