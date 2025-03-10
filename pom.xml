@@ -264,6 +264,7 @@
                 <test.env>unit</test.env>
                 <skipUnitTests>false</skipUnitTests>
                 <skipIntegrationTests>true</skipIntegrationTests>
+                <skipGpgPluginDuringTests>true</skipGpgPluginDuringTests>
             </properties>
             <activation>
                 <activeByDefault>false</activeByDefault>
@@ -289,6 +290,23 @@
                             </execution>
                         </executions>
                     </plugin>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-gpg-plugin</artifactId>
+                        <version>1.5</version>
+                        <executions>
+                            <execution>
+                                <id>sign-artifacts</id>
+                                <phase>verify</phase>
+                                <goals>
+                                    <goal>sign</goal>
+                                </goals>
+                                <configuration>
+                                    <skip>${skipGpgPluginDuringTests}</skip>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
                 </plugins>
             </build>
         </profile>
@@ -298,7 +316,29 @@
                 <test.env>integration</test.env>
                 <skipUnitTests>true</skipUnitTests>
                 <skipIntegrationTests>false</skipIntegrationTests>
+                <skipGpgPluginDuringTests>true</skipGpgPluginDuringTests>
             </properties>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-gpg-plugin</artifactId>
+                        <version>1.5</version>
+                        <executions>
+                            <execution>
+                                <id>sign-artifacts</id>
+                                <phase>verify</phase>
+                                <goals>
+                                    <goal>sign</goal>
+                                </goals>
+                                <configuration>
+                                    <skip>${skipGpgPluginDuringTests}</skip>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
         </profile>
         <profile>
             <id>ci-cd</id>
@@ -342,7 +382,6 @@
                             <autoReleaseAfterClose>true</autoReleaseAfterClose>
                         </configuration>
                     </plugin>
-
                     <plugin>
                         <groupId>org.jacoco</groupId>
                         <artifactId>jacoco-maven-plugin</artifactId>
