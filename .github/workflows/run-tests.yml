@@ -1,15 +1,15 @@
-name: Run Tests
+name: Run Unit and Integration Tests
 
 on:
   workflow_dispatch:
     inputs:
       branch:
-        description: 'Branch name to run tests on'
+        description: 'Branch name to run the tests on'
         required: true
         default: 'main'
 
 jobs:
-  build:
+  run-tests:
     runs-on: ubuntu-latest
 
     steps:
