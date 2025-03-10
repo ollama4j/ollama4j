@@ -27,7 +27,7 @@ import java.util.List;
 import static org.junit.jupiter.api.Assertions.*;
 
 @SuppressWarnings("HttpUrlsUsage")
-public class TestAPIsTest {
+public class OllamaAPIIntegrationTest {
 
     private static OllamaContainer ollama;
     private static OllamaAPI api;
