@@ -174,7 +174,7 @@ public class OllamaAPIIntegrationTest {
         api.pullModel(chatModel);
         OllamaChatRequestBuilder builder = OllamaChatRequestBuilder.getInstance(chatModel);
         OllamaChatRequest requestModel = builder.withMessage(OllamaChatMessageRole.SYSTEM,
-                        "You are a silent bot that only says 'Ssh'. Do not say anything else under any circumstances!")
+                        "You are a silent bot that only says 'Shush'. Do not say anything else under any circumstances!")
                 .withMessage(OllamaChatMessageRole.USER,
                         "What's something that's brown and sticky?")
                 .withOptions(new OptionsBuilder().setTemperature(0.8f).build())
@@ -185,7 +185,7 @@ public class OllamaAPIIntegrationTest {
         assertNotNull(chatResult.getResponseModel());
         assertNotNull(chatResult.getResponseModel().getMessage());
         assertFalse(chatResult.getResponseModel().getMessage().getContent().isBlank());
-        assertTrue(chatResult.getResponseModel().getMessage().getContent().contains("Ssh"));
+        assertTrue(chatResult.getResponseModel().getMessage().getContent().contains("Shush"));
         assertEquals(3, chatResult.getChatHistory().size());
     }
 
