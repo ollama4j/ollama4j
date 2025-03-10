@@ -72,7 +72,7 @@ public class OllamaAPI {
     @Setter
     private int maxChatToolCallRetries = 3;
 
-    private BasicAuth basicAuth;
+    private Auth auth;
 
     private final ToolRegistry toolRegistry = new ToolRegistry();
 
@@ -106,7 +106,16 @@ public class OllamaAPI {
      * @param password the password
      */
     public void setBasicAuth(String username, String password) {
-        this.basicAuth = new BasicAuth(username, password);
+        this.auth = new BasicAuth(username, password);
+    }
+
+    /**
+     * Set Bearer authentication for accessing Ollama server that's behind a reverse-proxy/gateway.
+     *
+     * @param bearerToken the Bearer authentication token to provide
+     */
+    public void setBearerAuth(String bearerToken) {
+        this.auth = new BearerAuth(bearerToken);
     }
 
     /**
@@ -888,7 +897,7 @@ public class OllamaAPI {
      * @throws InterruptedException if the operation is interrupted
      */
     public OllamaChatResult chatStreaming(OllamaChatRequest request, OllamaTokenHandler tokenHandler) throws OllamaBaseException, IOException, InterruptedException {
-        OllamaChatEndpointCaller requestCaller = new OllamaChatEndpointCaller(host, basicAuth, requestTimeoutSeconds, verbose);
+        OllamaChatEndpointCaller requestCaller = new OllamaChatEndpointCaller(host, auth, requestTimeoutSeconds, verbose);
         OllamaChatResult result;
 
         // add all registered tools to Request
@@ -1094,7 +1103,7 @@ public class OllamaAPI {
      * @throws InterruptedException if the thread is interrupted during the request.
      */
     private OllamaResult generateSyncForOllamaRequestModel(OllamaGenerateRequest ollamaRequestModel, OllamaStreamHandler streamHandler) throws OllamaBaseException, IOException, InterruptedException {
-        OllamaGenerateEndpointCaller requestCaller = new OllamaGenerateEndpointCaller(host, basicAuth, requestTimeoutSeconds, verbose);
+        OllamaGenerateEndpointCaller requestCaller = new OllamaGenerateEndpointCaller(host, auth, requestTimeoutSeconds, verbose);
         OllamaResult result;
         if (streamHandler != null) {
             ollamaRequestModel.setStream(true);
@@ -1115,19 +1124,9 @@ public class OllamaAPI {
     private HttpRequest.Builder getRequestBuilderDefault(URI uri) {
         HttpRequest.Builder requestBuilder = HttpRequest.newBuilder(uri).header("Content-Type", "application/json").timeout(Duration.ofSeconds(requestTimeoutSeconds));
         if (isBasicAuthCredentialsSet()) {
-            requestBuilder.header("Authorization", getBasicAuthHeaderValue());
+            requestBuilder.header("Authorization", auth.getAuthHeaderValue());
         }
         return requestBuilder;
-    }
-
-    /**
-     * Get basic authentication header value.
-     *
-     * @return basic authentication header value (encoded credentials)
-     */
-    private String getBasicAuthHeaderValue() {
-        String credentialsToEncode = basicAuth.getUsername() + ":" + basicAuth.getPassword();
-        return "Basic " + Base64.getEncoder().encodeToString(credentialsToEncode.getBytes());
     }
 
     /**
@@ -1136,7 +1135,7 @@ public class OllamaAPI {
      * @return true when Basic Auth credentials set
      */
     private boolean isBasicAuthCredentialsSet() {
-        return basicAuth != null;
+        return auth != null;
     }
 
     private Object invokeTool(ToolFunctionCallSpec toolFunctionCallSpec) throws ToolInvocationException {

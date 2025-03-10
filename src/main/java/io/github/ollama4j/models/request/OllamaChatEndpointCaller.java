@@ -30,8 +30,8 @@ public class OllamaChatEndpointCaller extends OllamaEndpointCaller {
 
     private OllamaTokenHandler tokenHandler;
 
-    public OllamaChatEndpointCaller(String host, BasicAuth basicAuth, long requestTimeoutSeconds, boolean verbose) {
-        super(host, basicAuth, requestTimeoutSeconds, verbose);
+    public OllamaChatEndpointCaller(String host, Auth auth, long requestTimeoutSeconds, boolean verbose) {
+        super(host, auth, requestTimeoutSeconds, verbose);
     }
 
     @Override
