@@ -109,6 +109,10 @@ public class OllamaAPI {
         this.basicAuth = new BasicAuth(username, password);
     }
 
+    public void setBasicAuth(BasicAuth basicAuth) {
+        this.basicAuth = basicAuth;
+    }
+
     /**
      * API to check the reachability of Ollama server.
      *
@@ -1083,19 +1087,9 @@ public class OllamaAPI {
     private HttpRequest.Builder getRequestBuilderDefault(URI uri) {
         HttpRequest.Builder requestBuilder = HttpRequest.newBuilder(uri).header("Content-Type", "application/json").timeout(Duration.ofSeconds(requestTimeoutSeconds));
         if (isBasicAuthCredentialsSet()) {
-            requestBuilder.header("Authorization", getBasicAuthHeaderValue());
+            requestBuilder.header("Authorization", basicAuth.getBasicAuthHeaderValue());
         }
         return requestBuilder;
-    }
-
-    /**
-     * Get basic authentication header value.
-     *
-     * @return basic authentication header value (encoded credentials)
-     */
-    private String getBasicAuthHeaderValue() {
-        String credentialsToEncode = basicAuth.getUsername() + ":" + basicAuth.getPassword();
-        return "Basic " + Base64.getEncoder().encodeToString(credentialsToEncode.getBytes());
     }
 
     /**

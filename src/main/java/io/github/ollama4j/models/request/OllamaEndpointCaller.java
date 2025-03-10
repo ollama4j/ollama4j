@@ -1,26 +1,14 @@
 package io.github.ollama4j.models.request;
 
-import io.github.ollama4j.OllamaAPI;
-import io.github.ollama4j.exceptions.OllamaBaseException;
-import io.github.ollama4j.models.response.OllamaErrorResponse;
-import io.github.ollama4j.models.response.OllamaResult;
-import io.github.ollama4j.utils.OllamaRequestBody;
-import io.github.ollama4j.utils.Utils;
-import lombok.Getter;
+import java.net.URI;
+import java.net.http.HttpRequest;
+import java.time.Duration;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.net.URI;
-import java.net.http.HttpClient;
-import java.net.http.HttpRequest;
-import java.net.http.HttpResponse;
-import java.nio.charset.StandardCharsets;
-import java.time.Duration;
-import java.util.Base64;
+import io.github.ollama4j.OllamaAPI;
+import lombok.Getter;
 
 /**
  * Abstract helperclass to call the ollama api server.
@@ -59,19 +47,9 @@ public abstract class OllamaEndpointCaller {
                         .header("Content-Type", "application/json")
                         .timeout(Duration.ofSeconds(this.requestTimeoutSeconds));
         if (isBasicAuthCredentialsSet()) {
-            requestBuilder.header("Authorization", getBasicAuthHeaderValue());
+            requestBuilder.header("Authorization", this.basicAuth.getBasicAuthHeaderValue());
         }
         return requestBuilder;
-    }
-
-    /**
-     * Get basic authentication header value.
-     *
-     * @return basic authentication header value (encoded credentials)
-     */
-    protected String getBasicAuthHeaderValue() {
-        String credentialsToEncode = this.basicAuth.getUsername() + ":" + this.basicAuth.getPassword();
-        return "Basic " + Base64.getEncoder().encodeToString(credentialsToEncode.getBytes());
     }
 
     /**
