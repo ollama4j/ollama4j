@@ -227,6 +227,9 @@ make unit-tests
 
 #### Run integration tests
 
+Make sure you have Docker running as this uses [testcontainers](https://testcontainers.com/) to run the integration
+tests on Ollama Docker container.
+
 ```shell
 make integration-tests
 ```
@@ -325,7 +328,7 @@ project.
   </a>
 </p>
 
-### Appreciate my work?
+### Appreciate the work?
 
 <p align="center">
   <a href="https://www.buymeacoffee.com/amithkoujalgi" target="_blank"><img src="https://cdn.buymeacoffee.com/buttons/v2/default-yellow.png" alt="Buy Me A Coffee" style="height: 60px !important;width: 217px !important;" ></a>
