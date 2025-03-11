@@ -520,7 +520,7 @@ public class OllamaAPIIntegrationTest {
     @Test
     @Order(19)
     void testChatWithImageFromFileWithHistoryRecognition() throws OllamaBaseException, IOException, URISyntaxException, InterruptedException {
-        String imageModel = "llava";
+        String imageModel = "moondream";
         api.pullModel(imageModel);
         OllamaChatRequestBuilder builder =
                 OllamaChatRequestBuilder.getInstance(imageModel);
@@ -531,7 +531,6 @@ public class OllamaAPIIntegrationTest {
         OllamaChatResult chatResult = api.chat(requestModel);
         assertNotNull(chatResult);
         assertNotNull(chatResult.getResponseModel());
-
         builder.reset();
 
         requestModel =
