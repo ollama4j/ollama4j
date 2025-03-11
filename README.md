@@ -191,33 +191,54 @@ dependencies {
 > [!TIP]
 > Find the full API specifications on the [website](https://ollama4j.github.io/ollama4j/).
 
-#### Development
+### Development
 
-Build:
+Make sure you have `pre-commit` installed.
+
+With `brew`:
+
+```shell
+brew install pre-commit
+```
+
+With `pip`:
+
+```shell
+pip install pre-commit
+```
+
+#### Setup dev environment
+
+```shell
+make dev
+```
+
+#### Build
 
 ```shell
 make build
 ```
 
-Run unit tests:
+#### Run unit tests
 
 ```shell
 make unit-tests
 ```
 
-Run integration tests:
+#### Run integration tests
 
 ```shell
 make integration-tests
 ```
 
-#### Releases
+### Releases
 
 Newer artifacts are published via GitHub Actions CI workflow when a new release is created from `main` branch.
 
 ## Examples
 
-The `ollama4j-examples` repository contains examples for using the Ollama4j library. You can explore it [here](https://github.com/ollama4j/ollama4j-examples). 
+The `ollama4j-examples` repository contains examples for using the Ollama4j library. You can explore
+it [here](https://github.com/ollama4j/ollama4j-examples).
 
 ## ⭐ Give us a Star!
 
@@ -236,7 +257,7 @@ If you like or are using this project to build your own, please give us a star. 
 | 7  | Katie Backend     | An open-source AI-based question-answering platform for accessing private domain knowledge                                                                         | [GitHub](https://github.com/wyona/katie-backend)                                                                                                                                              |
 | 8  | TeleLlama3 Bot    | A question-answering Telegram bot                                                                                                                                  | [Repo](https://git.hiast.edu.sy/mohamadbashar.disoki/telellama3-bot)                                                                                                                          |
 | 9  | moqui-wechat      | A moqui-wechat component                                                                                                                                           | [GitHub](https://github.com/heguangyong/moqui-wechat)                                                                                                                                         |
-| 10 | B4X               | A set of simple and powerful RAD tool for Desktop and Server development                                                                                           | [Website](https://www.b4x.com/android/forum/threads/ollama4j-library-pnd_ollama4j-your-local-offline-llm-like-chatgpt.165003/)                                                                |                                                              
+| 10 | B4X               | A set of simple and powerful RAD tool for Desktop and Server development                                                                                           | [Website](https://www.b4x.com/android/forum/threads/ollama4j-library-pnd_ollama4j-your-local-offline-llm-like-chatgpt.165003/)                                                                |
 | 11 | Research Article  | Article: `Large language model based mutations in genetic improvement` - published on National Library of Medicine (National Center for Biotechnology Information) | [Website](https://pmc.ncbi.nlm.nih.gov/articles/PMC11750896/)                                                                                                                                 |
 
 ## Traction
