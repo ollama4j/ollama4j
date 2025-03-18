@@ -203,12 +203,12 @@ public class OllamaAPIIntegrationTest {
     @Test
     @Order(10)
     public void testChat() throws Exception {
-        String chatModel = "qwen2.5:0.5b";
+        String chatModel = "llama3";
         api.pullModel(chatModel);
         OllamaChatRequestBuilder builder = OllamaChatRequestBuilder.getInstance(chatModel);
 
         // Create the initial user question
-        OllamaChatRequest requestModel = builder.withMessage(OllamaChatMessageRole.USER, "What is the capital of France?")
+        OllamaChatRequest requestModel = builder.withMessage(OllamaChatMessageRole.USER, "What is 1+1? Answer only in numbers.")
                 .build();
 
         // Start conversation with model
@@ -216,13 +216,13 @@ public class OllamaAPIIntegrationTest {
 
         assertTrue(
                 chatResult.getChatHistory().stream()
-                        .anyMatch(chat -> chat.getContent().contains("Paris")),
-                "Expected chat history to contain 'Paris'"
+                        .anyMatch(chat -> chat.getContent().contains("2")),
+                "Expected chat history to contain '2'"
         );
 
         // Create the next user question: second largest city
         requestModel = builder.withMessages(chatResult.getChatHistory())
-                .withMessage(OllamaChatMessageRole.USER, "And what is its official language?")
+                .withMessage(OllamaChatMessageRole.USER, "And what is its squared value?")
                 .build();
 
         // Continue conversation with model
@@ -230,13 +230,13 @@ public class OllamaAPIIntegrationTest {
 
         assertTrue(
                 chatResult.getChatHistory().stream()
-                        .anyMatch(chat -> chat.getContent().contains("French")),
-                "Expected chat history to contain 'French'"
+                        .anyMatch(chat -> chat.getContent().contains("4")),
+                "Expected chat history to contain '4'"
         );
 
         // Create the next user question: the third question
         requestModel = builder.withMessages(chatResult.getChatHistory())
-                .withMessage(OllamaChatMessageRole.USER, "What is the largest river in France?")
+                .withMessage(OllamaChatMessageRole.USER, "What is the largest value between 2, 4 and 6?")
                 .build();
 
         // Continue conversation with the model for the third question
@@ -245,7 +245,7 @@ public class OllamaAPIIntegrationTest {
         // verify the result
         assertNotNull(chatResult, "Chat result should not be null");
         assertTrue(chatResult.getChatHistory().size() > 2, "Chat history should contain more than two messages");
-        assertTrue(chatResult.getChatHistory().get(chatResult.getChatHistory().size() - 1).getContent().contains("river"), "Response should be related to river");
+        assertTrue(chatResult.getChatHistory().get(chatResult.getChatHistory().size() - 1).getContent().contains("6"), "Response should contain '6'");
     }
 
     @Test
