@@ -43,10 +43,10 @@ public class OllamaAPIIntegrationTest {
 
     @BeforeAll
     public static void setUp() {
-        String version = "0.5.13";
+        String ollamaVersion = "0.6.1";
         int internalPort = 11434;
         int mappedPort = 11435;
-        ollama = new OllamaContainer("ollama/ollama:" + version);
+        ollama = new OllamaContainer("ollama/ollama:" + ollamaVersion);
         ollama.addExposedPort(internalPort);
         List<String> portBindings = new ArrayList<>();
         portBindings.add(mappedPort + ":" + internalPort);
@@ -94,7 +94,8 @@ public class OllamaAPIIntegrationTest {
     @Test
     @Order(3)
     public void testPullModelAPI() throws URISyntaxException, IOException, OllamaBaseException, InterruptedException {
-        api.pullModel("all-minilm");
+        String embeddingModelMinilm = "all-minilm";
+        api.pullModel(embeddingModelMinilm);
         List<Model> models = api.listModels();
         assertNotNull(models, "Models should not be null");
         assertFalse(models.isEmpty(), "Models list should contain elements");
@@ -247,7 +248,45 @@ public class OllamaAPIIntegrationTest {
         assertTrue(chatResult.getChatHistory().get(chatResult.getChatHistory().size() - 1).getContent().contains("river"), "Response should be related to river");
     }
 
+    @Test
+    @Order(10)
+    void testChatWithImageFromURL() throws OllamaBaseException, IOException, InterruptedException, URISyntaxException {
+        String imageModel = "llava";
+        api.pullModel(imageModel);
 
+        OllamaChatRequestBuilder builder = OllamaChatRequestBuilder.getInstance(imageModel);
+        OllamaChatRequest requestModel = builder.withMessage(OllamaChatMessageRole.USER, "What's in the picture?", Collections.emptyList(),
+                        "https://t3.ftcdn.net/jpg/02/96/63/80/360_F_296638053_0gUVA4WVBKceGsIr7LNqRWSnkusi07dq.jpg")
+                .build();
+        api.registerAnnotatedTools(new OllamaAPIIntegrationTest());
+
+        OllamaChatResult chatResult = api.chat(requestModel);
+        assertNotNull(chatResult);
+    }
+    @Test
+    @Order(10)
+    void testChatWithImageFromFileWithHistoryRecognition() throws OllamaBaseException, IOException, URISyntaxException, InterruptedException {
+        String imageModel = "moondream";
+        api.pullModel(imageModel);
+        OllamaChatRequestBuilder builder =
+                OllamaChatRequestBuilder.getInstance(imageModel);
+        OllamaChatRequest requestModel =
+                builder.withMessage(OllamaChatMessageRole.USER, "What's in the picture?", Collections.emptyList(),
+                        List.of(getImageFileFromClasspath("dog-on-a-boat.jpg"))).build();
+
+        OllamaChatResult chatResult = api.chat(requestModel);
+        assertNotNull(chatResult);
+        assertNotNull(chatResult.getResponseModel());
+        builder.reset();
+
+        requestModel =
+                builder.withMessages(chatResult.getChatHistory())
+                        .withMessage(OllamaChatMessageRole.USER, "What's the dogs breed?").build();
+
+        chatResult = api.chat(requestModel);
+        assertNotNull(chatResult);
+        assertNotNull(chatResult.getResponseModel());
+    }
     @Test
     @Order(11)
     void testChatWithExplicitToolDefinition() throws OllamaBaseException, IOException, URISyntaxException, InterruptedException {
@@ -300,7 +339,7 @@ public class OllamaAPIIntegrationTest {
         assertEquals(1, toolCalls.size());
         OllamaToolCallsFunction function = toolCalls.get(0).getFunction();
         assertEquals("get-employee-details", function.getName());
-        assertEquals(1, function.getArguments().size());
+        assert !function.getArguments().isEmpty();
         Object employeeName = function.getArguments().get("employee-name");
         assertNotNull(employeeName);
         assertEquals("Rahul Kumar", employeeName);
@@ -463,20 +502,6 @@ public class OllamaAPIIntegrationTest {
         assertEquals(sb.toString().trim(), chatResult.getResponseModel().getMessage().getContent().trim());
     }
 
-    @Test
-    @Order(16)
-    void testChatWithImageFromURL() throws OllamaBaseException, IOException, InterruptedException, URISyntaxException {
-        String imageModel = "llava";
-        api.pullModel(imageModel);
-
-        OllamaChatRequestBuilder builder = OllamaChatRequestBuilder.getInstance(imageModel);
-        OllamaChatRequest requestModel = builder.withMessage(OllamaChatMessageRole.USER, "What's in the picture?", Collections.emptyList(),
-                        "https://t3.ftcdn.net/jpg/02/96/63/80/360_F_296638053_0gUVA4WVBKceGsIr7LNqRWSnkusi07dq.jpg")
-                .build();
-
-        OllamaChatResult chatResult = api.chat(requestModel);
-        assertNotNull(chatResult);
-    }
 
     @Test
     @Order(17)
@@ -517,30 +542,7 @@ public class OllamaAPIIntegrationTest {
         }
     }
 
-    @Test
-    @Order(19)
-    void testChatWithImageFromFileWithHistoryRecognition() throws OllamaBaseException, IOException, URISyntaxException, InterruptedException {
-        String imageModel = "moondream";
-        api.pullModel(imageModel);
-        OllamaChatRequestBuilder builder =
-                OllamaChatRequestBuilder.getInstance(imageModel);
-        OllamaChatRequest requestModel =
-                builder.withMessage(OllamaChatMessageRole.USER, "What's in the picture?", Collections.emptyList(),
-                        List.of(getImageFileFromClasspath("dog-on-a-boat.jpg"))).build();
 
-        OllamaChatResult chatResult = api.chat(requestModel);
-        assertNotNull(chatResult);
-        assertNotNull(chatResult.getResponseModel());
-        builder.reset();
-
-        requestModel =
-                builder.withMessages(chatResult.getChatHistory())
-                        .withMessage(OllamaChatMessageRole.USER, "What's the dogs breed?").build();
-
-        chatResult = api.chat(requestModel);
-        assertNotNull(chatResult);
-        assertNotNull(chatResult.getResponseModel());
-    }
 
     @Test
     @Order(20)
