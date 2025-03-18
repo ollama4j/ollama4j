@@ -1,26 +1,14 @@
 package io.github.ollama4j.models.request;
 
-import io.github.ollama4j.OllamaAPI;
-import io.github.ollama4j.exceptions.OllamaBaseException;
-import io.github.ollama4j.models.response.OllamaErrorResponse;
-import io.github.ollama4j.models.response.OllamaResult;
-import io.github.ollama4j.utils.OllamaRequestBody;
-import io.github.ollama4j.utils.Utils;
-import lombok.Getter;
+import java.net.URI;
+import java.net.http.HttpRequest;
+import java.time.Duration;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.net.URI;
-import java.net.http.HttpClient;
-import java.net.http.HttpRequest;
-import java.net.http.HttpResponse;
-import java.nio.charset.StandardCharsets;
-import java.time.Duration;
-import java.util.Base64;
+import io.github.ollama4j.OllamaAPI;
+import lombok.Getter;
 
 /**
  * Abstract helperclass to call the ollama api server.
@@ -31,13 +19,13 @@ public abstract class OllamaEndpointCaller {
     private static final Logger LOG = LoggerFactory.getLogger(OllamaAPI.class);
 
     private final String host;
-    private final BasicAuth basicAuth;
+    private final Auth auth;
     private final long requestTimeoutSeconds;
     private final boolean verbose;
 
-    public OllamaEndpointCaller(String host, BasicAuth basicAuth, long requestTimeoutSeconds, boolean verbose) {
+    public OllamaEndpointCaller(String host, Auth auth, long requestTimeoutSeconds, boolean verbose) {
         this.host = host;
-        this.basicAuth = basicAuth;
+        this.auth = auth;
         this.requestTimeoutSeconds = requestTimeoutSeconds;
         this.verbose = verbose;
     }
@@ -58,29 +46,19 @@ public abstract class OllamaEndpointCaller {
                 HttpRequest.newBuilder(uri)
                         .header("Content-Type", "application/json")
                         .timeout(Duration.ofSeconds(this.requestTimeoutSeconds));
-        if (isBasicAuthCredentialsSet()) {
-            requestBuilder.header("Authorization", getBasicAuthHeaderValue());
+        if (isAuthCredentialsSet()) {
+            requestBuilder.header("Authorization", this.auth.getAuthHeaderValue());
         }
         return requestBuilder;
     }
 
     /**
-     * Get basic authentication header value.
+     * Check if Auth credentials set.
      *
-     * @return basic authentication header value (encoded credentials)
+     * @return true when Auth credentials set
      */
-    protected String getBasicAuthHeaderValue() {
-        String credentialsToEncode = this.basicAuth.getUsername() + ":" + this.basicAuth.getPassword();
-        return "Basic " + Base64.getEncoder().encodeToString(credentialsToEncode.getBytes());
-    }
-
-    /**
-     * Check if Basic Auth credentials set.
-     *
-     * @return true when Basic Auth credentials set
-     */
-    protected boolean isBasicAuthCredentialsSet() {
-        return this.basicAuth != null;
+    protected boolean isAuthCredentialsSet() {
+        return this.auth != null;
     }
 
 }
