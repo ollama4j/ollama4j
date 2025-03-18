@@ -203,12 +203,12 @@ public class OllamaAPIIntegrationTest {
     @Test
     @Order(10)
     public void testChat() throws Exception {
-        String chatModel = "qwen2.5:0.5b";
+        String chatModel = "llama3";
         api.pullModel(chatModel);
         OllamaChatRequestBuilder builder = OllamaChatRequestBuilder.getInstance(chatModel);
 
         // Create the initial user question
-        OllamaChatRequest requestModel = builder.withMessage(OllamaChatMessageRole.USER, "What is 1+1?")
+        OllamaChatRequest requestModel = builder.withMessage(OllamaChatMessageRole.USER, "What is 1+1? Answer only in numbers.")
                 .build();
 
         // Start conversation with model
