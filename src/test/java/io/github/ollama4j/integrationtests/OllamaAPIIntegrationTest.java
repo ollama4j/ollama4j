@@ -53,7 +53,7 @@ public class OllamaAPIIntegrationTest {
         ollama.setPortBindings(portBindings);
         ollama.start();
         api = new OllamaAPI("http://" + ollama.getHost() + ":" + ollama.getMappedPort(internalPort));
-        api.setRequestTimeoutSeconds(60);
+        api.setRequestTimeoutSeconds(120);
         api.setVerbose(true);
     }
 
