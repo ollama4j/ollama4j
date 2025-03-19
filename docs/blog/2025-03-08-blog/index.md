@@ -64,9 +64,8 @@ Head over to https://cloud.couchbase.com/sign-in and sign up for an account.
 
 <img src={'https://miro.medium.com/v2/resize:fit:1400/format:webp/1*vsJC0ugfoh9vpYNapt4-5A.png'} />
 
-Once you’re in, you will be able to create a new database cluster. Click on the _**Operational**_ tab and click on the *
-*_Create
-Cluster_** button.
+Once you’re in, you will be able to create a new database cluster. Click on the _**Operational**_ tab and click on the
+**_Create Cluster_** button.
 
 <img src={'https://miro.medium.com/v2/resize:fit:1400/format:webp/1*ZNicgmYNkclgaBIxwRN7Ug.png'} />
 
@@ -124,8 +123,8 @@ couchbases://cb.uniqueclusteridentifer.cloud.couchbase.com
 
 <img src={'https://miro.medium.com/v2/resize:fit:1400/format:webp/1*jwnVdj5ZOQMHoggj9JZeJQ.png'} />
 
-To access this cluster endpoint, you need to allow the IP addresses that are permitted to connect. Click on the *
-*_Settings_**
+To access this cluster endpoint, you need to allow the IP addresses that are permitted to connect. Click on the
+**_Settings_**
 tab, which will take you to the **_Cluster Settings_** view. Then, click on **_Allowed IP Addresses_** in the left pane
 under
 **_Networking_**, where you can add allowed IP addresses. Then, click on the **_Add Allowed IP_** button.
@@ -166,9 +165,9 @@ Alright, your cluster access is now set up.
 
 One last step: you just need to select the **_Cluster Access Credentials_** that you want to allow to connect to your
 Capella
-cluster. Head over to the **_Connect_** tab, then click on the **_SDKs_** tab in the left pane. Under Choose the *
-*_Cluster Access
-Credentials you want to use to connect to your Capella cluster_**, select the cluster credentials you just created.
+cluster. Head over to the **_Connect_** tab, then click on the **_SDKs_** tab in the left pane. Under Choose the
+**_Cluster Access Credentials you want to use to connect to your Capella cluster_**, select the cluster credentials you
+just created.
 
 <img src={'https://miro.medium.com/v2/resize:fit:1400/format:webp/1*sIlH51v2HllTzBDV8K-9Aw.png'} />
 
@@ -187,7 +186,7 @@ command in your terminal.
 java --version
 ```
 
-Maven: Make sure you have the Maven build system set up. Set it up from [here](https://maven.apache.org/download.cgi).
+**Maven**: Make sure you have the Maven build system set up. Set it up from [here](https://maven.apache.org/download.cgi).
 Verify it by running the following command
 in your terminal.
 
@@ -203,7 +202,7 @@ running the following command in your terminal.
 ollama --version
 ```
 
-Model: You’ll need [tool-calling model](https://ollama.com/search?c=tools) (such as Mistral) downloaded and ready to
+**Model**: You’ll need [tool-calling model](https://ollama.com/search?c=tools) (such as Mistral) downloaded and ready to
 serve from your Ollama server.
 
 To download/pull the model into your Ollama server, run the following command in your terminal.
@@ -667,7 +666,6 @@ Setup the prompt to instruct the model to update the airline’s callsign.
 
 ```javascript
 String prompt = "I want to code name Astraeus as STARBOUND";
-
 ```
 
 And then we invoke the model with the new prompt.
