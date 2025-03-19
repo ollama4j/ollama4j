@@ -1,12 +1,10 @@
 ---
 slug: talk-to-your-data-on-couchbase-via-ollama4j
-title: "Talk to Your Data Using Natural Language    "
+title: "Talk to Your Data Using Natural Language: A Guide to Interacting with Couchbase via Ollama4j"
 authors: [ amith ]
 tags: [ Java, AI, LLM, GenAI, GenerativeAI, Generative AI Tools, Ollama, Ollama4J, OpenSource, Developers,
 ]
 ---
-
-Talk to Your Data Using Natural Language: A Guide to Interacting with Couchbase via Ollama4j
 
 Sometime back, I created a small wrapper called Ollama4j to interact with the Ollama server over the REST API in Java as
 a side project and made the [repository](https://github.com/ollama4j/ollama4j) public on GitHub. Over time, the project
