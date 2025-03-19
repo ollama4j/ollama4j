@@ -2,8 +2,11 @@ name: Run Tests
 
 on:
   pull_request:
-#    types: [opened, reopened, synchronize, edited]
+    #    types: [opened, reopened, synchronize, edited]
     branches: [ "main" ]
+    paths:
+      - 'src/**'           # Run if changes occur in the 'src' folder
+      - 'pom.xml'          # Run if changes occur in the 'pom.xml' file
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
