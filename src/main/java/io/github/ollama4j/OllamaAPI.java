@@ -77,7 +77,8 @@ public class OllamaAPI {
     private final ToolRegistry toolRegistry = new ToolRegistry();
 
     /**
-     * Instantiates the Ollama API with default Ollama host: <a href="http://localhost:11434">http://localhost:11434</a>
+     * Instantiates the Ollama API with default Ollama host:
+     * <a href="http://localhost:11434">http://localhost:11434</a>
      **/
     public OllamaAPI() {
         this.host = "http://localhost:11434";
@@ -100,7 +101,8 @@ public class OllamaAPI {
     }
 
     /**
-     * Set basic authentication for accessing Ollama server that's behind a reverse-proxy/gateway.
+     * Set basic authentication for accessing Ollama server that's behind a
+     * reverse-proxy/gateway.
      *
      * @param username the username
      * @param password the password
@@ -110,7 +112,8 @@ public class OllamaAPI {
     }
 
     /**
-     * Set Bearer authentication for accessing Ollama server that's behind a reverse-proxy/gateway.
+     * Set Bearer authentication for accessing Ollama server that's behind a
+     * reverse-proxy/gateway.
      *
      * @param bearerToken the Bearer authentication token to provide
      */
@@ -128,7 +131,8 @@ public class OllamaAPI {
         HttpClient httpClient = HttpClient.newHttpClient();
         HttpRequest httpRequest = null;
         try {
-            httpRequest = getRequestBuilderDefault(new URI(url)).header("Accept", "application/json").header("Content-type", "application/json").GET().build();
+            httpRequest = getRequestBuilderDefault(new URI(url)).header("Accept", "application/json")
+                    .header("Content-type", "application/json").GET().build();
         } catch (URISyntaxException e) {
             throw new RuntimeException(e);
         }
@@ -145,7 +149,8 @@ public class OllamaAPI {
     }
 
     /**
-     * Provides a list of running models and details about each model currently loaded into memory.
+     * Provides a list of running models and details about each model currently
+     * loaded into memory.
      *
      * @return ModelsProcessResponse containing details about the running models
      * @throws IOException          if an I/O error occurs during the HTTP request
@@ -157,7 +162,8 @@ public class OllamaAPI {
         HttpClient httpClient = HttpClient.newHttpClient();
         HttpRequest httpRequest = null;
         try {
-            httpRequest = getRequestBuilderDefault(new URI(url)).header("Accept", "application/json").header("Content-type", "application/json").GET().build();
+            httpRequest = getRequestBuilderDefault(new URI(url)).header("Accept", "application/json")
+                    .header("Content-type", "application/json").GET().build();
         } catch (URISyntaxException e) {
             throw new RuntimeException(e);
         }
@@ -184,7 +190,8 @@ public class OllamaAPI {
     public List<Model> listModels() throws OllamaBaseException, IOException, InterruptedException, URISyntaxException {
         String url = this.host + "/api/tags";
         HttpClient httpClient = HttpClient.newHttpClient();
-        HttpRequest httpRequest = getRequestBuilderDefault(new URI(url)).header("Accept", "application/json").header("Content-type", "application/json").GET().build();
+        HttpRequest httpRequest = getRequestBuilderDefault(new URI(url)).header("Accept", "application/json")
+                .header("Content-type", "application/json").GET().build();
         HttpResponse<String> response = httpClient.send(httpRequest, HttpResponse.BodyHandlers.ofString());
         int statusCode = response.statusCode();
         String responseString = response.body();
@@ -196,19 +203,28 @@ public class OllamaAPI {
     }
 
     /**
-     * Retrieves a list of models from the Ollama library. This method fetches the available models directly from Ollama
-     * library page, including model details such as the name, pull count, popular tags, tag count, and the time when model was updated.
+     * Retrieves a list of models from the Ollama library. This method fetches the
+     * available models directly from Ollama
+     * library page, including model details such as the name, pull count, popular
+     * tags, tag count, and the time when model was updated.
      *
-     * @return A list of {@link LibraryModel} objects representing the models available in the Ollama library.
-     * @throws OllamaBaseException  If the HTTP request fails or the response is not successful (non-200 status code).
-     * @throws IOException          If an I/O error occurs during the HTTP request or response processing.
-     * @throws InterruptedException If the thread executing the request is interrupted.
-     * @throws URISyntaxException   If there is an error creating the URI for the HTTP request.
+     * @return A list of {@link LibraryModel} objects representing the models
+     * available in the Ollama library.
+     * @throws OllamaBaseException  If the HTTP request fails or the response is not
+     *                              successful (non-200 status code).
+     * @throws IOException          If an I/O error occurs during the HTTP request
+     *                              or response processing.
+     * @throws InterruptedException If the thread executing the request is
+     *                              interrupted.
+     * @throws URISyntaxException   If there is an error creating the URI for the
+     *                              HTTP request.
      */
-    public List<LibraryModel> listModelsFromLibrary() throws OllamaBaseException, IOException, InterruptedException, URISyntaxException {
+    public List<LibraryModel> listModelsFromLibrary()
+            throws OllamaBaseException, IOException, InterruptedException, URISyntaxException {
         String url = "https://ollama.com/library";
         HttpClient httpClient = HttpClient.newHttpClient();
-        HttpRequest httpRequest = getRequestBuilderDefault(new URI(url)).header("Accept", "application/json").header("Content-type", "application/json").GET().build();
+        HttpRequest httpRequest = getRequestBuilderDefault(new URI(url)).header("Accept", "application/json")
+                .header("Content-type", "application/json").GET().build();
         HttpResponse<String> response = httpClient.send(httpRequest, HttpResponse.BodyHandlers.ofString());
         int statusCode = response.statusCode();
         String responseString = response.body();
@@ -223,7 +239,8 @@ public class OllamaAPI {
                 Elements pullCounts = e.select("div:nth-of-type(2) > p > span:first-of-type > span:first-of-type");
                 Elements popularTags = e.select("div > div > span");
                 Elements totalTags = e.select("div:nth-of-type(2) > p > span:nth-of-type(2) > span:first-of-type");
-                Elements lastUpdatedTime = e.select("div:nth-of-type(2) > p > span:nth-of-type(3) > span:nth-of-type(2)");
+                Elements lastUpdatedTime = e
+                        .select("div:nth-of-type(2) > p > span:nth-of-type(3) > span:nth-of-type(2)");
 
                 if (names.first() == null || names.isEmpty()) {
                     // if name cannot be extracted, skip.
@@ -231,9 +248,12 @@ public class OllamaAPI {
                 }
                 Optional.ofNullable(names.first()).map(Element::text).ifPresent(model::setName);
                 model.setDescription(Optional.ofNullable(desc.first()).map(Element::text).orElse(""));
-                model.setPopularTags(Optional.of(popularTags).map(tags -> tags.stream().map(Element::text).collect(Collectors.toList())).orElse(new ArrayList<>()));
+                model.setPopularTags(Optional.of(popularTags)
+                        .map(tags -> tags.stream().map(Element::text).collect(Collectors.toList()))
+                        .orElse(new ArrayList<>()));
                 model.setPullCount(Optional.ofNullable(pullCounts.first()).map(Element::text).orElse(""));
-                model.setTotalTags(Optional.ofNullable(totalTags.first()).map(Element::text).map(Integer::parseInt).orElse(0));
+                model.setTotalTags(
+                        Optional.ofNullable(totalTags.first()).map(Element::text).map(Integer::parseInt).orElse(0));
                 model.setLastUpdated(Optional.ofNullable(lastUpdatedTime.first()).map(Element::text).orElse(""));
 
                 models.add(model);
@@ -246,22 +266,32 @@ public class OllamaAPI {
 
     /**
      * Fetches the tags associated with a specific model from Ollama library.
-     * This method fetches the available model tags directly from Ollama library model page, including model tag name, size and time when model was last updated
+     * This method fetches the available model tags directly from Ollama library
+     * model page, including model tag name, size and time when model was last
+     * updated
      * into a list of {@link LibraryModelTag} objects.
      *
-     * @param libraryModel the {@link LibraryModel} object which contains the name of the library model
+     * @param libraryModel the {@link LibraryModel} object which contains the name
+     *                     of the library model
      *                     for which the tags need to be fetched.
-     * @return a list of {@link LibraryModelTag} objects containing the extracted tags and their associated metadata.
-     * @throws OllamaBaseException  if the HTTP response status code indicates an error (i.e., not 200 OK),
-     *                              or if there is any other issue during the request or response processing.
-     * @throws IOException          if an input/output exception occurs during the HTTP request or response handling.
-     * @throws InterruptedException if the thread is interrupted while waiting for the HTTP response.
+     * @return a list of {@link LibraryModelTag} objects containing the extracted
+     * tags and their associated metadata.
+     * @throws OllamaBaseException  if the HTTP response status code indicates an
+     *                              error (i.e., not 200 OK),
+     *                              or if there is any other issue during the
+     *                              request or response processing.
+     * @throws IOException          if an input/output exception occurs during the
+     *                              HTTP request or response handling.
+     * @throws InterruptedException if the thread is interrupted while waiting for
+     *                              the HTTP response.
      * @throws URISyntaxException   if the URI format is incorrect or invalid.
      */
-    public LibraryModelDetail getLibraryModelDetails(LibraryModel libraryModel) throws OllamaBaseException, IOException, InterruptedException, URISyntaxException {
+    public LibraryModelDetail getLibraryModelDetails(LibraryModel libraryModel)
+            throws OllamaBaseException, IOException, InterruptedException, URISyntaxException {
         String url = String.format("https://ollama.com/library/%s/tags", libraryModel.getName());
         HttpClient httpClient = HttpClient.newHttpClient();
-        HttpRequest httpRequest = getRequestBuilderDefault(new URI(url)).header("Accept", "application/json").header("Content-type", "application/json").GET().build();
+        HttpRequest httpRequest = getRequestBuilderDefault(new URI(url)).header("Accept", "application/json")
+                .header("Content-type", "application/json").GET().build();
         HttpResponse<String> response = httpClient.send(httpRequest, HttpResponse.BodyHandlers.ofString());
         int statusCode = response.statusCode();
         String responseString = response.body();
@@ -269,7 +299,8 @@ public class OllamaAPI {
         List<LibraryModelTag> libraryModelTags = new ArrayList<>();
         if (statusCode == 200) {
             Document doc = Jsoup.parse(responseString);
-            Elements tagSections = doc.select("html > body > main > div > section > div > div > div:nth-child(n+2) > div");
+            Elements tagSections = doc
+                    .select("html > body > main > div > section > div > div > div:nth-child(n+2) > div");
             for (Element e : tagSections) {
                 Elements tags = e.select("div > a > div");
                 Elements tagsMetas = e.select("div > span");
@@ -282,8 +313,11 @@ public class OllamaAPI {
                 }
                 libraryModelTag.setName(libraryModel.getName());
                 Optional.ofNullable(tags.first()).map(Element::text).ifPresent(libraryModelTag::setTag);
-                libraryModelTag.setSize(Optional.ofNullable(tagsMetas.first()).map(element -> element.text().split("•")).filter(parts -> parts.length > 1).map(parts -> parts[1].trim()).orElse(""));
-                libraryModelTag.setLastUpdated(Optional.ofNullable(tagsMetas.first()).map(element -> element.text().split("•")).filter(parts -> parts.length > 1).map(parts -> parts[2].trim()).orElse(""));
+                libraryModelTag.setSize(Optional.ofNullable(tagsMetas.first()).map(element -> element.text().split("•"))
+                        .filter(parts -> parts.length > 1).map(parts -> parts[1].trim()).orElse(""));
+                libraryModelTag
+                        .setLastUpdated(Optional.ofNullable(tagsMetas.first()).map(element -> element.text().split("•"))
+                                .filter(parts -> parts.length > 1).map(parts -> parts[2].trim()).orElse(""));
                 libraryModelTags.add(libraryModelTag);
             }
             LibraryModelDetail libraryModelDetail = new LibraryModelDetail();
@@ -298,24 +332,35 @@ public class OllamaAPI {
     /**
      * Finds a specific model using model name and tag from Ollama library.
      * <p>
-     * This method retrieves the model from the Ollama library by its name, then fetches its tags.
-     * It searches through the tags of the model to find one that matches the specified tag name.
-     * If the model or the tag is not found, it throws a {@link NoSuchElementException}.
+     * This method retrieves the model from the Ollama library by its name, then
+     * fetches its tags.
+     * It searches through the tags of the model to find one that matches the
+     * specified tag name.
+     * If the model or the tag is not found, it throws a
+     * {@link NoSuchElementException}.
      *
      * @param modelName The name of the model to search for in the library.
      * @param tag       The tag name to search for within the specified model.
-     * @return The {@link LibraryModelTag} associated with the specified model and tag.
-     * @throws OllamaBaseException    If there is a problem with the Ollama library operations.
+     * @return The {@link LibraryModelTag} associated with the specified model and
+     * tag.
+     * @throws OllamaBaseException    If there is a problem with the Ollama library
+     *                                operations.
      * @throws IOException            If an I/O error occurs during the operation.
      * @throws URISyntaxException     If there is an error with the URI syntax.
      * @throws InterruptedException   If the operation is interrupted.
      * @throws NoSuchElementException If the model or the tag is not found.
      */
-    public LibraryModelTag findModelTagFromLibrary(String modelName, String tag) throws OllamaBaseException, IOException, URISyntaxException, InterruptedException {
+    public LibraryModelTag findModelTagFromLibrary(String modelName, String tag)
+            throws OllamaBaseException, IOException, URISyntaxException, InterruptedException {
         List<LibraryModel> libraryModels = this.listModelsFromLibrary();
-        LibraryModel libraryModel = libraryModels.stream().filter(model -> model.getName().equals(modelName)).findFirst().orElseThrow(() -> new NoSuchElementException(String.format("Model by name '%s' not found", modelName)));
+        LibraryModel libraryModel = libraryModels.stream().filter(model -> model.getName().equals(modelName))
+                .findFirst().orElseThrow(
+                        () -> new NoSuchElementException(String.format("Model by name '%s' not found", modelName)));
         LibraryModelDetail libraryModelDetail = this.getLibraryModelDetails(libraryModel);
-        LibraryModelTag libraryModelTag = libraryModelDetail.getTags().stream().filter(tagName -> tagName.getTag().equals(tag)).findFirst().orElseThrow(() -> new NoSuchElementException(String.format("Tag '%s' for model '%s' not found", tag, modelName)));
+        LibraryModelTag libraryModelTag = libraryModelDetail.getTags().stream()
+                .filter(tagName -> tagName.getTag().equals(tag)).findFirst()
+                .orElseThrow(() -> new NoSuchElementException(
+                        String.format("Tag '%s' for model '%s' not found", tag, modelName)));
         return libraryModelTag;
     }
 
@@ -329,7 +374,8 @@ public class OllamaAPI {
      * @throws InterruptedException if the operation is interrupted
      * @throws URISyntaxException   if the URI for the request is malformed
      */
-    public void pullModel(String modelName) throws OllamaBaseException, IOException, URISyntaxException, InterruptedException {
+    public void pullModel(String modelName)
+            throws OllamaBaseException, IOException, URISyntaxException, InterruptedException {
         String url = this.host + "/api/pull";
         String jsonData = new ModelRequest(modelName).toString();
         HttpRequest request = getRequestBuilderDefault(new URI(url))
@@ -343,7 +389,8 @@ public class OllamaAPI {
         InputStream responseBodyStream = response.body();
         String responseString = "";
         boolean success = false; // Flag to check the pull success.
-        try (BufferedReader reader = new BufferedReader(new InputStreamReader(responseBodyStream, StandardCharsets.UTF_8))) {
+        try (BufferedReader reader = new BufferedReader(
+                new InputStreamReader(responseBodyStream, StandardCharsets.UTF_8))) {
             String line;
             while ((line = reader.readLine()) != null) {
                 ModelPullResponse modelPullResponse = Utils.getObjectMapper().readValue(line, ModelPullResponse.class);
@@ -369,11 +416,11 @@ public class OllamaAPI {
         }
     }
 
-
     public String getVersion() throws URISyntaxException, IOException, InterruptedException, OllamaBaseException {
         String url = this.host + "/api/version";
         HttpClient httpClient = HttpClient.newHttpClient();
-        HttpRequest httpRequest = getRequestBuilderDefault(new URI(url)).header("Accept", "application/json").header("Content-type", "application/json").GET().build();
+        HttpRequest httpRequest = getRequestBuilderDefault(new URI(url)).header("Accept", "application/json")
+                .header("Content-type", "application/json").GET().build();
         HttpResponse<String> response = httpClient.send(httpRequest, HttpResponse.BodyHandlers.ofString());
         int statusCode = response.statusCode();
         String responseString = response.body();
@@ -386,17 +433,20 @@ public class OllamaAPI {
 
     /**
      * Pulls a model using the specified Ollama library model tag.
-     * The model is identified by a name and a tag, which are combined into a single identifier
+     * The model is identified by a name and a tag, which are combined into a single
+     * identifier
      * in the format "name:tag" to pull the corresponding model.
      *
-     * @param libraryModelTag the {@link LibraryModelTag} object containing the name and tag
+     * @param libraryModelTag the {@link LibraryModelTag} object containing the name
+     *                        and tag
      *                        of the model to be pulled.
      * @throws OllamaBaseException  if the response indicates an error status
      * @throws IOException          if an I/O error occurs during the HTTP request
      * @throws InterruptedException if the operation is interrupted
      * @throws URISyntaxException   if the URI for the request is malformed
      */
-    public void pullModel(LibraryModelTag libraryModelTag) throws OllamaBaseException, IOException, URISyntaxException, InterruptedException {
+    public void pullModel(LibraryModelTag libraryModelTag)
+            throws OllamaBaseException, IOException, URISyntaxException, InterruptedException {
         String tagToPull = String.format("%s:%s", libraryModelTag.getName(), libraryModelTag.getTag());
         pullModel(tagToPull);
     }
@@ -411,10 +461,12 @@ public class OllamaAPI {
      * @throws InterruptedException if the operation is interrupted
      * @throws URISyntaxException   if the URI for the request is malformed
      */
-    public ModelDetail getModelDetails(String modelName) throws IOException, OllamaBaseException, InterruptedException, URISyntaxException {
+    public ModelDetail getModelDetails(String modelName)
+            throws IOException, OllamaBaseException, InterruptedException, URISyntaxException {
         String url = this.host + "/api/show";
         String jsonData = new ModelRequest(modelName).toString();
-        HttpRequest request = getRequestBuilderDefault(new URI(url)).header("Accept", "application/json").header("Content-type", "application/json").POST(HttpRequest.BodyPublishers.ofString(jsonData)).build();
+        HttpRequest request = getRequestBuilderDefault(new URI(url)).header("Accept", "application/json")
+                .header("Content-type", "application/json").POST(HttpRequest.BodyPublishers.ofString(jsonData)).build();
         HttpClient client = HttpClient.newHttpClient();
         HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
         int statusCode = response.statusCode();
@@ -427,8 +479,10 @@ public class OllamaAPI {
     }
 
     /**
-     * Create a custom model from a model file. Read more about custom model file creation <a
-     * href="https://github.com/jmorganca/ollama/blob/main/docs/modelfile.md">here</a>.
+     * Create a custom model from a model file. Read more about custom model file
+     * creation <a
+     * href=
+     * "https://github.com/jmorganca/ollama/blob/main/docs/modelfile.md">here</a>.
      *
      * @param modelName     the name of the custom model to be created.
      * @param modelFilePath the path to model file that exists on the Ollama server.
@@ -438,10 +492,13 @@ public class OllamaAPI {
      * @throws URISyntaxException   if the URI for the request is malformed
      */
     @Deprecated
-    public void createModelWithFilePath(String modelName, String modelFilePath) throws IOException, InterruptedException, OllamaBaseException, URISyntaxException {
+    public void createModelWithFilePath(String modelName, String modelFilePath)
+            throws IOException, InterruptedException, OllamaBaseException, URISyntaxException {
         String url = this.host + "/api/create";
         String jsonData = new CustomModelFilePathRequest(modelName, modelFilePath).toString();
-        HttpRequest request = getRequestBuilderDefault(new URI(url)).header("Accept", "application/json").header("Content-Type", "application/json").POST(HttpRequest.BodyPublishers.ofString(jsonData, StandardCharsets.UTF_8)).build();
+        HttpRequest request = getRequestBuilderDefault(new URI(url)).header("Accept", "application/json")
+                .header("Content-Type", "application/json")
+                .POST(HttpRequest.BodyPublishers.ofString(jsonData, StandardCharsets.UTF_8)).build();
         HttpClient client = HttpClient.newHttpClient();
         HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
         int statusCode = response.statusCode();
@@ -449,7 +506,8 @@ public class OllamaAPI {
         if (statusCode != 200) {
             throw new OllamaBaseException(statusCode + " - " + responseString);
         }
-        // FIXME: Ollama API returns HTTP status code 200 for model creation failure cases. Correct this
+        // FIXME: Ollama API returns HTTP status code 200 for model creation failure
+        // cases. Correct this
         // if the issue is fixed in the Ollama API server.
         if (responseString.contains("error")) {
             throw new OllamaBaseException(responseString);
@@ -460,21 +518,27 @@ public class OllamaAPI {
     }
 
     /**
-     * Create a custom model from a model file. Read more about custom model file creation <a
-     * href="https://github.com/jmorganca/ollama/blob/main/docs/modelfile.md">here</a>.
+     * Create a custom model from a model file. Read more about custom model file
+     * creation <a
+     * href=
+     * "https://github.com/jmorganca/ollama/blob/main/docs/modelfile.md">here</a>.
      *
      * @param modelName         the name of the custom model to be created.
-     * @param modelFileContents the path to model file that exists on the Ollama server.
+     * @param modelFileContents the path to model file that exists on the Ollama
+     *                          server.
      * @throws OllamaBaseException  if the response indicates an error status
      * @throws IOException          if an I/O error occurs during the HTTP request
      * @throws InterruptedException if the operation is interrupted
      * @throws URISyntaxException   if the URI for the request is malformed
      */
     @Deprecated
-    public void createModelWithModelFileContents(String modelName, String modelFileContents) throws IOException, InterruptedException, OllamaBaseException, URISyntaxException {
+    public void createModelWithModelFileContents(String modelName, String modelFileContents)
+            throws IOException, InterruptedException, OllamaBaseException, URISyntaxException {
         String url = this.host + "/api/create";
         String jsonData = new CustomModelFileContentsRequest(modelName, modelFileContents).toString();
-        HttpRequest request = getRequestBuilderDefault(new URI(url)).header("Accept", "application/json").header("Content-Type", "application/json").POST(HttpRequest.BodyPublishers.ofString(jsonData, StandardCharsets.UTF_8)).build();
+        HttpRequest request = getRequestBuilderDefault(new URI(url)).header("Accept", "application/json")
+                .header("Content-Type", "application/json")
+                .POST(HttpRequest.BodyPublishers.ofString(jsonData, StandardCharsets.UTF_8)).build();
         HttpClient client = HttpClient.newHttpClient();
         HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
         int statusCode = response.statusCode();
@@ -492,7 +556,8 @@ public class OllamaAPI {
 
     /**
      * Create a custom model. Read more about custom model creation <a
-     * href="https://github.com/ollama/ollama/blob/main/docs/api.md#create-a-model">here</a>.
+     * href=
+     * "https://github.com/ollama/ollama/blob/main/docs/api.md#create-a-model">here</a>.
      *
      * @param customModelRequest custom model spec
      * @throws OllamaBaseException  if the response indicates an error status
@@ -500,10 +565,13 @@ public class OllamaAPI {
      * @throws InterruptedException if the operation is interrupted
      * @throws URISyntaxException   if the URI for the request is malformed
      */
-    public void createModel(CustomModelRequest customModelRequest) throws IOException, InterruptedException, OllamaBaseException, URISyntaxException {
+    public void createModel(CustomModelRequest customModelRequest)
+            throws IOException, InterruptedException, OllamaBaseException, URISyntaxException {
         String url = this.host + "/api/create";
         String jsonData = customModelRequest.toString();
-        HttpRequest request = getRequestBuilderDefault(new URI(url)).header("Accept", "application/json").header("Content-Type", "application/json").POST(HttpRequest.BodyPublishers.ofString(jsonData, StandardCharsets.UTF_8)).build();
+        HttpRequest request = getRequestBuilderDefault(new URI(url)).header("Accept", "application/json")
+                .header("Content-Type", "application/json")
+                .POST(HttpRequest.BodyPublishers.ofString(jsonData, StandardCharsets.UTF_8)).build();
         HttpClient client = HttpClient.newHttpClient();
         HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
         int statusCode = response.statusCode();
@@ -523,16 +591,20 @@ public class OllamaAPI {
      * Delete a model from Ollama server.
      *
      * @param modelName          the name of the model to be deleted.
-     * @param ignoreIfNotPresent ignore errors if the specified model is not present on Ollama server.
+     * @param ignoreIfNotPresent ignore errors if the specified model is not present
+     *                           on Ollama server.
      * @throws OllamaBaseException  if the response indicates an error status
      * @throws IOException          if an I/O error occurs during the HTTP request
      * @throws InterruptedException if the operation is interrupted
      * @throws URISyntaxException   if the URI for the request is malformed
      */
-    public void deleteModel(String modelName, boolean ignoreIfNotPresent) throws IOException, InterruptedException, OllamaBaseException, URISyntaxException {
+    public void deleteModel(String modelName, boolean ignoreIfNotPresent)
+            throws IOException, InterruptedException, OllamaBaseException, URISyntaxException {
         String url = this.host + "/api/delete";
         String jsonData = new ModelRequest(modelName).toString();
-        HttpRequest request = getRequestBuilderDefault(new URI(url)).method("DELETE", HttpRequest.BodyPublishers.ofString(jsonData, StandardCharsets.UTF_8)).header("Accept", "application/json").header("Content-type", "application/json").build();
+        HttpRequest request = getRequestBuilderDefault(new URI(url))
+                .method("DELETE", HttpRequest.BodyPublishers.ofString(jsonData, StandardCharsets.UTF_8))
+                .header("Accept", "application/json").header("Content-type", "application/json").build();
         HttpClient client = HttpClient.newHttpClient();
         HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
         int statusCode = response.statusCode();
@@ -557,7 +629,8 @@ public class OllamaAPI {
      * @deprecated Use {@link #embed(String, List)} instead.
      */
     @Deprecated
-    public List<Double> generateEmbeddings(String model, String prompt) throws IOException, InterruptedException, OllamaBaseException {
+    public List<Double> generateEmbeddings(String model, String prompt)
+            throws IOException, InterruptedException, OllamaBaseException {
         return generateEmbeddings(new OllamaEmbeddingsRequestModel(model, prompt));
     }
 
@@ -572,17 +645,20 @@ public class OllamaAPI {
      * @deprecated Use {@link #embed(OllamaEmbedRequestModel)} instead.
      */
     @Deprecated
-    public List<Double> generateEmbeddings(OllamaEmbeddingsRequestModel modelRequest) throws IOException, InterruptedException, OllamaBaseException {
+    public List<Double> generateEmbeddings(OllamaEmbeddingsRequestModel modelRequest)
+            throws IOException, InterruptedException, OllamaBaseException {
         URI uri = URI.create(this.host + "/api/embeddings");
         String jsonData = modelRequest.toString();
         HttpClient httpClient = HttpClient.newHttpClient();
-        HttpRequest.Builder requestBuilder = getRequestBuilderDefault(uri).header("Accept", "application/json").POST(HttpRequest.BodyPublishers.ofString(jsonData));
+        HttpRequest.Builder requestBuilder = getRequestBuilderDefault(uri).header("Accept", "application/json")
+                .POST(HttpRequest.BodyPublishers.ofString(jsonData));
         HttpRequest request = requestBuilder.build();
         HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
         int statusCode = response.statusCode();
         String responseBody = response.body();
         if (statusCode == 200) {
-            OllamaEmbeddingResponseModel embeddingResponse = Utils.getObjectMapper().readValue(responseBody, OllamaEmbeddingResponseModel.class);
+            OllamaEmbeddingResponseModel embeddingResponse = Utils.getObjectMapper().readValue(responseBody,
+                    OllamaEmbeddingResponseModel.class);
             return embeddingResponse.getEmbedding();
         } else {
             throw new OllamaBaseException(statusCode + " - " + responseBody);
@@ -599,7 +675,8 @@ public class OllamaAPI {
      * @throws IOException          if an I/O error occurs during the HTTP request
      * @throws InterruptedException if the operation is interrupted
      */
-    public OllamaEmbedResponseModel embed(String model, List<String> inputs) throws IOException, InterruptedException, OllamaBaseException {
+    public OllamaEmbedResponseModel embed(String model, List<String> inputs)
+            throws IOException, InterruptedException, OllamaBaseException {
         return embed(new OllamaEmbedRequestModel(model, inputs));
     }
 
@@ -612,12 +689,14 @@ public class OllamaAPI {
      * @throws IOException          if an I/O error occurs during the HTTP request
      * @throws InterruptedException if the operation is interrupted
      */
-    public OllamaEmbedResponseModel embed(OllamaEmbedRequestModel modelRequest) throws IOException, InterruptedException, OllamaBaseException {
+    public OllamaEmbedResponseModel embed(OllamaEmbedRequestModel modelRequest)
+            throws IOException, InterruptedException, OllamaBaseException {
         URI uri = URI.create(this.host + "/api/embed");
         String jsonData = Utils.getObjectMapper().writeValueAsString(modelRequest);
         HttpClient httpClient = HttpClient.newHttpClient();
 
-        HttpRequest request = HttpRequest.newBuilder(uri).header("Accept", "application/json").POST(HttpRequest.BodyPublishers.ofString(jsonData)).build();
+        HttpRequest request = HttpRequest.newBuilder(uri).header("Accept", "application/json")
+                .POST(HttpRequest.BodyPublishers.ofString(jsonData)).build();
 
         HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
         int statusCode = response.statusCode();
@@ -631,21 +710,26 @@ public class OllamaAPI {
     }
 
     /**
-     * Generate response for a question to a model running on Ollama server. This is a sync/blocking
+     * Generate response for a question to a model running on Ollama server. This is
+     * a sync/blocking
      * call.
      *
      * @param model         the ollama model to ask the question to
      * @param prompt        the prompt/question text
      * @param options       the Options object - <a
-     *                      href="https://github.com/jmorganca/ollama/blob/main/docs/modelfile.md#valid-parameters-and-values">More
+     *                      href=
+     *                      "https://github.com/jmorganca/ollama/blob/main/docs/modelfile.md#valid-parameters-and-values">More
      *                      details on the options</a>
-     * @param streamHandler optional callback consumer that will be applied every time a streamed response is received. If not set, the stream parameter of the request is set to false.
+     * @param streamHandler optional callback consumer that will be applied every
+     *                      time a streamed response is received. If not set, the
+     *                      stream parameter of the request is set to false.
      * @return OllamaResult that includes response text and time taken for response
      * @throws OllamaBaseException  if the response indicates an error status
      * @throws IOException          if an I/O error occurs during the HTTP request
      * @throws InterruptedException if the operation is interrupted
      */
-    public OllamaResult generate(String model, String prompt, boolean raw, Options options, OllamaStreamHandler streamHandler) throws OllamaBaseException, IOException, InterruptedException {
+    public OllamaResult generate(String model, String prompt, boolean raw, Options options,
+                                 OllamaStreamHandler streamHandler) throws OllamaBaseException, IOException, InterruptedException {
         OllamaGenerateRequest ollamaRequestModel = new OllamaGenerateRequest(model, prompt);
         ollamaRequestModel.setRaw(raw);
         ollamaRequestModel.setOptions(options.getOptionsMap());
@@ -653,36 +737,90 @@ public class OllamaAPI {
     }
 
     /**
-     * Generates response using the specified AI model and prompt (in blocking mode).
+     * Generates structured output from the specified AI model and prompt.
+     *
+     * @param model  The name or identifier of the AI model to use for generating
+     *               the response.
+     * @param prompt The input text or prompt to provide to the AI model.
+     * @param format A map containing the format specification for the structured output.
+     * @return An instance of {@link OllamaStructuredResult} containing the structured response.
+     * @throws OllamaBaseException  if the response indicates an error status.
+     * @throws IOException          if an I/O error occurs during the HTTP request.
+     * @throws InterruptedException if the operation is interrupted.
+     */
+    public OllamaStructuredResult generate(String model, String prompt, Map<String, Object> format)
+            throws OllamaBaseException, IOException, InterruptedException {
+        URI uri = URI.create(this.host + "/api/generate");
+
+        Map<String, Object> requestBody = new HashMap<>();
+        requestBody.put("model", model);
+        requestBody.put("prompt", prompt);
+        requestBody.put("stream", false);
+        requestBody.put("format", format);
+
+        String jsonData = Utils.getObjectMapper().writeValueAsString(requestBody);
+        HttpClient httpClient = HttpClient.newHttpClient();
+
+        HttpRequest request = HttpRequest.newBuilder(uri)
+                .header("Content-Type", "application/json")
+                .POST(HttpRequest.BodyPublishers.ofString(jsonData))
+                .build();
+
+        HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
+        int statusCode = response.statusCode();
+        String responseBody = response.body();
+
+        if (statusCode == 200) {
+            return Utils.getObjectMapper().readValue(responseBody, OllamaStructuredResult.class);
+        } else {
+            throw new OllamaBaseException(statusCode + " - " + responseBody);
+        }
+    }
+
+    /**
+     * Generates response using the specified AI model and prompt (in blocking
+     * mode).
      * <p>
      * Uses {@link #generate(String, String, boolean, Options, OllamaStreamHandler)}
      *
-     * @param model   The name or identifier of the AI model to use for generating the response.
+     * @param model   The name or identifier of the AI model to use for generating
+     *                the response.
      * @param prompt  The input text or prompt to provide to the AI model.
-     * @param raw     In some cases, you may wish to bypass the templating system and provide a full prompt. In this case, you can use the raw parameter to disable templating. Also note that raw mode will not return a context.
-     * @param options Additional options or configurations to use when generating the response.
+     * @param raw     In some cases, you may wish to bypass the templating system
+     *                and provide a full prompt. In this case, you can use the raw
+     *                parameter to disable templating. Also note that raw mode will
+     *                not return a context.
+     * @param options Additional options or configurations to use when generating
+     *                the response.
      * @return {@link OllamaResult}
      * @throws OllamaBaseException  if the response indicates an error status
      * @throws IOException          if an I/O error occurs during the HTTP request
      * @throws InterruptedException if the operation is interrupted
      */
-    public OllamaResult generate(String model, String prompt, boolean raw, Options options) throws OllamaBaseException, IOException, InterruptedException {
+    public OllamaResult generate(String model, String prompt, boolean raw, Options options)
+            throws OllamaBaseException, IOException, InterruptedException {
         return generate(model, prompt, raw, options, null);
     }
 
     /**
-     * Generates response using the specified AI model and prompt (in blocking mode), and then invokes a set of tools
+     * Generates response using the specified AI model and prompt (in blocking
+     * mode), and then invokes a set of tools
      * on the generated response.
      *
-     * @param model   The name or identifier of the AI model to use for generating the response.
+     * @param model   The name or identifier of the AI model to use for generating
+     *                the response.
      * @param prompt  The input text or prompt to provide to the AI model.
-     * @param options Additional options or configurations to use when generating the response.
-     * @return {@link OllamaToolsResult} An OllamaToolsResult object containing the response from the AI model and the results of invoking the tools on that output.
+     * @param options Additional options or configurations to use when generating
+     *                the response.
+     * @return {@link OllamaToolsResult} An OllamaToolsResult object containing the
+     * response from the AI model and the results of invoking the tools on
+     * that output.
      * @throws OllamaBaseException  if the response indicates an error status
      * @throws IOException          if an I/O error occurs during the HTTP request
      * @throws InterruptedException if the operation is interrupted
      */
-    public OllamaToolsResult generateWithTools(String model, String prompt, Options options) throws OllamaBaseException, IOException, InterruptedException, ToolInvocationException {
+    public OllamaToolsResult generateWithTools(String model, String prompt, Options options)
+            throws OllamaBaseException, IOException, InterruptedException, ToolInvocationException {
         boolean raw = true;
         OllamaToolsResult toolResult = new OllamaToolsResult();
         Map<ToolFunctionCallSpec, Object> toolResults = new HashMap<>();
@@ -717,8 +855,7 @@ public class OllamaAPI {
             }
             toolFunctionCallSpecs = objectMapper.readValue(
                     toolsResponse,
-                    objectMapper.getTypeFactory().constructCollectionType(List.class, ToolFunctionCallSpec.class)
-            );
+                    objectMapper.getTypeFactory().constructCollectionType(List.class, ToolFunctionCallSpec.class));
         }
         for (ToolFunctionCallSpec toolFunctionCallSpec : toolFunctionCallSpecs) {
             toolResults.put(toolFunctionCallSpec, invokeTool(toolFunctionCallSpec));
@@ -728,8 +865,10 @@ public class OllamaAPI {
     }
 
     /**
-     * Generate response for a question to a model running on Ollama server and get a callback handle
-     * that can be used to check for status and get the response from the model later. This would be
+     * Generate response for a question to a model running on Ollama server and get
+     * a callback handle
+     * that can be used to check for status and get the response from the model
+     * later. This would be
      * an async/non-blocking call.
      *
      * @param model  the ollama model to ask the question to
@@ -740,28 +879,34 @@ public class OllamaAPI {
         OllamaGenerateRequest ollamaRequestModel = new OllamaGenerateRequest(model, prompt);
         ollamaRequestModel.setRaw(raw);
         URI uri = URI.create(this.host + "/api/generate");
-        OllamaAsyncResultStreamer ollamaAsyncResultStreamer = new OllamaAsyncResultStreamer(getRequestBuilderDefault(uri), ollamaRequestModel, requestTimeoutSeconds);
+        OllamaAsyncResultStreamer ollamaAsyncResultStreamer = new OllamaAsyncResultStreamer(
+                getRequestBuilderDefault(uri), ollamaRequestModel, requestTimeoutSeconds);
         ollamaAsyncResultStreamer.start();
         return ollamaAsyncResultStreamer;
     }
 
     /**
-     * With one or more image files, ask a question to a model running on Ollama server. This is a
+     * With one or more image files, ask a question to a model running on Ollama
+     * server. This is a
      * sync/blocking call.
      *
      * @param model         the ollama model to ask the question to
      * @param prompt        the prompt/question text
      * @param imageFiles    the list of image files to use for the question
      * @param options       the Options object - <a
-     *                      href="https://github.com/jmorganca/ollama/blob/main/docs/modelfile.md#valid-parameters-and-values">More
+     *                      href=
+     *                      "https://github.com/jmorganca/ollama/blob/main/docs/modelfile.md#valid-parameters-and-values">More
      *                      details on the options</a>
-     * @param streamHandler optional callback consumer that will be applied every time a streamed response is received. If not set, the stream parameter of the request is set to false.
+     * @param streamHandler optional callback consumer that will be applied every
+     *                      time a streamed response is received. If not set, the
+     *                      stream parameter of the request is set to false.
      * @return OllamaResult that includes response text and time taken for response
      * @throws OllamaBaseException  if the response indicates an error status
      * @throws IOException          if an I/O error occurs during the HTTP request
      * @throws InterruptedException if the operation is interrupted
      */
-    public OllamaResult generateWithImageFiles(String model, String prompt, List<File> imageFiles, Options options, OllamaStreamHandler streamHandler) throws OllamaBaseException, IOException, InterruptedException {
+    public OllamaResult generateWithImageFiles(String model, String prompt, List<File> imageFiles, Options options,
+                                               OllamaStreamHandler streamHandler) throws OllamaBaseException, IOException, InterruptedException {
         List<String> images = new ArrayList<>();
         for (File imageFile : imageFiles) {
             images.add(encodeFileToBase64(imageFile));
@@ -774,34 +919,42 @@ public class OllamaAPI {
     /**
      * Convenience method to call Ollama API without streaming responses.
      * <p>
-     * Uses {@link #generateWithImageFiles(String, String, List, Options, OllamaStreamHandler)}
+     * Uses
+     * {@link #generateWithImageFiles(String, String, List, Options, OllamaStreamHandler)}
      *
      * @throws OllamaBaseException  if the response indicates an error status
      * @throws IOException          if an I/O error occurs during the HTTP request
      * @throws InterruptedException if the operation is interrupted
      */
-    public OllamaResult generateWithImageFiles(String model, String prompt, List<File> imageFiles, Options options) throws OllamaBaseException, IOException, InterruptedException {
+    public OllamaResult generateWithImageFiles(String model, String prompt, List<File> imageFiles, Options options)
+            throws OllamaBaseException, IOException, InterruptedException {
         return generateWithImageFiles(model, prompt, imageFiles, options, null);
     }
 
     /**
-     * With one or more image URLs, ask a question to a model running on Ollama server. This is a
+     * With one or more image URLs, ask a question to a model running on Ollama
+     * server. This is a
      * sync/blocking call.
      *
      * @param model         the ollama model to ask the question to
      * @param prompt        the prompt/question text
      * @param imageURLs     the list of image URLs to use for the question
      * @param options       the Options object - <a
-     *                      href="https://github.com/jmorganca/ollama/blob/main/docs/modelfile.md#valid-parameters-and-values">More
+     *                      href=
+     *                      "https://github.com/jmorganca/ollama/blob/main/docs/modelfile.md#valid-parameters-and-values">More
      *                      details on the options</a>
-     * @param streamHandler optional callback consumer that will be applied every time a streamed response is received. If not set, the stream parameter of the request is set to false.
+     * @param streamHandler optional callback consumer that will be applied every
+     *                      time a streamed response is received. If not set, the
+     *                      stream parameter of the request is set to false.
      * @return OllamaResult that includes response text and time taken for response
      * @throws OllamaBaseException  if the response indicates an error status
      * @throws IOException          if an I/O error occurs during the HTTP request
      * @throws InterruptedException if the operation is interrupted
      * @throws URISyntaxException   if the URI for the request is malformed
      */
-    public OllamaResult generateWithImageURLs(String model, String prompt, List<String> imageURLs, Options options, OllamaStreamHandler streamHandler) throws OllamaBaseException, IOException, InterruptedException, URISyntaxException {
+    public OllamaResult generateWithImageURLs(String model, String prompt, List<String> imageURLs, Options options,
+                                              OllamaStreamHandler streamHandler)
+            throws OllamaBaseException, IOException, InterruptedException, URISyntaxException {
         List<String> images = new ArrayList<>();
         for (String imageURL : imageURLs) {
             images.add(encodeByteArrayToBase64(Utils.loadImageBytesFromUrl(imageURL)));
@@ -814,38 +967,45 @@ public class OllamaAPI {
     /**
      * Convenience method to call Ollama API without streaming responses.
      * <p>
-     * Uses {@link #generateWithImageURLs(String, String, List, Options, OllamaStreamHandler)}
+     * Uses
+     * {@link #generateWithImageURLs(String, String, List, Options, OllamaStreamHandler)}
      *
      * @throws OllamaBaseException  if the response indicates an error status
      * @throws IOException          if an I/O error occurs during the HTTP request
      * @throws InterruptedException if the operation is interrupted
      * @throws URISyntaxException   if the URI for the request is malformed
      */
-    public OllamaResult generateWithImageURLs(String model, String prompt, List<String> imageURLs, Options options) throws OllamaBaseException, IOException, InterruptedException, URISyntaxException {
+    public OllamaResult generateWithImageURLs(String model, String prompt, List<String> imageURLs, Options options)
+            throws OllamaBaseException, IOException, InterruptedException, URISyntaxException {
         return generateWithImageURLs(model, prompt, imageURLs, options, null);
     }
 
     /**
-     * Ask a question to a model based on a given message stack (i.e. a chat history). Creates a synchronous call to the api
+     * Ask a question to a model based on a given message stack (i.e. a chat
+     * history). Creates a synchronous call to the api
      * 'api/chat'.
      *
      * @param model    the ollama model to ask the question to
      * @param messages chat history / message stack to send to the model
-     * @return {@link OllamaChatResult} containing the api response and the message history including the newly aqcuired assistant response.
+     * @return {@link OllamaChatResult} containing the api response and the message
+     * history including the newly aqcuired assistant response.
      * @throws OllamaBaseException  any response code than 200 has been returned
      * @throws IOException          in case the responseStream can not be read
-     * @throws InterruptedException in case the server is not reachable or network issues happen
+     * @throws InterruptedException in case the server is not reachable or network
+     *                              issues happen
      * @throws OllamaBaseException  if the response indicates an error status
      * @throws IOException          if an I/O error occurs during the HTTP request
      * @throws InterruptedException if the operation is interrupted
      */
-    public OllamaChatResult chat(String model, List<OllamaChatMessage> messages) throws OllamaBaseException, IOException, InterruptedException {
+    public OllamaChatResult chat(String model, List<OllamaChatMessage> messages)
+            throws OllamaBaseException, IOException, InterruptedException {
         OllamaChatRequestBuilder builder = OllamaChatRequestBuilder.getInstance(model);
         return chat(builder.withMessages(messages).build());
     }
 
     /**
-     * Ask a question to a model using an {@link OllamaChatRequest}. This can be constructed using an {@link OllamaChatRequestBuilder}.
+     * Ask a question to a model using an {@link OllamaChatRequest}. This can be
+     * constructed using an {@link OllamaChatRequestBuilder}.
      * <p>
      * Hint: the OllamaChatRequestModel#getStream() property is not implemented.
      *
@@ -853,55 +1013,69 @@ public class OllamaAPI {
      * @return {@link OllamaChatResult}
      * @throws OllamaBaseException  any response code than 200 has been returned
      * @throws IOException          in case the responseStream can not be read
-     * @throws InterruptedException in case the server is not reachable or network issues happen
+     * @throws InterruptedException in case the server is not reachable or network
+     *                              issues happen
      * @throws OllamaBaseException  if the response indicates an error status
      * @throws IOException          if an I/O error occurs during the HTTP request
      * @throws InterruptedException if the operation is interrupted
      */
-    public OllamaChatResult chat(OllamaChatRequest request) throws OllamaBaseException, IOException, InterruptedException {
+    public OllamaChatResult chat(OllamaChatRequest request)
+            throws OllamaBaseException, IOException, InterruptedException {
         return chat(request, null);
     }
 
     /**
-     * Ask a question to a model using an {@link OllamaChatRequest}. This can be constructed using an {@link OllamaChatRequestBuilder}.
+     * Ask a question to a model using an {@link OllamaChatRequest}. This can be
+     * constructed using an {@link OllamaChatRequestBuilder}.
      * <p>
      * Hint: the OllamaChatRequestModel#getStream() property is not implemented.
      *
      * @param request       request object to be sent to the server
-     * @param streamHandler callback handler to handle the last message from stream (caution: all previous messages from stream will be concatenated)
+     * @param streamHandler callback handler to handle the last message from stream
+     *                      (caution: all previous messages from stream will be
+     *                      concatenated)
      * @return {@link OllamaChatResult}
      * @throws OllamaBaseException  any response code than 200 has been returned
      * @throws IOException          in case the responseStream can not be read
-     * @throws InterruptedException in case the server is not reachable or network issues happen
+     * @throws InterruptedException in case the server is not reachable or network
+     *                              issues happen
      * @throws OllamaBaseException  if the response indicates an error status
      * @throws IOException          if an I/O error occurs during the HTTP request
      * @throws InterruptedException if the operation is interrupted
      */
-    public OllamaChatResult chat(OllamaChatRequest request, OllamaStreamHandler streamHandler) throws OllamaBaseException, IOException, InterruptedException {
+    public OllamaChatResult chat(OllamaChatRequest request, OllamaStreamHandler streamHandler)
+            throws OllamaBaseException, IOException, InterruptedException {
         return chatStreaming(request, new OllamaChatStreamObserver(streamHandler));
     }
 
     /**
-     * Ask a question to a model using an {@link OllamaChatRequest}. This can be constructed using an {@link OllamaChatRequestBuilder}.
+     * Ask a question to a model using an {@link OllamaChatRequest}. This can be
+     * constructed using an {@link OllamaChatRequestBuilder}.
      * <p>
      * Hint: the OllamaChatRequestModel#getStream() property is not implemented.
      *
      * @param request      request object to be sent to the server
-     * @param tokenHandler callback handler to handle the last token from stream (caution: all previous messages from stream will be concatenated)
+     * @param tokenHandler callback handler to handle the last token from stream
+     *                     (caution: all previous messages from stream will be
+     *                     concatenated)
      * @return {@link OllamaChatResult}
      * @throws OllamaBaseException  any response code than 200 has been returned
      * @throws IOException          in case the responseStream can not be read
-     * @throws InterruptedException in case the server is not reachable or network issues happen
+     * @throws InterruptedException in case the server is not reachable or network
+     *                              issues happen
      * @throws OllamaBaseException  if the response indicates an error status
      * @throws IOException          if an I/O error occurs during the HTTP request
      * @throws InterruptedException if the operation is interrupted
      */
-    public OllamaChatResult chatStreaming(OllamaChatRequest request, OllamaTokenHandler tokenHandler) throws OllamaBaseException, IOException, InterruptedException {
-        OllamaChatEndpointCaller requestCaller = new OllamaChatEndpointCaller(host, auth, requestTimeoutSeconds, verbose);
+    public OllamaChatResult chatStreaming(OllamaChatRequest request, OllamaTokenHandler tokenHandler)
+            throws OllamaBaseException, IOException, InterruptedException {
+        OllamaChatEndpointCaller requestCaller = new OllamaChatEndpointCaller(host, auth, requestTimeoutSeconds,
+                verbose);
         OllamaChatResult result;
 
         // add all registered tools to Request
-        request.setTools(toolRegistry.getRegisteredSpecs().stream().map(Tools.ToolSpecification::getToolPrompt).collect(Collectors.toList()));
+        request.setTools(toolRegistry.getRegisteredSpecs().stream().map(Tools.ToolSpecification::getToolPrompt)
+                .collect(Collectors.toList()));
 
         if (tokenHandler != null) {
             request.setStream(true);
@@ -919,7 +1093,8 @@ public class OllamaAPI {
                 ToolFunction toolFunction = toolRegistry.getToolFunction(toolName);
                 Map<String, Object> arguments = toolCall.getFunction().getArguments();
                 Object res = toolFunction.apply(arguments);
-                request.getMessages().add(new OllamaChatMessage(OllamaChatMessageRole.TOOL, "[TOOL_RESULTS]" + toolName + "(" + arguments.keySet() + ") : " + res + "[/TOOL_RESULTS]"));
+                request.getMessages().add(new OllamaChatMessage(OllamaChatMessageRole.TOOL,
+                        "[TOOL_RESULTS]" + toolName + "(" + arguments.keySet() + ") : " + res + "[/TOOL_RESULTS]"));
             }
 
             if (tokenHandler != null) {
@@ -935,9 +1110,11 @@ public class OllamaAPI {
     }
 
     /**
-     * Registers a single tool in the tool registry using the provided tool specification.
+     * Registers a single tool in the tool registry using the provided tool
+     * specification.
      *
-     * @param toolSpecification the specification of the tool to register. It contains the
+     * @param toolSpecification the specification of the tool to register. It
+     *                          contains the
      *                          tool's function name and other relevant information.
      */
     public void registerTool(Tools.ToolSpecification toolSpecification) {
@@ -948,11 +1125,14 @@ public class OllamaAPI {
     }
 
     /**
-     * Registers multiple tools in the tool registry using a list of tool specifications.
+     * Registers multiple tools in the tool registry using a list of tool
+     * specifications.
      * Iterates over the list and adds each tool specification to the registry.
      *
-     * @param toolSpecifications a list of tool specifications to register. Each specification
-     *                           contains information about a tool, such as its function name.
+     * @param toolSpecifications a list of tool specifications to register. Each
+     *                           specification
+     *                           contains information about a tool, such as its
+     *                           function name.
      */
     public void registerTools(List<Tools.ToolSpecification> toolSpecifications) {
         for (Tools.ToolSpecification toolSpecification : toolSpecifications) {
@@ -961,12 +1141,16 @@ public class OllamaAPI {
     }
 
     /**
-     * Registers tools based on the annotations found on the methods of the caller's class and its providers.
-     * This method scans the caller's class for the {@link OllamaToolService} annotation and recursively registers
+     * Registers tools based on the annotations found on the methods of the caller's
+     * class and its providers.
+     * This method scans the caller's class for the {@link OllamaToolService}
+     * annotation and recursively registers
      * annotated tools from all the providers specified in the annotation.
      *
-     * @throws IllegalStateException if the caller's class is not annotated with {@link OllamaToolService}.
-     * @throws RuntimeException      if any reflection-based instantiation or invocation fails.
+     * @throws IllegalStateException if the caller's class is not annotated with
+     *                               {@link OllamaToolService}.
+     * @throws RuntimeException      if any reflection-based instantiation or
+     *                               invocation fails.
      */
     public void registerAnnotatedTools() {
         try {
@@ -986,19 +1170,24 @@ public class OllamaAPI {
             for (Class<?> provider : providers) {
                 registerAnnotatedTools(provider.getDeclaredConstructor().newInstance());
             }
-        } catch (InstantiationException | NoSuchMethodException | IllegalAccessException |
-                 InvocationTargetException e) {
+        } catch (InstantiationException | NoSuchMethodException | IllegalAccessException
+                 | InvocationTargetException e) {
             throw new RuntimeException(e);
         }
     }
 
     /**
-     * Registers tools based on the annotations found on the methods of the provided object.
-     * This method scans the methods of the given object and registers tools using the {@link ToolSpec} annotation
-     * and associated {@link ToolProperty} annotations. It constructs tool specifications and stores them in a tool registry.
+     * Registers tools based on the annotations found on the methods of the provided
+     * object.
+     * This method scans the methods of the given object and registers tools using
+     * the {@link ToolSpec} annotation
+     * and associated {@link ToolProperty} annotations. It constructs tool
+     * specifications and stores them in a tool registry.
      *
-     * @param object the object whose methods are to be inspected for annotated tools.
-     * @throws RuntimeException if any reflection-based instantiation or invocation fails.
+     * @param object the object whose methods are to be inspected for annotated
+     *               tools.
+     * @throws RuntimeException if any reflection-based instantiation or invocation
+     *                          fails.
      */
     public void registerAnnotatedTools(Object object) {
         Class<?> objectClass = object.getClass();
@@ -1022,12 +1211,22 @@ public class OllamaAPI {
                 }
                 String propName = !toolPropertyAnn.name().isBlank() ? toolPropertyAnn.name() : parameter.getName();
                 methodParams.put(propName, propType);
-                propsBuilder.withProperty(propName, Tools.PromptFuncDefinition.Property.builder().type(propType).description(toolPropertyAnn.desc()).required(toolPropertyAnn.required()).build());
+                propsBuilder.withProperty(propName, Tools.PromptFuncDefinition.Property.builder().type(propType)
+                        .description(toolPropertyAnn.desc()).required(toolPropertyAnn.required()).build());
             }
             final Map<String, Tools.PromptFuncDefinition.Property> params = propsBuilder.build();
-            List<String> reqProps = params.entrySet().stream().filter(e -> e.getValue().isRequired()).map(Map.Entry::getKey).collect(Collectors.toList());
+            List<String> reqProps = params.entrySet().stream().filter(e -> e.getValue().isRequired())
+                    .map(Map.Entry::getKey).collect(Collectors.toList());
 
-            Tools.ToolSpecification toolSpecification = Tools.ToolSpecification.builder().functionName(operationName).functionDescription(operationDesc).toolPrompt(Tools.PromptFuncDefinition.builder().type("function").function(Tools.PromptFuncDefinition.PromptFuncSpec.builder().name(operationName).description(operationDesc).parameters(Tools.PromptFuncDefinition.Parameters.builder().type("object").properties(params).required(reqProps).build()).build()).build()).build();
+            Tools.ToolSpecification toolSpecification = Tools.ToolSpecification.builder().functionName(operationName)
+                    .functionDescription(operationDesc)
+                    .toolPrompt(Tools.PromptFuncDefinition.builder().type("function")
+                            .function(Tools.PromptFuncDefinition.PromptFuncSpec.builder().name(operationName)
+                                    .description(operationDesc).parameters(Tools.PromptFuncDefinition.Parameters
+                                            .builder().type("object").properties(params).required(reqProps).build())
+                                    .build())
+                            .build())
+                    .build();
 
             ReflectionalToolFunction reflectionalToolFunction = new ReflectionalToolFunction(object, m, methodParams);
             toolSpecification.setToolFunction(reflectionalToolFunction);
@@ -1060,12 +1259,12 @@ public class OllamaAPI {
      *
      * @param roleName the name of the role to retrieve
      * @return the OllamaChatMessageRole associated with the given name
-     * @throws RoleNotFoundException if the role with the specified name does not exist
+     * @throws RoleNotFoundException if the role with the specified name does not
+     *                               exist
      */
     public OllamaChatMessageRole getRole(String roleName) throws RoleNotFoundException {
         return OllamaChatMessageRole.getRole(roleName);
     }
-
 
     // technical private methods //
 
@@ -1092,18 +1291,26 @@ public class OllamaAPI {
 
     /**
      * Generates a request for the Ollama API and returns the result.
-     * This method synchronously calls the Ollama API. If a stream handler is provided,
-     * the request will be streamed; otherwise, a regular synchronous request will be made.
+     * This method synchronously calls the Ollama API. If a stream handler is
+     * provided,
+     * the request will be streamed; otherwise, a regular synchronous request will
+     * be made.
      *
-     * @param ollamaRequestModel the request model containing necessary parameters for the Ollama API request.
-     * @param streamHandler      the stream handler to process streaming responses, or null for non-streaming requests.
+     * @param ollamaRequestModel the request model containing necessary parameters
+     *                           for the Ollama API request.
+     * @param streamHandler      the stream handler to process streaming responses,
+     *                           or null for non-streaming requests.
      * @return the result of the Ollama API request.
-     * @throws OllamaBaseException  if the request fails due to an issue with the Ollama API.
-     * @throws IOException          if an I/O error occurs during the request process.
+     * @throws OllamaBaseException  if the request fails due to an issue with the
+     *                              Ollama API.
+     * @throws IOException          if an I/O error occurs during the request
+     *                              process.
      * @throws InterruptedException if the thread is interrupted during the request.
      */
-    private OllamaResult generateSyncForOllamaRequestModel(OllamaGenerateRequest ollamaRequestModel, OllamaStreamHandler streamHandler) throws OllamaBaseException, IOException, InterruptedException {
-        OllamaGenerateEndpointCaller requestCaller = new OllamaGenerateEndpointCaller(host, auth, requestTimeoutSeconds, verbose);
+    private OllamaResult generateSyncForOllamaRequestModel(OllamaGenerateRequest ollamaRequestModel,
+                                                           OllamaStreamHandler streamHandler) throws OllamaBaseException, IOException, InterruptedException {
+        OllamaGenerateEndpointCaller requestCaller = new OllamaGenerateEndpointCaller(host, auth, requestTimeoutSeconds,
+                verbose);
         OllamaResult result;
         if (streamHandler != null) {
             ollamaRequestModel.setStream(true);
@@ -1114,7 +1321,6 @@ public class OllamaAPI {
         return result;
     }
 
-
     /**
      * Get default request builder.
      *
@@ -1122,7 +1328,8 @@ public class OllamaAPI {
      * @return HttpRequest.Builder
      */
     private HttpRequest.Builder getRequestBuilderDefault(URI uri) {
-        HttpRequest.Builder requestBuilder = HttpRequest.newBuilder(uri).header("Content-Type", "application/json").timeout(Duration.ofSeconds(requestTimeoutSeconds));
+        HttpRequest.Builder requestBuilder = HttpRequest.newBuilder(uri).header("Content-Type", "application/json")
+                .timeout(Duration.ofSeconds(requestTimeoutSeconds));
         if (isBasicAuthCredentialsSet()) {
             requestBuilder.header("Authorization", auth.getAuthHeaderValue());
         }
@@ -1147,7 +1354,8 @@ public class OllamaAPI {
                 logger.debug("Invoking function {} with arguments {}", methodName, arguments);
             }
             if (function == null) {
-                throw new ToolNotFoundException("No such tool: " + methodName + ". Please register the tool before invoking it.");
+                throw new ToolNotFoundException(
+                        "No such tool: " + methodName + ". Please register the tool before invoking it.");
             }
             return function.apply(arguments);
         } catch (Exception e) {
