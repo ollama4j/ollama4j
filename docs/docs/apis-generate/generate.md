@@ -13,7 +13,7 @@ with [extra parameters](https://github.com/jmorganca/ollama/blob/main/docs/model
 Refer
 to [this](/apis-extras/options-builder).
 
-## Try asking a question about the model.
+## Try asking a question about the model
 
 ```java
 import io.github.ollama4j.OllamaAPI;
@@ -87,7 +87,7 @@ You will get a response similar to:
 > The capital of France is Paris.
 > Full response: The capital of France is Paris.
 
-## Try asking a question from general topics.
+## Try asking a question from general topics
 
 ```java
 import io.github.ollama4j.OllamaAPI;
@@ -135,7 +135,7 @@ You'd then get a response from the model:
 > semi-finals. The tournament was
 > won by the England cricket team, who defeated New Zealand in the final.
 
-## Try asking for a Database query for your data schema.
+## Try asking for a Database query for your data schema
 
 ```java
 import io.github.ollama4j.OllamaAPI;
@@ -161,6 +161,7 @@ public class Main {
 
 ```
 
+
 _Note: Here I've used
 a [sample prompt](https://github.com/ollama4j/ollama4j/blob/main/src/main/resources/sample-db-prompt-template.txt)
 containing a database schema from within this library for demonstration purposes._
@@ -172,4 +173,123 @@ SELECT customers.name
 FROM sales
          JOIN customers ON sales.customer_id = customers.customer_id
 GROUP BY customers.name;
+```
+
+
+## Generate structured output
+
+### With response as a `Map`
+
+```java
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Map;
+
+import io.github.ollama4j.OllamaAPI;
+import io.github.ollama4j.utils.Utilities;
+import io.github.ollama4j.models.chat.OllamaChatMessageRole;
+import io.github.ollama4j.models.chat.OllamaChatRequest;
+import io.github.ollama4j.models.chat.OllamaChatRequestBuilder;
+import io.github.ollama4j.models.chat.OllamaChatResult;
+import io.github.ollama4j.models.response.OllamaResult;
+import io.github.ollama4j.types.OllamaModelType;
+
+public class StructuredOutput {
+
+    public static void main(String[] args) throws Exception {
+        String host = "http://localhost:11434/";
+
+        OllamaAPI api = new OllamaAPI(host);
+
+        String chatModel = "qwen2.5:0.5b";
+        api.pullModel(chatModel);
+
+        String prompt = "Ollama is 22 years old and is busy saving the world. Respond using JSON";
+        Map<String, Object> format = new HashMap<>();
+        format.put("type", "object");
+        format.put("properties", new HashMap<String, Object>() {
+            {
+                put("age", new HashMap<String, Object>() {
+                    {
+                        put("type", "integer");
+                    }
+                });
+                put("available", new HashMap<String, Object>() {
+                    {
+                        put("type", "boolean");
+                    }
+                });
+            }
+        });
+        format.put("required", Arrays.asList("age", "available"));
+
+        OllamaResult result = api.generate(chatModel, prompt, format);
+        System.out.println(result);
+    }
+}
+```
+
+### With response mapped to specified class type
+
+```java
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Map;
+
+import io.github.ollama4j.OllamaAPI;
+import io.github.ollama4j.utils.Utilities;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+import io.github.ollama4j.models.chat.OllamaChatMessageRole;
+import io.github.ollama4j.models.chat.OllamaChatRequest;
+import io.github.ollama4j.models.chat.OllamaChatRequestBuilder;
+import io.github.ollama4j.models.chat.OllamaChatResult;
+import io.github.ollama4j.models.response.OllamaResult;
+import io.github.ollama4j.types.OllamaModelType;
+
+public class StructuredOutput {
+
+    public static void main(String[] args) throws Exception {
+        String host = Utilities.getFromConfig("host");
+
+        OllamaAPI api = new OllamaAPI(host);
+
+        String chatModel = "llama3.1:8b";
+        chatModel = "qwen2.5:0.5b";
+        api.pullModel(chatModel);
+
+        String prompt = "Ollama is 22 years old and is busy saving the world. Respond using JSON";
+        Map<String, Object> format = new HashMap<>();
+        format.put("type", "object");
+        format.put("properties", new HashMap<String, Object>() {
+            {
+                put("age", new HashMap<String, Object>() {
+                    {
+                        put("type", "integer");
+                    }
+                });
+                put("available", new HashMap<String, Object>() {
+                    {
+                        put("type", "boolean");
+                    }
+                });
+            }
+        });
+        format.put("required", Arrays.asList("age", "available"));
+
+        OllamaResult result = api.generate(chatModel, prompt, format);
+        Person person = result.getStructuredResponse(Person.class);
+        System.out.println(person);
+    }
+
+}
+
+@Data
+@AllArgsConstructor
+@NoArgsConstructor
+class Person {
+    private int age;
+    private boolean available;
+}
 ```

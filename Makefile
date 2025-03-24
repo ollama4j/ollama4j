@@ -7,6 +7,9 @@ dev:
 	pre-commit install --install-hooks
 
 build:
+	mvn -B clean install -Dgpg.skip=true
+
+full-build:
 	mvn -B clean install
 
 unit-tests:

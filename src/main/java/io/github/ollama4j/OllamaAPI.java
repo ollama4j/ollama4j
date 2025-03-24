@@ -743,12 +743,12 @@ public class OllamaAPI {
      *               the response.
      * @param prompt The input text or prompt to provide to the AI model.
      * @param format A map containing the format specification for the structured output.
-     * @return An instance of {@link OllamaStructuredResult} containing the structured response.
+     * @return An instance of {@link OllamaResult} containing the structured response.
      * @throws OllamaBaseException  if the response indicates an error status.
      * @throws IOException          if an I/O error occurs during the HTTP request.
      * @throws InterruptedException if the operation is interrupted.
      */
-    public OllamaStructuredResult generate(String model, String prompt, Map<String, Object> format)
+    public OllamaResult generate(String model, String prompt, Map<String, Object> format)
             throws OllamaBaseException, IOException, InterruptedException {
         URI uri = URI.create(this.host + "/api/generate");
 
@@ -771,7 +771,7 @@ public class OllamaAPI {
         String responseBody = response.body();
 
         if (statusCode == 200) {
-            return Utils.getObjectMapper().readValue(responseBody, OllamaStructuredResult.class);
+            return Utils.getObjectMapper().readValue(responseBody, OllamaResult.class);
         } else {
             throw new OllamaBaseException(statusCode + " - " + responseBody);
         }
