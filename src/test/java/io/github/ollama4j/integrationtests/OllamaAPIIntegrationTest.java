@@ -4,7 +4,10 @@ import io.github.ollama4j.OllamaAPI;
 import io.github.ollama4j.exceptions.OllamaBaseException;
 import io.github.ollama4j.models.chat.*;
 import io.github.ollama4j.models.embeddings.OllamaEmbedResponseModel;
-import io.github.ollama4j.models.response.*;
+import io.github.ollama4j.models.response.LibraryModel;
+import io.github.ollama4j.models.response.Model;
+import io.github.ollama4j.models.response.ModelDetail;
+import io.github.ollama4j.models.response.OllamaResult;
 import io.github.ollama4j.samples.AnnotatedTool;
 import io.github.ollama4j.tools.OllamaToolCallsFunction;
 import io.github.ollama4j.tools.ToolFunction;
@@ -14,7 +17,6 @@ import io.github.ollama4j.utils.OptionsBuilder;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.MethodOrderer.OrderAnnotation;
 import org.junit.jupiter.api.Order;
@@ -24,15 +26,12 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.testcontainers.ollama.OllamaContainer;
 
-import com.fasterxml.jackson.core.type.TypeReference;
-
 import java.io.File;
 import java.io.IOException;
 import java.net.ConnectException;
 import java.net.URISyntaxException;
 import java.util.*;
 
-import static io.github.ollama4j.utils.Utils.getObjectMapper;
 import static org.junit.jupiter.api.Assertions.*;
 
 @OllamaToolService(providers = { AnnotatedTool.class })
