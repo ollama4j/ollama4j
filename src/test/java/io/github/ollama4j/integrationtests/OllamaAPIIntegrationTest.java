@@ -35,28 +35,46 @@ import java.util.*;
 import static io.github.ollama4j.utils.Utils.getObjectMapper;
 import static org.junit.jupiter.api.Assertions.*;
 
-@OllamaToolService(providers = { AnnotatedTool.class })
+@OllamaToolService(providers = {AnnotatedTool.class})
 @TestMethodOrder(OrderAnnotation.class)
 
-@SuppressWarnings("HttpUrlsUsage")
+@SuppressWarnings({"HttpUrlsUsage", "SpellCheckingInspection"})
 public class OllamaAPIIntegrationTest {
     private static final Logger LOG = LoggerFactory.getLogger(OllamaAPIIntegrationTest.class);
 
     private static OllamaContainer ollama;
     private static OllamaAPI api;
 
+    private static final String EMBEDDING_MODEL_MINILM = "all-minilm";
+    private static final String CHAT_MODEL_DEFAULT = "qwen2.5:0.5b";
+    private static final String CHAT_MODEL_INSTRUCT = "qwen2.5:0.5b-instruct";
+    private static final String CHAT_MODEL_SYSTEM_PROMPT = "llama3.2:1b";
+    private static final String CHAT_MODEL_LLAMA3 = "llama3";
+    private static final String IMAGE_MODEL_LLAVA = "llava";
+    private static final String IMAGE_MODEL_MOONDREAM = "moondream";
+
     @BeforeAll
     public static void setUp() {
-        String ollamaVersion = "0.6.1";
-        int internalPort = 11434;
-        int mappedPort = 11435;
-        ollama = new OllamaContainer("ollama/ollama:" + ollamaVersion);
-        ollama.addExposedPort(internalPort);
-        List<String> portBindings = new ArrayList<>();
-        portBindings.add(mappedPort + ":" + internalPort);
-        ollama.setPortBindings(portBindings);
-        ollama.start();
-        api = new OllamaAPI("http://" + ollama.getHost() + ":" + ollama.getMappedPort(internalPort));
+        try {
+            boolean useExternalOllamaHost = Boolean.parseBoolean(System.getenv("USE_EXTERNAL_OLLAMA_HOST"));
+            String ollamaHost = System.getenv("OLLAMA_HOST");
+            if (useExternalOllamaHost) {
+                api = new OllamaAPI(ollamaHost);
+            } else {
+                throw new RuntimeException("USE_EXTERNAL_OLLAMA_HOST is not set so, we will be using Testcontainers Ollama host for the tests now. If you would like to use an external host, please set the env var to USE_EXTERNAL_OLLAMA_HOST=true and set the env var OLLAMA_HOST=http://localhost:11435 or a different host/port.");
+            }
+        } catch (Exception e) {
+                String ollamaVersion = "0.6.1";
+                int internalPort = 11434;
+                int mappedPort = 11435;
+                ollama = new OllamaContainer("ollama/ollama:" + ollamaVersion);
+                ollama.addExposedPort(internalPort);
+                List<String> portBindings = new ArrayList<>();
+                portBindings.add(mappedPort + ":" + internalPort);
+                ollama.setPortBindings(portBindings);
+                ollama.start();
+                api = new OllamaAPI("http://" + ollama.getHost() + ":" + ollama.getMappedPort(internalPort));
+        }
         api.setRequestTimeoutSeconds(120);
         api.setVerbose(true);
     }
@@ -71,20 +89,22 @@ public class OllamaAPIIntegrationTest {
     @Test
     @Order(1)
     public void testVersionAPI() throws URISyntaxException, IOException, OllamaBaseException, InterruptedException {
-        String expectedVersion = ollama.getDockerImageName().split(":")[1];
+        // String expectedVersion = ollama.getDockerImageName().split(":")[1];
         String actualVersion = api.getVersion();
-        assertEquals(expectedVersion, actualVersion, "Version should match the Docker image version");
+        assertNotNull(actualVersion);
+        // assertEquals(expectedVersion, actualVersion, "Version should match the Docker image version");
     }
 
     @Test
     @Order(2)
     public void testListModelsAPI() throws URISyntaxException, IOException, OllamaBaseException, InterruptedException {
+        api.pullModel(EMBEDDING_MODEL_MINILM);
         // Fetch the list of models
         List<Model> models = api.listModels();
         // Assert that the models list is not null
         assertNotNull(models, "Models should not be null");
         // Assert that models list is either empty or contains more than 0 models
-        assertTrue(models.size() >= 0, "Models list should be empty or contain elements");
+        assertFalse(models.isEmpty(), "Models list should not be empty");
     }
 
     @Test
@@ -98,8 +118,7 @@ public class OllamaAPIIntegrationTest {
     @Test
     @Order(3)
     public void testPullModelAPI() throws URISyntaxException, IOException, OllamaBaseException, InterruptedException {
-        String embeddingModelMinilm = "all-minilm";
-        api.pullModel(embeddingModelMinilm);
+        api.pullModel(EMBEDDING_MODEL_MINILM);
         List<Model> models = api.listModels();
         assertNotNull(models, "Models should not be null");
         assertFalse(models.isEmpty(), "Models list should contain elements");
@@ -108,19 +127,17 @@ public class OllamaAPIIntegrationTest {
     @Test
     @Order(4)
     void testListModelDetails() throws IOException, OllamaBaseException, URISyntaxException, InterruptedException {
-        String embeddingModelMinilm = "all-minilm";
-        api.pullModel(embeddingModelMinilm);
-        ModelDetail modelDetails = api.getModelDetails("all-minilm");
+        api.pullModel(EMBEDDING_MODEL_MINILM);
+        ModelDetail modelDetails = api.getModelDetails(EMBEDDING_MODEL_MINILM);
         assertNotNull(modelDetails);
-        assertTrue(modelDetails.getModelFile().contains(embeddingModelMinilm));
+        assertTrue(modelDetails.getModelFile().contains(EMBEDDING_MODEL_MINILM));
     }
 
     @Test
     @Order(5)
     public void testEmbeddings() throws Exception {
-        String embeddingModelMinilm = "all-minilm";
-        api.pullModel(embeddingModelMinilm);
-        OllamaEmbedResponseModel embeddings = api.embed(embeddingModelMinilm,
+        api.pullModel(EMBEDDING_MODEL_MINILM);
+        OllamaEmbedResponseModel embeddings = api.embed(EMBEDDING_MODEL_MINILM,
                 Arrays.asList("Why is the sky blue?", "Why is the grass green?"));
         assertNotNull(embeddings, "Embeddings should not be null");
         assertFalse(embeddings.getEmbeddings().isEmpty(), "Embeddings should not be empty");
@@ -130,9 +147,8 @@ public class OllamaAPIIntegrationTest {
     @Order(6)
     void testAskModelWithDefaultOptions()
             throws OllamaBaseException, IOException, InterruptedException, URISyntaxException {
-        String chatModel = "qwen2.5:0.5b";
-        api.pullModel(chatModel);
-        OllamaResult result = api.generate(chatModel,
+        api.pullModel(CHAT_MODEL_DEFAULT);
+        OllamaResult result = api.generate(CHAT_MODEL_DEFAULT,
                 "What is the capital of France? And what's France's connection with Mona Lisa?", false,
                 new OptionsBuilder().build());
         assertNotNull(result);
@@ -144,9 +160,7 @@ public class OllamaAPIIntegrationTest {
     @Order(6)
     void testAskModelWithStructuredOutput()
             throws OllamaBaseException, IOException, InterruptedException, URISyntaxException {
-        String chatModel = "llama3.1:8b";
-        chatModel = "qwen2.5:0.5b";
-        api.pullModel(chatModel);
+        api.pullModel(CHAT_MODEL_DEFAULT);
 
         String prompt = "Ollama is 22 years old and is busy saving the world. Respond using JSON";
         Map<String, Object> format = new HashMap<>();
@@ -167,7 +181,7 @@ public class OllamaAPIIntegrationTest {
         });
         format.put("required", Arrays.asList("age", "available"));
 
-        OllamaResult result = api.generate(chatModel, prompt, format);
+        OllamaResult result = api.generate(CHAT_MODEL_DEFAULT, prompt, format);
 
         assertNotNull(result);
         assertNotNull(result.getResponse());
@@ -200,10 +214,9 @@ public class OllamaAPIIntegrationTest {
     @Order(7)
     void testAskModelWithDefaultOptionsStreamed()
             throws OllamaBaseException, IOException, URISyntaxException, InterruptedException {
-        String chatModel = "qwen2.5:0.5b";
-        api.pullModel(chatModel);
+        api.pullModel(CHAT_MODEL_DEFAULT);
         StringBuffer sb = new StringBuffer();
-        OllamaResult result = api.generate(chatModel,
+        OllamaResult result = api.generate(CHAT_MODEL_DEFAULT,
                 "What is the capital of France? And what's France's connection with Mona Lisa?", false,
                 new OptionsBuilder().build(), (s) -> {
                     LOG.info(s);
@@ -221,12 +234,11 @@ public class OllamaAPIIntegrationTest {
     @Test
     @Order(8)
     void testAskModelWithOptions() throws OllamaBaseException, IOException, URISyntaxException, InterruptedException {
-        String chatModel = "qwen2.5:0.5b-instruct";
-        api.pullModel(chatModel);
+        api.pullModel(CHAT_MODEL_INSTRUCT);
 
-        OllamaChatRequestBuilder builder = OllamaChatRequestBuilder.getInstance(chatModel);
+        OllamaChatRequestBuilder builder = OllamaChatRequestBuilder.getInstance(CHAT_MODEL_INSTRUCT);
         OllamaChatRequest requestModel = builder.withMessage(OllamaChatMessageRole.SYSTEM,
-                "You are a helpful assistant who can generate random person's first and last names in the format [First name, Last name].")
+                        "You are a helpful assistant who can generate random person's first and last names in the format [First name, Last name].")
                 .build();
         requestModel = builder.withMessages(requestModel.getMessages())
                 .withMessage(OllamaChatMessageRole.USER, "Give me a cool name")
@@ -241,11 +253,10 @@ public class OllamaAPIIntegrationTest {
     @Test
     @Order(9)
     void testChatWithSystemPrompt() throws OllamaBaseException, IOException, URISyntaxException, InterruptedException {
-        String chatModel = "llama3.2:1b";
-        api.pullModel(chatModel);
-        OllamaChatRequestBuilder builder = OllamaChatRequestBuilder.getInstance(chatModel);
+        api.pullModel(CHAT_MODEL_SYSTEM_PROMPT);
+        OllamaChatRequestBuilder builder = OllamaChatRequestBuilder.getInstance(CHAT_MODEL_SYSTEM_PROMPT);
         OllamaChatRequest requestModel = builder.withMessage(OllamaChatMessageRole.SYSTEM,
-                "You are a silent bot that only says 'Shush'. Do not say anything else under any circumstances!")
+                        "You are a silent bot that only says 'Shush'. Do not say anything else under any circumstances!")
                 .withMessage(OllamaChatMessageRole.USER, "What's something that's brown and sticky?")
                 .withOptions(new OptionsBuilder().setTemperature(0.8f).build()).build();
 
@@ -261,9 +272,8 @@ public class OllamaAPIIntegrationTest {
     @Test
     @Order(10)
     public void testChat() throws Exception {
-        String chatModel = "llama3";
-        api.pullModel(chatModel);
-        OllamaChatRequestBuilder builder = OllamaChatRequestBuilder.getInstance(chatModel);
+        api.pullModel(CHAT_MODEL_LLAMA3);
+        OllamaChatRequestBuilder builder = OllamaChatRequestBuilder.getInstance(CHAT_MODEL_LLAMA3);
 
         // Create the initial user question
         OllamaChatRequest requestModel = builder
@@ -302,10 +312,9 @@ public class OllamaAPIIntegrationTest {
     @Test
     @Order(10)
     void testChatWithImageFromURL() throws OllamaBaseException, IOException, InterruptedException, URISyntaxException {
-        String imageModel = "llava";
-        api.pullModel(imageModel);
+        api.pullModel(IMAGE_MODEL_LLAVA);
 
-        OllamaChatRequestBuilder builder = OllamaChatRequestBuilder.getInstance(imageModel);
+        OllamaChatRequestBuilder builder = OllamaChatRequestBuilder.getInstance(IMAGE_MODEL_LLAVA);
         OllamaChatRequest requestModel = builder
                 .withMessage(OllamaChatMessageRole.USER, "What's in the picture?", Collections.emptyList(),
                         "https://t3.ftcdn.net/jpg/02/96/63/80/360_F_296638053_0gUVA4WVBKceGsIr7LNqRWSnkusi07dq.jpg")
@@ -320,9 +329,8 @@ public class OllamaAPIIntegrationTest {
     @Order(10)
     void testChatWithImageFromFileWithHistoryRecognition()
             throws OllamaBaseException, IOException, URISyntaxException, InterruptedException {
-        String imageModel = "moondream";
-        api.pullModel(imageModel);
-        OllamaChatRequestBuilder builder = OllamaChatRequestBuilder.getInstance(imageModel);
+        api.pullModel(IMAGE_MODEL_MOONDREAM);
+        OllamaChatRequestBuilder builder = OllamaChatRequestBuilder.getInstance(IMAGE_MODEL_MOONDREAM);
         OllamaChatRequest requestModel = builder.withMessage(OllamaChatMessageRole.USER, "What's in the picture?",
                 Collections.emptyList(), List.of(getImageFileFromClasspath("dog-on-a-boat.jpg"))).build();
 
@@ -343,9 +351,8 @@ public class OllamaAPIIntegrationTest {
     @Order(11)
     void testChatWithExplicitToolDefinition()
             throws OllamaBaseException, IOException, URISyntaxException, InterruptedException {
-        String chatModel = "llama3.2:1b";
-        api.pullModel(chatModel);
-        OllamaChatRequestBuilder builder = OllamaChatRequestBuilder.getInstance(chatModel);
+        api.pullModel(CHAT_MODEL_SYSTEM_PROMPT);
+        OllamaChatRequestBuilder builder = OllamaChatRequestBuilder.getInstance(CHAT_MODEL_SYSTEM_PROMPT);
 
         final Tools.ToolSpecification databaseQueryToolSpecification = Tools.ToolSpecification.builder()
                 .functionName("get-employee-details").functionDescription("Get employee details from the database")
@@ -407,10 +414,8 @@ public class OllamaAPIIntegrationTest {
     @Order(12)
     void testChatWithAnnotatedToolsAndSingleParam()
             throws OllamaBaseException, IOException, InterruptedException, URISyntaxException {
-        String chatModel = "llama3.2:1b";
-        api.pullModel(chatModel);
-
-        OllamaChatRequestBuilder builder = OllamaChatRequestBuilder.getInstance(chatModel);
+        api.pullModel(CHAT_MODEL_SYSTEM_PROMPT);
+        OllamaChatRequestBuilder builder = OllamaChatRequestBuilder.getInstance(CHAT_MODEL_SYSTEM_PROMPT);
 
         api.registerAnnotatedTools();
 
@@ -440,9 +445,8 @@ public class OllamaAPIIntegrationTest {
     @Order(13)
     void testChatWithAnnotatedToolsAndMultipleParams()
             throws OllamaBaseException, IOException, URISyntaxException, InterruptedException {
-        String chatModel = "llama3.2:1b";
-        api.pullModel(chatModel);
-        OllamaChatRequestBuilder builder = OllamaChatRequestBuilder.getInstance(chatModel);
+        api.pullModel(CHAT_MODEL_SYSTEM_PROMPT);
+        OllamaChatRequestBuilder builder = OllamaChatRequestBuilder.getInstance(CHAT_MODEL_SYSTEM_PROMPT);
 
         api.registerAnnotatedTools(new AnnotatedTool());
 
@@ -477,9 +481,8 @@ public class OllamaAPIIntegrationTest {
     @Order(14)
     void testChatWithToolsAndStream()
             throws OllamaBaseException, IOException, URISyntaxException, InterruptedException {
-        String chatModel = "llama3.2:1b";
-        api.pullModel(chatModel);
-        OllamaChatRequestBuilder builder = OllamaChatRequestBuilder.getInstance(chatModel);
+        api.pullModel(CHAT_MODEL_SYSTEM_PROMPT);
+        OllamaChatRequestBuilder builder = OllamaChatRequestBuilder.getInstance(CHAT_MODEL_SYSTEM_PROMPT);
         final Tools.ToolSpecification databaseQueryToolSpecification = Tools.ToolSpecification.builder()
                 .functionName("get-employee-details").functionDescription("Get employee details from the database")
                 .toolPrompt(Tools.PromptFuncDefinition.builder().type("function")
@@ -538,9 +541,8 @@ public class OllamaAPIIntegrationTest {
     @Test
     @Order(15)
     void testChatWithStream() throws OllamaBaseException, IOException, URISyntaxException, InterruptedException {
-        String chatModel = "llama3.2:1b";
-        api.pullModel(chatModel);
-        OllamaChatRequestBuilder builder = OllamaChatRequestBuilder.getInstance(chatModel);
+        api.pullModel(CHAT_MODEL_SYSTEM_PROMPT);
+        OllamaChatRequestBuilder builder = OllamaChatRequestBuilder.getInstance(CHAT_MODEL_SYSTEM_PROMPT);
         OllamaChatRequest requestModel = builder.withMessage(OllamaChatMessageRole.USER,
                 "What is the capital of France? And what's France's connection with Mona Lisa?").build();
 
@@ -563,10 +565,9 @@ public class OllamaAPIIntegrationTest {
     @Order(17)
     void testAskModelWithOptionsAndImageURLs()
             throws OllamaBaseException, IOException, URISyntaxException, InterruptedException {
-        String imageModel = "llava";
-        api.pullModel(imageModel);
+        api.pullModel(IMAGE_MODEL_LLAVA);
 
-        OllamaResult result = api.generateWithImageURLs(imageModel, "What is in this image?",
+        OllamaResult result = api.generateWithImageURLs(IMAGE_MODEL_LLAVA, "What is in this image?",
                 List.of("https://t3.ftcdn.net/jpg/02/96/63/80/360_F_296638053_0gUVA4WVBKceGsIr7LNqRWSnkusi07dq.jpg"),
                 new OptionsBuilder().build());
         assertNotNull(result);
@@ -578,11 +579,10 @@ public class OllamaAPIIntegrationTest {
     @Order(18)
     void testAskModelWithOptionsAndImageFiles()
             throws OllamaBaseException, IOException, URISyntaxException, InterruptedException {
-        String imageModel = "llava";
-        api.pullModel(imageModel);
+        api.pullModel(IMAGE_MODEL_LLAVA);
         File imageFile = getImageFileFromClasspath("dog-on-a-boat.jpg");
         try {
-            OllamaResult result = api.generateWithImageFiles(imageModel, "What is in this image?", List.of(imageFile),
+            OllamaResult result = api.generateWithImageFiles(IMAGE_MODEL_LLAVA, "What is in this image?", List.of(imageFile),
                     new OptionsBuilder().build());
             assertNotNull(result);
             assertNotNull(result.getResponse());
@@ -596,14 +596,13 @@ public class OllamaAPIIntegrationTest {
     @Order(20)
     void testAskModelWithOptionsAndImageFilesStreamed()
             throws OllamaBaseException, IOException, URISyntaxException, InterruptedException {
-        String imageModel = "llava";
-        api.pullModel(imageModel);
+        api.pullModel(IMAGE_MODEL_LLAVA);
 
         File imageFile = getImageFileFromClasspath("dog-on-a-boat.jpg");
 
         StringBuffer sb = new StringBuffer();
 
-        OllamaResult result = api.generateWithImageFiles(imageModel, "What is in this image?", List.of(imageFile),
+        OllamaResult result = api.generateWithImageFiles(IMAGE_MODEL_LLAVA, "What is in this image?", List.of(imageFile),
                 new OptionsBuilder().build(), (s) -> {
                     LOG.info(s);
                     String substring = s.substring(sb.toString().length(), s.length());

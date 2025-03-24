@@ -16,7 +16,10 @@ unit-tests:
 	mvn clean test -Punit-tests
 
 integration-tests:
-	mvn clean verify -Pintegration-tests
+	export USE_EXTERNAL_OLLAMA_HOST=false && mvn clean verify -Pintegration-tests
+
+integration-tests-local:
+	export USE_EXTERNAL_OLLAMA_HOST=true && export OLLAMA_HOST=http://localhost:11434 && mvn clean verify -Pintegration-tests -Dgpg.skip=true
 
 doxygen:
 	doxygen Doxyfile
