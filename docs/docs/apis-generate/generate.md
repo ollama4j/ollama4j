@@ -255,11 +255,12 @@ public class StructuredOutput {
 
         OllamaAPI api = new OllamaAPI(host);
 
-        String chatModel = "llama3.1:8b";
-        chatModel = "qwen2.5:0.5b";
-        api.pullModel(chatModel);
+        int age = 28;
+        boolean available = false;
 
-        String prompt = "Ollama is 22 years old and is busy saving the world. Respond using JSON";
+        String prompt = "Batman is " + age + " years old and is " + (available ? "available" : "not available")
+                + " because he is busy saving Gotham City. Respond using JSON";
+
         Map<String, Object> format = new HashMap<>();
         format.put("type", "object");
         format.put("properties", new HashMap<String, Object>() {
@@ -278,11 +279,12 @@ public class StructuredOutput {
         });
         format.put("required", Arrays.asList("age", "available"));
 
-        OllamaResult result = api.generate(chatModel, prompt, format);
-        Person person = result.getStructuredResponse(Person.class);
-        System.out.println(person);
-    }
+        OllamaResult result = api.generate(CHAT_MODEL_QWEN_SMALL, prompt, format);
 
+        Person person = result.as(Person.class);
+        System.out.println(person.getAge());
+        System.out.println(person.getAvailable());
+    }
 }
 
 @Data

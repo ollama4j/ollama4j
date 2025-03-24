@@ -183,8 +183,6 @@ public class OllamaAPIIntegrationTest {
                 assertNotNull(result.getResponse());
                 assertFalse(result.getResponse().isEmpty());
 
-                System.out.println(result);
-
                 assertEquals(result.getStructuredResponse().get("age").toString(),
                                 result.getStructuredResponse().get("age").toString());
                 assertEquals(result.getStructuredResponse().get("available").toString(),
