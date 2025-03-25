@@ -58,6 +58,7 @@ public class OllamaAPIIntegrationTest {
             boolean useExternalOllamaHost = Boolean.parseBoolean(System.getenv("USE_EXTERNAL_OLLAMA_HOST"));
             String ollamaHost = System.getenv("OLLAMA_HOST");
             if (useExternalOllamaHost) {
+                LOG.info("Using external Ollama host...");
                 api = new OllamaAPI(ollamaHost);
             } else {
                 throw new RuntimeException(
@@ -73,6 +74,7 @@ public class OllamaAPIIntegrationTest {
             portBindings.add(mappedPort + ":" + internalPort);
             ollama.setPortBindings(portBindings);
             ollama.start();
+            LOG.info("Using Testcontainer Ollama host...");
             api = new OllamaAPI("http://" + ollama.getHost() + ":" + ollama.getMappedPort(internalPort));
         }
         api.setRequestTimeoutSeconds(120);
@@ -152,12 +154,12 @@ public class OllamaAPIIntegrationTest {
     @Order(6)
     void testAskModelWithStructuredOutput()
             throws OllamaBaseException, IOException, InterruptedException, URISyntaxException {
-        api.pullModel(CHAT_MODEL_QWEN_SMALL);
+        api.pullModel(CHAT_MODEL_LLAMA3);
 
         int timeHour = 6;
         boolean isNightTime = false;
 
-        String prompt = "The Sun is shining, and its " + timeHour + " in the morning right now. So, its daytime.";
+        String prompt = "The Sun is shining, and its " + timeHour + ". Its daytime.";
 
         Map<String, Object> format = new HashMap<>();
         format.put("type", "object");
@@ -177,22 +179,21 @@ public class OllamaAPIIntegrationTest {
         });
         format.put("required", Arrays.asList("timeHour", "isNightTime"));
 
-        OllamaResult result = api.generate(CHAT_MODEL_QWEN_SMALL, prompt, format);
+        OllamaResult result = api.generate(CHAT_MODEL_LLAMA3, prompt, format);
 
         assertNotNull(result);
         assertNotNull(result.getResponse());
         assertFalse(result.getResponse().isEmpty());
 
-        assertEquals(result.getStructuredResponse().get("timeHour").toString(),
-                result.getStructuredResponse().get("timeHour").toString());
-        assertEquals(result.getStructuredResponse().get("isNightTime").toString(),
-                result.getStructuredResponse().get("isNightTime").toString());
+        assertEquals(timeHour,
+                result.getStructuredResponse().get("timeHour"));
+        assertEquals(isNightTime,
+                result.getStructuredResponse().get("isNightTime"));
 
-        System.out.println(result.getResponse());
         TimeOfDay timeOfDay = result.as(TimeOfDay.class);
 
-        assertEquals(timeOfDay.getTimeHour(), timeHour);
-        assertEquals(timeOfDay.isNightTime(), isNightTime);
+        assertEquals(timeHour, timeOfDay.getTimeHour());
+        assertEquals(isNightTime, timeOfDay.isNightTime());
     }
 
     @Test
