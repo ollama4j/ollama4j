@@ -1013,6 +1013,44 @@ public class OllamaAPI {
     }
 
     /**
+     * Synchronously generates a response using a list of image byte arrays.
+     * <p>
+     * This method encodes the provided byte arrays into Base64 and sends them to the Ollama server.
+     *
+     * @param model         the Ollama model to use for generating the response
+     * @param prompt        the prompt or question text to send to the model
+     * @param images        the list of image data as byte arrays
+     * @param options       the Options object - <a href="https://github.com/jmorganca/ollama/blob/main/docs/modelfile.md#valid-parameters-and-values">More details on the options</a>
+     * @param streamHandler optional callback that will be invoked with each streamed response; if null, streaming is disabled
+     * @return OllamaResult containing the response text and the time taken for the response
+     * @throws OllamaBaseException  if the response indicates an error status
+     * @throws IOException          if an I/O error occurs during the HTTP request
+     * @throws InterruptedException if the operation is interrupted
+     */
+    public OllamaResult generateWithImages(String model, String prompt, List<byte[]> images, Options options, OllamaStreamHandler streamHandler) throws OllamaBaseException, IOException, InterruptedException {
+        List<String> encodedImages = new ArrayList<>();
+        for (byte[] image : images) {
+            encodedImages.add(encodeByteArrayToBase64(image));
+        }
+        OllamaGenerateRequest ollamaRequestModel = new OllamaGenerateRequest(model, prompt, encodedImages);
+        ollamaRequestModel.setOptions(options.getOptionsMap());
+        return generateSyncForOllamaRequestModel(ollamaRequestModel, streamHandler);
+    }
+
+    /**
+     * Convenience method to call the Ollama API using image byte arrays without streaming responses.
+     * <p>
+     * Uses {@link #generateWithImages(String, String, List, Options, OllamaStreamHandler)}
+     *
+     * @throws OllamaBaseException  if the response indicates an error status
+     * @throws IOException          if an I/O error occurs during the HTTP request
+     * @throws InterruptedException if the operation is interrupted
+     */
+    public OllamaResult generateWithImages(String model, String prompt, List<byte[]> images, Options options) throws OllamaBaseException, IOException, InterruptedException {
+        return generateWithImages(model, prompt, images, options, null);
+    }
+
+    /**
      * Ask a question to a model based on a given message stack (i.e. a chat
      * history). Creates a synchronous call to the api
      * 'api/chat'.
