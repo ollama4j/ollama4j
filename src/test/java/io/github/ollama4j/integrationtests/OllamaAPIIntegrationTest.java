@@ -58,6 +58,7 @@ public class OllamaAPIIntegrationTest {
             boolean useExternalOllamaHost = Boolean.parseBoolean(System.getenv("USE_EXTERNAL_OLLAMA_HOST"));
             String ollamaHost = System.getenv("OLLAMA_HOST");
             if (useExternalOllamaHost) {
+                LOG.info("Using external Ollama host...");
                 api = new OllamaAPI(ollamaHost);
             } else {
                 throw new RuntimeException(
@@ -73,6 +74,7 @@ public class OllamaAPIIntegrationTest {
             portBindings.add(mappedPort + ":" + internalPort);
             ollama.setPortBindings(portBindings);
             ollama.start();
+            LOG.info("Using Testcontainer Ollama host...");
             api = new OllamaAPI("http://" + ollama.getHost() + ":" + ollama.getMappedPort(internalPort));
         }
         api.setRequestTimeoutSeconds(120);
@@ -152,12 +154,12 @@ public class OllamaAPIIntegrationTest {
     @Order(6)
     void testAskModelWithStructuredOutput()
             throws OllamaBaseException, IOException, InterruptedException, URISyntaxException {
-        api.pullModel(CHAT_MODEL_QWEN_SMALL);
+        api.pullModel(CHAT_MODEL_LLAMA3);
 
         int timeHour = 6;
         boolean isNightTime = false;
 
-        String prompt = "The Sun is shining, and its " + timeHour + " in the morning right now. So, its daytime.";
+        String prompt = "The Sun is shining, and its " + timeHour + ". Its daytime.";
 
         Map<String, Object> format = new HashMap<>();
         format.put("type", "object");
@@ -177,22 +179,21 @@ public class OllamaAPIIntegrationTest {
         });
         format.put("required", Arrays.asList("timeHour", "isNightTime"));
 
-        OllamaResult result = api.generate(CHAT_MODEL_QWEN_SMALL, prompt, format);
+        OllamaResult result = api.generate(CHAT_MODEL_LLAMA3, prompt, format);
 
         assertNotNull(result);
         assertNotNull(result.getResponse());
         assertFalse(result.getResponse().isEmpty());
 
-        assertEquals(result.getStructuredResponse().get("timeHour").toString(),
-                result.getStructuredResponse().get("timeHour").toString());
-        assertEquals(result.getStructuredResponse().get("isNightTime").toString(),
-                result.getStructuredResponse().get("isNightTime").toString());
+        assertEquals(timeHour,
+                result.getStructuredResponse().get("timeHour"));
+        assertEquals(isNightTime,
+                result.getStructuredResponse().get("isNightTime"));
 
-        System.out.println(result.getResponse());
         TimeOfDay timeOfDay = result.as(TimeOfDay.class);
 
-        assertEquals(timeOfDay.getTimeHour(), timeHour);
-        assertEquals(timeOfDay.isNightTime(), isNightTime);
+        assertEquals(timeHour, timeOfDay.getTimeHour());
+        assertEquals(isNightTime, timeOfDay.isNightTime());
     }
 
     @Test
@@ -340,7 +341,7 @@ public class OllamaAPIIntegrationTest {
         OllamaChatRequestBuilder builder = OllamaChatRequestBuilder.getInstance(IMAGE_MODEL_LLAVA);
         OllamaChatRequest requestModel = builder.withMessage(OllamaChatMessageRole.USER,
                         "What's in the picture?",
-                        Collections.emptyList(), List.of(getImageFileFromClasspath("dog-on-a-boat.jpg")))
+                        Collections.emptyList(), List.of(getImageFileFromClasspath("emoji-smile.jpeg")))
                 .build();
 
         OllamaChatResult chatResult = api.chat(requestModel);
@@ -349,7 +350,7 @@ public class OllamaAPIIntegrationTest {
         builder.reset();
 
         requestModel = builder.withMessages(chatResult.getChatHistory())
-                .withMessage(OllamaChatMessageRole.USER, "What's the dogs breed?").build();
+                .withMessage(OllamaChatMessageRole.USER, "What's the color?").build();
 
         chatResult = api.chat(requestModel);
         assertNotNull(chatResult);
@@ -608,12 +609,12 @@ public class OllamaAPIIntegrationTest {
 
     @Test
     @Order(17)
-    void testAskModelWithOptionsAndImageURLs()
+    void    testAskModelWithOptionsAndImageURLs()
             throws OllamaBaseException, IOException, URISyntaxException, InterruptedException {
         api.pullModel(IMAGE_MODEL_LLAVA);
 
         OllamaResult result = api.generateWithImageURLs(IMAGE_MODEL_LLAVA, "What is in this image?",
-                List.of("https://t3.ftcdn.net/jpg/02/96/63/80/360_F_296638053_0gUVA4WVBKceGsIr7LNqRWSnkusi07dq.jpg"),
+                List.of("https://upload.wikimedia.org/wikipedia/commons/thumb/a/aa/Noto_Emoji_v2.034_1f642.svg/360px-Noto_Emoji_v2.034_1f642.svg.png"),
                 new OptionsBuilder().build());
         assertNotNull(result);
         assertNotNull(result.getResponse());
@@ -625,7 +626,7 @@ public class OllamaAPIIntegrationTest {
     void testAskModelWithOptionsAndImageFiles()
             throws OllamaBaseException, IOException, URISyntaxException, InterruptedException {
         api.pullModel(IMAGE_MODEL_LLAVA);
-        File imageFile = getImageFileFromClasspath("dog-on-a-boat.jpg");
+        File imageFile = getImageFileFromClasspath("emoji-smile.jpeg");
         try {
             OllamaResult result = api.generateWithImageFiles(IMAGE_MODEL_LLAVA, "What is in this image?",
                     List.of(imageFile),
@@ -644,7 +645,7 @@ public class OllamaAPIIntegrationTest {
             throws OllamaBaseException, IOException, URISyntaxException, InterruptedException {
         api.pullModel(IMAGE_MODEL_LLAVA);
 
-        File imageFile = getImageFileFromClasspath("dog-on-a-boat.jpg");
+        File imageFile = getImageFileFromClasspath("emoji-smile.jpeg");
 
         StringBuffer sb = new StringBuffer();
 
