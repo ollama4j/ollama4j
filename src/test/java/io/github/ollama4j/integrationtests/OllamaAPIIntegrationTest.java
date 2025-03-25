@@ -341,7 +341,7 @@ public class OllamaAPIIntegrationTest {
         OllamaChatRequestBuilder builder = OllamaChatRequestBuilder.getInstance(IMAGE_MODEL_LLAVA);
         OllamaChatRequest requestModel = builder.withMessage(OllamaChatMessageRole.USER,
                         "What's in the picture?",
-                        Collections.emptyList(), List.of(getImageFileFromClasspath("dog-on-a-boat.jpg")))
+                        Collections.emptyList(), List.of(getImageFileFromClasspath("emoji-smile.jpeg")))
                 .build();
 
         OllamaChatResult chatResult = api.chat(requestModel);
@@ -609,12 +609,12 @@ public class OllamaAPIIntegrationTest {
 
     @Test
     @Order(17)
-    void testAskModelWithOptionsAndImageURLs()
+    void    testAskModelWithOptionsAndImageURLs()
             throws OllamaBaseException, IOException, URISyntaxException, InterruptedException {
         api.pullModel(IMAGE_MODEL_LLAVA);
 
         OllamaResult result = api.generateWithImageURLs(IMAGE_MODEL_LLAVA, "What is in this image?",
-                List.of("https://t3.ftcdn.net/jpg/02/96/63/80/360_F_296638053_0gUVA4WVBKceGsIr7LNqRWSnkusi07dq.jpg"),
+                List.of("https://upload.wikimedia.org/wikipedia/commons/thumb/a/aa/Noto_Emoji_v2.034_1f642.svg/360px-Noto_Emoji_v2.034_1f642.svg.png"),
                 new OptionsBuilder().build());
         assertNotNull(result);
         assertNotNull(result.getResponse());
@@ -626,7 +626,7 @@ public class OllamaAPIIntegrationTest {
     void testAskModelWithOptionsAndImageFiles()
             throws OllamaBaseException, IOException, URISyntaxException, InterruptedException {
         api.pullModel(IMAGE_MODEL_LLAVA);
-        File imageFile = getImageFileFromClasspath("dog-on-a-boat.jpg");
+        File imageFile = getImageFileFromClasspath("emoji-smile.jpeg");
         try {
             OllamaResult result = api.generateWithImageFiles(IMAGE_MODEL_LLAVA, "What is in this image?",
                     List.of(imageFile),
@@ -645,7 +645,7 @@ public class OllamaAPIIntegrationTest {
             throws OllamaBaseException, IOException, URISyntaxException, InterruptedException {
         api.pullModel(IMAGE_MODEL_LLAVA);
 
-        File imageFile = getImageFileFromClasspath("dog-on-a-boat.jpg");
+        File imageFile = getImageFileFromClasspath("emoji-smile.jpeg");
 
         StringBuffer sb = new StringBuffer();
 
