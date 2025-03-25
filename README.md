@@ -209,6 +209,9 @@ pip install pre-commit
 
 #### Setup dev environment
 
+> **Note**
+> If you're on Windows, install [Chocolatey Package Manager for Windows](https://chocolatey.org/install) and then install `make` by running `choco install make`. Just a little tip - run the command with administrator privileges if installation faiils.
+
 ```shell
 make dev
 ```
