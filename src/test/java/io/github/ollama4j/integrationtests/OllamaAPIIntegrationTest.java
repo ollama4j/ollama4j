@@ -350,7 +350,7 @@ public class OllamaAPIIntegrationTest {
         builder.reset();
 
         requestModel = builder.withMessages(chatResult.getChatHistory())
-                .withMessage(OllamaChatMessageRole.USER, "What's the dogs breed?").build();
+                .withMessage(OllamaChatMessageRole.USER, "What's the color?").build();
 
         chatResult = api.chat(requestModel);
         assertNotNull(chatResult);
