@@ -18,8 +18,8 @@ unit-tests:
 integration-tests:
 	export USE_EXTERNAL_OLLAMA_HOST=false && mvn clean verify -Pintegration-tests
 
-integration-tests-local:
-	export USE_EXTERNAL_OLLAMA_HOST=true && export OLLAMA_HOST=http://localhost:11434 && mvn clean verify -Pintegration-tests -Dgpg.skip=true
+integration-tests-remote:
+	export USE_EXTERNAL_OLLAMA_HOST=true && export OLLAMA_HOST=http://192.168.29.223:11434 && mvn clean verify -Pintegration-tests -Dgpg.skip=true
 
 doxygen:
 	doxygen Doxyfile
@@ -29,10 +29,10 @@ list-releases:
       --compressed \
       --silent | jq -r '.components[].version'
 
-build-docs:
+docs:
 	npm i --prefix docs && npm run build --prefix docs
 
-start-docs:
+docs-dev:
 	npm i --prefix docs && npm run start --prefix docs
 
 start-cpu:

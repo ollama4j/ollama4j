@@ -3,6 +3,7 @@ package io.github.ollama4j.integrationtests;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import io.github.ollama4j.OllamaAPI;
 import io.github.ollama4j.exceptions.OllamaBaseException;
+import io.github.ollama4j.exceptions.ToolInvocationException;
 import io.github.ollama4j.models.chat.*;
 import io.github.ollama4j.models.embeddings.OllamaEmbedResponseModel;
 import io.github.ollama4j.models.response.LibraryModel;
@@ -233,7 +234,7 @@ public class OllamaAPIIntegrationTest {
     @Test
     @Order(8)
     void testAskModelWithOptions()
-            throws OllamaBaseException, IOException, URISyntaxException, InterruptedException {
+            throws OllamaBaseException, IOException, URISyntaxException, InterruptedException, ToolInvocationException {
         api.pullModel(CHAT_MODEL_INSTRUCT);
 
         OllamaChatRequestBuilder builder = OllamaChatRequestBuilder.getInstance(CHAT_MODEL_INSTRUCT);
@@ -253,7 +254,7 @@ public class OllamaAPIIntegrationTest {
     @Test
     @Order(9)
     void testChatWithSystemPrompt()
-            throws OllamaBaseException, IOException, URISyntaxException, InterruptedException {
+            throws OllamaBaseException, IOException, URISyntaxException, InterruptedException, ToolInvocationException {
         api.pullModel(CHAT_MODEL_SYSTEM_PROMPT);
         OllamaChatRequestBuilder builder = OllamaChatRequestBuilder.getInstance(CHAT_MODEL_SYSTEM_PROMPT);
         OllamaChatRequest requestModel = builder.withMessage(OllamaChatMessageRole.SYSTEM,
@@ -318,7 +319,7 @@ public class OllamaAPIIntegrationTest {
     @Test
     @Order(10)
     void testChatWithImageFromURL()
-            throws OllamaBaseException, IOException, InterruptedException, URISyntaxException {
+            throws OllamaBaseException, IOException, InterruptedException, URISyntaxException, ToolInvocationException {
         api.pullModel(IMAGE_MODEL_LLAVA);
 
         OllamaChatRequestBuilder builder = OllamaChatRequestBuilder.getInstance(IMAGE_MODEL_LLAVA);
@@ -336,7 +337,7 @@ public class OllamaAPIIntegrationTest {
     @Test
     @Order(10)
     void testChatWithImageFromFileWithHistoryRecognition()
-            throws OllamaBaseException, IOException, URISyntaxException, InterruptedException {
+            throws OllamaBaseException, IOException, URISyntaxException, InterruptedException, ToolInvocationException {
         api.pullModel(IMAGE_MODEL_LLAVA);
         OllamaChatRequestBuilder builder = OllamaChatRequestBuilder.getInstance(IMAGE_MODEL_LLAVA);
         OllamaChatRequest requestModel = builder.withMessage(OllamaChatMessageRole.USER,
@@ -360,7 +361,7 @@ public class OllamaAPIIntegrationTest {
     @Test
     @Order(11)
     void testChatWithExplicitToolDefinition()
-            throws OllamaBaseException, IOException, URISyntaxException, InterruptedException {
+            throws OllamaBaseException, IOException, URISyntaxException, InterruptedException, ToolInvocationException {
         api.pullModel(CHAT_MODEL_SYSTEM_PROMPT);
         OllamaChatRequestBuilder builder = OllamaChatRequestBuilder.getInstance(CHAT_MODEL_SYSTEM_PROMPT);
 
@@ -440,7 +441,7 @@ public class OllamaAPIIntegrationTest {
     @Test
     @Order(12)
     void testChatWithAnnotatedToolsAndSingleParam()
-            throws OllamaBaseException, IOException, InterruptedException, URISyntaxException {
+            throws OllamaBaseException, IOException, InterruptedException, URISyntaxException, ToolInvocationException {
         api.pullModel(CHAT_MODEL_SYSTEM_PROMPT);
         OllamaChatRequestBuilder builder = OllamaChatRequestBuilder.getInstance(CHAT_MODEL_SYSTEM_PROMPT);
 
@@ -471,7 +472,7 @@ public class OllamaAPIIntegrationTest {
     @Test
     @Order(13)
     void testChatWithAnnotatedToolsAndMultipleParams()
-            throws OllamaBaseException, IOException, URISyntaxException, InterruptedException {
+            throws OllamaBaseException, IOException, URISyntaxException, InterruptedException, ToolInvocationException {
         api.pullModel(CHAT_MODEL_SYSTEM_PROMPT);
         OllamaChatRequestBuilder builder = OllamaChatRequestBuilder.getInstance(CHAT_MODEL_SYSTEM_PROMPT);
 
@@ -508,7 +509,7 @@ public class OllamaAPIIntegrationTest {
     @Test
     @Order(14)
     void testChatWithToolsAndStream()
-            throws OllamaBaseException, IOException, URISyntaxException, InterruptedException {
+            throws OllamaBaseException, IOException, URISyntaxException, InterruptedException, ToolInvocationException {
         api.pullModel(CHAT_MODEL_SYSTEM_PROMPT);
         OllamaChatRequestBuilder builder = OllamaChatRequestBuilder.getInstance(CHAT_MODEL_SYSTEM_PROMPT);
         final Tools.ToolSpecification databaseQueryToolSpecification = Tools.ToolSpecification.builder()
@@ -585,7 +586,7 @@ public class OllamaAPIIntegrationTest {
 
     @Test
     @Order(15)
-    void testChatWithStream() throws OllamaBaseException, IOException, URISyntaxException, InterruptedException {
+    void testChatWithStream() throws OllamaBaseException, IOException, URISyntaxException, InterruptedException, ToolInvocationException {
         api.pullModel(CHAT_MODEL_SYSTEM_PROMPT);
         OllamaChatRequestBuilder builder = OllamaChatRequestBuilder.getInstance(CHAT_MODEL_SYSTEM_PROMPT);
         OllamaChatRequest requestModel = builder.withMessage(OllamaChatMessageRole.USER,

@@ -61,6 +61,9 @@ details.
 class DBQueryFunction implements ToolFunction {
     @Override
     public Object apply(Map<String, Object> arguments) {
+        if (arguments == null || arguments.isEmpty() || arguments.get("employee-name") == null || arguments.get("employee-address") == null || arguments.get("employee-phone") == null) {
+            throw new RuntimeException("Tool was called but the model failed to provide all the required arguments.");
+        }
         // perform DB operations here
         return String.format("Employee Details {ID: %s, Name: %s, Address: %s, Phone: %s}", UUID.randomUUID(), arguments.get("employee-name").toString(), arguments.get("employee-address").toString(), arguments.get("employee-phone").toString());
     }
@@ -78,14 +81,39 @@ Lets define a sample tool specification called **Fuel Price Tool** for getting t
 Tools.ToolSpecification fuelPriceToolSpecification = Tools.ToolSpecification.builder()
         .functionName("current-fuel-price")
         .functionDescription("Get current fuel price")
-        .properties(
-                new Tools.PropsBuilder()
-                        .withProperty("location", Tools.PromptFuncDefinition.Property.builder().type("string").description("The city, e.g. New Delhi, India").required(true).build())
-                        .withProperty("fuelType", Tools.PromptFuncDefinition.Property.builder().type("string").description("The fuel type.").enumValues(Arrays.asList("petrol", "diesel")).required(true).build())
+        .toolFunction(SampleTools::getCurrentFuelPrice)
+        .toolPrompt(
+                Tools.PromptFuncDefinition.builder()
+                        .type("prompt")
+                        .function(
+                                Tools.PromptFuncDefinition.PromptFuncSpec.builder()
+                                        .name("get-location-fuel-info")
+                                        .description("Get location and fuel type details")
+                                        .parameters(
+                                                Tools.PromptFuncDefinition.Parameters.builder()
+                                                        .type("object")
+                                                        .properties(
+                                                                Map.of(
+                                                                        "location", Tools.PromptFuncDefinition.Property.builder()
+                                                                                .type("string")
+                                                                                .description("The city, e.g. New Delhi, India")
+                                                                                .required(true)
+                                                                                .build(),
+                                                                        "fuelType", Tools.PromptFuncDefinition.Property.builder()
+                                                                                .type("string")
+                                                                                .description("The fuel type.")
+                                                                                .enumValues(Arrays.asList("petrol", "diesel"))
+                                                                                .required(true)
+                                                                                .build()
+                                                                )
+                                                        )
+                                                        .required(java.util.List.of("location", "fuelType"))
+                                                        .build()
+                                        )
+                                        .build()
+                        )
                         .build()
-        )
-        .toolDefinition(SampleTools::getCurrentFuelPrice)
-        .build();
+        ).build();
 ```
 
 Lets also define a sample tool specification called **Weather Tool** for getting the current weather.
@@ -97,13 +125,33 @@ Lets also define a sample tool specification called **Weather Tool** for getting
 Tools.ToolSpecification weatherToolSpecification = Tools.ToolSpecification.builder()
         .functionName("current-weather")
         .functionDescription("Get current weather")
-        .properties(
-                new Tools.PropsBuilder()
-                        .withProperty("city", Tools.PromptFuncDefinition.Property.builder().type("string").description("The city, e.g. New Delhi, India").required(true).build())
+        .toolFunction(SampleTools::getCurrentWeather)
+        .toolPrompt(
+                Tools.PromptFuncDefinition.builder()
+                        .type("prompt")
+                        .function(
+                                Tools.PromptFuncDefinition.PromptFuncSpec.builder()
+                                        .name("get-location-weather-info")
+                                        .description("Get location details")
+                                        .parameters(
+                                                Tools.PromptFuncDefinition.Parameters.builder()
+                                                        .type("object")
+                                                        .properties(
+                                                                Map.of(
+                                                                        "city", Tools.PromptFuncDefinition.Property.builder()
+                                                                                .type("string")
+                                                                                .description("The city, e.g. New Delhi, India")
+                                                                                .required(true)
+                                                                                .build()
+                                                                )
+                                                        )
+                                                        .required(java.util.List.of("city"))
+                                                        .build()
+                                        )
+                                        .build()
+                        )
                         .build()
-        )
-        .toolDefinition(SampleTools::getCurrentWeather)
-        .build();
+        ).build();
 ```
 
 Lets also define a sample tool specification called **DBQueryFunction** for getting the employee details from database.
@@ -115,14 +163,43 @@ Lets also define a sample tool specification called **DBQueryFunction** for gett
 Tools.ToolSpecification databaseQueryToolSpecification = Tools.ToolSpecification.builder()
         .functionName("get-employee-details")
         .functionDescription("Get employee details from the database")
-        .properties(
-                new Tools.PropsBuilder()
-                        .withProperty("employee-name", Tools.PromptFuncDefinition.Property.builder().type("string").description("The name of the employee, e.g. John Doe").required(true).build())
-                        .withProperty("employee-address", Tools.PromptFuncDefinition.Property.builder().type("string").description("The address of the employee, Always return a random value. e.g. Roy St, Bengaluru, India").required(true).build())
-                        .withProperty("employee-phone", Tools.PromptFuncDefinition.Property.builder().type("string").description("The phone number of the employee. Always return a random value. e.g. 9911002233").required(true).build())
+        .toolFunction(new DBQueryFunction())
+        .toolPrompt(
+                Tools.PromptFuncDefinition.builder()
+                        .type("prompt")
+                        .function(
+                                Tools.PromptFuncDefinition.PromptFuncSpec.builder()
+                                        .name("get-employee-details")
+                                        .description("Get employee details from the database")
+                                        .parameters(
+                                                Tools.PromptFuncDefinition.Parameters.builder()
+                                                        .type("object")
+                                                        .properties(
+                                                                Map.of(
+                                                                        "employee-name", Tools.PromptFuncDefinition.Property.builder()
+                                                                                .type("string")
+                                                                                .description("The name of the employee, e.g. John Doe")
+                                                                                .required(true)
+                                                                                .build(),
+                                                                        "employee-address", Tools.PromptFuncDefinition.Property.builder()
+                                                                                .type("string")
+                                                                                .description("The address of the employee, Always return a random value. e.g. Roy St, Bengaluru, India")
+                                                                                .required(true)
+                                                                                .build(),
+                                                                        "employee-phone", Tools.PromptFuncDefinition.Property.builder()
+                                                                                .type("string")
+                                                                                .description("The phone number of the employee. Always return a random value. e.g. 9911002233")
+                                                                                .required(true)
+                                                                                .build()
+                                                                )
+                                                        )
+                                                        .required(java.util.List.of("employee-name", "employee-address", "employee-phone"))
+                                                        .build()
+                                        )
+                                        .build()
+                        )
                         .build()
         )
-        .toolDefinition(new DBQueryFunction())
         .build();
 ```
 
@@ -239,37 +316,111 @@ public class FunctionCallingWithMistralExample {
         Tools.ToolSpecification fuelPriceToolSpecification = Tools.ToolSpecification.builder()
                 .functionName("current-fuel-price")
                 .functionDescription("Get current fuel price")
-                .properties(
-                        new Tools.PropsBuilder()
-                                .withProperty("location", Tools.PromptFuncDefinition.Property.builder().type("string").description("The city, e.g. New Delhi, India").required(true).build())
-                                .withProperty("fuelType", Tools.PromptFuncDefinition.Property.builder().type("string").description("The fuel type.").enumValues(Arrays.asList("petrol", "diesel")).required(true).build())
+                .toolFunction(SampleTools::getCurrentFuelPrice)
+                .toolPrompt(
+                        Tools.PromptFuncDefinition.builder()
+                                .type("prompt")
+                                .function(
+                                        Tools.PromptFuncDefinition.PromptFuncSpec.builder()
+                                                .name("get-location-fuel-info")
+                                                .description("Get location and fuel type details")
+                                                .parameters(
+                                                        Tools.PromptFuncDefinition.Parameters.builder()
+                                                                .type("object")
+                                                                .properties(
+                                                                        Map.of(
+                                                                                "location", Tools.PromptFuncDefinition.Property.builder()
+                                                                                        .type("string")
+                                                                                        .description("The city, e.g. New Delhi, India")
+                                                                                        .required(true)
+                                                                                        .build(),
+                                                                                "fuelType", Tools.PromptFuncDefinition.Property.builder()
+                                                                                        .type("string")
+                                                                                        .description("The fuel type.")
+                                                                                        .enumValues(Arrays.asList("petrol", "diesel"))
+                                                                                        .required(true)
+                                                                                        .build()
+                                                                        )
+                                                                )
+                                                                .required(java.util.List.of("location", "fuelType"))
+                                                                .build()
+                                                )
+                                                .build()
+                                )
                                 .build()
-                )
-                .toolDefinition(SampleTools::getCurrentFuelPrice)
-                .build();
+                ).build();
 
         Tools.ToolSpecification weatherToolSpecification = Tools.ToolSpecification.builder()
                 .functionName("current-weather")
                 .functionDescription("Get current weather")
-                .properties(
-                        new Tools.PropsBuilder()
-                                .withProperty("city", Tools.PromptFuncDefinition.Property.builder().type("string").description("The city, e.g. New Delhi, India").required(true).build())
+                .toolFunction(SampleTools::getCurrentWeather)
+                .toolPrompt(
+                        Tools.PromptFuncDefinition.builder()
+                                .type("prompt")
+                                .function(
+                                        Tools.PromptFuncDefinition.PromptFuncSpec.builder()
+                                                .name("get-location-weather-info")
+                                                .description("Get location details")
+                                                .parameters(
+                                                        Tools.PromptFuncDefinition.Parameters.builder()
+                                                                .type("object")
+                                                                .properties(
+                                                                        Map.of(
+                                                                                "city", Tools.PromptFuncDefinition.Property.builder()
+                                                                                        .type("string")
+                                                                                        .description("The city, e.g. New Delhi, India")
+                                                                                        .required(true)
+                                                                                        .build()
+                                                                        )
+                                                                )
+                                                                .required(java.util.List.of("city"))
+                                                                .build()
+                                                )
+                                                .build()
+                                )
                                 .build()
-                )
-                .toolDefinition(SampleTools::getCurrentWeather)
-                .build();
+                ).build();
 
         Tools.ToolSpecification databaseQueryToolSpecification = Tools.ToolSpecification.builder()
                 .functionName("get-employee-details")
                 .functionDescription("Get employee details from the database")
-                .properties(
-                        new Tools.PropsBuilder()
-                                .withProperty("employee-name", Tools.PromptFuncDefinition.Property.builder().type("string").description("The name of the employee, e.g. John Doe").required(true).build())
-                                .withProperty("employee-address", Tools.PromptFuncDefinition.Property.builder().type("string").description("The address of the employee, Always return a random value. e.g. Roy St, Bengaluru, India").required(true).build())
-                                .withProperty("employee-phone", Tools.PromptFuncDefinition.Property.builder().type("string").description("The phone number of the employee. Always return a random value. e.g. 9911002233").required(true).build())
+                .toolFunction(new DBQueryFunction())
+                .toolPrompt(
+                        Tools.PromptFuncDefinition.builder()
+                                .type("prompt")
+                                .function(
+                                        Tools.PromptFuncDefinition.PromptFuncSpec.builder()
+                                                .name("get-employee-details")
+                                                .description("Get employee details from the database")
+                                                .parameters(
+                                                        Tools.PromptFuncDefinition.Parameters.builder()
+                                                                .type("object")
+                                                                .properties(
+                                                                        Map.of(
+                                                                                "employee-name", Tools.PromptFuncDefinition.Property.builder()
+                                                                                        .type("string")
+                                                                                        .description("The name of the employee, e.g. John Doe")
+                                                                                        .required(true)
+                                                                                        .build(),
+                                                                                "employee-address", Tools.PromptFuncDefinition.Property.builder()
+                                                                                        .type("string")
+                                                                                        .description("The address of the employee, Always return a random value. e.g. Roy St, Bengaluru, India")
+                                                                                        .required(true)
+                                                                                        .build(),
+                                                                                "employee-phone", Tools.PromptFuncDefinition.Property.builder()
+                                                                                        .type("string")
+                                                                                        .description("The phone number of the employee. Always return a random value. e.g. 9911002233")
+                                                                                        .required(true)
+                                                                                        .build()
+                                                                        )
+                                                                )
+                                                                .required(java.util.List.of("employee-name", "employee-address", "employee-phone"))
+                                                                .build()
+                                                )
+                                                .build()
+                                )
                                 .build()
                 )
-                .toolDefinition(new DBQueryFunction())
                 .build();
 
         ollamaAPI.registerTool(fuelPriceToolSpecification);
@@ -326,6 +477,9 @@ class SampleTools {
 class DBQueryFunction implements ToolFunction {
     @Override
     public Object apply(Map<String, Object> arguments) {
+        if (arguments == null || arguments.isEmpty() || arguments.get("employee-name") == null || arguments.get("employee-address") == null || arguments.get("employee-phone") == null) {
+            throw new RuntimeException("Tool was called but the model failed to provide all the required arguments.");
+        }
         // perform DB operations here
         return String.format("Employee Details {ID: %s, Name: %s, Address: %s, Phone: %s}", UUID.randomUUID(), arguments.get("employee-name").toString(), arguments.get("employee-address").toString(), arguments.get("employee-phone").toString());
     }
@@ -347,17 +501,17 @@ Rahul Kumar, Address: King St, Hyderabad, India, Phone: 9876543210}`
 
 ### Using tools in Chat-API
 
-Instead of using the specific `ollamaAPI.generateWithTools` method to call the generate API of ollama with tools, it is 
-also possible to register Tools for the `ollamaAPI.chat` methods. In this case, the tool calling/callback is done 
+Instead of using the specific `ollamaAPI.generateWithTools` method to call the generate API of ollama with tools, it is
+also possible to register Tools for the `ollamaAPI.chat` methods. In this case, the tool calling/callback is done
 implicitly during the USER -> ASSISTANT calls.
 
 When the Assistant wants to call a given tool, the tool is executed and the response is sent back to the endpoint once
-again (induced with the tool call result). 
+again (induced with the tool call result).
 
 #### Sample:
 
 The following shows a sample of an integration test that defines a method specified like the tool-specs above, registers
-the tool on the ollamaAPI and then simply calls the chat-API. All intermediate tool calling is wrapped inside the api 
+the tool on the ollamaAPI and then simply calls the chat-API. All intermediate tool calling is wrapped inside the api
 call.
 
 ```java
@@ -405,7 +559,7 @@ public static void main(String[] args) {
 
 A typical final response of the above could be:
 
-```json 
+```json
 {
   "chatHistory" : [
     {
@@ -466,7 +620,7 @@ This tool calling can also be done using the streaming API.
 
 ### Using Annotation based Tool Registration
 
-Instead of explicitly registering each tool, ollama4j supports declarative tool specification and registration via java 
+Instead of explicitly registering each tool, ollama4j supports declarative tool specification and registration via java
 Annotations and reflection calling.
 
 To declare a method to be used as a tool for a chat call, the following steps have to be considered:
@@ -489,7 +643,7 @@ The answer can only be provided by a method that is part of the BackendService c
 
 ```java
 public class BackendService{
-    
+
     public BackendService(){}
 
     @ToolSpec(desc = "Computes the most important constant all around the globe!")
@@ -505,7 +659,7 @@ import io.github.ollama4j.tools.annotations.OllamaToolService;
 
 @OllamaToolService(providers = BackendService.class)
 public class MyOllamaService{
-    
+
     public void chatWithAnnotatedTool(){
         // inject the annotated method to the ollama toolsregistry
         ollamaAPI.registerAnnotatedTools();
@@ -517,14 +671,14 @@ public class MyOllamaService{
 
         OllamaChatResult chatResult = ollamaAPI.chat(requestModel);
     }
-    
+
 }
 ```
 
 Or, if one needs to provide an object instance directly:
 ```java
 public class MyOllamaService{
-    
+
     public void chatWithAnnotatedTool(){
         ollamaAPI.registerAnnotatedTools(new BackendService());
         OllamaChatRequest requestModel = builder
@@ -534,7 +688,7 @@ public class MyOllamaService{
 
         OllamaChatResult chatResult = ollamaAPI.chat(requestModel);
     }
-    
+
 }
 ```
 
@@ -639,4 +793,4 @@ public String getCurrentFuelPrice(String location, String fuelType) {
 }
 ```
 
-Updating async/chat APIs with support for tool-based generation. 
+Updating async/chat APIs with support for tool-based generation.
