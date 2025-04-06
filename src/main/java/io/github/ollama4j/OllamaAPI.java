@@ -1058,7 +1058,7 @@ public class OllamaAPI {
      * @param model    the ollama model to ask the question to
      * @param messages chat history / message stack to send to the model
      * @return {@link OllamaChatResult} containing the api response and the message
-     *         history including the newly aqcuired assistant response.
+     *         history including the newly acquired assistant response.
      * @throws OllamaBaseException  any response code than 200 has been returned
      * @throws IOException          in case the responseStream can not be read
      * @throws InterruptedException in case the server is not reachable or network
@@ -1066,9 +1066,10 @@ public class OllamaAPI {
      * @throws OllamaBaseException  if the response indicates an error status
      * @throws IOException          if an I/O error occurs during the HTTP request
      * @throws InterruptedException if the operation is interrupted
+     * @throws ToolInvocationException if the tool invocation fails
      */
     public OllamaChatResult chat(String model, List<OllamaChatMessage> messages)
-            throws OllamaBaseException, IOException, InterruptedException {
+            throws OllamaBaseException, IOException, InterruptedException, ToolInvocationException {
         OllamaChatRequestBuilder builder = OllamaChatRequestBuilder.getInstance(model);
         return chat(builder.withMessages(messages).build());
     }
@@ -1088,9 +1089,10 @@ public class OllamaAPI {
      * @throws OllamaBaseException  if the response indicates an error status
      * @throws IOException          if an I/O error occurs during the HTTP request
      * @throws InterruptedException if the operation is interrupted
+     * @throws ToolInvocationException if the tool invocation fails
      */
     public OllamaChatResult chat(OllamaChatRequest request)
-            throws OllamaBaseException, IOException, InterruptedException {
+            throws OllamaBaseException, IOException, InterruptedException, ToolInvocationException {
         return chat(request, null);
     }
 
@@ -1102,7 +1104,7 @@ public class OllamaAPI {
      *
      * @param request       request object to be sent to the server
      * @param streamHandler callback handler to handle the last message from stream
-     *                      (caution: all previous messages from stream will be
+     *                      (caution: all previous tokens from stream will be
      *                      concatenated)
      * @return {@link OllamaChatResult}
      * @throws OllamaBaseException  any response code than 200 has been returned
@@ -1112,9 +1114,10 @@ public class OllamaAPI {
      * @throws OllamaBaseException  if the response indicates an error status
      * @throws IOException          if an I/O error occurs during the HTTP request
      * @throws InterruptedException if the operation is interrupted
+     * @throws ToolInvocationException if the tool invocation fails
      */
     public OllamaChatResult chat(OllamaChatRequest request, OllamaStreamHandler streamHandler)
-            throws OllamaBaseException, IOException, InterruptedException {
+            throws OllamaBaseException, IOException, InterruptedException, ToolInvocationException {
         return chatStreaming(request, new OllamaChatStreamObserver(streamHandler));
     }
 
@@ -1126,7 +1129,7 @@ public class OllamaAPI {
      *
      * @param request      request object to be sent to the server
      * @param tokenHandler callback handler to handle the last token from stream
-     *                     (caution: all previous messages from stream will be
+     *                     (caution: the previous tokens from stream will not be
      *                     concatenated)
      * @return {@link OllamaChatResult}
      * @throws OllamaBaseException  any response code than 200 has been returned
@@ -1138,7 +1141,7 @@ public class OllamaAPI {
      * @throws InterruptedException if the operation is interrupted
      */
     public OllamaChatResult chatStreaming(OllamaChatRequest request, OllamaTokenHandler tokenHandler)
-            throws OllamaBaseException, IOException, InterruptedException {
+            throws OllamaBaseException, IOException, InterruptedException, ToolInvocationException {
         OllamaChatEndpointCaller requestCaller = new OllamaChatEndpointCaller(host, auth, requestTimeoutSeconds,
                 verbose);
         OllamaChatResult result;
@@ -1161,6 +1164,9 @@ public class OllamaAPI {
             for (OllamaChatToolCalls toolCall : toolCalls) {
                 String toolName = toolCall.getFunction().getName();
                 ToolFunction toolFunction = toolRegistry.getToolFunction(toolName);
+                if (toolFunction == null) {
+                    throw new ToolInvocationException("Tool function not found: " + toolName);
+                }
                 Map<String, Object> arguments = toolCall.getFunction().getArguments();
                 Object res = toolFunction.apply(arguments);
                 request.getMessages().add(new OllamaChatMessage(OllamaChatMessageRole.TOOL,
