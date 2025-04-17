@@ -11,26 +11,11 @@ These API retrieves a list of models directly from the Ollama library.
 This API fetches available models from the Ollama library page, including details such as the model's name, pull count,
 popular tags, tag count, and the last update time.
 
-```java title="ListLibraryModels.java"
-import io.github.ollama4j.OllamaAPI;
-import io.github.ollama4j.models.response.LibraryModel;
+<iframe style={{ width: '100%', height: '919px', border: 'none' }} allow="clipboard-write" src="https://emgithub.com/iframe.html?target=https%3A%2F%2Fgithub.com%2Follama4j%2Follama4j-examples%2Fblob%2Fmain%2Fsrc%2Fmain%2Fjava%2Fio%2Fgithub%2Follama4j%2Fexamples%2FListLibraryModels.java&style=default&type=code&showBorder=on&showLineNumbers=on&showFileMeta=on&showFullPath=on&showCopy=on" />
 
-import java.util.List;
-
-public class Main {
-
-    public static void main(String[] args) {
-
-        String host = "http://localhost:11434/";
-
-        OllamaAPI ollamaAPI = new OllamaAPI(host);
-
-        List<LibraryModel> libraryModels = ollamaAPI.listModelsFromLibrary();
-
-        System.out.println(libraryModels);
-    }
-}
-```
+<a href="https://github.com/ollama4j/ollama4j-examples/blob/main/src/main/java/io/github/ollama4j/examples/ListLibraryModels.java" target="_blank">
+  View ListLibraryModels.java on GitHub
+</a>
 
 The following is the sample output:
 
