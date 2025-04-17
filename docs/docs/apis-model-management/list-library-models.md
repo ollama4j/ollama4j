@@ -2,6 +2,8 @@
 sidebar_position: 1
 ---
 
+import CodeEmbed from '@site/src/components/CodeEmbed';
+
 # Models from Ollama Library
 
 These API retrieves a list of models directly from the Ollama library.
@@ -11,17 +13,15 @@ These API retrieves a list of models directly from the Ollama library.
 This API fetches available models from the Ollama library page, including details such as the model's name, pull count,
 popular tags, tag count, and the last update time.
 
-<iframe style={{ width: '100%', height: '919px', border: 'none' }} allow="clipboard-write" src="https://emgithub.com/iframe.html?target=https%3A%2F%2Fgithub.com%2Follama4j%2Follama4j-examples%2Fblob%2Fmain%2Fsrc%2Fmain%2Fjava%2Fio%2Fgithub%2Follama4j%2Fexamples%2FListLibraryModels.java&style=default&type=code&showBorder=on&showLineNumbers=on&showFileMeta=on&showFullPath=on&showCopy=on" />
-
-<a href="https://github.com/ollama4j/ollama4j-examples/blob/main/src/main/java/io/github/ollama4j/examples/ListLibraryModels.java" target="_blank">
-  View ListLibraryModels.java on GitHub
-</a>
+<CodeEmbed
+    src='https://raw.githubusercontent.com/ollama4j/ollama4j-examples/refs/heads/main/src/main/java/io/github/ollama4j/examples/ListLibraryModels.java'>
+</CodeEmbed>
 
 The following is the sample output:
 
 ```
 [
-    LibraryModel(name=llama3.2-vision, description=Llama 3.2 Vision is a collection of instruction-tuned image reasoning generative models in 11B and 90B sizes., pullCount=21.1K, totalTags=9, popularTags=[vision, 11b, 90b], lastUpdated=yesterday), 
+    LibraryModel(name=llama3.2-vision, description=Llama 3.2 Vision is a collection of instruction-tuned image reasoning generative models in 11B and 90B sizes., pullCount=21.1K, totalTags=9, popularTags=[vision, 11b, 90b], lastUpdated=yesterday),
     LibraryModel(name=llama3.2, description=Meta's Llama 3.2 goes small with 1B and 3B models., pullCount=2.4M, totalTags=63, popularTags=[tools, 1b, 3b], lastUpdated=6 weeks ago)
 ]
 ```
@@ -56,10 +56,10 @@ The following is the sample output:
 
 ```
 LibraryModelDetail(
-  model=LibraryModel(name=llama3.2-vision, description=Llama 3.2 Vision is a collection of instruction-tuned image reasoning generative models in 11B and 90B sizes., pullCount=21.1K, totalTags=9, popularTags=[vision, 11b, 90b], lastUpdated=yesterday), 
+  model=LibraryModel(name=llama3.2-vision, description=Llama 3.2 Vision is a collection of instruction-tuned image reasoning generative models in 11B and 90B sizes., pullCount=21.1K, totalTags=9, popularTags=[vision, 11b, 90b], lastUpdated=yesterday),
   tags=[
-        LibraryModelTag(name=llama3.2-vision, tag=latest, size=7.9GB, lastUpdated=yesterday), 
-        LibraryModelTag(name=llama3.2-vision, tag=11b, size=7.9GB, lastUpdated=yesterday), 
+        LibraryModelTag(name=llama3.2-vision, tag=latest, size=7.9GB, lastUpdated=yesterday),
+        LibraryModelTag(name=llama3.2-vision, tag=11b, size=7.9GB, lastUpdated=yesterday),
         LibraryModelTag(name=llama3.2-vision, tag=90b, size=55GB, lastUpdated=yesterday)
     ]
 )
