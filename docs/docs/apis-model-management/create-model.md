@@ -2,28 +2,27 @@
 sidebar_position: 5
 ---
 
+import CodeEmbed from '@site/src/components/CodeEmbed';
+
 # Create Model
 
 This API lets you create a custom model on the Ollama server.
 
 ### Create a custom model from an existing model in the Ollama server
 
-```java title="CreateModel.java"
-import io.github.ollama4j.OllamaAPI;
+<CodeEmbed src="https://raw.githubusercontent.com/ollama4j/ollama4j-examples/refs/heads/main/src/main/java/io/github/ollama4j/examples/CreateModel.java" />
 
-public class CreateModel {
+You would see these logs while the custom model is being created:
 
-    public static void main(String[] args) {
-
-        String host = "http://localhost:11434/";
-
-        OllamaAPI ollamaAPI = new OllamaAPI(host);
-
-        ollamaAPI.createModel(CustomModelRequest.builder().model("mario").from("llama3.2:latest").system("You are Mario from Super Mario Bros.").build());
-    }
-}
 ```
-
+{"status":"using existing layer sha256:fad2a06e4cc705c2fa8bec5477ddb00dc0c859ac184c34dcc5586663774161ca"}
+{"status":"using existing layer sha256:41c2cf8c272f6fb0080a97cd9d9bd7d4604072b80a0b10e7d65ca26ef5000c0c"}
+{"status":"using existing layer sha256:1da0581fd4ce92dcf5a66b1da737cf215d8dcf25aa1b98b44443aaf7173155f5"}
+{"status":"creating new layer sha256:941b69ca7dc2a85c053c38d9e8029c9df6224e545060954fa97587f87c044a64"}
+{"status":"using existing layer sha256:f02dd72bb2423204352eabc5637b44d79d17f109fdb510a7c51455892aa2d216"}
+{"status":"writing manifest"}
+{"status":"success"}
+```
 Once created, you can see it when you use [list models](./list-models) API.
 
 [Read more](https://github.com/ollama/ollama/blob/main/docs/api.md#create-a-model) about custom model creation and the parameters available for model creation.

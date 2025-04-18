@@ -29,10 +29,10 @@ list-releases:
       --compressed \
       --silent | jq -r '.components[].version'
 
-docs:
+docs-build:
 	npm i --prefix docs && npm run build --prefix docs
 
-docs-dev:
+docs-serve:
 	npm i --prefix docs && npm run start --prefix docs
 
 start-cpu:
