@@ -1,6 +1,11 @@
 ---
 sidebar_position: 1
+
+title: Introduction
 ---
+
+import LatestRelease from '@site/src/components/LatestRelease';
+import AddToYourProject from '@site/src/components/AddToYourProject';
 
 # Introduction
 
@@ -71,20 +76,16 @@ The command runs the Ollama server locally at **http://localhost:11434/**.
 
 ### Setup your project
 
-Get started by **creating a new Maven project** on your favorite IDE.
 
 Add the dependency to your project's `pom.xml`.
 
-```xml
+<AddToYourProject/>
 
-<dependency>
-    <groupId>io.github.ollama4j</groupId>
-    <artifactId>ollama4j</artifactId>
-    <version>1.0.78</version>
-</dependency>
-```
+<div style={{ marginTop: '2rem', marginBottom: '2rem', fontSize: '1em', textAlign: 'left', display: 'flex', justifyContent: 'left'}}>
+    <LatestRelease style={{textAlign: 'left', fontWeight: 'normal'}}/>
+</div>
 
-Find the latest version of the library [here](https://central.sonatype.com/artifact/io.github.ollama4j/ollama4j).
+Find the latest version of the library from [Maven Central Repository](https://central.sonatype.com/artifact/io.github.ollama4j/ollama4j).
 
 You might want to include an implementation of [SL4J](https://www.slf4j.org/) logger in your `pom.xml` file. For
 example,
