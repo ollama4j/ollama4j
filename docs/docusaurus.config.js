@@ -99,20 +99,32 @@ const config = {
                 style: 'dark',
                 links: [
                     {
-                        title: 'Docs',
+                        title: 'Quick Links',
                         items: [
                             {
-                                label: 'Tutorial',
-                                to: '/intro',
+                                label: 'Ollama4j Examples',
+                                to: 'https://github.com/ollama4j/ollama4j-examples',
+                            },
+                            {
+                                label: 'Blog',
+                                to: '/blog',
+                            },
+                            {
+                                label: 'GitHub',
+                                href: 'https://github.com/ollama4j/ollama4j',
                             },
                         ],
                     },
                     {
-                        title: 'Usage',
+                        title: 'Stuff built with Ollama4j',
                         items: [
                             {
-                                label: 'Examples',
-                                to: 'https://github.com/ollama4j/ollama4j-examples',
+                                label: 'Ollama4j Web UI',
+                                to: 'https://github.com/ollama4j/ollama4j-web-ui',
+                            },
+                            {
+                                label: 'Ollama4j Desktop UI with Swing',
+                                to: 'https://github.com/ollama4j/ollama4j-ui',
                             },
                         ],
                     },
@@ -128,20 +140,7 @@ const config = {
                                 href: 'https://twitter.com/ollama4j',
                             },
                         ],
-                    },
-                    {
-                        title: 'More',
-                        items: [
-                            {
-                                label: 'Blog',
-                                to: '/blog',
-                            },
-                            {
-                                label: 'GitHub',
-                                href: 'https://github.com/ollama4j/ollama4j',
-                            },
-                        ],
-                    },
+                    }
                 ],
                 copyright: `Ollama4j Documentation ${new Date().getFullYear()}. Built with Docusaurus.`,
             },
