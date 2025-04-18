@@ -1,8 +1,10 @@
 ---
-sidebar_position: 4
+sidebar_position: 3
 ---
 
-# Generate - With Image Files
+import CodeEmbed from '@site/src/components/CodeEmbed';
+
+# Generate with Image Files
 
 This API lets you ask questions along with the image files to the LLMs.
 This API corresponds to
@@ -21,34 +23,11 @@ If you have this image downloaded and you pass the path to the downloaded image 
 
 ![Img](https://t3.ftcdn.net/jpg/02/96/63/80/360_F_296638053_0gUVA4WVBKceGsIr7LNqRWSnkusi07dq.jpg)
 
-```java
-import io.github.ollama4j.OllamaAPI;
-import io.github.ollama4j.models.response.OllamaResult;
-import io.github.ollama4j.types.OllamaModelType;
-import io.github.ollama4j.utils.OptionsBuilder;
-
-import java.io.File;
-import java.util.List;
-
-public class Main {
-
-    public static void main(String[] args) {
-        String host = "http://localhost:11434/";
-        OllamaAPI ollamaAPI = new OllamaAPI(host);
-        ollamaAPI.setRequestTimeoutSeconds(10);
-
-        OllamaResult result = ollamaAPI.generateWithImageFiles(OllamaModelType.LLAVA,
-                "What's in this image?",
-                List.of(
-                        new File("/path/to/image")),
-                new OptionsBuilder().build()
-        );
-        System.out.println(result.getResponse());
-    }
-}
-```
+<CodeEmbed src="https://raw.githubusercontent.com/ollama4j/ollama4j-examples/refs/heads/main/src/main/java/io/github/ollama4j/examples/GenerateWithImageFile.java" />
 
 You will get a response similar to:
 
+::::tip[LLM Response]
 > This image features a white boat with brown cushions, where a dog is sitting on the back of the boat. The dog seems to
 > be enjoying its time outdoors, perhaps on a lake.
+::::
