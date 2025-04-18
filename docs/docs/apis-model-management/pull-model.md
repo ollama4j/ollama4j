@@ -2,26 +2,15 @@
 sidebar_position: 3
 ---
 
+import CodeEmbed from '@site/src/components/CodeEmbed';
+
 # Pull Model
 
 This API lets you pull a model on the Ollama server.
 
-```java title="PullModel.java"
-import io.github.ollama4j.OllamaAPI;
-import io.github.ollama4j.types.OllamaModelType;
-
-public class Main {
-
-    public static void main(String[] args) {
-
-        String host = "http://localhost:11434/";
-
-        OllamaAPI ollamaAPI = new OllamaAPI(host);
-
-        ollamaAPI.pullModel(OllamaModelType.LLAMA2);
-    }
-}
-```
+<CodeEmbed
+src='https://raw.githubusercontent.com/ollama4j/ollama4j-examples/refs/heads/main/src/main/java/io/github/ollama4j/examples/PullModel.java'>
+</CodeEmbed>
 
 Once downloaded, you can see them when you use [list models](./list-models) API.
 

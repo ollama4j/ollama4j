@@ -2,6 +2,8 @@
 sidebar_position: 7
 ---
 
+import CodeEmbed from '@site/src/components/CodeEmbed';
+
 # Chat
 
 This API lets you create a conversation with LLMs. Using this API enables you to ask questions to the model including
@@ -273,10 +275,4 @@ You will get a response similar to:
 > or a similar breed. Without more details like ear shape and tail length, it's not possible to identify the exact breed
 > confidently.
 
-
-[//]: # (Generated using: https://emgithub.com/)
-<iframe style={{ width: '100%', height: '919px', border: 'none' }} allow="clipboard-write" src="https://emgithub.com/iframe.html?target=https%3A%2F%2Fgithub.com%2Follama4j%2Follama4j-examples%2Fblob%2Fmain%2Fsrc%2Fmain%2Fjava%2Fio%2Fgithub%2Follama4j%2Fexamples%2FChatExample.java&style=default&type=code&showBorder=on&showLineNumbers=on&showFileMeta=on&showFullPath=on&showCopy=on" />
-
-<a href="https://github.com/ollama4j/ollama4j-examples/blob/main/src/main/java/io/github/ollama4j/examples/ChatExample.java" target="_blank">
-  View ChatExample.java on GitHub
-</a>
+<CodeEmbed src="https://raw.githubusercontent.com/ollama4j/ollama4j-examples/refs/heads/main/src/main/java/io/github/ollama4j/examples/ChatExample.java" />

@@ -2,6 +2,8 @@
 sidebar_position: 1
 ---
 
+import CodeEmbed from '@site/src/components/CodeEmbed';
+
 # Generate - Sync
 
 This API lets you ask questions to the LLMs in a synchronous way.
@@ -15,77 +17,32 @@ to [this](/apis-extras/options-builder).
 
 ## Try asking a question about the model
 
-```java
-import io.github.ollama4j.OllamaAPI;
-import io.github.ollama4j.models.response.OllamaResult;
-import io.github.ollama4j.types.OllamaModelType;
-import io.github.ollama4j.utils.OptionsBuilder;
-
-public class Main {
-
-    public static void main(String[] args) {
-
-        String host = "http://localhost:11434/";
-
-        OllamaAPI ollamaAPI = new OllamaAPI(host);
-
-        OllamaResult result =
-                ollamaAPI.generate(OllamaModelType.LLAMA2, "Who are you?", new OptionsBuilder().build());
-
-        System.out.println(result.getResponse());
-    }
-}
-
-```
+<CodeEmbed src="https://raw.githubusercontent.com/ollama4j/ollama4j-examples/refs/heads/main/src/main/java/io/github/ollama4j/examples/Generate.java" />
 
 You will get a response similar to:
 
-> I am LLaMA, an AI assistant developed by Meta AI that can understand and respond to human input in a conversational
-> manner. I am trained on a massive dataset of text from the internet and can generate human-like responses to a wide
-> range of topics and questions. I can be used to create chatbots, virtual assistants, and other applications that
-> require
-> natural language understanding and generation capabilities.
+> I am a large language model created by Alibaba Cloud. My purpose is to assist users in generating text, answering
+> questions, and completing tasks. I aim to be user-friendly and easy to understand for everyone who interacts with me.
 
 ## Try asking a question, receiving the answer streamed
 
-```java
-import io.github.ollama4j.OllamaAPI;
-import io.github.ollama4j.models.response.OllamaResult;
-import io.github.ollama4j.models.generate.OllamaStreamHandler;
-import io.github.ollama4j.utils.OptionsBuilder;
-
-public class Main {
-
-    public static void main(String[] args) {
-
-        String host = "http://localhost:11434/";
-
-        OllamaAPI ollamaAPI = new OllamaAPI(host);
-        // define a stream handler (Consumer<String>)
-        OllamaStreamHandler streamHandler = (s) -> {
-            System.out.println(s);
-        };
-
-        // Should be called using seperate thread to gain non blocking streaming effect.
-        OllamaResult result = ollamaAPI.generate(config.getModel(),
-                "What is the capital of France? And what's France's connection with Mona Lisa?",
-                new OptionsBuilder().build(), streamHandler);
-
-        System.out.println("Full response: " + result.getResponse());
-    }
-}
-```
+<CodeEmbed src="https://raw.githubusercontent.com/ollama4j/ollama4j-examples/refs/heads/main/src/main/java/io/github/ollama4j/examples/GenerateStreamingWithTokenConcatenation.java" />
 
 You will get a response similar to:
 
 > The
+>
 > The capital
+>
 > The capital of
+>
 > The capital of France
+>
 > The capital of France is
+>
 > The capital of France is Paris
+>
 > The capital of France is Paris.
-> Full response: The capital of France is Paris.
 
 ## Try asking a question from general topics
 
@@ -161,7 +118,6 @@ public class Main {
 
 ```
 
-
 _Note: Here I've used
 a [sample prompt](https://github.com/ollama4j/ollama4j/blob/main/src/main/resources/sample-db-prompt-template.txt)
 containing a database schema from within this library for demonstration purposes._
@@ -174,7 +130,6 @@ FROM sales
          JOIN customers ON sales.customer_id = customers.customer_id
 GROUP BY customers.name;
 ```
-
 
 ## Generate structured output
 

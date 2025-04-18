@@ -2,34 +2,23 @@
 sidebar_position: 2
 ---
 
+import CodeEmbed from '@site/src/components/CodeEmbed';
+
 # List Local Models
 
 This API lets you list downloaded/available models on the Ollama server.
 
-```java title="ListModels.java"
-import io.github.ollama4j.OllamaAPI;
-import io.github.ollama4j.models.response.Model;
+<CodeEmbed
+src='https://raw.githubusercontent.com/ollama4j/ollama4j-examples/refs/heads/main/src/main/java/io/github/ollama4j/examples/ListLocalModels.java'>
+</CodeEmbed>
 
-import java.util.List;
-
-public class ListModels {
-
-    public static void main(String[] args) {
-
-        String host = "http://localhost:11434/";
-
-        OllamaAPI ollamaAPI = new OllamaAPI(host);
-
-        List<Model> models = ollamaAPI.listModels();
-
-        models.forEach(model -> System.out.println(model.getName()));
-    }
-}
-```
 
 If you have any models already downloaded on Ollama server, you would have them listed as follows:
 
 ```bash
 llama2:latest
+llama3.2:1b
+qwen2:0.5b
+qwen:0.5b
 sqlcoder:latest
 ```
