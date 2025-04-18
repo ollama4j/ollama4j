@@ -36,7 +36,7 @@ const AddToYourProject = () => {
                 <div>Error: {error.message}</div>
             ) : releaseInfo ? (
                 <>
-                    <h3>Using Maven <code>pom.xml</code></h3>
+                    <h4>Using Maven <code>pom.xml</code></h4>
                     <CodeBlock className="language-xml">
                         {`<dependency>
     <groupId>io.github.ollama4j</groupId>
@@ -44,13 +44,13 @@ const AddToYourProject = () => {
     <version>${releaseInfo.name}</version>
 </dependency>`}
                     </CodeBlock>
-                    <h3>Using Groovy-based <code>build.gradle</code></h3>
+                    <h4>Using Groovy-based <code>build.gradle</code></h4>
                     <CodeBlock className="language-groovy">
                         {`dependencies {
     implementation 'io.github.ollama4j:ollama4j:${releaseInfo.name}'
 }`}
                     </CodeBlock>
-                    <h3>For Kotlin-based <code>build.gradle.kts</code></h3>
+                    <h4>For Kotlin-based <code>build.gradle.kts</code></h4>
                     <CodeBlock className="language-kotlin">
                         {`dependencies {
     implementation("io.github.ollama4j:ollama4j:${releaseInfo.name}")
