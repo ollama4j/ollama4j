@@ -8,7 +8,7 @@ import Heading from '@theme/Heading';
 import styles from './index.module.css';
 import BrowserOnly from '@docusaurus/BrowserOnly';
 import LatestRelease from '@site/src/components/LatestRelease';
-
+import TypewriterTextarea from '@site/src/components/TypewriterTextarea';
 
 function HomepageHeader() {
   const {siteConfig} = useDocusaurusContext();
@@ -25,9 +25,18 @@ function HomepageHeader() {
           style={{ maxWidth: '20vh' }}
         />
         <p className="hero__subtitle">{siteConfig.tagline}</p>
-        <div className={styles.buttons}>
-          <Link className="button button--secondary button--lg" to="/intro">
-            Getting Started
+        <div style={{ marginTop: '2rem' }}>
+          <TypewriterTextarea
+            textContent='Hello there! I’m a handy little Java library that helps you talk to an Ollama server — nice and easy.'
+            typingSpeed={30}
+            pauseBetweenSentences={1200}
+            height='70px'
+            width='50%'
+          />
+        </div>
+        <div className={styles.buttons} >
+          <Link className="button button--secondary button--lg" to="/intro" style={{ marginTop:'2rem' }}>
+            Get Started
           </Link>
         </div>
         <div style={{ marginTop: '3rem' }}>

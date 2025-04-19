@@ -3,6 +3,7 @@ sidebar_position: 7
 ---
 
 import CodeEmbed from '@site/src/components/CodeEmbed';
+import TypewriterTextarea from '@site/src/components/TypewriterTextarea';
 
 # Chat
 
@@ -52,7 +53,7 @@ You will get a response similar to:
 
 <CodeEmbed src="https://raw.githubusercontent.com/ollama4j/ollama4j-examples/refs/heads/main/src/main/java/io/github/ollama4j/examples/ChatStreamingWithTokenConcatenationExample.java" />
 
-::::tip[LLM Response]
+<!-- ::::tip[LLM Response]
 >
 > The
 >
@@ -68,7 +69,15 @@ You will get a response similar to:
 >
 > The capital of France is Paris.
 >
-::::
+:::: -->
+
+<TypewriterTextarea
+    textContent='The capital of France is Paris.'
+    typingSpeed={30}
+    pauseBetweenSentences={1200}
+    height='55px'
+    width='100%'
+/>
 
 ### Using a simple Console Output Stream Handler
 
