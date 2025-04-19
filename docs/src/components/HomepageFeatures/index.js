@@ -1,6 +1,7 @@
 import clsx from 'clsx';
 import Heading from '@theme/Heading';
 import styles from './styles.module.css';
+import Ollama4jUIImageCarousel from '@site/src/components/Ollama4jUIImageCarousel';
 
 const FeatureList = [
   {
@@ -159,6 +160,11 @@ export default function HomepageFeatures() {
               <Usage key={idx} {...props} />
             ))}
           </div>
+        </div>
+      </section>
+      <section className={styles.features}>
+        <div className="container">
+          <Ollama4jUIImageCarousel></Ollama4jUIImageCarousel>
         </div>
       </section>
     </>
