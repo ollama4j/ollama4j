@@ -3,6 +3,7 @@ sidebar_position: 1
 ---
 
 import CodeEmbed from '@site/src/components/CodeEmbed';
+import TypewriterTextarea from '@site/src/components/TypewriterTextarea';
 
 # Generate (Sync)
 
@@ -25,14 +26,14 @@ You will get a response similar to:
 > I am a large language model created by Alibaba Cloud. My purpose is to assist users in generating text, answering
 > questions, and completing tasks. I aim to be user-friendly and easy to understand for everyone who interacts with me.
 ::::
->
+
 ### Try asking a question, receiving the answer streamed
 
 <CodeEmbed src="https://raw.githubusercontent.com/ollama4j/ollama4j-examples/refs/heads/main/src/main/java/io/github/ollama4j/examples/GenerateStreamingWithTokenConcatenation.java" />
 
 You will get a response similar to:
 
-::::tip[LLM Response]
+<!-- ::::tip[LLM Response]
 > The
 >
 > The capital
@@ -46,7 +47,15 @@ You will get a response similar to:
 > The capital of France is Paris
 >
 > The capital of France is Paris.
-::::
+:::: -->
+
+<TypewriterTextarea
+    textContent='The capital of France is Paris.'
+    typingSpeed={30}
+    pauseBetweenSentences={1200}
+    height='55px'
+    width='100%'
+/>
 
 ## Generate structured output
 
