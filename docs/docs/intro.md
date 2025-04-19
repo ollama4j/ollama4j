@@ -9,16 +9,14 @@ import AddToYourProject from '@site/src/components/AddToYourProject';
 
 # Introduction
 
-Let's get started with **Ollama4j**.
-
-## 🦙 What is Ollama?
+### 🦙 What is Ollama?
 
 [Ollama](https://ollama.ai/) is an advanced AI tool that allows users to easily set up and run large language models
 locally (in CPU and GPU
 modes). With Ollama, users can leverage powerful language models such as Llama 2 and even customize and create their own
 models.
 
-## 👨‍💻 Why Ollama4j?
+### 👨‍💻 Why Ollama4j?
 
 Ollama4j was built for the simple purpose of integrating Ollama with Java applications.
 
@@ -39,16 +37,16 @@ Ollama4j was built for the simple purpose of integrating Ollama with Java applic
     end
 ```
 
-## Getting Started
+### Getting Started
 
-### What you'll need
+#### What you'll need
 
 - **[Ollama](https://ollama.ai/download)**
 - **[Oracle JDK](https://www.oracle.com/java/technologies/javase/jdk11-archive-downloads.html)** or
   **[Open JDK](https://jdk.java.net/archive/)** 11.0 or above.
 - **[Maven](https://maven.apache.org/download.cgi)**
 
-### Start Ollama server
+#### Start Ollama server
 
 The easiest way of getting started with Ollama server is with [Docker](https://docs.docker.com/get-started/overview/).
 But if you choose to run the
@@ -74,7 +72,7 @@ terminal of your code editor.
 
 The command runs the Ollama server locally at **http://localhost:11434/**.
 
-### Setup your project
+#### Setup your project
 
 Add the dependency to your project's `pom.xml`.
 
@@ -92,7 +90,6 @@ example,
 Use `slf4j-jdk14` implementation:
 
 ```xml
-
 <dependency>
     <groupId>org.slf4j</groupId>
     <artifactId>slf4j-jdk14</artifactId>
@@ -103,7 +100,6 @@ Use `slf4j-jdk14` implementation:
 or use `logback-classic` implementation:
 
 ```xml
-
 <dependency>
     <groupId>ch.qos.logback</groupId>
     <artifactId>logback-classic</artifactId>
