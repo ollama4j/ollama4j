@@ -37,7 +37,7 @@ class Ollama4jUIImageCarousel extends React.Component {
     render() {
         return (
             <div style={{ margin: '0 auto', maxWidth: '800px' }}>
-                <div style={{ display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center' }}>
+                <div style={{ display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center', textAlign: 'center' }}>
                     <h2>Explore the stuff we have built with Ollama4j</h2>
                     <h4>
                         <a href="https://github.com/ollama4j/ollama4j-ui" target='_blank' rel="noopener noreferrer">
