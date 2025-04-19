@@ -76,13 +76,12 @@ The command runs the Ollama server locally at **http://localhost:11434/**.
 
 ### Setup your project
 
-
 Add the dependency to your project's `pom.xml`.
 
 <AddToYourProject/>
 
 <div style={{ marginTop: '2rem', marginBottom: '2rem', fontSize: '1em', textAlign: 'left', display: 'flex', justifyContent: 'left'}}>
-    <LatestRelease style={{textAlign: 'left', fontWeight: 'normal'}}/>
+    <LatestRelease showReleaseDate={true} style={{textAlign: 'left', fontWeight: 'normal'}}/>
 </div>
 
 Find the latest version of the library from [Maven Central Repository](https://central.sonatype.com/artifact/io.github.ollama4j/ollama4j).
