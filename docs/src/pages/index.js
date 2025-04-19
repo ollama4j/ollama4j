@@ -10,7 +10,6 @@ import BrowserOnly from '@docusaurus/BrowserOnly';
 import LatestRelease from '@site/src/components/LatestRelease';
 
 
-
 function HomepageHeader() {
   const {siteConfig} = useDocusaurusContext();
   return (
@@ -32,7 +31,7 @@ function HomepageHeader() {
           </Link>
         </div>
         <div style={{ marginTop: '3rem' }}>
-          <LatestRelease />
+          <LatestRelease showReleaseDate={false} />
         </div>
       </div>
     </header>
