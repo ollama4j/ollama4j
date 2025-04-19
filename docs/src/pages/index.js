@@ -30,8 +30,8 @@ function HomepageHeader() {
             textContent='Hello there! I’m a handy little Java library that helps you talk to an Ollama server — nice and easy.'
             typingSpeed={30}
             pauseBetweenSentences={1200}
-            height='70px'
-            width='50%'
+            height='130px'
+            width='100%'
           />
         </div>
         <div className={styles.buttons} >
