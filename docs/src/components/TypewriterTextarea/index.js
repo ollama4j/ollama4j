@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useRef } from 'react';
 
-const TypewriterTextarea = ({ textContent, typingSpeed = 50, pauseBetweenSentences = 1000, height = '200px', width = '100%' }) => {
+const TypewriterTextarea = ({ textContent, typingSpeed = 50, pauseBetweenSentences = 1000, height = '200px', width = '100%', align = 'left' }) => {
   const [text, setText] = useState('');
   const [sentenceIndex, setSentenceIndex] = useState(0);
   const [charIndex, setCharIndex] = useState(0);
@@ -56,8 +56,10 @@ const TypewriterTextarea = ({ textContent, typingSpeed = 50, pauseBetweenSentenc
         fontSize: '1rem',
         backgroundColor: '#f4f4f4',
         border: '1px solid #ccc',
+        textAlign: align,
         resize: 'none',
         whiteSpace: 'pre-wrap',
+        color: 'black',
       }}
     />
   );
