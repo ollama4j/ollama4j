@@ -5,6 +5,7 @@ import static io.github.ollama4j.utils.Utils.getObjectMapper;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 import io.github.ollama4j.utils.FileToBase64Serializer;
 
@@ -25,6 +26,7 @@ import lombok.RequiredArgsConstructor;
 @AllArgsConstructor
 @RequiredArgsConstructor
 @NoArgsConstructor
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class OllamaChatMessage {
 
     @NonNull
