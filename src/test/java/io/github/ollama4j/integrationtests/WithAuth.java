@@ -1,6 +1,8 @@
 package io.github.ollama4j.integrationtests;
 
 import io.github.ollama4j.OllamaAPI;
+import io.github.ollama4j.exceptions.OllamaBaseException;
+import io.github.ollama4j.models.response.OllamaResult;
 import io.github.ollama4j.samples.AnnotatedTool;
 import io.github.ollama4j.tools.annotations.OllamaToolService;
 import org.junit.jupiter.api.BeforeAll;
@@ -20,9 +22,13 @@ import org.testcontainers.utility.MountableFile;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.net.URISyntaxException;
 import java.time.Duration;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Map;
 
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 
 @OllamaToolService(providers = {AnnotatedTool.class})
 @TestMethodOrder(OrderAnnotation.class)
@@ -33,6 +39,10 @@ public class WithAuth {
     private static final int NGINX_PORT = 80;
     private static final int OLLAMA_INTERNAL_PORT = 11434;
     private static final String OLLAMA_VERSION = "0.6.1";
+    private static final String NGINX_VERSION = "nginx:1.23.4-alpine";
+    private static final String BEARER_AUTH_TOKEN = "secret-token";
+    private static final String CHAT_MODEL_LLAMA3 = "llama3";
+
 
     private static OllamaContainer ollama;
     private static GenericContainer<?> nginx;
@@ -52,12 +62,20 @@ public class WithAuth {
         api.setRequestTimeoutSeconds(120);
         api.setVerbose(true);
         api.setNumberOfRetriesForModelPull(3);
+
+        String ollamaUrl = "http://" + ollama.getHost() + ":" + ollama.getMappedPort(OLLAMA_INTERNAL_PORT);
+        String nginxUrl = "http://" + nginx.getHost() + ":" + nginx.getMappedPort(NGINX_PORT);
+        LOG.info(
+                "The Ollama service is now accessible via the Nginx proxy with bearer-auth authentication mode.\n" +
+                        "→ Ollama URL: {}\n" +
+                        "→ Proxy URL: {}}",
+                ollamaUrl, nginxUrl
+        );
+        LOG.info("OllamaAPI initialized with bearer auth token: {}", BEARER_AUTH_TOKEN);
     }
 
     private static OllamaContainer createOllamaContainer() {
-        OllamaContainer container = new OllamaContainer("ollama/ollama:" + OLLAMA_VERSION);
-        container.addExposedPort(OLLAMA_INTERNAL_PORT);
-        return container;
+        return new OllamaContainer("ollama/ollama:" + OLLAMA_VERSION).withExposedPorts(OLLAMA_INTERNAL_PORT);
     }
 
     private static String generateNginxConfig(int ollamaPort) {
@@ -86,7 +104,6 @@ public class WithAuth {
 
     public static GenericContainer<?> createNginxContainer(int ollamaPort) {
         File nginxConf;
-
         try {
             File tempDir = new File(System.getProperty("java.io.tmpdir"), "nginx-auth");
             if (!tempDir.exists()) tempDir.mkdirs();
@@ -96,7 +113,7 @@ public class WithAuth {
                 writer.write(generateNginxConfig(ollamaPort));
             }
 
-            return new NginxContainer<>(DockerImageName.parse("nginx:1.23.4-alpine"))
+            return new NginxContainer<>(DockerImageName.parse(NGINX_VERSION))
                     .withExposedPorts(NGINX_PORT)
                     .withCopyFileToContainer(
                             MountableFile.forHostPath(nginxConf.getAbsolutePath()),
@@ -115,12 +132,63 @@ public class WithAuth {
 
     @Test
     @Order(1)
-    void testEndpoint() throws InterruptedException {
-        String ollamaUrl = "http://" + ollama.getHost() + ":" + ollama.getMappedPort(OLLAMA_INTERNAL_PORT);
-        String nginxUrl = "http://" + nginx.getHost() + ":" + nginx.getMappedPort(NGINX_PORT);
-        System.out.printf("Ollama service at %s is now accessible through the Nginx proxy at %s%n", ollamaUrl, nginxUrl);
-        api.setBearerAuth("secret-token");
-        Thread.sleep(1000);
-        assertTrue(api.ping(), "OllamaAPI failed to ping through NGINX with auth.");
+    void testOllamaBehindProxy() throws InterruptedException {
+        api.setBearerAuth(BEARER_AUTH_TOKEN);
+        assertTrue(api.ping(), "Expected OllamaAPI to successfully ping through NGINX with valid auth token.");
+    }
+
+    @Test
+    @Order(1)
+    void testWithWrongToken() throws InterruptedException {
+        api.setBearerAuth("wrong-token");
+        assertFalse(api.ping(), "Expected OllamaAPI ping to fail through NGINX with an invalid auth token.");
+    }
+
+    @Test
+    @Order(2)
+    void testAskModelWithStructuredOutput()
+            throws OllamaBaseException, IOException, InterruptedException, URISyntaxException {
+        api.setBearerAuth(BEARER_AUTH_TOKEN);
+
+        api.pullModel(CHAT_MODEL_LLAMA3);
+
+        int timeHour = 6;
+        boolean isNightTime = false;
+
+        String prompt = "The Sun is shining, and its " + timeHour + ". Its daytime.";
+
+        Map<String, Object> format = new HashMap<>();
+        format.put("type", "object");
+        format.put("properties", new HashMap<String, Object>() {
+            {
+                put("timeHour", new HashMap<String, Object>() {
+                    {
+                        put("type", "integer");
+                    }
+                });
+                put("isNightTime", new HashMap<String, Object>() {
+                    {
+                        put("type", "boolean");
+                    }
+                });
+            }
+        });
+        format.put("required", Arrays.asList("timeHour", "isNightTime"));
+
+        OllamaResult result = api.generate(CHAT_MODEL_LLAMA3, prompt, format);
+
+        assertNotNull(result);
+        assertNotNull(result.getResponse());
+        assertFalse(result.getResponse().isEmpty());
+
+        assertEquals(timeHour,
+                result.getStructuredResponse().get("timeHour"));
+        assertEquals(isNightTime,
+                result.getStructuredResponse().get("isNightTime"));
+
+        TimeOfDay timeOfDay = result.as(TimeOfDay.class);
+
+        assertEquals(timeHour, timeOfDay.getTimeHour());
+        assertEquals(isNightTime, timeOfDay.isNightTime());
     }
 }
