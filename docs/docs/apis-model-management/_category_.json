@@ -1,8 +1,8 @@
 {
-  "label": "APIs - Model Management",
-  "position": 2,
-  "link": {
-    "type": "generated-index",
-    "description": "Details of APIs to manage LLMs."
-  }
+    "label": "APIs - Model Management",
+    "position": 2,
+    "link": {
+        "type": "generated-index",
+        "description": "Details of APIs to manage LLMs."
+    }
 }

@@ -26,7 +26,7 @@ public class OllamaGenerateRequestBuilder {
         request.setPrompt(prompt);
         return this;
     }
-    
+
     public OllamaGenerateRequestBuilder withGetJsonResponse(){
         this.request.setReturnFormatJson(true);
         return this;

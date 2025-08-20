@@ -13,4 +13,3 @@ public class ToolFunctionCallSpec {
     private String name;
     private Map<String, Object> arguments;
 }
-
