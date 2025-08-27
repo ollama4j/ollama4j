@@ -32,6 +32,7 @@ function HomepageHeader() {
             pauseBetweenSentences={1200}
             height='130px'
             width='100%'
+            align='center'
           />
         </div>
         <div className={styles.buttons} >

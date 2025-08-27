@@ -51,7 +51,7 @@ import java.util.stream.Collectors;
 /**
  * The base Ollama API class.
  */
-@SuppressWarnings({ "DuplicatedCode", "resource" })
+@SuppressWarnings({"DuplicatedCode", "resource"})
 public class OllamaAPI {
 
     private static final Logger logger = LoggerFactory.getLogger(OllamaAPI.class);
@@ -215,7 +215,7 @@ public class OllamaAPI {
      * tags, tag count, and the time when model was updated.
      *
      * @return A list of {@link LibraryModel} objects representing the models
-     *         available in the Ollama library.
+     * available in the Ollama library.
      * @throws OllamaBaseException  If the HTTP request fails or the response is not
      *                              successful (non-200 status code).
      * @throws IOException          If an I/O error occurs during the HTTP request
@@ -281,7 +281,7 @@ public class OllamaAPI {
      *                     of the library model
      *                     for which the tags need to be fetched.
      * @return a list of {@link LibraryModelTag} objects containing the extracted
-     *         tags and their associated metadata.
+     * tags and their associated metadata.
      * @throws OllamaBaseException  if the HTTP response status code indicates an
      *                              error (i.e., not 200 OK),
      *                              or if there is any other issue during the
@@ -348,7 +348,7 @@ public class OllamaAPI {
      * @param modelName The name of the model to search for in the library.
      * @param tag       The tag name to search for within the specified model.
      * @return The {@link LibraryModelTag} associated with the specified model and
-     *         tag.
+     * tag.
      * @throws OllamaBaseException    If there is a problem with the Ollama library
      *                                operations.
      * @throws IOException            If an I/O error occurs during the operation.
@@ -778,7 +778,7 @@ public class OllamaAPI {
      * @param format A map containing the format specification for the structured
      *               output.
      * @return An instance of {@link OllamaResult} containing the structured
-     *         response.
+     * response.
      * @throws OllamaBaseException  if the response indicates an error status.
      * @throws IOException          if an I/O error occurs during the HTTP request.
      * @throws InterruptedException if the operation is interrupted.
@@ -796,8 +796,9 @@ public class OllamaAPI {
         String jsonData = Utils.getObjectMapper().writeValueAsString(requestBody);
         HttpClient httpClient = HttpClient.newHttpClient();
 
-        HttpRequest request = HttpRequest.newBuilder(uri)
-                .header("Content-Type", "application/json")
+        HttpRequest request = getRequestBuilderDefault(uri)
+                .header("Accept", "application/json")
+                .header("Content-type", "application/json")
                 .POST(HttpRequest.BodyPublishers.ofString(jsonData))
                 .build();
 
@@ -852,8 +853,8 @@ public class OllamaAPI {
      * @param options Additional options or configurations to use when generating
      *                the response.
      * @return {@link OllamaToolsResult} An OllamaToolsResult object containing the
-     *         response from the AI model and the results of invoking the tools on
-     *         that output.
+     * response from the AI model and the results of invoking the tools on
+     * that output.
      * @throws OllamaBaseException  if the response indicates an error status
      * @throws IOException          if an I/O error occurs during the HTTP request
      * @throws InterruptedException if the operation is interrupted
@@ -1065,14 +1066,14 @@ public class OllamaAPI {
      * @param model    the ollama model to ask the question to
      * @param messages chat history / message stack to send to the model
      * @return {@link OllamaChatResult} containing the api response and the message
-     *         history including the newly acquired assistant response.
-     * @throws OllamaBaseException  any response code than 200 has been returned
-     * @throws IOException          in case the responseStream can not be read
-     * @throws InterruptedException in case the server is not reachable or network
-     *                              issues happen
-     * @throws OllamaBaseException  if the response indicates an error status
-     * @throws IOException          if an I/O error occurs during the HTTP request
-     * @throws InterruptedException if the operation is interrupted
+     * history including the newly acquired assistant response.
+     * @throws OllamaBaseException     any response code than 200 has been returned
+     * @throws IOException             in case the responseStream can not be read
+     * @throws InterruptedException    in case the server is not reachable or network
+     *                                 issues happen
+     * @throws OllamaBaseException     if the response indicates an error status
+     * @throws IOException             if an I/O error occurs during the HTTP request
+     * @throws InterruptedException    if the operation is interrupted
      * @throws ToolInvocationException if the tool invocation fails
      */
     public OllamaChatResult chat(String model, List<OllamaChatMessage> messages)
@@ -1089,13 +1090,13 @@ public class OllamaAPI {
      *
      * @param request request object to be sent to the server
      * @return {@link OllamaChatResult}
-     * @throws OllamaBaseException  any response code than 200 has been returned
-     * @throws IOException          in case the responseStream can not be read
-     * @throws InterruptedException in case the server is not reachable or network
-     *                              issues happen
-     * @throws OllamaBaseException  if the response indicates an error status
-     * @throws IOException          if an I/O error occurs during the HTTP request
-     * @throws InterruptedException if the operation is interrupted
+     * @throws OllamaBaseException     any response code than 200 has been returned
+     * @throws IOException             in case the responseStream can not be read
+     * @throws InterruptedException    in case the server is not reachable or network
+     *                                 issues happen
+     * @throws OllamaBaseException     if the response indicates an error status
+     * @throws IOException             if an I/O error occurs during the HTTP request
+     * @throws InterruptedException    if the operation is interrupted
      * @throws ToolInvocationException if the tool invocation fails
      */
     public OllamaChatResult chat(OllamaChatRequest request)
@@ -1114,13 +1115,13 @@ public class OllamaAPI {
      *                      (caution: all previous tokens from stream will be
      *                      concatenated)
      * @return {@link OllamaChatResult}
-     * @throws OllamaBaseException  any response code than 200 has been returned
-     * @throws IOException          in case the responseStream can not be read
-     * @throws InterruptedException in case the server is not reachable or network
-     *                              issues happen
-     * @throws OllamaBaseException  if the response indicates an error status
-     * @throws IOException          if an I/O error occurs during the HTTP request
-     * @throws InterruptedException if the operation is interrupted
+     * @throws OllamaBaseException     any response code than 200 has been returned
+     * @throws IOException             in case the responseStream can not be read
+     * @throws InterruptedException    in case the server is not reachable or network
+     *                                 issues happen
+     * @throws OllamaBaseException     if the response indicates an error status
+     * @throws IOException             if an I/O error occurs during the HTTP request
+     * @throws InterruptedException    if the operation is interrupted
      * @throws ToolInvocationException if the tool invocation fails
      */
     public OllamaChatResult chat(OllamaChatRequest request, OllamaStreamHandler streamHandler)
