@@ -10,4 +10,5 @@ public class ModelPullResponse {
     private String digest;
     private long total;
     private long completed;
+    private String error;
 }

@@ -13,8 +13,8 @@ import lombok.Data;
 @Data
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public abstract class OllamaCommonRequest {
-  
-  protected String model;  
+
+  protected String model;
   @JsonSerialize(using = BooleanToJsonFormatFlagSerializer.class)
   @JsonProperty(value = "format")
   protected Boolean returnFormatJson;
@@ -24,7 +24,7 @@ public abstract class OllamaCommonRequest {
   @JsonProperty(value = "keep_alive")
   protected String keepAlive;
 
-  
+
   public String toString() {
     try {
       return Utils.getObjectMapper().writerWithDefaultPrettyPrinter().writeValueAsString(this);

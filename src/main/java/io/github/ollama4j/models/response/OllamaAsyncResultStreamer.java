@@ -120,4 +120,3 @@ public class OllamaAsyncResultStreamer extends Thread {
     }
 
 }
-

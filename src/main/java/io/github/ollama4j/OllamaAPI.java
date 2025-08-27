@@ -420,16 +420,23 @@ public class OllamaAPI {
             String line;
             while ((line = reader.readLine()) != null) {
                 ModelPullResponse modelPullResponse = Utils.getObjectMapper().readValue(line, ModelPullResponse.class);
-                if (modelPullResponse != null && modelPullResponse.getStatus() != null) {
-                    if (verbose) {
-                        logger.info(modelName + ": " + modelPullResponse.getStatus());
+                if (modelPullResponse != null) {
+                    // Check for error in response body first
+                    if (modelPullResponse.getError() != null && !modelPullResponse.getError().trim().isEmpty()) {
+                        throw new OllamaBaseException("Model pull failed: " + modelPullResponse.getError());
                     }
-                    // Check if status is "success" and set success flag to true.
-                    if ("success".equalsIgnoreCase(modelPullResponse.getStatus())) {
-                        success = true;
+
+                    if (modelPullResponse.getStatus() != null) {
+                        if (verbose) {
+                            logger.info(modelName + ": " + modelPullResponse.getStatus());
+                        }
+                        // Check if status is "success" and set success flag to true.
+                        if ("success".equalsIgnoreCase(modelPullResponse.getStatus())) {
+                            success = true;
+                        }
                     }
                 } else {
-                    logger.error("Received null or invalid status for model pull.");
+                    logger.error("Received null response for model pull.");
                 }
             }
         }
@@ -755,7 +762,7 @@ public class OllamaAPI {
      * @throws InterruptedException if the operation is interrupted
      */
     public OllamaResult generate(String model, String prompt, boolean raw, Options options,
-            OllamaStreamHandler streamHandler) throws OllamaBaseException, IOException, InterruptedException {
+                                 OllamaStreamHandler streamHandler) throws OllamaBaseException, IOException, InterruptedException {
         OllamaGenerateRequest ollamaRequestModel = new OllamaGenerateRequest(model, prompt);
         ollamaRequestModel.setRaw(raw);
         ollamaRequestModel.setOptions(options.getOptionsMap());
@@ -938,7 +945,7 @@ public class OllamaAPI {
      * @throws InterruptedException if the operation is interrupted
      */
     public OllamaResult generateWithImageFiles(String model, String prompt, List<File> imageFiles, Options options,
-            OllamaStreamHandler streamHandler) throws OllamaBaseException, IOException, InterruptedException {
+                                               OllamaStreamHandler streamHandler) throws OllamaBaseException, IOException, InterruptedException {
         List<String> images = new ArrayList<>();
         for (File imageFile : imageFiles) {
             images.add(encodeFileToBase64(imageFile));
@@ -985,7 +992,7 @@ public class OllamaAPI {
      * @throws URISyntaxException   if the URI for the request is malformed
      */
     public OllamaResult generateWithImageURLs(String model, String prompt, List<String> imageURLs, Options options,
-            OllamaStreamHandler streamHandler)
+                                              OllamaStreamHandler streamHandler)
             throws OllamaBaseException, IOException, InterruptedException, URISyntaxException {
         List<String> images = new ArrayList<>();
         for (String imageURL : imageURLs) {
@@ -1247,7 +1254,7 @@ public class OllamaAPI {
                 registerAnnotatedTools(provider.getDeclaredConstructor().newInstance());
             }
         } catch (InstantiationException | NoSuchMethodException | IllegalAccessException
-                | InvocationTargetException e) {
+                 | InvocationTargetException e) {
             throw new RuntimeException(e);
         }
     }
@@ -1384,7 +1391,7 @@ public class OllamaAPI {
      * @throws InterruptedException if the thread is interrupted during the request.
      */
     private OllamaResult generateSyncForOllamaRequestModel(OllamaGenerateRequest ollamaRequestModel,
-            OllamaStreamHandler streamHandler) throws OllamaBaseException, IOException, InterruptedException {
+                                                           OllamaStreamHandler streamHandler) throws OllamaBaseException, IOException, InterruptedException {
         OllamaGenerateEndpointCaller requestCaller = new OllamaGenerateEndpointCaller(host, auth, requestTimeoutSeconds,
                 verbose);
         OllamaResult result;

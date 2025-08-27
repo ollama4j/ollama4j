@@ -10,10 +10,10 @@ import com.fasterxml.jackson.core.JsonProcessingException;
  * Interface to represent a OllamaRequest as HTTP-Request Body via {@link BodyPublishers}.
  */
 public interface OllamaRequestBody {
-    
+
     /**
      * Transforms the OllamaRequest Object to a JSON Object via Jackson.
-     * 
+     *
      * @return JSON representation of a OllamaRequest
      */
     @JsonIgnore

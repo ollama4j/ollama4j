@@ -2,7 +2,7 @@ repos:
 
   # pre-commit hooks
   - repo: https://github.com/pre-commit/pre-commit-hooks
-    rev: "v5.0.0"
+    rev: "v6.0.0"
     hooks:
       - id: no-commit-to-branch
         args: ['--branch', 'main']
@@ -21,7 +21,7 @@ repos:
 
   # for commit message formatting
   - repo: https://github.com/commitizen-tools/commitizen
-    rev: v4.4.1
+    rev: v4.8.3
     hooks:
       - id: commitizen
         stages: [commit-msg]
