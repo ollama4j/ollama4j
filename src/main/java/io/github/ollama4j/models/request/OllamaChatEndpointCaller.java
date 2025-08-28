@@ -46,18 +46,18 @@ public class OllamaChatEndpointCaller extends OllamaEndpointCaller {
      * in case the JSON Object cannot be parsed to a {@link OllamaChatResponseModel}. Thus, the ResponseModel should
      * never be null.
      *
-     * @param line streamed line of ollama stream response
+     * @param line           streamed line of ollama stream response
      * @param responseBuffer Stringbuffer to add latest response message part to
      * @return TRUE, if ollama-Response has 'done' state
      */
     @Override
-    protected boolean parseResponseAndAddToBuffer(String line, StringBuilder responseBuffer) {
+    protected boolean parseResponseAndAddToBuffer(String line, StringBuilder responseBuffer, StringBuilder thinkingBuffer) {
         try {
             OllamaChatResponseModel ollamaResponseModel = Utils.getObjectMapper().readValue(line, OllamaChatResponseModel.class);
             // it seems that under heavy load ollama responds with an empty chat message part in the streamed response
             // thus, we null check the message and hope that the next streamed response has some message content again
             OllamaChatMessage message = ollamaResponseModel.getMessage();
-            if(message != null) {
+            if (message != null) {
                 responseBuffer.append(message.getContent());
                 if (tokenHandler != null) {
                     tokenHandler.accept(ollamaResponseModel);
@@ -92,6 +92,7 @@ public class OllamaChatEndpointCaller extends OllamaEndpointCaller {
         int statusCode = response.statusCode();
         InputStream responseBodyStream = response.body();
         StringBuilder responseBuffer = new StringBuilder();
+        StringBuilder thinkingBuffer = new StringBuilder();
         OllamaChatResponseModel ollamaChatResponseModel = null;
         List<OllamaChatToolCalls> wantedToolsForStream = null;
         try (BufferedReader reader =
@@ -115,10 +116,15 @@ public class OllamaChatEndpointCaller extends OllamaEndpointCaller {
                     OllamaErrorResponse ollamaResponseModel = Utils.getObjectMapper().readValue(line,
                             OllamaErrorResponse.class);
                     responseBuffer.append(ollamaResponseModel.getError());
+                } else if (statusCode == 500) {
+                    LOG.warn("Status code: 500 (Internal Server Error)");
+                    OllamaErrorResponse ollamaResponseModel = Utils.getObjectMapper().readValue(line,
+                            OllamaErrorResponse.class);
+                    responseBuffer.append(ollamaResponseModel.getError());
                 } else {
-                    boolean finished = parseResponseAndAddToBuffer(line, responseBuffer);
-                        ollamaChatResponseModel = Utils.getObjectMapper().readValue(line, OllamaChatResponseModel.class);
-                    if(body.stream && ollamaChatResponseModel.getMessage().getToolCalls() != null){
+                    boolean finished = parseResponseAndAddToBuffer(line, responseBuffer, thinkingBuffer);
+                    ollamaChatResponseModel = Utils.getObjectMapper().readValue(line, OllamaChatResponseModel.class);
+                    if (body.stream && ollamaChatResponseModel.getMessage().getToolCalls() != null) {
                         wantedToolsForStream = ollamaChatResponseModel.getMessage().getToolCalls();
                     }
                     if (finished && body.stream) {
@@ -132,11 +138,11 @@ public class OllamaChatEndpointCaller extends OllamaEndpointCaller {
             LOG.error("Status code " + statusCode);
             throw new OllamaBaseException(responseBuffer.toString());
         } else {
-            if(wantedToolsForStream != null) {
+            if (wantedToolsForStream != null) {
                 ollamaChatResponseModel.getMessage().setToolCalls(wantedToolsForStream);
             }
             OllamaChatResult ollamaResult =
-                    new OllamaChatResult(ollamaChatResponseModel,body.getMessages());
+                    new OllamaChatResult(ollamaChatResponseModel, body.getMessages());
             if (isVerbose()) LOG.info("Model response: " + ollamaResult);
             return ollamaResult;
         }

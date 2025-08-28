@@ -21,6 +21,7 @@ import lombok.NoArgsConstructor;
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class OllamaStructuredResult {
   private String response;
+  private String thinking;
 
   private int httpStatusCode;
 

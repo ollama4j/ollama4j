@@ -38,10 +38,15 @@ public class OllamaGenerateEndpointCaller extends OllamaEndpointCaller {
     }
 
     @Override
-    protected boolean parseResponseAndAddToBuffer(String line, StringBuilder responseBuffer) {
+    protected boolean parseResponseAndAddToBuffer(String line, StringBuilder responseBuffer, StringBuilder thinkingBuffer) {
         try {
             OllamaGenerateResponseModel ollamaResponseModel = Utils.getObjectMapper().readValue(line, OllamaGenerateResponseModel.class);
-            responseBuffer.append(ollamaResponseModel.getResponse());
+            if (ollamaResponseModel.getResponse() != null) {
+                responseBuffer.append(ollamaResponseModel.getResponse());
+            }
+            if (ollamaResponseModel.getThinking() != null) {
+                thinkingBuffer.append(ollamaResponseModel.getThinking());
+            }
             if (streamObserver != null) {
                 streamObserver.notify(ollamaResponseModel);
             }
@@ -84,6 +89,7 @@ public class OllamaGenerateEndpointCaller extends OllamaEndpointCaller {
         int statusCode = response.statusCode();
         InputStream responseBodyStream = response.body();
         StringBuilder responseBuffer = new StringBuilder();
+        StringBuilder thinkingBuffer = new StringBuilder();
         try (BufferedReader reader =
                      new BufferedReader(new InputStreamReader(responseBodyStream, StandardCharsets.UTF_8))) {
             String line;
@@ -105,7 +111,7 @@ public class OllamaGenerateEndpointCaller extends OllamaEndpointCaller {
                             OllamaErrorResponse.class);
                     responseBuffer.append(ollamaResponseModel.getError());
                 } else {
-                    boolean finished = parseResponseAndAddToBuffer(line, responseBuffer);
+                    boolean finished = parseResponseAndAddToBuffer(line, responseBuffer, thinkingBuffer);
                     if (finished) {
                         break;
                     }
@@ -119,7 +125,7 @@ public class OllamaGenerateEndpointCaller extends OllamaEndpointCaller {
         } else {
             long endTime = System.currentTimeMillis();
             OllamaResult ollamaResult =
-                    new OllamaResult(responseBuffer.toString().trim(), endTime - startTime, statusCode);
+                    new OllamaResult(responseBuffer.toString().trim(), thinkingBuffer.toString().trim(), endTime - startTime, statusCode);
             if (isVerbose()) LOG.info("Model response: " + ollamaResult);
             return ollamaResult;
         }

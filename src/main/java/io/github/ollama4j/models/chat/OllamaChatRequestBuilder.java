@@ -39,11 +39,17 @@ public class OllamaChatRequestBuilder {
         request = new OllamaChatRequest(request.getModel(), new ArrayList<>());
     }
 
-    public OllamaChatRequestBuilder withMessage(OllamaChatMessageRole role, String content){
-        return withMessage(role,content, Collections.emptyList());
+    public OllamaChatRequestBuilder withMessage(OllamaChatMessageRole role, String content) {
+        return withMessage(role, content, Collections.emptyList());
     }
 
-    public OllamaChatRequestBuilder withMessage(OllamaChatMessageRole role, String content, List<OllamaChatToolCalls> toolCalls,List<File> images) {
+    public OllamaChatRequestBuilder withMessage(OllamaChatMessageRole role, String content, List<OllamaChatToolCalls> toolCalls) {
+        List<OllamaChatMessage> messages = this.request.getMessages();
+        messages.add(new OllamaChatMessage(role, content, toolCalls, null));
+        return this;
+    }
+
+    public OllamaChatRequestBuilder withMessage(OllamaChatMessageRole role, String content, List<OllamaChatToolCalls> toolCalls, List<File> images) {
         List<OllamaChatMessage> messages = this.request.getMessages();
 
         List<byte[]> binaryImages = images.stream().map(file -> {
@@ -55,11 +61,11 @@ public class OllamaChatRequestBuilder {
             }
         }).collect(Collectors.toList());
 
-        messages.add(new OllamaChatMessage(role, content,toolCalls, binaryImages));
+        messages.add(new OllamaChatMessage(role, content, toolCalls, binaryImages));
         return this;
     }
 
-    public OllamaChatRequestBuilder withMessage(OllamaChatMessageRole role, String content,List<OllamaChatToolCalls> toolCalls, String... imageUrls) {
+    public OllamaChatRequestBuilder withMessage(OllamaChatMessageRole role, String content, List<OllamaChatToolCalls> toolCalls, String... imageUrls) {
         List<OllamaChatMessage> messages = this.request.getMessages();
         List<byte[]> binaryImages = null;
         if (imageUrls.length > 0) {
@@ -75,7 +81,7 @@ public class OllamaChatRequestBuilder {
             }
         }
 
-        messages.add(new OllamaChatMessage(role, content,toolCalls, binaryImages));
+        messages.add(new OllamaChatMessage(role, content, toolCalls, binaryImages));
         return this;
     }
 

@@ -21,9 +21,17 @@ public class OllamaGenerateStreamObserver {
     }
 
     protected void handleCurrentResponsePart(OllamaGenerateResponseModel currentResponsePart) {
-        message = message + currentResponsePart.getResponse();
+        String response = currentResponsePart.getResponse();
+        String thinking = currentResponsePart.getThinking();
+
+        boolean hasResponse = response != null && !response.trim().isEmpty();
+        boolean hasThinking = thinking != null && !thinking.trim().isEmpty();
+
+        if (!hasResponse && hasThinking) {
+            message = message + thinking;
+        } else if (hasResponse) {
+            message = message + response;
+        }
         streamHandler.accept(message);
     }
-
-
 }

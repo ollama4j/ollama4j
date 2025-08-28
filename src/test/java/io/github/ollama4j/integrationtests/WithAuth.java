@@ -68,7 +68,7 @@ public class WithAuth {
         LOG.info(
                 "The Ollama service is now accessible via the Nginx proxy with bearer-auth authentication mode.\n" +
                         "→ Ollama URL: {}\n" +
-                        "→ Proxy URL: {}}",
+                        "→ Proxy URL: {}",
                 ollamaUrl, nginxUrl
         );
         LOG.info("OllamaAPI initialized with bearer auth token: {}", BEARER_AUTH_TOKEN);

@@ -138,10 +138,10 @@ class TestMockedAPIs {
         String prompt = "some prompt text";
         OptionsBuilder optionsBuilder = new OptionsBuilder();
         try {
-            when(ollamaAPI.generate(model, prompt, false, optionsBuilder.build()))
-                    .thenReturn(new OllamaResult("", 0, 200));
-            ollamaAPI.generate(model, prompt, false, optionsBuilder.build());
-            verify(ollamaAPI, times(1)).generate(model, prompt, false, optionsBuilder.build());
+            when(ollamaAPI.generate(model, prompt, false, false, optionsBuilder.build()))
+                    .thenReturn(new OllamaResult("", "", 0, 200));
+            ollamaAPI.generate(model, prompt, false, false, optionsBuilder.build());
+            verify(ollamaAPI, times(1)).generate(model, prompt, false, false, optionsBuilder.build());
         } catch (IOException | OllamaBaseException | InterruptedException e) {
             throw new RuntimeException(e);
         }
@@ -155,7 +155,7 @@ class TestMockedAPIs {
         try {
             when(ollamaAPI.generateWithImageFiles(
                     model, prompt, Collections.emptyList(), new OptionsBuilder().build()))
-                    .thenReturn(new OllamaResult("", 0, 200));
+                    .thenReturn(new OllamaResult("","", 0, 200));
             ollamaAPI.generateWithImageFiles(
                     model, prompt, Collections.emptyList(), new OptionsBuilder().build());
             verify(ollamaAPI, times(1))
@@ -174,7 +174,7 @@ class TestMockedAPIs {
         try {
             when(ollamaAPI.generateWithImageURLs(
                     model, prompt, Collections.emptyList(), new OptionsBuilder().build()))
-                    .thenReturn(new OllamaResult("", 0, 200));
+                    .thenReturn(new OllamaResult("","", 0, 200));
             ollamaAPI.generateWithImageURLs(
                     model, prompt, Collections.emptyList(), new OptionsBuilder().build());
             verify(ollamaAPI, times(1))

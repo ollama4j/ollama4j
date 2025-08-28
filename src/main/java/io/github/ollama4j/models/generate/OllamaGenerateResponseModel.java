@@ -12,6 +12,7 @@ public class OllamaGenerateResponseModel {
     private String model;
     private @JsonProperty("created_at") String createdAt;
     private String response;
+    private String thinking;
     private boolean done;
     private List<Integer> context;
     private @JsonProperty("total_duration") Long totalDuration;

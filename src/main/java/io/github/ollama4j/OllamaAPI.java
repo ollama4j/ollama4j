@@ -749,6 +749,8 @@ public class OllamaAPI {
      *
      * @param model         the ollama model to ask the question to
      * @param prompt        the prompt/question text
+     * @param raw           if true no formatting will be applied to the prompt. You may choose to use the raw parameter if you are specifying a full templated prompt in your request to the API
+     * @param think         if true the model will "think" step-by-step before generating the final response
      * @param options       the Options object - <a
      *                      href=
      *                      "https://github.com/jmorganca/ollama/blob/main/docs/modelfile.md#valid-parameters-and-values">More
@@ -761,12 +763,40 @@ public class OllamaAPI {
      * @throws IOException          if an I/O error occurs during the HTTP request
      * @throws InterruptedException if the operation is interrupted
      */
-    public OllamaResult generate(String model, String prompt, boolean raw, Options options,
+    public OllamaResult generate(String model, String prompt, boolean raw, boolean think, Options options,
                                  OllamaStreamHandler streamHandler) throws OllamaBaseException, IOException, InterruptedException {
         OllamaGenerateRequest ollamaRequestModel = new OllamaGenerateRequest(model, prompt);
         ollamaRequestModel.setRaw(raw);
+        ollamaRequestModel.setThink(think);
         ollamaRequestModel.setOptions(options.getOptionsMap());
         return generateSyncForOllamaRequestModel(ollamaRequestModel, streamHandler);
+    }
+
+    /**
+     * Generates response using the specified AI model and prompt (in blocking
+     * mode).
+     * <p>
+     * Uses {@link #generate(String, String, boolean, boolean, Options, OllamaStreamHandler)}
+     *
+     * @param model   The name or identifier of the AI model to use for generating
+     *                the response.
+     * @param prompt  The input text or prompt to provide to the AI model.
+     * @param raw     In some cases, you may wish to bypass the templating system
+     *                and provide a full prompt. In this case, you can use the raw
+     *                parameter to disable templating. Also note that raw mode will
+     *                not return a context.
+     * @param think   If set to true, the model will "think" step-by-step before
+     *                generating the final response.
+     * @param options Additional options or configurations to use when generating
+     *                the response.
+     * @return {@link OllamaResult}
+     * @throws OllamaBaseException  if the response indicates an error status
+     * @throws IOException          if an I/O error occurs during the HTTP request
+     * @throws InterruptedException if the operation is interrupted
+     */
+    public OllamaResult generate(String model, String prompt, boolean raw, boolean think, Options options)
+            throws OllamaBaseException, IOException, InterruptedException {
+        return generate(model, prompt, raw, think, options, null);
     }
 
     /**
@@ -809,37 +839,12 @@ public class OllamaAPI {
         if (statusCode == 200) {
             OllamaStructuredResult structuredResult = Utils.getObjectMapper().readValue(responseBody,
                     OllamaStructuredResult.class);
-            OllamaResult ollamaResult = new OllamaResult(structuredResult.getResponse(),
+            OllamaResult ollamaResult = new OllamaResult(structuredResult.getResponse(), structuredResult.getThinking(),
                     structuredResult.getResponseTime(), statusCode);
             return ollamaResult;
         } else {
             throw new OllamaBaseException(statusCode + " - " + responseBody);
         }
-    }
-
-    /**
-     * Generates response using the specified AI model and prompt (in blocking
-     * mode).
-     * <p>
-     * Uses {@link #generate(String, String, boolean, Options, OllamaStreamHandler)}
-     *
-     * @param model   The name or identifier of the AI model to use for generating
-     *                the response.
-     * @param prompt  The input text or prompt to provide to the AI model.
-     * @param raw     In some cases, you may wish to bypass the templating system
-     *                and provide a full prompt. In this case, you can use the raw
-     *                parameter to disable templating. Also note that raw mode will
-     *                not return a context.
-     * @param options Additional options or configurations to use when generating
-     *                the response.
-     * @return {@link OllamaResult}
-     * @throws OllamaBaseException  if the response indicates an error status
-     * @throws IOException          if an I/O error occurs during the HTTP request
-     * @throws InterruptedException if the operation is interrupted
-     */
-    public OllamaResult generate(String model, String prompt, boolean raw, Options options)
-            throws OllamaBaseException, IOException, InterruptedException {
-        return generate(model, prompt, raw, options, null);
     }
 
     /**
@@ -850,6 +855,8 @@ public class OllamaAPI {
      * @param model   The name or identifier of the AI model to use for generating
      *                the response.
      * @param prompt  The input text or prompt to provide to the AI model.
+     * @param think   If set to true, the model will "think" step-by-step before
+     *                generating the final response.
      * @param options Additional options or configurations to use when generating
      *                the response.
      * @return {@link OllamaToolsResult} An OllamaToolsResult object containing the
@@ -859,7 +866,7 @@ public class OllamaAPI {
      * @throws IOException          if an I/O error occurs during the HTTP request
      * @throws InterruptedException if the operation is interrupted
      */
-    public OllamaToolsResult generateWithTools(String model, String prompt, Options options)
+    public OllamaToolsResult generateWithTools(String model, String prompt, boolean think, Options options)
             throws OllamaBaseException, IOException, InterruptedException, ToolInvocationException {
         boolean raw = true;
         OllamaToolsResult toolResult = new OllamaToolsResult();
@@ -874,7 +881,7 @@ public class OllamaAPI {
             prompt = promptBuilder.build();
         }
 
-        OllamaResult result = generate(model, prompt, raw, options, null);
+        OllamaResult result = generate(model, prompt, raw, think, options, null);
         toolResult.setModelResult(result);
 
         String toolsResponse = result.getResponse();
@@ -1023,19 +1030,25 @@ public class OllamaAPI {
     /**
      * Synchronously generates a response using a list of image byte arrays.
      * <p>
-     * This method encodes the provided byte arrays into Base64 and sends them to the Ollama server.
+     * This method encodes the provided byte arrays into Base64 and sends them to
+     * the Ollama server.
      *
      * @param model         the Ollama model to use for generating the response
      * @param prompt        the prompt or question text to send to the model
      * @param images        the list of image data as byte arrays
-     * @param options       the Options object - <a href="https://github.com/jmorganca/ollama/blob/main/docs/modelfile.md#valid-parameters-and-values">More details on the options</a>
-     * @param streamHandler optional callback that will be invoked with each streamed response; if null, streaming is disabled
-     * @return OllamaResult containing the response text and the time taken for the response
+     * @param options       the Options object - <a href=
+     *                      "https://github.com/jmorganca/ollama/blob/main/docs/modelfile.md#valid-parameters-and-values">More
+     *                      details on the options</a>
+     * @param streamHandler optional callback that will be invoked with each
+     *                      streamed response; if null, streaming is disabled
+     * @return OllamaResult containing the response text and the time taken for the
+     * response
      * @throws OllamaBaseException  if the response indicates an error status
      * @throws IOException          if an I/O error occurs during the HTTP request
      * @throws InterruptedException if the operation is interrupted
      */
-    public OllamaResult generateWithImages(String model, String prompt, List<byte[]> images, Options options, OllamaStreamHandler streamHandler) throws OllamaBaseException, IOException, InterruptedException {
+    public OllamaResult generateWithImages(String model, String prompt, List<byte[]> images, Options options,
+                                           OllamaStreamHandler streamHandler) throws OllamaBaseException, IOException, InterruptedException {
         List<String> encodedImages = new ArrayList<>();
         for (byte[] image : images) {
             encodedImages.add(encodeByteArrayToBase64(image));
@@ -1046,15 +1059,18 @@ public class OllamaAPI {
     }
 
     /**
-     * Convenience method to call the Ollama API using image byte arrays without streaming responses.
+     * Convenience method to call the Ollama API using image byte arrays without
+     * streaming responses.
      * <p>
-     * Uses {@link #generateWithImages(String, String, List, Options, OllamaStreamHandler)}
+     * Uses
+     * {@link #generateWithImages(String, String, List, Options, OllamaStreamHandler)}
      *
      * @throws OllamaBaseException  if the response indicates an error status
      * @throws IOException          if an I/O error occurs during the HTTP request
      * @throws InterruptedException if the operation is interrupted
      */
-    public OllamaResult generateWithImages(String model, String prompt, List<byte[]> images, Options options) throws OllamaBaseException, IOException, InterruptedException {
+    public OllamaResult generateWithImages(String model, String prompt, List<byte[]> images, Options options)
+            throws OllamaBaseException, IOException, InterruptedException {
         return generateWithImages(model, prompt, images, options, null);
     }
 
@@ -1069,10 +1085,12 @@ public class OllamaAPI {
      * history including the newly acquired assistant response.
      * @throws OllamaBaseException     any response code than 200 has been returned
      * @throws IOException             in case the responseStream can not be read
-     * @throws InterruptedException    in case the server is not reachable or network
+     * @throws InterruptedException    in case the server is not reachable or
+     *                                 network
      *                                 issues happen
      * @throws OllamaBaseException     if the response indicates an error status
-     * @throws IOException             if an I/O error occurs during the HTTP request
+     * @throws IOException             if an I/O error occurs during the HTTP
+     *                                 request
      * @throws InterruptedException    if the operation is interrupted
      * @throws ToolInvocationException if the tool invocation fails
      */
@@ -1092,10 +1110,12 @@ public class OllamaAPI {
      * @return {@link OllamaChatResult}
      * @throws OllamaBaseException     any response code than 200 has been returned
      * @throws IOException             in case the responseStream can not be read
-     * @throws InterruptedException    in case the server is not reachable or network
+     * @throws InterruptedException    in case the server is not reachable or
+     *                                 network
      *                                 issues happen
      * @throws OllamaBaseException     if the response indicates an error status
-     * @throws IOException             if an I/O error occurs during the HTTP request
+     * @throws IOException             if an I/O error occurs during the HTTP
+     *                                 request
      * @throws InterruptedException    if the operation is interrupted
      * @throws ToolInvocationException if the tool invocation fails
      */
@@ -1117,10 +1137,12 @@ public class OllamaAPI {
      * @return {@link OllamaChatResult}
      * @throws OllamaBaseException     any response code than 200 has been returned
      * @throws IOException             in case the responseStream can not be read
-     * @throws InterruptedException    in case the server is not reachable or network
+     * @throws InterruptedException    in case the server is not reachable or
+     *                                 network
      *                                 issues happen
      * @throws OllamaBaseException     if the response indicates an error status
-     * @throws IOException             if an I/O error occurs during the HTTP request
+     * @throws IOException             if an I/O error occurs during the HTTP
+     *                                 request
      * @throws InterruptedException    if the operation is interrupted
      * @throws ToolInvocationException if the tool invocation fails
      */

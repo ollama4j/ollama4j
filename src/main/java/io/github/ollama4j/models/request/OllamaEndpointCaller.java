@@ -32,7 +32,7 @@ public abstract class OllamaEndpointCaller {
 
     protected abstract String getEndpointSuffix();
 
-    protected abstract boolean parseResponseAndAddToBuffer(String line, StringBuilder responseBuffer);
+    protected abstract boolean parseResponseAndAddToBuffer(String line, StringBuilder responseBuffer, StringBuilder thinkingBuffer);
 
 
     /**
