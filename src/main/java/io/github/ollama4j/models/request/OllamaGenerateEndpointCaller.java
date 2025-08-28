@@ -125,7 +125,7 @@ public class OllamaGenerateEndpointCaller extends OllamaEndpointCaller {
         } else {
             long endTime = System.currentTimeMillis();
             OllamaResult ollamaResult =
-                    new OllamaResult(responseBuffer.toString().trim(), thinkingBuffer.toString().trim(), endTime - startTime, statusCode);
+                    new OllamaResult(responseBuffer.toString(), thinkingBuffer.toString(), endTime - startTime, statusCode);
             if (isVerbose()) LOG.info("Model response: " + ollamaResult);
             return ollamaResult;
         }

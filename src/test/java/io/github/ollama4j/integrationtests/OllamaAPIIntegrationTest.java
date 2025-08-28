@@ -53,6 +53,7 @@ public class OllamaAPIIntegrationTest {
     private static final String CHAT_MODEL_LLAMA3 = "llama3";
     private static final String IMAGE_MODEL_LLAVA = "llava";
     private static final String THINKING_MODEL_GPT_OSS = "gpt-oss:20b";
+    private static final String THINKING_MODEL_QWEN = "qwen3:0.6b";
 
     @BeforeAll
     public static void setUp() {
@@ -220,7 +221,7 @@ public class OllamaAPIIntegrationTest {
         assertNotNull(result);
         assertNotNull(result.getResponse());
         assertFalse(result.getResponse().isEmpty());
-        assertEquals(sb.toString().trim(), result.getResponse().trim());
+        assertEquals(sb.toString(), result.getResponse());
     }
 
     @Test
@@ -441,29 +442,51 @@ public class OllamaAPIIntegrationTest {
         assertNotNull(chatResult.getResponseModel());
         assertNotNull(chatResult.getResponseModel().getMessage());
         assertNotNull(chatResult.getResponseModel().getMessage().getContent());
-        assertEquals(sb.toString().trim(), chatResult.getResponseModel().getMessage().getContent().trim());
+        assertEquals(sb.toString(), chatResult.getResponseModel().getMessage().getContent());
     }
 
     @Test
     @Order(15)
     void testChatWithStream() throws OllamaBaseException, IOException, URISyntaxException, InterruptedException, ToolInvocationException {
-        api.pullModel(CHAT_MODEL_QWEN_SMALL);
-        OllamaChatRequestBuilder builder = OllamaChatRequestBuilder.getInstance(CHAT_MODEL_QWEN_SMALL);
+        api.pullModel(THINKING_MODEL_QWEN);
+        OllamaChatRequestBuilder builder = OllamaChatRequestBuilder.getInstance(THINKING_MODEL_QWEN);
         OllamaChatRequest requestModel = builder.withMessage(OllamaChatMessageRole.USER, "What is the capital of France? And what's France's connection with Mona Lisa?").build();
-
         StringBuffer sb = new StringBuffer();
 
         OllamaChatResult chatResult = api.chat(requestModel, (s) -> {
             LOG.info(s);
-            String substring = s.substring(sb.toString().length(), s.length());
-            LOG.info(substring);
+            String substring = s.substring(sb.toString().length());
             sb.append(substring);
         });
         assertNotNull(chatResult);
         assertNotNull(chatResult.getResponseModel());
         assertNotNull(chatResult.getResponseModel().getMessage());
         assertNotNull(chatResult.getResponseModel().getMessage().getContent());
-        assertEquals(sb.toString().trim(), chatResult.getResponseModel().getMessage().getContent().trim());
+        assertEquals(sb.toString(), chatResult.getResponseModel().getMessage().getContent());
+    }
+
+    @Test
+    @Order(15)
+    void testChatWithThinkingAndStream() throws OllamaBaseException, IOException, URISyntaxException, InterruptedException, ToolInvocationException {
+        api.pullModel(THINKING_MODEL_QWEN);
+        OllamaChatRequestBuilder builder = OllamaChatRequestBuilder.getInstance(THINKING_MODEL_QWEN);
+        OllamaChatRequest requestModel = builder
+                .withMessage(OllamaChatMessageRole.USER, "What is the capital of France? And what's France's connection with Mona Lisa?")
+                .withThinking(true)
+                .withKeepAlive("0m")
+                .build();
+        StringBuffer sb = new StringBuffer();
+
+        OllamaChatResult chatResult = api.chat(requestModel, (s) -> {
+            LOG.info(s);
+            String substring = s.substring(sb.toString().length());
+            sb.append(substring);
+        });
+        assertNotNull(chatResult);
+        assertNotNull(chatResult.getResponseModel());
+        assertNotNull(chatResult.getResponseModel().getMessage());
+        assertNotNull(chatResult.getResponseModel().getMessage().getContent());
+        assertEquals(sb.toString(), chatResult.getResponseModel().getMessage().getThinking() + chatResult.getResponseModel().getMessage().getContent());
     }
 
     @Test
@@ -503,14 +526,14 @@ public class OllamaAPIIntegrationTest {
 
         OllamaResult result = api.generateWithImageFiles(IMAGE_MODEL_LLAVA, "What is in this image?", List.of(imageFile), new OptionsBuilder().build(), (s) -> {
             LOG.info(s);
-            String substring = s.substring(sb.toString().length(), s.length());
+            String substring = s.substring(sb.toString().length());
             LOG.info(substring);
             sb.append(substring);
         });
         assertNotNull(result);
         assertNotNull(result.getResponse());
         assertFalse(result.getResponse().isEmpty());
-        assertEquals(sb.toString().trim(), result.getResponse().trim());
+        assertEquals(sb.toString(), result.getResponse());
     }
 
     @Test
@@ -532,13 +555,13 @@ public class OllamaAPIIntegrationTest {
     @Test
     @Order(20)
     void testGenerateWithThinkingAndStreamHandler() throws OllamaBaseException, IOException, URISyntaxException, InterruptedException {
-        api.pullModel(THINKING_MODEL_GPT_OSS);
+        api.pullModel(THINKING_MODEL_QWEN);
 
         boolean raw = false;
         boolean thinking = true;
 
         StringBuffer sb = new StringBuffer();
-        OllamaResult result = api.generate(THINKING_MODEL_GPT_OSS, "Who are you?", raw, thinking, new OptionsBuilder().build(), (s) -> {
+        OllamaResult result = api.generate(THINKING_MODEL_QWEN, "Who are you?", raw, thinking, new OptionsBuilder().build(), (s) -> {
             LOG.info(s);
             String substring = s.substring(sb.toString().length());
             sb.append(substring);
@@ -548,7 +571,7 @@ public class OllamaAPIIntegrationTest {
         assertFalse(result.getResponse().isEmpty());
         assertNotNull(result.getThinking());
         assertFalse(result.getThinking().isEmpty());
-        assertEquals(sb.toString().trim(), result.getThinking().trim() + result.getResponse().trim());
+        assertEquals(sb.toString(), result.getThinking() + result.getResponse());
     }
 
     private File getImageFileFromClasspath(String fileName) {

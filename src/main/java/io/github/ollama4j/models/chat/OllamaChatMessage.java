@@ -35,6 +35,8 @@ public class OllamaChatMessage {
     @NonNull
     private String content;
 
+    private String thinking;
+
     private @JsonProperty("tool_calls") List<OllamaChatToolCalls> toolCalls;
 
     @JsonSerialize(using = FileToBase64Serializer.class)

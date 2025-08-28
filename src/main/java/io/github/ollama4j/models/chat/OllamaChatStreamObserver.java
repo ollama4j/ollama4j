@@ -11,9 +11,22 @@ public class OllamaChatStreamObserver implements OllamaTokenHandler {
 
     @Override
     public void accept(OllamaChatResponseModel token) {
-        if (streamHandler != null) {
-            message += token.getMessage().getContent();
-            streamHandler.accept(message);
+        if (streamHandler == null || token == null || token.getMessage() == null) {
+            return;
         }
+
+        String content = token.getMessage().getContent();
+        String thinking = token.getMessage().getThinking();
+
+        boolean hasContent = !content.isEmpty();
+        boolean hasThinking = thinking != null && !thinking.isEmpty();
+
+        if (hasThinking && !hasContent) {
+            message += thinking;
+        } else {
+            message += content;
+        }
+
+        streamHandler.accept(message);
     }
 }

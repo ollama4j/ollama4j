@@ -24,8 +24,8 @@ public class OllamaGenerateStreamObserver {
         String response = currentResponsePart.getResponse();
         String thinking = currentResponsePart.getThinking();
 
-        boolean hasResponse = response != null && !response.trim().isEmpty();
-        boolean hasThinking = thinking != null && !thinking.trim().isEmpty();
+        boolean hasResponse = response != null && !response.isEmpty();
+        boolean hasThinking = thinking != null && !thinking.isEmpty();
 
         if (!hasResponse && hasThinking) {
             message = message + thinking;

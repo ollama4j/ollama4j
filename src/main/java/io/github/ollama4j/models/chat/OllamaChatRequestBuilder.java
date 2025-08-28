@@ -22,7 +22,7 @@ public class OllamaChatRequestBuilder {
     private static final Logger LOG = LoggerFactory.getLogger(OllamaChatRequestBuilder.class);
 
     private OllamaChatRequestBuilder(String model, List<OllamaChatMessage> messages) {
-        request = new OllamaChatRequest(model, messages);
+        request = new OllamaChatRequest(model, false, messages);
     }
 
     private OllamaChatRequest request;
@@ -36,7 +36,7 @@ public class OllamaChatRequestBuilder {
     }
 
     public void reset() {
-        request = new OllamaChatRequest(request.getModel(), new ArrayList<>());
+        request = new OllamaChatRequest(request.getModel(), request.isThink(), new ArrayList<>());
     }
 
     public OllamaChatRequestBuilder withMessage(OllamaChatMessageRole role, String content) {
@@ -45,7 +45,7 @@ public class OllamaChatRequestBuilder {
 
     public OllamaChatRequestBuilder withMessage(OllamaChatMessageRole role, String content, List<OllamaChatToolCalls> toolCalls) {
         List<OllamaChatMessage> messages = this.request.getMessages();
-        messages.add(new OllamaChatMessage(role, content, toolCalls, null));
+        messages.add(new OllamaChatMessage(role, content, null, toolCalls, null));
         return this;
     }
 
@@ -61,7 +61,7 @@ public class OllamaChatRequestBuilder {
             }
         }).collect(Collectors.toList());
 
-        messages.add(new OllamaChatMessage(role, content, toolCalls, binaryImages));
+        messages.add(new OllamaChatMessage(role, content, null, toolCalls, binaryImages));
         return this;
     }
 
@@ -81,7 +81,7 @@ public class OllamaChatRequestBuilder {
             }
         }
 
-        messages.add(new OllamaChatMessage(role, content, toolCalls, binaryImages));
+        messages.add(new OllamaChatMessage(role, content, null, toolCalls, binaryImages));
         return this;
     }
 
@@ -114,4 +114,8 @@ public class OllamaChatRequestBuilder {
         return this;
     }
 
+    public OllamaChatRequestBuilder withThinking(boolean think) {
+        this.request.setThink(think);
+        return this;
+    }
 }

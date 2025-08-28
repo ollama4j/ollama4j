@@ -58,7 +58,12 @@ public class OllamaChatEndpointCaller extends OllamaEndpointCaller {
             // thus, we null check the message and hope that the next streamed response has some message content again
             OllamaChatMessage message = ollamaResponseModel.getMessage();
             if (message != null) {
-                responseBuffer.append(message.getContent());
+                if (message.getThinking() != null) {
+                    thinkingBuffer.append(message.getThinking());
+                }
+                else {
+                    responseBuffer.append(message.getContent());
+                }
                 if (tokenHandler != null) {
                     tokenHandler.accept(ollamaResponseModel);
                 }
@@ -85,7 +90,7 @@ public class OllamaChatEndpointCaller extends OllamaEndpointCaller {
                         .POST(
                                 body.getBodyPublisher());
         HttpRequest request = requestBuilder.build();
-        if (isVerbose()) LOG.info("Asking model: " + body);
+        if (isVerbose()) LOG.info("Asking model: {}", body);
         HttpResponse<InputStream> response =
                 httpClient.send(request, HttpResponse.BodyHandlers.ofInputStream());
 
@@ -129,6 +134,7 @@ public class OllamaChatEndpointCaller extends OllamaEndpointCaller {
                     }
                     if (finished && body.stream) {
                         ollamaChatResponseModel.getMessage().setContent(responseBuffer.toString());
+                        ollamaChatResponseModel.getMessage().setThinking(thinkingBuffer.toString());
                         break;
                     }
                 }
