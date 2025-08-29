@@ -105,7 +105,6 @@ public class OllamaAPIIntegrationTest {
     @Test
     @Order(2)
     public void testListModelsAPI() throws URISyntaxException, IOException, OllamaBaseException, InterruptedException {
-        api.pullModel(EMBEDDING_MODEL_MINILM);
         // Fetch the list of models
         List<Model> models = api.listModels();
         // Assert that the models list is not null
