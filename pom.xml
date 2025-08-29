@@ -14,11 +14,12 @@
 
     <properties>
         <maven.compiler.release>11</maven.compiler.release>
-        <project.build.outputTimestamp>${git.commit.time}</project.build.outputTimestamp><!-- populated via git-commit-id-plugin -->
+        <project.build.outputTimestamp>${git.commit.time}
+        </project.build.outputTimestamp><!-- populated via git-commit-id-plugin -->
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <maven-surefire-plugin.version>3.0.0-M5</maven-surefire-plugin.version>
         <maven-failsafe-plugin.version>3.0.0-M5</maven-failsafe-plugin.version>
-        <lombok.version>1.18.30</lombok.version>
+        <lombok.version>1.18.38</lombok.version>
     </properties>
 
     <developers>
@@ -46,6 +47,19 @@
 
     <build>
         <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <configuration>
+                    <annotationProcessorPaths>
+                        <path>
+                            <groupId>org.projectlombok</groupId>
+                            <artifactId>lombok</artifactId>
+                            <version>${lombok.version}</version>
+                        </path>
+                    </annotationProcessorPaths>
+                </configuration>
+            </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-source-plugin</artifactId>
@@ -146,7 +160,7 @@
                 </executions>
                 <configuration>
                     <dateFormat>yyyy-MM-dd'T'HH:mm:ss'Z'</dateFormat>
-		    <dateFormatTimeZone>Etc/UTC</dateFormatTimeZone>
+                    <dateFormatTimeZone>Etc/UTC</dateFormatTimeZone>
                 </configuration>
             </plugin>
         </plugins>
