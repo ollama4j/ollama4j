@@ -16,9 +16,21 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v3
+      - name: Checkout target branch
+        uses: actions/checkout@v3
         with:
           ref: ${{ github.event.inputs.branch }}
+
+      - name: Use workflow from checked out branch
+        run: |
+          if [ -f .github/workflows/run-tests.yml ]; then
+            echo "Using workflow from checked out branch."
+            cp .github/workflows/run-tests.yml /tmp/run-tests.yml
+            exit 0
+          else
+            echo "Workflow file not found in checked out branch."
+            exit 1
+          fi
 
       - name: Set up Ollama
         run: |
