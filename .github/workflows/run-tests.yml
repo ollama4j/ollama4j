@@ -16,9 +16,25 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v3
+      - name: Checkout target branch
+        uses: actions/checkout@v3
         with:
           ref: ${{ github.event.inputs.branch }}
+
+      - name: Use workflow from checked out branch
+        run: |
+          if [ -f .github/workflows/run-tests.yml ]; then
+            echo "Using workflow from checked out branch."
+            cp .github/workflows/run-tests.yml /tmp/run-tests.yml
+            exit 0
+          else
+            echo "Workflow file not found in checked out branch."
+            exit 1
+          fi
+
+      - name: Set up Ollama
+        run: |
+          curl -fsSL https://ollama.com/install.sh | sh
 
       - name: Set up JDK 17
         uses: actions/setup-java@v3
@@ -33,3 +49,6 @@ jobs:
 
       - name: Run integration tests
         run: mvn clean verify -Pintegration-tests
+        env:
+          USE_EXTERNAL_OLLAMA_HOST: "true"
+          OLLAMA_HOST: "http://localhost:11434"
