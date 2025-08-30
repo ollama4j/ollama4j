@@ -20,6 +20,10 @@ jobs:
         with:
           ref: ${{ github.event.inputs.branch }}
 
+      - name: Set up Ollama
+        run: |
+          curl -fsSL https://ollama.com/install.sh | sh
+
       - name: Set up JDK 17
         uses: actions/setup-java@v3
         with:
@@ -33,3 +37,6 @@ jobs:
 
       - name: Run integration tests
         run: mvn clean verify -Pintegration-tests
+        env:
+          USE_EXTERNAL_OLLAMA_HOST: "true"
+          OLLAMA_HOST: "http://localhost:11434"

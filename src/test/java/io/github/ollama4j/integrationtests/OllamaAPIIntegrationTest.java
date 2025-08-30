@@ -154,7 +154,7 @@ class OllamaAPIIntegrationTest {
 
     @Test
     @Order(6)
-    void testAskModelWithStructuredOutput()
+    void testGenerateWithStructuredOutput()
             throws OllamaBaseException, IOException, InterruptedException, URISyntaxException {
         api.pullModel(GENERAL_PURPOSE_MODEL);
 
@@ -184,7 +184,7 @@ class OllamaAPIIntegrationTest {
 
     @Test
     @Order(6)
-    void testAskModelWithDefaultOptions()
+    void testGennerateModelWithDefaultOptions()
             throws OllamaBaseException, IOException, InterruptedException, URISyntaxException {
         api.pullModel(GENERAL_PURPOSE_MODEL);
         boolean raw = false;
@@ -199,7 +199,7 @@ class OllamaAPIIntegrationTest {
 
     @Test
     @Order(7)
-    void testAskModelWithDefaultOptionsStreamed()
+    void testGenerateWithDefaultOptionsStreamed()
             throws OllamaBaseException, IOException, URISyntaxException, InterruptedException {
         api.pullModel(GENERAL_PURPOSE_MODEL);
         boolean raw = false;
@@ -222,7 +222,7 @@ class OllamaAPIIntegrationTest {
 
     @Test
     @Order(8)
-    void testAskModelWithOptions() throws OllamaBaseException, IOException, URISyntaxException,
+    void testGenerateWithOptions() throws OllamaBaseException, IOException, URISyntaxException,
             InterruptedException, ToolInvocationException {
         api.pullModel(GENERAL_PURPOSE_MODEL);
 
@@ -303,46 +303,6 @@ class OllamaAPIIntegrationTest {
                 "Chat history should contain more than two messages");
         assertTrue(chatResult.getChatHistory().get(chatResult.getChatHistory().size() - 1).getContent()
                 .contains("6"), "Response should contain '6'");
-    }
-
-    @Test
-    @Order(10)
-    void testChatWithImageFromURL() throws OllamaBaseException, IOException, InterruptedException,
-            URISyntaxException, ToolInvocationException {
-        api.pullModel(VISION_MODEL);
-
-        OllamaChatRequestBuilder builder = OllamaChatRequestBuilder.getInstance(VISION_MODEL);
-        OllamaChatRequest requestModel = builder.withMessage(OllamaChatMessageRole.USER,
-                        "What's in the picture?", Collections.emptyList(),
-                        "https://t3.ftcdn.net/jpg/02/96/63/80/360_F_296638053_0gUVA4WVBKceGsIr7LNqRWSnkusi07dq.jpg")
-                .build();
-        api.registerAnnotatedTools(new OllamaAPIIntegrationTest());
-
-        OllamaChatResult chatResult = api.chat(requestModel);
-        assertNotNull(chatResult);
-    }
-
-    @Test
-    @Order(10)
-    void testChatWithImageFromFileWithHistoryRecognition() throws OllamaBaseException, IOException,
-            URISyntaxException, InterruptedException, ToolInvocationException {
-        api.pullModel(VISION_MODEL);
-        OllamaChatRequestBuilder builder = OllamaChatRequestBuilder.getInstance(VISION_MODEL);
-        OllamaChatRequest requestModel = builder.withMessage(OllamaChatMessageRole.USER,
-                "What's in the picture?", Collections.emptyList(),
-                List.of(getImageFileFromClasspath("emoji-smile.jpeg"))).build();
-
-        OllamaChatResult chatResult = api.chat(requestModel);
-        assertNotNull(chatResult);
-        assertNotNull(chatResult.getResponseModel());
-        builder.reset();
-
-        requestModel = builder.withMessages(chatResult.getChatHistory())
-                .withMessage(OllamaChatMessageRole.USER, "What's the color?").build();
-
-        chatResult = api.chat(requestModel);
-        assertNotNull(chatResult);
-        assertNotNull(chatResult.getResponseModel());
     }
 
     @Test
@@ -618,8 +578,48 @@ class OllamaAPIIntegrationTest {
     }
 
     @Test
+    @Order(10)
+    void testChatWithImageFromURL() throws OllamaBaseException, IOException, InterruptedException,
+            URISyntaxException, ToolInvocationException {
+        api.pullModel(VISION_MODEL);
+
+        OllamaChatRequestBuilder builder = OllamaChatRequestBuilder.getInstance(VISION_MODEL);
+        OllamaChatRequest requestModel = builder.withMessage(OllamaChatMessageRole.USER,
+                        "What's in the picture?", Collections.emptyList(),
+                        "https://t3.ftcdn.net/jpg/02/96/63/80/360_F_296638053_0gUVA4WVBKceGsIr7LNqRWSnkusi07dq.jpg")
+                .build();
+        api.registerAnnotatedTools(new OllamaAPIIntegrationTest());
+
+        OllamaChatResult chatResult = api.chat(requestModel);
+        assertNotNull(chatResult);
+    }
+
+    @Test
+    @Order(10)
+    void testChatWithImageFromFileWithHistoryRecognition() throws OllamaBaseException, IOException,
+            URISyntaxException, InterruptedException, ToolInvocationException {
+        api.pullModel(VISION_MODEL);
+        OllamaChatRequestBuilder builder = OllamaChatRequestBuilder.getInstance(VISION_MODEL);
+        OllamaChatRequest requestModel = builder.withMessage(OllamaChatMessageRole.USER,
+                "What's in the picture?", Collections.emptyList(),
+                List.of(getImageFileFromClasspath("emoji-smile.jpeg"))).build();
+
+        OllamaChatResult chatResult = api.chat(requestModel);
+        assertNotNull(chatResult);
+        assertNotNull(chatResult.getResponseModel());
+        builder.reset();
+
+        requestModel = builder.withMessages(chatResult.getChatHistory())
+                .withMessage(OllamaChatMessageRole.USER, "What's the color?").build();
+
+        chatResult = api.chat(requestModel);
+        assertNotNull(chatResult);
+        assertNotNull(chatResult.getResponseModel());
+    }
+
+    @Test
     @Order(17)
-    void testAskModelWithOptionsAndImageURLs()
+    void testGenerateWithOptionsAndImageURLs()
             throws OllamaBaseException, IOException, URISyntaxException, InterruptedException {
         api.pullModel(VISION_MODEL);
 
@@ -633,7 +633,7 @@ class OllamaAPIIntegrationTest {
 
     @Test
     @Order(18)
-    void testAskModelWithOptionsAndImageFiles()
+    void testGenerateWithOptionsAndImageFiles()
             throws OllamaBaseException, IOException, URISyntaxException, InterruptedException {
         api.pullModel(VISION_MODEL);
         File imageFile = getImageFileFromClasspath("roses.jpg");
@@ -650,7 +650,7 @@ class OllamaAPIIntegrationTest {
 
     @Test
     @Order(20)
-    void testAskModelWithOptionsAndImageFilesStreamed()
+    void testGenerateWithOptionsAndImageFilesStreamed()
             throws OllamaBaseException, IOException, URISyntaxException, InterruptedException {
         api.pullModel(VISION_MODEL);
 
