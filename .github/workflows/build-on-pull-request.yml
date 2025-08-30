@@ -32,11 +32,10 @@ jobs:
       - name: Build with Maven
         run: mvn --file pom.xml -U clean package
 
-      - name: Run unit tests
-        run: mvn --file pom.xml -U clean test -Punit-tests
-
-      - name: Run integration tests
-        run: mvn --file pom.xml -U clean verify -Pintegration-tests
+      - name: Call run-tests.yml
+        uses: ./.github/workflows/run-tests.yml
+        with:
+          branch: ${{ github.head_ref || github.ref_name }}
 
       - name: Use Node.js
         uses: actions/setup-node@v3
