@@ -44,7 +44,7 @@ class OllamaAPIIntegrationTest {
 
     private static final String EMBEDDING_MODEL = "all-minilm";
     private static final String VISION_MODEL = "moondream:1.8b";
-    private static final String THINKING_TOOL_MODEL = "qwen3:1.7b";
+    private static final String THINKING_TOOL_MODEL = "gpt-oss:20b";
     private static final String GENERAL_PURPOSE_MODEL = "gemma3:270m";
 
     @BeforeAll
