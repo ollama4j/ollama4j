@@ -14,8 +14,7 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  run-tests:
-
+  build:
     runs-on: ubuntu-latest
     permissions:
       contents: read
@@ -33,11 +32,18 @@ jobs:
       - name: Build with Maven
         run: mvn --file pom.xml -U clean package
 
-      - name: Call run-tests.yml
-        uses: ./.github/workflows/run-tests.yml
-        with:
-          branch: ${{ github.head_ref || github.ref_name }}
+  run-tests:
+    needs: build
+    uses: ./.github/workflows/run-tests.yml
+    with:
+      branch: ${{ github.head_ref || github.ref_name }}
 
+  build-docs:
+    needs: [build, run-tests]
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v3
       - name: Use Node.js
         uses: actions/setup-node@v3
         with:
