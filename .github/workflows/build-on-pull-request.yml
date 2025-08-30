@@ -15,6 +15,7 @@ concurrency:
 
 jobs:
   build:
+    name: Build Java Project
     runs-on: ubuntu-latest
     permissions:
       contents: read
@@ -33,12 +34,14 @@ jobs:
         run: mvn --file pom.xml -U clean package
 
   run-tests:
+    name: Run Unit and Integration Tests
     needs: build
     uses: ./.github/workflows/run-tests.yml
     with:
       branch: ${{ github.head_ref || github.ref_name }}
 
   build-docs:
+    name: Build Documentation
     needs: [build, run-tests]
     runs-on: ubuntu-latest
 
