@@ -13,9 +13,9 @@ public class AnnotatedTool {
     }
 
     @ToolSpec(desc = "Says hello to a friend!")
-    public String sayHello(@ToolProperty(name = "name", desc = "Name of the friend") String name, Integer someRandomProperty, @ToolProperty(name = "amountOfHearts", desc = "amount of heart emojis that should be used", required = false) Integer amountOfHearts) {
-        String hearts = amountOfHearts != null ? "♡".repeat(amountOfHearts) : "";
-        return "Hello " + name + " (" + someRandomProperty + ") " + hearts;
+    public String sayHello(@ToolProperty(name = "name", desc = "Name of the friend") String name, @ToolProperty(name = "numberOfHearts", desc = "number of heart emojis that should be used", required = false) Integer numberOfHearts) {
+        String hearts = numberOfHearts != null ? "♡".repeat(numberOfHearts) : "";
+        return "Hello, " + name + "! " + hearts;
     }
 
 }

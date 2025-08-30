@@ -1294,8 +1294,11 @@ public class OllamaAPI {
                 }
                 Map<String, Object> arguments = toolCall.getFunction().getArguments();
                 Object res = toolFunction.apply(arguments);
+                String argumentKeys = arguments.keySet().stream()
+                        .map(Object::toString)
+                        .collect(Collectors.joining(", "));
                 request.getMessages().add(new OllamaChatMessage(OllamaChatMessageRole.TOOL,
-                        "[TOOL_RESULTS]" + toolName + "(" + arguments.keySet() + ") : " + res + "[/TOOL_RESULTS]"));
+                        "[TOOL_RESULTS] " + toolName + "(" + argumentKeys + "): " + res + " [/TOOL_RESULTS]"));
             }
 
             if (tokenHandler != null) {
