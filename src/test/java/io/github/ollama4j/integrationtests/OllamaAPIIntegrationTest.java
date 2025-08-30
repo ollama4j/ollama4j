@@ -46,6 +46,7 @@ class OllamaAPIIntegrationTest {
     private static final String VISION_MODEL = "moondream:1.8b";
     private static final String THINKING_TOOL_MODEL = "gpt-oss:20b";
     private static final String GENERAL_PURPOSE_MODEL = "gemma3:270m";
+    private static final String TOOLS_MODEL = "mistral:7b";
 
     @BeforeAll
     static void setUp() {
@@ -309,16 +310,17 @@ class OllamaAPIIntegrationTest {
     @Order(11)
     void testChatWithExplicitToolDefinition() throws OllamaBaseException, IOException, URISyntaxException,
             InterruptedException, ToolInvocationException {
-        api.pullModel(THINKING_TOOL_MODEL);
-        OllamaChatRequestBuilder builder = OllamaChatRequestBuilder.getInstance(THINKING_TOOL_MODEL);
+        String theToolModel = TOOLS_MODEL;
+        api.pullModel(theToolModel);
+        OllamaChatRequestBuilder builder = OllamaChatRequestBuilder.getInstance(theToolModel);
 
-        final Tools.ToolSpecification databaseQueryToolSpecification = Tools.ToolSpecification.builder()
+        final Tools.ToolSpecification employeeDetailsToolSpecification = Tools.ToolSpecification.builder()
                 .functionName("get-employee-details")
-                .functionDescription("Get employee details from the database")
+                .functionDescription("Tool to get details of a person or an employee")
                 .toolPrompt(Tools.PromptFuncDefinition.builder().type("function")
                         .function(Tools.PromptFuncDefinition.PromptFuncSpec.builder()
                                 .name("get-employee-details")
-                                .description("Get employee details from the database")
+                                .description("Tool to get details of a person or an employee")
                                 .parameters(Tools.PromptFuncDefinition.Parameters
                                         .builder().type("object")
                                         .properties(new Tools.PropsBuilder()
@@ -358,10 +360,10 @@ class OllamaAPIIntegrationTest {
                             arguments.get("employee-phone"));
                 }).build();
 
-        api.registerTool(databaseQueryToolSpecification);
+        api.registerTool(employeeDetailsToolSpecification);
 
         OllamaChatRequest requestModel = builder.withMessage(OllamaChatMessageRole.USER,
-                "Give me the address of the employee named 'Rahul Kumar'?").build();
+                "Give me the ID of the employee named Rahul Kumar.").build();
         requestModel.setOptions(new OptionsBuilder().setTemperature(0.9f).build().getOptionsMap());
 
         OllamaChatResult chatResult = api.chat(requestModel);
@@ -387,8 +389,9 @@ class OllamaAPIIntegrationTest {
     @Order(12)
     void testChatWithAnnotatedToolsAndSingleParam() throws OllamaBaseException, IOException, InterruptedException,
             URISyntaxException, ToolInvocationException {
-        api.pullModel(THINKING_TOOL_MODEL);
-        OllamaChatRequestBuilder builder = OllamaChatRequestBuilder.getInstance(THINKING_TOOL_MODEL);
+        String theToolModel = TOOLS_MODEL;
+        api.pullModel(theToolModel);
+        OllamaChatRequestBuilder builder = OllamaChatRequestBuilder.getInstance(theToolModel);
 
         api.registerAnnotatedTools();
 
@@ -420,8 +423,9 @@ class OllamaAPIIntegrationTest {
     @Order(13)
     void testChatWithAnnotatedToolsAndMultipleParams() throws OllamaBaseException, IOException, URISyntaxException,
             InterruptedException, ToolInvocationException {
-        api.pullModel(THINKING_TOOL_MODEL);
-        OllamaChatRequestBuilder builder = OllamaChatRequestBuilder.getInstance(THINKING_TOOL_MODEL);
+        String theToolModel = TOOLS_MODEL;
+        api.pullModel(theToolModel);
+        OllamaChatRequestBuilder builder = OllamaChatRequestBuilder.getInstance(theToolModel);
 
         api.registerAnnotatedTools(new AnnotatedTool());
 
@@ -455,15 +459,18 @@ class OllamaAPIIntegrationTest {
     @Order(14)
     void testChatWithToolsAndStream() throws OllamaBaseException, IOException, URISyntaxException,
             InterruptedException, ToolInvocationException {
-        api.pullModel(THINKING_TOOL_MODEL);
-        OllamaChatRequestBuilder builder = OllamaChatRequestBuilder.getInstance(THINKING_TOOL_MODEL);
-        final Tools.ToolSpecification databaseQueryToolSpecification = Tools.ToolSpecification.builder()
+        String theToolModel = TOOLS_MODEL;
+        api.pullModel(theToolModel);
+
+        String expectedEmployeeID = UUID.randomUUID().toString();
+        OllamaChatRequestBuilder builder = OllamaChatRequestBuilder.getInstance(theToolModel);
+        final Tools.ToolSpecification employeeDetailsToolSpecification = Tools.ToolSpecification.builder()
                 .functionName("get-employee-details")
-                .functionDescription("Get employee details from the database")
+                .functionDescription("Tool to get details for a person or an employee")
                 .toolPrompt(Tools.PromptFuncDefinition.builder().type("function")
                         .function(Tools.PromptFuncDefinition.PromptFuncSpec.builder()
                                 .name("get-employee-details")
-                                .description("Get employee details from the database")
+                                .description("Tool to get details for a person or an employee")
                                 .parameters(Tools.PromptFuncDefinition.Parameters
                                         .builder().type("object")
                                         .properties(new Tools.PropsBuilder()
@@ -478,14 +485,14 @@ class OllamaAPIIntegrationTest {
                                                         Tools.PromptFuncDefinition.Property
                                                                 .builder()
                                                                 .type("string")
-                                                                .description("The address of the employee, Always return a random value. e.g. Roy St, Bengaluru, India")
+                                                                .description("The address of the employee, Always gives a random address. For example, Roy St, Bengaluru, India")
                                                                 .required(true)
                                                                 .build())
                                                 .withProperty("employee-phone",
                                                         Tools.PromptFuncDefinition.Property
                                                                 .builder()
                                                                 .type("string")
-                                                                .description("The phone number of the employee. Always return a random value. e.g. 9911002233")
+                                                                .description("The phone number of the employee. Always gives a random phone number. For example, 9911002233")
                                                                 .required(true)
                                                                 .build())
                                                 .build())
@@ -499,30 +506,33 @@ class OllamaAPIIntegrationTest {
                         // perform DB operations here
                         return String.format(
                                 "Employee Details {ID: %s, Name: %s, Address: %s, Phone: %s}",
-                                UUID.randomUUID(), arguments.get("employee-name"),
+                                expectedEmployeeID, arguments.get("employee-name"),
                                 arguments.get("employee-address"),
                                 arguments.get("employee-phone"));
                     }
                 }).build();
 
-        api.registerTool(databaseQueryToolSpecification);
+        api.registerTool(employeeDetailsToolSpecification);
 
-        OllamaChatRequest requestModel = builder.withMessage(OllamaChatMessageRole.USER,
-                "Give me the address of the employee named 'Rahul Kumar'?").build();
+        OllamaChatRequest requestModel = builder
+                .withMessage(OllamaChatMessageRole.USER, "Find the ID of employee Rahul Kumar")
+                .withKeepAlive("0m")
+                .withOptions(new OptionsBuilder().setTemperature(0.9f).build())
+                .build();
 
         StringBuffer sb = new StringBuffer();
 
         OllamaChatResult chatResult = api.chat(requestModel, (s) -> {
-            LOG.info(s);
             String substring = s.substring(sb.toString().length());
-            LOG.info(substring);
             sb.append(substring);
+            LOG.info(substring);
         });
         assertNotNull(chatResult);
         assertNotNull(chatResult.getResponseModel());
         assertNotNull(chatResult.getResponseModel().getMessage());
         assertNotNull(chatResult.getResponseModel().getMessage().getContent());
-        assertEquals(sb.toString(), chatResult.getResponseModel().getMessage().getContent());
+        assertTrue(sb.toString().toLowerCase().contains(expectedEmployeeID));
+        assertTrue(chatResult.getResponseModel().getMessage().getContent().toLowerCase().contains(expectedEmployeeID));
     }
 
     @Test
