@@ -450,7 +450,7 @@ public class OllamaAPI {
         int attempt = currentRetry + 1;
         if (attempt < maxRetries) {
             long backoffMillis = baseDelayMillis * (1L << currentRetry);
-            logger.error("Failed to pull model {}, retrying in {} s... (attempt {}/{})",
+            logger.error("Failed to pull model {}, retrying in {}s... (attempt {}/{})",
                     modelName, backoffMillis/1000, attempt, maxRetries);
             try {
                 Thread.sleep(backoffMillis);
