@@ -371,6 +371,11 @@ public class OllamaAPI {
     /**
      * Finds a specific model using model name and tag from Ollama library.
      * <p>
+     * <b>Deprecated:</b> This method relies on the HTML structure of the Ollama website,
+     * which is subject to change at any time. As a result, it is difficult to keep this API
+     * method consistently updated and reliable. Therefore, this method is deprecated and
+     * may be removed in future releases.
+     * <p>
      * This method retrieves the model from the Ollama library by its name, then
      * fetches its tags.
      * It searches through the tags of the model to find one that matches the
@@ -388,7 +393,9 @@ public class OllamaAPI {
      * @throws URISyntaxException     If there is an error with the URI syntax.
      * @throws InterruptedException   If the operation is interrupted.
      * @throws NoSuchElementException If the model or the tag is not found.
+     * @deprecated This method relies on the HTML structure of the Ollama website, which can change at any time and break this API. It is deprecated and may be removed in the future.
      */
+    @Deprecated
     public LibraryModelTag findModelTagFromLibrary(String modelName, String tag)
             throws OllamaBaseException, IOException, URISyntaxException, InterruptedException {
         List<LibraryModel> libraryModels = this.listModelsFromLibrary();
