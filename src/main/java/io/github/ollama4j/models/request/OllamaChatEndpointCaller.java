@@ -24,6 +24,7 @@ import java.util.List;
 /**
  * Specialization class for requests
  */
+@SuppressWarnings("resource")
 public class OllamaChatEndpointCaller extends OllamaEndpointCaller {
 
     private static final Logger LOG = LoggerFactory.getLogger(OllamaChatEndpointCaller.class);

@@ -99,6 +99,13 @@ public class OllamaAPIIntegrationTest {
     }
 
     @Test
+    @Order(1)
+    public void testPing() throws URISyntaxException, IOException, OllamaBaseException, InterruptedException {
+        boolean pingResponse = api.ping();
+        assertTrue(pingResponse, "Ping should return true");
+    }
+
+    @Test
     @Order(2)
     public void testListModelsAPI()
             throws URISyntaxException, IOException, OllamaBaseException, InterruptedException {

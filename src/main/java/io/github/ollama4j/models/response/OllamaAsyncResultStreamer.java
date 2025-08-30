@@ -8,6 +8,7 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
+import io.github.ollama4j.utils.Constants;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -68,14 +69,14 @@ public class OllamaAsyncResultStreamer extends Thread {
     public void run() {
         ollamaRequestModel.setStream(true);
         HttpClient httpClient = HttpClient.newHttpClient();
+        long startTime = System.currentTimeMillis();
         try {
-            long startTime = System.currentTimeMillis();
             HttpRequest request =
                     requestBuilder
                             .POST(
                                     HttpRequest.BodyPublishers.ofString(
                                             Utils.getObjectMapper().writeValueAsString(ollamaRequestModel)))
-                            .header("Content-Type", "application/json")
+                            .header(Constants.HttpConstants.HEADER_KEY_CONTENT_TYPE, Constants.HttpConstants.APPLICATION_JSON)
                             .timeout(Duration.ofSeconds(requestTimeoutSeconds))
                             .build();
             HttpResponse<InputStream> response =
@@ -84,8 +85,9 @@ public class OllamaAsyncResultStreamer extends Thread {
             this.httpStatusCode = statusCode;
 
             InputStream responseBodyStream = response.body();
-            try (BufferedReader reader =
-                         new BufferedReader(new InputStreamReader(responseBodyStream, StandardCharsets.UTF_8))) {
+            BufferedReader reader = null;
+            try {
+                reader = new BufferedReader(new InputStreamReader(responseBodyStream, StandardCharsets.UTF_8));
                 String line;
                 StringBuilder responseBuffer = new StringBuilder();
                 while ((line = reader.readLine()) != null) {
@@ -109,6 +111,21 @@ public class OllamaAsyncResultStreamer extends Thread {
                 this.completeResponse = responseBuffer.toString();
                 long endTime = System.currentTimeMillis();
                 responseTime = endTime - startTime;
+            } finally {
+                if (reader != null) {
+                    try {
+                        reader.close();
+                    } catch (IOException e) {
+                        // Optionally log or handle
+                    }
+                }
+                if (responseBodyStream != null) {
+                    try {
+                        responseBodyStream.close();
+                    } catch (IOException e) {
+                        // Optionally log or handle
+                    }
+                }
             }
             if (statusCode != 200) {
                 throw new OllamaBaseException(this.completeResponse);

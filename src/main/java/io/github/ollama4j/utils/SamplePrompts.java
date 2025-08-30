@@ -16,7 +16,7 @@ public class SamplePrompts {
                 stringBuffer.append(scanner.nextLine()).append("\n");
             }
             scanner.close();
-            return stringBuffer.toString().replaceAll("<question>", question);
+            return stringBuffer.toString().replace("<question>", question);
         } else {
             throw new Exception("Sample database question file not found.");
         }

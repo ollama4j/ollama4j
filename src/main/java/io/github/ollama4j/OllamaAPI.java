@@ -22,6 +22,7 @@ import io.github.ollama4j.tools.*;
 import io.github.ollama4j.tools.annotations.OllamaToolService;
 import io.github.ollama4j.tools.annotations.ToolProperty;
 import io.github.ollama4j.tools.annotations.ToolSpec;
+import io.github.ollama4j.utils.Constants;
 import io.github.ollama4j.utils.Options;
 import io.github.ollama4j.utils.Utils;
 import lombok.Setter;
@@ -102,7 +103,7 @@ public class OllamaAPI {
             this.host = host;
         }
         if (this.verbose) {
-            logger.info("Ollama API initialized with host: " + this.host);
+            logger.info("Ollama API initialized with host: {}", this.host);
         }
     }
 
@@ -135,13 +136,17 @@ public class OllamaAPI {
     public boolean ping() {
         String url = this.host + "/api/tags";
         HttpClient httpClient = HttpClient.newHttpClient();
-        HttpRequest httpRequest = null;
+        HttpRequest httpRequest;
         try {
-            httpRequest = getRequestBuilderDefault(new URI(url)).header("Accept", "application/json").header("Content-type", "application/json").GET().build();
+            httpRequest = getRequestBuilderDefault(new URI(url))
+                    .header(Constants.HttpConstants.HEADER_KEY_ACCEPT, Constants.HttpConstants.APPLICATION_JSON)
+                    .header(Constants.HttpConstants.HEADER_KEY_CONTENT_TYPE, Constants.HttpConstants.APPLICATION_JSON)
+                    .GET()
+                    .build();
         } catch (URISyntaxException e) {
             throw new RuntimeException(e);
         }
-        HttpResponse<String> response = null;
+        HttpResponse<String> response;
         try {
             response = httpClient.send(httpRequest, HttpResponse.BodyHandlers.ofString());
         } catch (HttpConnectTimeoutException e) {
@@ -167,7 +172,7 @@ public class OllamaAPI {
         HttpClient httpClient = HttpClient.newHttpClient();
         HttpRequest httpRequest = null;
         try {
-            httpRequest = getRequestBuilderDefault(new URI(url)).header("Accept", "application/json").header("Content-type", "application/json").GET().build();
+            httpRequest = getRequestBuilderDefault(new URI(url)).header(Constants.HttpConstants.HEADER_KEY_ACCEPT, Constants.HttpConstants.APPLICATION_JSON).header(Constants.HttpConstants.HEADER_KEY_CONTENT_TYPE, Constants.HttpConstants.APPLICATION_JSON).GET().build();
         } catch (URISyntaxException e) {
             throw new RuntimeException(e);
         }
@@ -194,7 +199,7 @@ public class OllamaAPI {
     public List<Model> listModels() throws OllamaBaseException, IOException, InterruptedException, URISyntaxException {
         String url = this.host + "/api/tags";
         HttpClient httpClient = HttpClient.newHttpClient();
-        HttpRequest httpRequest = getRequestBuilderDefault(new URI(url)).header("Accept", "application/json").header("Content-type", "application/json").GET().build();
+        HttpRequest httpRequest = getRequestBuilderDefault(new URI(url)).header(Constants.HttpConstants.HEADER_KEY_ACCEPT, Constants.HttpConstants.APPLICATION_JSON).header(Constants.HttpConstants.HEADER_KEY_CONTENT_TYPE, Constants.HttpConstants.APPLICATION_JSON).GET().build();
         HttpResponse<String> response = httpClient.send(httpRequest, HttpResponse.BodyHandlers.ofString());
         int statusCode = response.statusCode();
         String responseString = response.body();
@@ -225,7 +230,7 @@ public class OllamaAPI {
     public List<LibraryModel> listModelsFromLibrary() throws OllamaBaseException, IOException, InterruptedException, URISyntaxException {
         String url = "https://ollama.com/library";
         HttpClient httpClient = HttpClient.newHttpClient();
-        HttpRequest httpRequest = getRequestBuilderDefault(new URI(url)).header("Accept", "application/json").header("Content-type", "application/json").GET().build();
+        HttpRequest httpRequest = getRequestBuilderDefault(new URI(url)).header(Constants.HttpConstants.HEADER_KEY_ACCEPT, Constants.HttpConstants.APPLICATION_JSON).header(Constants.HttpConstants.HEADER_KEY_CONTENT_TYPE, Constants.HttpConstants.APPLICATION_JSON).GET().build();
         HttpResponse<String> response = httpClient.send(httpRequest, HttpResponse.BodyHandlers.ofString());
         int statusCode = response.statusCode();
         String responseString = response.body();
@@ -286,7 +291,7 @@ public class OllamaAPI {
     public LibraryModelDetail getLibraryModelDetails(LibraryModel libraryModel) throws OllamaBaseException, IOException, InterruptedException, URISyntaxException {
         String url = String.format("https://ollama.com/library/%s/tags", libraryModel.getName());
         HttpClient httpClient = HttpClient.newHttpClient();
-        HttpRequest httpRequest = getRequestBuilderDefault(new URI(url)).header("Accept", "application/json").header("Content-type", "application/json").GET().build();
+        HttpRequest httpRequest = getRequestBuilderDefault(new URI(url)).header(Constants.HttpConstants.HEADER_KEY_ACCEPT, Constants.HttpConstants.APPLICATION_JSON).header(Constants.HttpConstants.HEADER_KEY_CONTENT_TYPE, Constants.HttpConstants.APPLICATION_JSON).GET().build();
         HttpResponse<String> response = httpClient.send(httpRequest, HttpResponse.BodyHandlers.ofString());
         int statusCode = response.statusCode();
         String responseString = response.body();
@@ -380,7 +385,7 @@ public class OllamaAPI {
     private void doPullModel(String modelName) throws OllamaBaseException, IOException, URISyntaxException, InterruptedException {
         String url = this.host + "/api/pull";
         String jsonData = new ModelRequest(modelName).toString();
-        HttpRequest request = getRequestBuilderDefault(new URI(url)).POST(HttpRequest.BodyPublishers.ofString(jsonData)).header("Accept", "application/json").header("Content-type", "application/json").build();
+        HttpRequest request = getRequestBuilderDefault(new URI(url)).POST(HttpRequest.BodyPublishers.ofString(jsonData)).header(Constants.HttpConstants.HEADER_KEY_ACCEPT, Constants.HttpConstants.APPLICATION_JSON).header(Constants.HttpConstants.HEADER_KEY_CONTENT_TYPE, Constants.HttpConstants.APPLICATION_JSON).build();
         HttpClient client = HttpClient.newHttpClient();
         HttpResponse<InputStream> response = client.send(request, HttpResponse.BodyHandlers.ofInputStream());
         int statusCode = response.statusCode();
@@ -399,7 +404,7 @@ public class OllamaAPI {
 
                     if (modelPullResponse.getStatus() != null) {
                         if (verbose) {
-                            logger.info(modelName + ": " + modelPullResponse.getStatus());
+                            logger.info("{}: {}", modelName, modelPullResponse.getStatus());
                         }
                         // Check if status is "success" and set success flag to true.
                         if ("success".equalsIgnoreCase(modelPullResponse.getStatus())) {
@@ -423,7 +428,7 @@ public class OllamaAPI {
     public String getVersion() throws URISyntaxException, IOException, InterruptedException, OllamaBaseException {
         String url = this.host + "/api/version";
         HttpClient httpClient = HttpClient.newHttpClient();
-        HttpRequest httpRequest = getRequestBuilderDefault(new URI(url)).header("Accept", "application/json").header("Content-type", "application/json").GET().build();
+        HttpRequest httpRequest = getRequestBuilderDefault(new URI(url)).header(Constants.HttpConstants.HEADER_KEY_ACCEPT, Constants.HttpConstants.APPLICATION_JSON).header(Constants.HttpConstants.HEADER_KEY_CONTENT_TYPE, Constants.HttpConstants.APPLICATION_JSON).GET().build();
         HttpResponse<String> response = httpClient.send(httpRequest, HttpResponse.BodyHandlers.ofString());
         int statusCode = response.statusCode();
         String responseString = response.body();
@@ -466,7 +471,7 @@ public class OllamaAPI {
     public ModelDetail getModelDetails(String modelName) throws IOException, OllamaBaseException, InterruptedException, URISyntaxException {
         String url = this.host + "/api/show";
         String jsonData = new ModelRequest(modelName).toString();
-        HttpRequest request = getRequestBuilderDefault(new URI(url)).header("Accept", "application/json").header("Content-type", "application/json").POST(HttpRequest.BodyPublishers.ofString(jsonData)).build();
+        HttpRequest request = getRequestBuilderDefault(new URI(url)).header(Constants.HttpConstants.HEADER_KEY_ACCEPT, Constants.HttpConstants.APPLICATION_JSON).header(Constants.HttpConstants.HEADER_KEY_CONTENT_TYPE, Constants.HttpConstants.APPLICATION_JSON).POST(HttpRequest.BodyPublishers.ofString(jsonData)).build();
         HttpClient client = HttpClient.newHttpClient();
         HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
         int statusCode = response.statusCode();
@@ -495,7 +500,7 @@ public class OllamaAPI {
     public void createModelWithFilePath(String modelName, String modelFilePath) throws IOException, InterruptedException, OllamaBaseException, URISyntaxException {
         String url = this.host + "/api/create";
         String jsonData = new CustomModelFilePathRequest(modelName, modelFilePath).toString();
-        HttpRequest request = getRequestBuilderDefault(new URI(url)).header("Accept", "application/json").header("Content-Type", "application/json").POST(HttpRequest.BodyPublishers.ofString(jsonData, StandardCharsets.UTF_8)).build();
+        HttpRequest request = getRequestBuilderDefault(new URI(url)).header(Constants.HttpConstants.HEADER_KEY_ACCEPT, Constants.HttpConstants.APPLICATION_JSON).header(Constants.HttpConstants.HEADER_KEY_CONTENT_TYPE, Constants.HttpConstants.APPLICATION_JSON).POST(HttpRequest.BodyPublishers.ofString(jsonData, StandardCharsets.UTF_8)).build();
         HttpClient client = HttpClient.newHttpClient();
         HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
         int statusCode = response.statusCode();
@@ -532,7 +537,7 @@ public class OllamaAPI {
     public void createModelWithModelFileContents(String modelName, String modelFileContents) throws IOException, InterruptedException, OllamaBaseException, URISyntaxException {
         String url = this.host + "/api/create";
         String jsonData = new CustomModelFileContentsRequest(modelName, modelFileContents).toString();
-        HttpRequest request = getRequestBuilderDefault(new URI(url)).header("Accept", "application/json").header("Content-Type", "application/json").POST(HttpRequest.BodyPublishers.ofString(jsonData, StandardCharsets.UTF_8)).build();
+        HttpRequest request = getRequestBuilderDefault(new URI(url)).header(Constants.HttpConstants.HEADER_KEY_ACCEPT, Constants.HttpConstants.APPLICATION_JSON).header(Constants.HttpConstants.HEADER_KEY_CONTENT_TYPE, Constants.HttpConstants.APPLICATION_JSON).POST(HttpRequest.BodyPublishers.ofString(jsonData, StandardCharsets.UTF_8)).build();
         HttpClient client = HttpClient.newHttpClient();
         HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
         int statusCode = response.statusCode();
@@ -562,7 +567,7 @@ public class OllamaAPI {
     public void createModel(CustomModelRequest customModelRequest) throws IOException, InterruptedException, OllamaBaseException, URISyntaxException {
         String url = this.host + "/api/create";
         String jsonData = customModelRequest.toString();
-        HttpRequest request = getRequestBuilderDefault(new URI(url)).header("Accept", "application/json").header("Content-Type", "application/json").POST(HttpRequest.BodyPublishers.ofString(jsonData, StandardCharsets.UTF_8)).build();
+        HttpRequest request = getRequestBuilderDefault(new URI(url)).header(Constants.HttpConstants.HEADER_KEY_ACCEPT, Constants.HttpConstants.APPLICATION_JSON).header(Constants.HttpConstants.HEADER_KEY_CONTENT_TYPE, Constants.HttpConstants.APPLICATION_JSON).POST(HttpRequest.BodyPublishers.ofString(jsonData, StandardCharsets.UTF_8)).build();
         HttpClient client = HttpClient.newHttpClient();
         HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
         int statusCode = response.statusCode();
@@ -592,7 +597,7 @@ public class OllamaAPI {
     public void deleteModel(String modelName, boolean ignoreIfNotPresent) throws IOException, InterruptedException, OllamaBaseException, URISyntaxException {
         String url = this.host + "/api/delete";
         String jsonData = new ModelRequest(modelName).toString();
-        HttpRequest request = getRequestBuilderDefault(new URI(url)).method("DELETE", HttpRequest.BodyPublishers.ofString(jsonData, StandardCharsets.UTF_8)).header("Accept", "application/json").header("Content-type", "application/json").build();
+        HttpRequest request = getRequestBuilderDefault(new URI(url)).method("DELETE", HttpRequest.BodyPublishers.ofString(jsonData, StandardCharsets.UTF_8)).header(Constants.HttpConstants.HEADER_KEY_ACCEPT, Constants.HttpConstants.APPLICATION_JSON).header(Constants.HttpConstants.HEADER_KEY_CONTENT_TYPE, Constants.HttpConstants.APPLICATION_JSON).build();
         HttpClient client = HttpClient.newHttpClient();
         HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
         int statusCode = response.statusCode();
@@ -636,7 +641,7 @@ public class OllamaAPI {
         URI uri = URI.create(this.host + "/api/embeddings");
         String jsonData = modelRequest.toString();
         HttpClient httpClient = HttpClient.newHttpClient();
-        HttpRequest.Builder requestBuilder = getRequestBuilderDefault(uri).header("Accept", "application/json").POST(HttpRequest.BodyPublishers.ofString(jsonData));
+        HttpRequest.Builder requestBuilder = getRequestBuilderDefault(uri).header(Constants.HttpConstants.HEADER_KEY_ACCEPT, Constants.HttpConstants.APPLICATION_JSON).POST(HttpRequest.BodyPublishers.ofString(jsonData));
         HttpRequest request = requestBuilder.build();
         HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
         int statusCode = response.statusCode();
@@ -677,7 +682,7 @@ public class OllamaAPI {
         String jsonData = Utils.getObjectMapper().writeValueAsString(modelRequest);
         HttpClient httpClient = HttpClient.newHttpClient();
 
-        HttpRequest request = HttpRequest.newBuilder(uri).header("Accept", "application/json").POST(HttpRequest.BodyPublishers.ofString(jsonData)).build();
+        HttpRequest request = HttpRequest.newBuilder(uri).header(Constants.HttpConstants.HEADER_KEY_ACCEPT, Constants.HttpConstants.APPLICATION_JSON).POST(HttpRequest.BodyPublishers.ofString(jsonData)).build();
 
         HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
         int statusCode = response.statusCode();
@@ -774,7 +779,7 @@ public class OllamaAPI {
         String jsonData = Utils.getObjectMapper().writeValueAsString(requestBody);
         HttpClient httpClient = HttpClient.newHttpClient();
 
-        HttpRequest request = getRequestBuilderDefault(uri).header("Accept", "application/json").header("Content-type", "application/json").POST(HttpRequest.BodyPublishers.ofString(jsonData)).build();
+        HttpRequest request = getRequestBuilderDefault(uri).header(Constants.HttpConstants.HEADER_KEY_ACCEPT, Constants.HttpConstants.APPLICATION_JSON).header(Constants.HttpConstants.HEADER_KEY_CONTENT_TYPE, Constants.HttpConstants.APPLICATION_JSON).POST(HttpRequest.BodyPublishers.ofString(jsonData)).build();
 
         if (verbose) {
             try {
@@ -1370,7 +1375,7 @@ public class OllamaAPI {
      * @return HttpRequest.Builder
      */
     private HttpRequest.Builder getRequestBuilderDefault(URI uri) {
-        HttpRequest.Builder requestBuilder = HttpRequest.newBuilder(uri).header("Content-Type", "application/json").timeout(Duration.ofSeconds(requestTimeoutSeconds));
+        HttpRequest.Builder requestBuilder = HttpRequest.newBuilder(uri).header(Constants.HttpConstants.HEADER_KEY_CONTENT_TYPE, Constants.HttpConstants.APPLICATION_JSON).timeout(Duration.ofSeconds(requestTimeoutSeconds));
         if (isBasicAuthCredentialsSet()) {
             requestBuilder.header("Authorization", auth.getAuthHeaderValue());
         }

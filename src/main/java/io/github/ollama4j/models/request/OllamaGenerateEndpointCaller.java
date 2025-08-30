@@ -22,6 +22,7 @@ import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.nio.charset.StandardCharsets;
 
+@SuppressWarnings("resource")
 public class OllamaGenerateEndpointCaller extends OllamaEndpointCaller {
 
     private static final Logger LOG = LoggerFactory.getLogger(OllamaGenerateEndpointCaller.class);

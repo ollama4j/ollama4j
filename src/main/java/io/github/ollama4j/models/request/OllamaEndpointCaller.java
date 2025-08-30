@@ -4,6 +4,7 @@ import java.net.URI;
 import java.net.http.HttpRequest;
 import java.time.Duration;
 
+import io.github.ollama4j.utils.Constants;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -44,7 +45,7 @@ public abstract class OllamaEndpointCaller {
     protected HttpRequest.Builder getRequestBuilderDefault(URI uri) {
         HttpRequest.Builder requestBuilder =
                 HttpRequest.newBuilder(uri)
-                        .header("Content-Type", "application/json")
+                        .header(Constants.HttpConstants.HEADER_KEY_CONTENT_TYPE, Constants.HttpConstants.APPLICATION_JSON)
                         .timeout(Duration.ofSeconds(this.requestTimeoutSeconds));
         if (isAuthCredentialsSet()) {
             requestBuilder.header("Authorization", this.auth.getAuthHeaderValue());

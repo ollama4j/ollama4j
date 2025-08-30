@@ -12,15 +12,17 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 import io.github.ollama4j.tools.Tools;
 
+@SuppressWarnings("resource")
 public class WeatherTool {
         private String openWeatherMapAPIKey = null;
-
+        private String paramCityName = "cityName";
         public WeatherTool(String openWeatherMapAPIKey) {
                 this.openWeatherMapAPIKey = openWeatherMapAPIKey;
         }
 
         public String getCurrentWeather(Map<String, Object> arguments) {
-                String city = (String) arguments.get("cityName");
+
+                String city = (String) arguments.get(paramCityName);
                 System.out.println("Finding weather for city: " + city);
 
                 String url = String.format("https://api.openweathermap.org/data/2.5/weather?q=%s&appid=%s&units=metric",
@@ -45,7 +47,6 @@ public class WeatherTool {
                                                 + response.statusCode();
                         }
                 } catch (IOException | InterruptedException e) {
-                        e.printStackTrace();
                         return "Error retrieving weather data: " + e.getMessage();
                 }
         }
@@ -70,7 +71,7 @@ public class WeatherTool {
                                                                                                                                 .type("object")
                                                                                                                                 .properties(
                                                                                                                                                 Map.of(
-                                                                                                                                                                "cityName",
+                                                                                                                                                        paramCityName,
                                                                                                                                                                 Tools.PromptFuncDefinition.Property
                                                                                                                                                                                 .builder()
                                                                                                                                                                                 .type("string")
@@ -79,7 +80,7 @@ public class WeatherTool {
                                                                                                                                                                                 .required(true)
                                                                                                                                                                                 .build()))
                                                                                                                                 .required(java.util.List
-                                                                                                                                                .of("cityName"))
+                                                                                                                                                .of(paramCityName))
                                                                                                                                 .build())
                                                                                                 .build())
                                                                 .build())
