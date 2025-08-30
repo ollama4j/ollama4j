@@ -1,15 +1,25 @@
 name: Run Unit and Integration Tests
 
 on:
-#  push:
-#    branches:
-#      - main
+  #  push:
+  #    branches:
+  #      - main
+
+  workflow_call:
+    inputs:
+      branch:
+        description: 'Branch name to run the tests on'
+        required: true
+        default: 'main'
+        type: string
+
   workflow_dispatch:
     inputs:
       branch:
         description: 'Branch name to run the tests on'
         required: true
         default: 'main'
+        type: string
 
 jobs:
   run-tests:
