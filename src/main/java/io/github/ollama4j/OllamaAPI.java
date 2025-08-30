@@ -1184,6 +1184,17 @@ public class OllamaAPI {
     }
 
     /**
+     * Deregisters all tools from the tool registry.
+     * This method removes all registered tools, effectively clearing the registry.
+     */
+    public void deregisterTools() {
+        toolRegistry.clear();
+        if (this.verbose) {
+            logger.debug("All tools have been deregistered.");
+        }
+    }
+
+    /**
      * Registers tools based on the annotations found on the methods of the caller's
      * class and its providers.
      * This method scans the caller's class for the {@link OllamaToolService}
