@@ -75,7 +75,7 @@ class OllamaAPIIntegrationTest {
         }
         api.setRequestTimeoutSeconds(120);
         api.setVerbose(true);
-        api.setNumberOfRetriesForModelPull(3);
+        api.setNumberOfRetriesForModelPull(5);
     }
 
     @Test

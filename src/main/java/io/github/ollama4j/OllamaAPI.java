@@ -429,7 +429,7 @@ public class OllamaAPI {
             return;
         }
         int numberOfRetries = 0;
-        long baseDelayMillis = 1000L; // 1 second base delay
+        long baseDelayMillis = 3000L; // 1 second base delay
         while (numberOfRetries < numberOfRetriesForModelPull) {
             try {
                 this.doPullModel(modelName);
@@ -450,8 +450,8 @@ public class OllamaAPI {
         int attempt = currentRetry + 1;
         if (attempt < maxRetries) {
             long backoffMillis = baseDelayMillis * (1L << currentRetry);
-            logger.error("Failed to pull model {}, retrying in {} ms... (attempt {}/{})",
-                    modelName, backoffMillis, attempt, maxRetries);
+            logger.error("Failed to pull model {}, retrying in {} s... (attempt {}/{})",
+                    modelName, backoffMillis/1000, attempt, maxRetries);
             try {
                 Thread.sleep(backoffMillis);
             } catch (InterruptedException ie) {
