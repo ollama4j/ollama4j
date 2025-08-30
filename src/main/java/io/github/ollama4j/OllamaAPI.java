@@ -56,32 +56,49 @@ import java.util.stream.Collectors;
 public class OllamaAPI {
 
     private static final Logger logger = LoggerFactory.getLogger(OllamaAPI.class);
+
     private final String host;
+    private Auth auth;
+    private final ToolRegistry toolRegistry = new ToolRegistry();
+
     /**
-     * -- SETTER --
-     * Set request timeout in seconds. Default is 3 seconds.
+     * The request timeout in seconds for API calls.
+     * <p>
+     * Default is 10 seconds. This value determines how long the client will wait for a response
+     * from the Ollama server before timing out.
      */
     @Setter
     private long requestTimeoutSeconds = 10;
+
     /**
-     * -- SETTER --
-     * Set/unset logging of responses
+     * Enables or disables verbose logging of responses.
+     * <p>
+     * If set to {@code true}, the API will log detailed information about requests and responses.
+     * Default is {@code true}.
      */
     @Setter
     private boolean verbose = true;
 
+    /**
+     * The maximum number of retries for tool calls during chat interactions.
+     * <p>
+     * This value controls how many times the API will attempt to call a tool in the event of a failure.
+     * Default is 3.
+     */
     @Setter
     private int maxChatToolCallRetries = 3;
 
-    private Auth auth;
-
+    /**
+     * The number of retries to attempt when pulling a model from the Ollama server.
+     * <p>
+     * If set to 0, no retries will be performed. If greater than 0, the API will retry pulling the model
+     * up to the specified number of times in case of failure.
+     * <p>
+     * Default is 0 (no retries).
+     */
+    @Setter
+    @SuppressWarnings({"FieldMayBeFinal", "FieldCanBeLocal"})
     private int numberOfRetriesForModelPull = 0;
-
-    public void setNumberOfRetriesForModelPull(int numberOfRetriesForModelPull) {
-        this.numberOfRetriesForModelPull = numberOfRetriesForModelPull;
-    }
-
-    private final ToolRegistry toolRegistry = new ToolRegistry();
 
     /**
      * Instantiates the Ollama API with default Ollama host:
@@ -350,35 +367,57 @@ public class OllamaAPI {
         List<LibraryModel> libraryModels = this.listModelsFromLibrary();
         LibraryModel libraryModel = libraryModels.stream().filter(model -> model.getName().equals(modelName)).findFirst().orElseThrow(() -> new NoSuchElementException(String.format("Model by name '%s' not found", modelName)));
         LibraryModelDetail libraryModelDetail = this.getLibraryModelDetails(libraryModel);
-        LibraryModelTag libraryModelTag = libraryModelDetail.getTags().stream().filter(tagName -> tagName.getTag().equals(tag)).findFirst().orElseThrow(() -> new NoSuchElementException(String.format("Tag '%s' for model '%s' not found", tag, modelName)));
-        return libraryModelTag;
+        return libraryModelDetail.getTags().stream().filter(tagName -> tagName.getTag().equals(tag)).findFirst().orElseThrow(() -> new NoSuchElementException(String.format("Tag '%s' for model '%s' not found", tag, modelName)));
     }
 
     /**
      * Pull a model on the Ollama server from the list of <a
      * href="https://ollama.ai/library">available models</a>.
+     * <p>
+     * If {@code numberOfRetriesForModelPull} is greater than 0, this method will retry pulling the model
+     * up to the specified number of times if an {@link OllamaBaseException} occurs, using exponential backoff
+     * between retries (delay doubles after each failed attempt, starting at 1 second).
+     * <p>
+     * The backoff is only applied between retries, not after the final attempt.
      *
      * @param modelName the name of the model
-     * @throws OllamaBaseException  if the response indicates an error status
+     * @throws OllamaBaseException  if the response indicates an error status or all retries fail
      * @throws IOException          if an I/O error occurs during the HTTP request
-     * @throws InterruptedException if the operation is interrupted
+     * @throws InterruptedException if the operation is interrupted or the thread is interrupted during backoff
      * @throws URISyntaxException   if the URI for the request is malformed
      */
     public void pullModel(String modelName) throws OllamaBaseException, IOException, URISyntaxException, InterruptedException {
         if (numberOfRetriesForModelPull == 0) {
             this.doPullModel(modelName);
-        } else {
-            int numberOfRetries = 0;
-            while (numberOfRetries < numberOfRetriesForModelPull) {
-                try {
-                    this.doPullModel(modelName);
-                    return;
-                } catch (OllamaBaseException e) {
-                    logger.error("Failed to pull model " + modelName + ", retrying...");
-                    numberOfRetries++;
-                }
+            return;
+        }
+        int numberOfRetries = 0;
+        long baseDelayMillis = 1000L; // 1 second base delay
+        while (numberOfRetries < numberOfRetriesForModelPull) {
+            try {
+                this.doPullModel(modelName);
+                return;
+            } catch (OllamaBaseException e) {
+                handlePullRetry(modelName, numberOfRetries, numberOfRetriesForModelPull, baseDelayMillis);
+                numberOfRetries++;
             }
-            throw new OllamaBaseException("Failed to pull model " + modelName + " after " + numberOfRetriesForModelPull + " retries");
+        }
+        throw new OllamaBaseException("Failed to pull model " + modelName + " after " + numberOfRetriesForModelPull + " retries");
+    }
+
+    /**
+     * Handles retry logic for pullModel, including logging and backoff.
+     */
+    private void handlePullRetry(String modelName, int currentRetry, int maxRetries, long baseDelayMillis) throws InterruptedException {
+        logger.error("Failed to pull model {}, retrying... (attempt {}/{})", modelName, currentRetry + 1, maxRetries);
+        if (currentRetry + 1 < maxRetries) {
+            long backoffMillis = baseDelayMillis * (1L << currentRetry);
+            try {
+                Thread.sleep(backoffMillis);
+            } catch (InterruptedException ie) {
+                Thread.currentThread().interrupt();
+                throw ie;
+            }
         }
     }
 
