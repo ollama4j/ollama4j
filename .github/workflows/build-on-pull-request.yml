@@ -2,11 +2,12 @@ name: Run Tests
 
 on:
   pull_request:
-    #    types: [opened, reopened, synchronize, edited]
-    branches: [ "main" ]
+    types: [opened, reopened, synchronize, edited]
+    branches:
+      - main
     paths:
-      - 'src/**'           # Run if changes occur in the 'src' folder
-      - 'pom.xml'          # Run if changes occur in the 'pom.xml' file
+      - 'src/**'
+      - 'pom.xml'
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
@@ -26,8 +27,8 @@ jobs:
         with:
           java-version: '11'
           distribution: 'adopt-hotspot'
-          server-id: github # Value of the distributionManagement/repository/id field of the pom.xml
-          settings-path: ${{ github.workspace }} # location for the settings.xml file
+          server-id: github
+          settings-path: ${{ github.workspace }}
 
       - name: Build with Maven
         run: mvn --file pom.xml -U clean package
