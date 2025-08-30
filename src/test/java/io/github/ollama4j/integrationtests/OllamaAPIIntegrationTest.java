@@ -363,21 +363,6 @@ class OllamaAPIIntegrationTest {
             sb.append(substring);
             LOG.info(substring);
         });
-//        assertNotNull(chatResult);
-//        assertNotNull(chatResult.getResponseModel());
-//        assertNotNull(chatResult.getResponseModel().getMessage());
-//        assertNotNull(chatResult.getResponseModel().getMessage().getContent());
-//        assertTrue(sb.toString().toLowerCase().contains("Rahul Kumar".toLowerCase()));
-//        assertTrue(chatResult.getResponseModel().getMessage().getContent().toLowerCase()
-//                .contains("Rahul Kumar".toLowerCase()));
-//
-//        boolean toolCallMessageFound = false;
-//        for (OllamaChatMessage message : chatResult.getChatHistory()) {
-//            if (message.getToolCalls() != null && !message.getToolCalls().isEmpty()) {
-//                toolCallMessageFound = true;
-//            }
-//        }
-//        assertTrue(toolCallMessageFound, "Expected at least one message in chat history to have tool calls");
 
         assertNotNull(chatResult, "chatResult should not be null");
         assertNotNull(chatResult.getResponseModel(), "Response model should not be null");
