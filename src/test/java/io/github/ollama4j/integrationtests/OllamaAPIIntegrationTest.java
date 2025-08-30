@@ -245,7 +245,7 @@ public class OllamaAPIIntegrationTest {
         OllamaChatRequest requestModel = builder.withMessage(OllamaChatMessageRole.SYSTEM,
                         "You are a silent bot that only says 'Shush'. Do not say anything else under any circumstances!")
                 .withMessage(OllamaChatMessageRole.USER, "What's something that's brown and sticky?")
-                .withOptions(new OptionsBuilder().setTemperature(0.8f).build()).build();
+                .withOptions(new OptionsBuilder().setTemperature(0.1f).build()).build();
 
         OllamaChatResult chatResult = api.chat(requestModel);
         assertNotNull(chatResult);
