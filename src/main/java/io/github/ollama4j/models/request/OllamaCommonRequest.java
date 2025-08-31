@@ -1,14 +1,14 @@
 package io.github.ollama4j.models.request;
 
-import java.util.Map;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
-
 import io.github.ollama4j.utils.BooleanToJsonFormatFlagSerializer;
 import io.github.ollama4j.utils.Utils;
 import lombok.Data;
+
+import java.util.Map;
 
 @Data
 @JsonInclude(JsonInclude.Include.NON_NULL)

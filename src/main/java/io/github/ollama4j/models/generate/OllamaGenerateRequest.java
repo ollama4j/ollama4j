@@ -3,11 +3,10 @@ package io.github.ollama4j.models.generate;
 
 import io.github.ollama4j.models.request.OllamaCommonRequest;
 import io.github.ollama4j.utils.OllamaRequestBody;
-
-import java.util.List;
-
 import lombok.Getter;
 import lombok.Setter;
+
+import java.util.List;
 
 @Getter
 @Setter
@@ -19,6 +18,7 @@ public class OllamaGenerateRequest extends OllamaCommonRequest implements Ollama
   private String system;
   private String context;
   private boolean raw;
+  private boolean think;
 
   public OllamaGenerateRequest() {
   }

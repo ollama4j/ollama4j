@@ -1,20 +1,21 @@
-name: Run Tests
+name: Build and Test on Pull Request
 
 on:
   pull_request:
-    #    types: [opened, reopened, synchronize, edited]
-    branches: [ "main" ]
+    types: [opened, reopened, synchronize]
+    branches:
+      - main
     paths:
-      - 'src/**'           # Run if changes occur in the 'src' folder
-      - 'pom.xml'          # Run if changes occur in the 'pom.xml' file
+      - 'src/**'
+      - 'pom.xml'
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
   cancel-in-progress: true
 
 jobs:
-  run-tests:
-
+  build:
+    name: Build Java Project
     runs-on: ubuntu-latest
     permissions:
       contents: read
@@ -26,18 +27,26 @@ jobs:
         with:
           java-version: '11'
           distribution: 'adopt-hotspot'
-          server-id: github # Value of the distributionManagement/repository/id field of the pom.xml
-          settings-path: ${{ github.workspace }} # location for the settings.xml file
+          server-id: github
+          settings-path: ${{ github.workspace }}
 
       - name: Build with Maven
         run: mvn --file pom.xml -U clean package
 
-      - name: Run unit tests
-        run: mvn --file pom.xml -U clean test -Punit-tests
+  run-tests:
+    name: Run Unit and Integration Tests
+    needs: build
+    uses: ./.github/workflows/run-tests.yml
+    with:
+      branch: ${{ github.head_ref || github.ref_name }}
 
-      - name: Run integration tests
-        run: mvn --file pom.xml -U clean verify -Pintegration-tests
+  build-docs:
+    name: Build Documentation
+    needs: [build, run-tests]
+    runs-on: ubuntu-latest
 
+    steps:
+      - uses: actions/checkout@v3
       - name: Use Node.js
         uses: actions/setup-node@v3
         with:

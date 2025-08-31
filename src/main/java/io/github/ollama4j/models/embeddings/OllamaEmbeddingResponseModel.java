@@ -1,9 +1,9 @@
 package io.github.ollama4j.models.embeddings;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import lombok.Data;
 
 import java.util.List;
-import lombok.Data;
 
 @SuppressWarnings("unused")
 @Data

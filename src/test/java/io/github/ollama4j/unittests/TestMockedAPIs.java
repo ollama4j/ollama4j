@@ -21,7 +21,8 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.fail;
 import static org.mockito.Mockito.*;
 
 class TestMockedAPIs {
@@ -138,10 +139,10 @@ class TestMockedAPIs {
         String prompt = "some prompt text";
         OptionsBuilder optionsBuilder = new OptionsBuilder();
         try {
-            when(ollamaAPI.generate(model, prompt, false, optionsBuilder.build()))
-                    .thenReturn(new OllamaResult("", 0, 200));
-            ollamaAPI.generate(model, prompt, false, optionsBuilder.build());
-            verify(ollamaAPI, times(1)).generate(model, prompt, false, optionsBuilder.build());
+            when(ollamaAPI.generate(model, prompt, false, false, optionsBuilder.build()))
+                    .thenReturn(new OllamaResult("", "", 0, 200));
+            ollamaAPI.generate(model, prompt, false, false, optionsBuilder.build());
+            verify(ollamaAPI, times(1)).generate(model, prompt, false, false, optionsBuilder.build());
         } catch (IOException | OllamaBaseException | InterruptedException e) {
             throw new RuntimeException(e);
         }
@@ -155,7 +156,7 @@ class TestMockedAPIs {
         try {
             when(ollamaAPI.generateWithImageFiles(
                     model, prompt, Collections.emptyList(), new OptionsBuilder().build()))
-                    .thenReturn(new OllamaResult("", 0, 200));
+                    .thenReturn(new OllamaResult("", "", 0, 200));
             ollamaAPI.generateWithImageFiles(
                     model, prompt, Collections.emptyList(), new OptionsBuilder().build());
             verify(ollamaAPI, times(1))
@@ -174,7 +175,7 @@ class TestMockedAPIs {
         try {
             when(ollamaAPI.generateWithImageURLs(
                     model, prompt, Collections.emptyList(), new OptionsBuilder().build()))
-                    .thenReturn(new OllamaResult("", 0, 200));
+                    .thenReturn(new OllamaResult("", "", 0, 200));
             ollamaAPI.generateWithImageURLs(
                     model, prompt, Collections.emptyList(), new OptionsBuilder().build());
             verify(ollamaAPI, times(1))
@@ -190,10 +191,10 @@ class TestMockedAPIs {
         OllamaAPI ollamaAPI = Mockito.mock(OllamaAPI.class);
         String model = OllamaModelType.LLAMA2;
         String prompt = "some prompt text";
-        when(ollamaAPI.generateAsync(model, prompt, false))
+        when(ollamaAPI.generateAsync(model, prompt, false, false))
                 .thenReturn(new OllamaAsyncResultStreamer(null, null, 3));
-        ollamaAPI.generateAsync(model, prompt, false);
-        verify(ollamaAPI, times(1)).generateAsync(model, prompt, false);
+        ollamaAPI.generateAsync(model, prompt, false, false);
+        verify(ollamaAPI, times(1)).generateAsync(model, prompt, false, false);
     }
 
     @Test

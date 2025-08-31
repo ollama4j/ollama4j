@@ -1,6 +1,5 @@
 package io.github.ollama4j.utils;
 
-import java.io.IOException;
 import java.util.HashMap;
 
 /** Builder class for creating options for Ollama model. */

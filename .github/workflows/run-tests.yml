@@ -1,18 +1,29 @@
-name: Run Unit and Integration Tests
+name: Run Tests
 
 on:
-#  push:
-#    branches:
-#      - main
+  #  push:
+  #    branches:
+  #      - main
+
+  workflow_call:
+    inputs:
+      branch:
+        description: 'Branch name to run the tests on'
+        required: true
+        default: 'main'
+        type: string
+
   workflow_dispatch:
     inputs:
       branch:
         description: 'Branch name to run the tests on'
         required: true
         default: 'main'
+        type: string
 
 jobs:
   run-tests:
+    name: Unit and Integration Tests
     runs-on: ubuntu-latest
 
     steps:
@@ -20,17 +31,6 @@ jobs:
         uses: actions/checkout@v3
         with:
           ref: ${{ github.event.inputs.branch }}
-
-      - name: Use workflow from checked out branch
-        run: |
-          if [ -f .github/workflows/run-tests.yml ]; then
-            echo "Using workflow from checked out branch."
-            cp .github/workflows/run-tests.yml /tmp/run-tests.yml
-            exit 0
-          else
-            echo "Workflow file not found in checked out branch."
-            exit 1
-          fi
 
       - name: Set up Ollama
         run: |

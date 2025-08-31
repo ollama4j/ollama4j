@@ -5,14 +5,16 @@ import java.util.List;
 
 public class OllamaGenerateStreamObserver {
 
-    private OllamaStreamHandler streamHandler;
+    private final OllamaStreamHandler thinkingStreamHandler;
+    private final OllamaStreamHandler responseStreamHandler;
 
-    private List<OllamaGenerateResponseModel> responseParts = new ArrayList<>();
+    private final List<OllamaGenerateResponseModel> responseParts = new ArrayList<>();
 
     private String message = "";
 
-    public OllamaGenerateStreamObserver(OllamaStreamHandler streamHandler) {
-        this.streamHandler = streamHandler;
+    public OllamaGenerateStreamObserver(OllamaStreamHandler thinkingStreamHandler, OllamaStreamHandler responseStreamHandler) {
+        this.responseStreamHandler = responseStreamHandler;
+        this.thinkingStreamHandler = thinkingStreamHandler;
     }
 
     public void notify(OllamaGenerateResponseModel currentResponsePart) {
@@ -21,9 +23,24 @@ public class OllamaGenerateStreamObserver {
     }
 
     protected void handleCurrentResponsePart(OllamaGenerateResponseModel currentResponsePart) {
-        message = message + currentResponsePart.getResponse();
-        streamHandler.accept(message);
+        String response = currentResponsePart.getResponse();
+        String thinking = currentResponsePart.getThinking();
+
+        boolean hasResponse = response != null && !response.isEmpty();
+        boolean hasThinking = thinking != null && !thinking.isEmpty();
+
+        if (!hasResponse && hasThinking && thinkingStreamHandler != null) {
+            // message = message + thinking;
+
+            // use only new tokens received, instead of appending the tokens to the previous
+            // ones and sending the full string again
+            thinkingStreamHandler.accept(thinking);
+        } else if (hasResponse && responseStreamHandler != null) {
+            // message = message + response;
+
+            // use only new tokens received, instead of appending the tokens to the previous
+            // ones and sending the full string again
+            responseStreamHandler.accept(response);
+        }
     }
-
-
 }

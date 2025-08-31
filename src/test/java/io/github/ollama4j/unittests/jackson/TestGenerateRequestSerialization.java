@@ -1,15 +1,13 @@
 package io.github.ollama4j.unittests.jackson;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-
 import io.github.ollama4j.models.generate.OllamaGenerateRequest;
+import io.github.ollama4j.models.generate.OllamaGenerateRequestBuilder;
+import io.github.ollama4j.utils.OptionsBuilder;
 import org.json.JSONObject;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-
-import io.github.ollama4j.models.generate.OllamaGenerateRequestBuilder;
-import io.github.ollama4j.utils.OptionsBuilder;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class TestGenerateRequestSerialization extends AbstractSerializationTest<OllamaGenerateRequest> {
 

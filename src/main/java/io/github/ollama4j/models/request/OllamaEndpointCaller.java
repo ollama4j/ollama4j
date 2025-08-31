@@ -1,14 +1,14 @@
 package io.github.ollama4j.models.request;
 
-import java.net.URI;
-import java.net.http.HttpRequest;
-import java.time.Duration;
-
+import io.github.ollama4j.OllamaAPI;
+import io.github.ollama4j.utils.Constants;
+import lombok.Getter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import io.github.ollama4j.OllamaAPI;
-import lombok.Getter;
+import java.net.URI;
+import java.net.http.HttpRequest;
+import java.time.Duration;
 
 /**
  * Abstract helperclass to call the ollama api server.
@@ -32,7 +32,7 @@ public abstract class OllamaEndpointCaller {
 
     protected abstract String getEndpointSuffix();
 
-    protected abstract boolean parseResponseAndAddToBuffer(String line, StringBuilder responseBuffer);
+    protected abstract boolean parseResponseAndAddToBuffer(String line, StringBuilder responseBuffer, StringBuilder thinkingBuffer);
 
 
     /**
@@ -44,7 +44,7 @@ public abstract class OllamaEndpointCaller {
     protected HttpRequest.Builder getRequestBuilderDefault(URI uri) {
         HttpRequest.Builder requestBuilder =
                 HttpRequest.newBuilder(uri)
-                        .header("Content-Type", "application/json")
+                        .header(Constants.HttpConstants.HEADER_KEY_CONTENT_TYPE, Constants.HttpConstants.APPLICATION_JSON)
                         .timeout(Duration.ofSeconds(this.requestTimeoutSeconds));
         if (isAuthCredentialsSet()) {
             requestBuilder.header("Authorization", this.auth.getAuthHeaderValue());

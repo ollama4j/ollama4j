@@ -9,14 +9,21 @@ public class ToolRegistry {
 
     public ToolFunction getToolFunction(String name) {
         final Tools.ToolSpecification toolSpecification = tools.get(name);
-        return toolSpecification !=null ? toolSpecification.getToolFunction() : null ;
+        return toolSpecification != null ? toolSpecification.getToolFunction() : null;
     }
 
-    public void addTool (String name, Tools.ToolSpecification specification) {
+    public void addTool(String name, Tools.ToolSpecification specification) {
         tools.put(name, specification);
     }
 
-    public Collection<Tools.ToolSpecification> getRegisteredSpecs(){
+    public Collection<Tools.ToolSpecification> getRegisteredSpecs() {
         return tools.values();
+    }
+
+    /**
+     * Removes all registered tools from the registry.
+     */
+    public void clear() {
+        tools.clear();
     }
 }

@@ -1,13 +1,14 @@
 package io.github.ollama4j.models.request;
 
-import java.util.Base64;
-
 import lombok.AllArgsConstructor;
 import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.EqualsAndHashCode;
+
+import java.util.Base64;
 
 @Data
 @AllArgsConstructor
+@EqualsAndHashCode(callSuper = false)
 public class BasicAuth extends Auth {
   private String username;
   private String password;

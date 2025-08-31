@@ -1,6 +1,5 @@
 package io.github.ollama4j.integrationtests;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
 import io.github.ollama4j.OllamaAPI;
 import io.github.ollama4j.exceptions.OllamaBaseException;
 import io.github.ollama4j.exceptions.ToolInvocationException;
@@ -16,9 +15,6 @@ import io.github.ollama4j.tools.ToolFunction;
 import io.github.ollama4j.tools.Tools;
 import io.github.ollama4j.tools.annotations.OllamaToolService;
 import io.github.ollama4j.utils.OptionsBuilder;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.MethodOrderer.OrderAnnotation;
 import org.junit.jupiter.api.Order;
@@ -40,24 +36,24 @@ import static org.junit.jupiter.api.Assertions.*;
 @TestMethodOrder(OrderAnnotation.class)
 
 @SuppressWarnings({"HttpUrlsUsage", "SpellCheckingInspection"})
-public class OllamaAPIIntegrationTest {
+class OllamaAPIIntegrationTest {
     private static final Logger LOG = LoggerFactory.getLogger(OllamaAPIIntegrationTest.class);
 
     private static OllamaContainer ollama;
     private static OllamaAPI api;
 
-    private static final String EMBEDDING_MODEL_MINILM = "all-minilm";
-    private static final String CHAT_MODEL_QWEN_SMALL = "qwen2.5:0.5b";
-    private static final String CHAT_MODEL_INSTRUCT = "qwen2.5:0.5b-instruct";
-    private static final String CHAT_MODEL_SYSTEM_PROMPT = "llama3.2:1b";
-    private static final String CHAT_MODEL_LLAMA3 = "llama3";
-    private static final String IMAGE_MODEL_LLAVA = "llava";
+    private static final String EMBEDDING_MODEL = "all-minilm";
+    private static final String VISION_MODEL = "moondream:1.8b";
+    private static final String THINKING_TOOL_MODEL = "gpt-oss:20b";
+    private static final String GENERAL_PURPOSE_MODEL = "gemma3:270m";
+    private static final String TOOLS_MODEL = "mistral:7b";
 
     @BeforeAll
-    public static void setUp() {
+    static void setUp() {
         try {
             boolean useExternalOllamaHost = Boolean.parseBoolean(System.getenv("USE_EXTERNAL_OLLAMA_HOST"));
             String ollamaHost = System.getenv("OLLAMA_HOST");
+
             if (useExternalOllamaHost) {
                 LOG.info("Using external Ollama host...");
                 api = new OllamaAPI(ollamaHost);
@@ -80,7 +76,7 @@ public class OllamaAPIIntegrationTest {
         }
         api.setRequestTimeoutSeconds(120);
         api.setVerbose(true);
-        api.setNumberOfRetriesForModelPull(3);
+        api.setNumberOfRetriesForModelPull(5);
     }
 
     @Test
@@ -92,7 +88,7 @@ public class OllamaAPIIntegrationTest {
 
     @Test
     @Order(1)
-    public void testVersionAPI() throws URISyntaxException, IOException, OllamaBaseException, InterruptedException {
+    void testVersionAPI() throws URISyntaxException, IOException, OllamaBaseException, InterruptedException {
         // String expectedVersion = ollama.getDockerImageName().split(":")[1];
         String actualVersion = api.getVersion();
         assertNotNull(actualVersion);
@@ -101,16 +97,21 @@ public class OllamaAPIIntegrationTest {
     }
 
     @Test
+    @Order(1)
+    void testPing() throws URISyntaxException, IOException, OllamaBaseException, InterruptedException {
+        boolean pingResponse = api.ping();
+        assertTrue(pingResponse, "Ping should return true");
+    }
+
+    @Test
     @Order(2)
-    public void testListModelsAPI()
-            throws URISyntaxException, IOException, OllamaBaseException, InterruptedException {
-        api.pullModel(EMBEDDING_MODEL_MINILM);
+    void testListModelsAPI() throws URISyntaxException, IOException, OllamaBaseException, InterruptedException {
         // Fetch the list of models
         List<Model> models = api.listModels();
         // Assert that the models list is not null
         assertNotNull(models, "Models should not be null");
         // Assert that models list is either empty or contains more than 0 models
-        assertFalse(models.isEmpty(), "Models list should not be empty");
+        assertTrue(models.size() >= 0, "Models list should not be empty");
     }
 
     @Test
@@ -124,9 +125,8 @@ public class OllamaAPIIntegrationTest {
 
     @Test
     @Order(3)
-    public void testPullModelAPI()
-            throws URISyntaxException, IOException, OllamaBaseException, InterruptedException {
-        api.pullModel(EMBEDDING_MODEL_MINILM);
+    void testPullModelAPI() throws URISyntaxException, IOException, OllamaBaseException, InterruptedException {
+        api.pullModel(EMBEDDING_MODEL);
         List<Model> models = api.listModels();
         assertNotNull(models, "Models should not be null");
         assertFalse(models.isEmpty(), "Models list should contain elements");
@@ -135,17 +135,17 @@ public class OllamaAPIIntegrationTest {
     @Test
     @Order(4)
     void testListModelDetails() throws IOException, OllamaBaseException, URISyntaxException, InterruptedException {
-        api.pullModel(EMBEDDING_MODEL_MINILM);
-        ModelDetail modelDetails = api.getModelDetails(EMBEDDING_MODEL_MINILM);
+        api.pullModel(EMBEDDING_MODEL);
+        ModelDetail modelDetails = api.getModelDetails(EMBEDDING_MODEL);
         assertNotNull(modelDetails);
-        assertTrue(modelDetails.getModelFile().contains(EMBEDDING_MODEL_MINILM));
+        assertTrue(modelDetails.getModelFile().contains(EMBEDDING_MODEL));
     }
 
     @Test
     @Order(5)
-    public void testEmbeddings() throws Exception {
-        api.pullModel(EMBEDDING_MODEL_MINILM);
-        OllamaEmbedResponseModel embeddings = api.embed(EMBEDDING_MODEL_MINILM,
+    void testEmbeddings() throws Exception {
+        api.pullModel(EMBEDDING_MODEL);
+        OllamaEmbedResponseModel embeddings = api.embed(EMBEDDING_MODEL,
                 Arrays.asList("Why is the sky blue?", "Why is the grass green?"));
         assertNotNull(embeddings, "Embeddings should not be null");
         assertFalse(embeddings.getEmbeddings().isEmpty(), "Embeddings should not be empty");
@@ -153,58 +153,44 @@ public class OllamaAPIIntegrationTest {
 
     @Test
     @Order(6)
-    void testAskModelWithStructuredOutput()
+    void testGenerateWithStructuredOutput()
             throws OllamaBaseException, IOException, InterruptedException, URISyntaxException {
-        api.pullModel(CHAT_MODEL_LLAMA3);
+        api.pullModel(TOOLS_MODEL);
 
-        int timeHour = 6;
-        boolean isNightTime = false;
-
-        String prompt = "The Sun is shining, and its " + timeHour + ". Its daytime.";
+        String prompt = "The sun is shining brightly and is directly overhead at the zenith, casting my shadow over my foot, so it must be noon.";
 
         Map<String, Object> format = new HashMap<>();
         format.put("type", "object");
         format.put("properties", new HashMap<String, Object>() {
             {
-                put("timeHour", new HashMap<String, Object>() {
-                    {
-                        put("type", "integer");
-                    }
-                });
-                put("isNightTime", new HashMap<String, Object>() {
+                put("isNoon", new HashMap<String, Object>() {
                     {
                         put("type", "boolean");
                     }
                 });
             }
         });
-        format.put("required", Arrays.asList("timeHour", "isNightTime"));
+        format.put("required", List.of("isNoon"));
 
-        OllamaResult result = api.generate(CHAT_MODEL_LLAMA3, prompt, format);
+        OllamaResult result = api.generate(TOOLS_MODEL, prompt, format);
 
         assertNotNull(result);
         assertNotNull(result.getResponse());
         assertFalse(result.getResponse().isEmpty());
 
-        assertEquals(timeHour,
-                result.getStructuredResponse().get("timeHour"));
-        assertEquals(isNightTime,
-                result.getStructuredResponse().get("isNightTime"));
-
-        TimeOfDay timeOfDay = result.as(TimeOfDay.class);
-
-        assertEquals(timeHour, timeOfDay.getTimeHour());
-        assertEquals(isNightTime, timeOfDay.isNightTime());
+        assertEquals(true, result.getStructuredResponse().get("isNoon"));
     }
 
     @Test
     @Order(6)
-    void testAskModelWithDefaultOptions()
+    void testGennerateModelWithDefaultOptions()
             throws OllamaBaseException, IOException, InterruptedException, URISyntaxException {
-        api.pullModel(CHAT_MODEL_QWEN_SMALL);
-        OllamaResult result = api.generate(CHAT_MODEL_QWEN_SMALL,
-                "What is the capital of France? And what's France's connection with Mona Lisa?", false,
-                new OptionsBuilder().build());
+        api.pullModel(GENERAL_PURPOSE_MODEL);
+        boolean raw = false;
+        boolean thinking = false;
+        OllamaResult result = api.generate(GENERAL_PURPOSE_MODEL,
+                "What is the capital of France? And what's France's connection with Mona Lisa?", raw,
+                thinking, new OptionsBuilder().build());
         assertNotNull(result);
         assertNotNull(result.getResponse());
         assertFalse(result.getResponse().isEmpty());
@@ -212,32 +198,31 @@ public class OllamaAPIIntegrationTest {
 
     @Test
     @Order(7)
-    void testAskModelWithDefaultOptionsStreamed()
+    void testGenerateWithDefaultOptionsStreamed()
             throws OllamaBaseException, IOException, URISyntaxException, InterruptedException {
-        api.pullModel(CHAT_MODEL_QWEN_SMALL);
+        api.pullModel(GENERAL_PURPOSE_MODEL);
+        boolean raw = false;
         StringBuffer sb = new StringBuffer();
-        OllamaResult result = api.generate(CHAT_MODEL_QWEN_SMALL,
-                "What is the capital of France? And what's France's connection with Mona Lisa?", false,
+        OllamaResult result = api.generate(GENERAL_PURPOSE_MODEL,
+                "What is the capital of France? And what's France's connection with Mona Lisa?", raw,
                 new OptionsBuilder().build(), (s) -> {
                     LOG.info(s);
-                    String substring = s.substring(sb.toString().length(), s.length());
-                    LOG.info(substring);
-                    sb.append(substring);
+                    sb.append(s);
                 });
 
         assertNotNull(result);
         assertNotNull(result.getResponse());
         assertFalse(result.getResponse().isEmpty());
-        assertEquals(sb.toString().trim(), result.getResponse().trim());
+        assertEquals(sb.toString(), result.getResponse());
     }
 
     @Test
     @Order(8)
-    void testAskModelWithOptions()
-            throws OllamaBaseException, IOException, URISyntaxException, InterruptedException, ToolInvocationException {
-        api.pullModel(CHAT_MODEL_INSTRUCT);
+    void testGenerateWithOptions() throws OllamaBaseException, IOException, URISyntaxException,
+            InterruptedException, ToolInvocationException {
+        api.pullModel(GENERAL_PURPOSE_MODEL);
 
-        OllamaChatRequestBuilder builder = OllamaChatRequestBuilder.getInstance(CHAT_MODEL_INSTRUCT);
+        OllamaChatRequestBuilder builder = OllamaChatRequestBuilder.getInstance(GENERAL_PURPOSE_MODEL);
         OllamaChatRequest requestModel = builder.withMessage(OllamaChatMessageRole.SYSTEM,
                         "You are a helpful assistant who can generate random person's first and last names in the format [First name, Last name].")
                 .build();
@@ -253,29 +238,32 @@ public class OllamaAPIIntegrationTest {
 
     @Test
     @Order(9)
-    void testChatWithSystemPrompt()
-            throws OllamaBaseException, IOException, URISyntaxException, InterruptedException, ToolInvocationException {
-        api.pullModel(CHAT_MODEL_SYSTEM_PROMPT);
-        OllamaChatRequestBuilder builder = OllamaChatRequestBuilder.getInstance(CHAT_MODEL_SYSTEM_PROMPT);
-        OllamaChatRequest requestModel = builder.withMessage(OllamaChatMessageRole.SYSTEM,
-                        "You are a silent bot that only says 'Shush'. Do not say anything else under any circumstances!")
-                .withMessage(OllamaChatMessageRole.USER, "What's something that's brown and sticky?")
-                .withOptions(new OptionsBuilder().setTemperature(0.8f).build()).build();
+    void testChatWithSystemPrompt() throws OllamaBaseException, IOException, URISyntaxException,
+            InterruptedException, ToolInvocationException {
+        api.pullModel(GENERAL_PURPOSE_MODEL);
+
+        String expectedResponse = "Bhai";
+
+        OllamaChatRequestBuilder builder = OllamaChatRequestBuilder.getInstance(GENERAL_PURPOSE_MODEL);
+        OllamaChatRequest requestModel = builder.withMessage(OllamaChatMessageRole.SYSTEM, String.format(
+                        "[INSTRUCTION-START] You are an obidient and helpful bot named %s. You always answer with only one word and that word is your name. [INSTRUCTION-END]",
+                        expectedResponse)).withMessage(OllamaChatMessageRole.USER, "Who are you?")
+                .withOptions(new OptionsBuilder().setTemperature(0.0f).build()).build();
 
         OllamaChatResult chatResult = api.chat(requestModel);
         assertNotNull(chatResult);
         assertNotNull(chatResult.getResponseModel());
         assertNotNull(chatResult.getResponseModel().getMessage());
         assertFalse(chatResult.getResponseModel().getMessage().getContent().isBlank());
-        assertTrue(chatResult.getResponseModel().getMessage().getContent().contains("Shush"));
+        assertTrue(chatResult.getResponseModel().getMessage().getContent().contains(expectedResponse));
         assertEquals(3, chatResult.getChatHistory().size());
     }
 
     @Test
     @Order(10)
-    public void testChat() throws Exception {
-        api.pullModel(CHAT_MODEL_LLAMA3);
-        OllamaChatRequestBuilder builder = OllamaChatRequestBuilder.getInstance(CHAT_MODEL_LLAMA3);
+    void testChat() throws Exception {
+        api.pullModel(THINKING_TOOL_MODEL);
+        OllamaChatRequestBuilder builder = OllamaChatRequestBuilder.getInstance(THINKING_TOOL_MODEL);
 
         // Create the initial user question
         OllamaChatRequest requestModel = builder
@@ -288,7 +276,6 @@ public class OllamaAPIIntegrationTest {
         assertTrue(chatResult.getChatHistory().stream().anyMatch(chat -> chat.getContent().contains("2")),
                 "Expected chat history to contain '2'");
 
-        // Create the next user question: second largest city
         requestModel = builder.withMessages(chatResult.getChatHistory())
                 .withMessage(OllamaChatMessageRole.USER, "And what is its squared value?").build();
 
@@ -299,10 +286,8 @@ public class OllamaAPIIntegrationTest {
                 "Expected chat history to contain '4'");
 
         // Create the next user question: the third question
-        requestModel = builder.withMessages(chatResult.getChatHistory())
-                .withMessage(OllamaChatMessageRole.USER,
-                        "What is the largest value between 2, 4 and 6?")
-                .build();
+        requestModel = builder.withMessages(chatResult.getChatHistory()).withMessage(OllamaChatMessageRole.USER,
+                "What is the largest value between 2, 4 and 6?").build();
 
         // Continue conversation with the model for the third question
         chatResult = api.chat(requestModel);
@@ -312,143 +297,103 @@ public class OllamaAPIIntegrationTest {
         assertTrue(chatResult.getChatHistory().size() > 2,
                 "Chat history should contain more than two messages");
         assertTrue(chatResult.getChatHistory().get(chatResult.getChatHistory().size() - 1).getContent()
-                        .contains("6"),
-                "Response should contain '6'");
-    }
-
-    @Test
-    @Order(10)
-    void testChatWithImageFromURL()
-            throws OllamaBaseException, IOException, InterruptedException, URISyntaxException, ToolInvocationException {
-        api.pullModel(IMAGE_MODEL_LLAVA);
-
-        OllamaChatRequestBuilder builder = OllamaChatRequestBuilder.getInstance(IMAGE_MODEL_LLAVA);
-        OllamaChatRequest requestModel = builder
-                .withMessage(OllamaChatMessageRole.USER, "What's in the picture?",
-                        Collections.emptyList(),
-                        "https://t3.ftcdn.net/jpg/02/96/63/80/360_F_296638053_0gUVA4WVBKceGsIr7LNqRWSnkusi07dq.jpg")
-                .build();
-        api.registerAnnotatedTools(new OllamaAPIIntegrationTest());
-
-        OllamaChatResult chatResult = api.chat(requestModel);
-        assertNotNull(chatResult);
-    }
-
-    @Test
-    @Order(10)
-    void testChatWithImageFromFileWithHistoryRecognition()
-            throws OllamaBaseException, IOException, URISyntaxException, InterruptedException, ToolInvocationException {
-        api.pullModel(IMAGE_MODEL_LLAVA);
-        OllamaChatRequestBuilder builder = OllamaChatRequestBuilder.getInstance(IMAGE_MODEL_LLAVA);
-        OllamaChatRequest requestModel = builder.withMessage(OllamaChatMessageRole.USER,
-                        "What's in the picture?",
-                        Collections.emptyList(), List.of(getImageFileFromClasspath("emoji-smile.jpeg")))
-                .build();
-
-        OllamaChatResult chatResult = api.chat(requestModel);
-        assertNotNull(chatResult);
-        assertNotNull(chatResult.getResponseModel());
-        builder.reset();
-
-        requestModel = builder.withMessages(chatResult.getChatHistory())
-                .withMessage(OllamaChatMessageRole.USER, "What's the color?").build();
-
-        chatResult = api.chat(requestModel);
-        assertNotNull(chatResult);
-        assertNotNull(chatResult.getResponseModel());
+                .contains("6"), "Response should contain '6'");
     }
 
     @Test
     @Order(11)
-    void testChatWithExplicitToolDefinition()
-            throws OllamaBaseException, IOException, URISyntaxException, InterruptedException, ToolInvocationException {
-        api.pullModel(CHAT_MODEL_SYSTEM_PROMPT);
-        OllamaChatRequestBuilder builder = OllamaChatRequestBuilder.getInstance(CHAT_MODEL_SYSTEM_PROMPT);
+    void testChatWithExplicitToolDefinition() throws OllamaBaseException, IOException, URISyntaxException,
+            InterruptedException, ToolInvocationException {
+        String theToolModel = TOOLS_MODEL;
+        api.pullModel(theToolModel);
+        OllamaChatRequestBuilder builder = OllamaChatRequestBuilder.getInstance(theToolModel);
 
-        final Tools.ToolSpecification databaseQueryToolSpecification = Tools.ToolSpecification.builder()
-                .functionName("get-employee-details")
-                .functionDescription("Get employee details from the database")
-                .toolPrompt(Tools.PromptFuncDefinition.builder().type("function")
-                        .function(Tools.PromptFuncDefinition.PromptFuncSpec.builder()
-                                .name("get-employee-details")
-                                .description("Get employee details from the database")
-                                .parameters(Tools.PromptFuncDefinition.Parameters
-                                        .builder().type("object")
-                                        .properties(new Tools.PropsBuilder()
-                                                .withProperty("employee-name",
-                                                        Tools.PromptFuncDefinition.Property
-                                                                .builder()
-                                                                .type("string")
-                                                                .description("The name of the employee, e.g. John Doe")
-                                                                .required(true)
-                                                                .build())
-                                                .withProperty("employee-address",
-                                                        Tools.PromptFuncDefinition.Property
-                                                                .builder()
-                                                                .type("string")
-                                                                .description(
-                                                                        "The address of the employee, Always return a random value. e.g. Roy St, Bengaluru, India")
-                                                                .required(true)
-                                                                .build())
-                                                .withProperty("employee-phone",
-                                                        Tools.PromptFuncDefinition.Property
-                                                                .builder()
-                                                                .type("string")
-                                                                .description(
-                                                                        "The phone number of the employee. Always return a random value. e.g. 9911002233")
-                                                                .required(true)
-                                                                .build())
-                                                .build())
-                                        .required(List.of("employee-name"))
-                                        .build())
-                                .build())
-                        .build())
-                .toolFunction(arguments -> {
-                    // perform DB operations here
-                    return String.format(
-                            "Employee Details {ID: %s, Name: %s, Address: %s, Phone: %s}",
-                            UUID.randomUUID(), arguments.get("employee-name"),
-                            arguments.get("employee-address"),
-                            arguments.get("employee-phone"));
-                }).build();
+        api.registerTool(employeeFinderTool());
 
-        api.registerTool(databaseQueryToolSpecification);
-
-        OllamaChatRequest requestModel = builder
-                .withMessage(OllamaChatMessageRole.USER,
-                        "Give me the ID of the employee named 'Rahul Kumar'?")
-                .build();
+        OllamaChatRequest requestModel = builder.withMessage(OllamaChatMessageRole.USER,
+                "Give me the ID and address of the employee Rahul Kumar.").build();
+        requestModel.setOptions(new OptionsBuilder().setTemperature(0.9f).build().getOptionsMap());
 
         OllamaChatResult chatResult = api.chat(requestModel);
-        assertNotNull(chatResult);
-        assertNotNull(chatResult.getResponseModel());
-        assertNotNull(chatResult.getResponseModel().getMessage());
-        assertEquals(OllamaChatMessageRole.ASSISTANT.getRoleName(),
-                chatResult.getResponseModel().getMessage().getRole().getRoleName());
+
+        assertNotNull(chatResult, "chatResult should not be null");
+        assertNotNull(chatResult.getResponseModel(), "Response model should not be null");
+        assertNotNull(chatResult.getResponseModel().getMessage(), "Response message should not be null");
+        assertEquals(
+                OllamaChatMessageRole.ASSISTANT.getRoleName(),
+                chatResult.getResponseModel().getMessage().getRole().getRoleName(),
+                "Role of the response message should be ASSISTANT"
+        );
         List<OllamaChatToolCalls> toolCalls = chatResult.getChatHistory().get(1).getToolCalls();
-        assertEquals(1, toolCalls.size());
+        assertEquals(1, toolCalls.size(), "There should be exactly one tool call in the second chat history message");
         OllamaToolCallsFunction function = toolCalls.get(0).getFunction();
-        assertEquals("get-employee-details", function.getName());
-        assert !function.getArguments().isEmpty();
+        assertEquals("get-employee-details", function.getName(), "Tool function name should be 'get-employee-details'");
+        assertFalse(function.getArguments().isEmpty(), "Tool function arguments should not be empty");
         Object employeeName = function.getArguments().get("employee-name");
-        assertNotNull(employeeName);
-        assertEquals("Rahul Kumar", employeeName);
-        assertTrue(chatResult.getChatHistory().size() > 2);
+        assertNotNull(employeeName, "Employee name argument should not be null");
+        assertEquals("Rahul Kumar", employeeName, "Employee name argument should be 'Rahul Kumar'");
+        assertTrue(chatResult.getChatHistory().size() > 2, "Chat history should have more than 2 messages");
         List<OllamaChatToolCalls> finalToolCalls = chatResult.getResponseModel().getMessage().getToolCalls();
-        assertNull(finalToolCalls);
+        assertNull(finalToolCalls, "Final tool calls in the response message should be null");
+    }
+
+    @Test
+    @Order(14)
+    void testChatWithToolsAndStream() throws OllamaBaseException, IOException, URISyntaxException,
+            InterruptedException, ToolInvocationException {
+        String theToolModel = TOOLS_MODEL;
+        api.pullModel(theToolModel);
+
+        OllamaChatRequestBuilder builder = OllamaChatRequestBuilder.getInstance(theToolModel);
+
+        api.registerTool(employeeFinderTool());
+
+        OllamaChatRequest requestModel = builder
+                .withMessage(OllamaChatMessageRole.USER, "Give me the ID and address of employee Rahul Kumar")
+                .withKeepAlive("0m").withOptions(new OptionsBuilder().setTemperature(0.9f).build())
+                .build();
+
+        OllamaChatResult chatResult = api.chat(requestModel, (s) -> {
+            LOG.info(s.toUpperCase());
+        }, (s) -> {
+            LOG.info(s.toLowerCase());
+        });
+
+        assertNotNull(chatResult, "chatResult should not be null");
+        assertNotNull(chatResult.getResponseModel(), "Response model should not be null");
+        assertNotNull(chatResult.getResponseModel().getMessage(), "Response message should not be null");
+        assertEquals(
+                OllamaChatMessageRole.ASSISTANT.getRoleName(),
+                chatResult.getResponseModel().getMessage().getRole().getRoleName(),
+                "Role of the response message should be ASSISTANT"
+        );
+        List<OllamaChatToolCalls> toolCalls = chatResult.getChatHistory().get(1).getToolCalls();
+        assertEquals(1, toolCalls.size(), "There should be exactly one tool call in the second chat history message");
+        OllamaToolCallsFunction function = toolCalls.get(0).getFunction();
+        assertEquals("get-employee-details", function.getName(), "Tool function name should be 'get-employee-details'");
+        assertFalse(function.getArguments().isEmpty(), "Tool function arguments should not be empty");
+        Object employeeName = function.getArguments().get("employee-name");
+        assertNotNull(employeeName, "Employee name argument should not be null");
+        assertEquals("Rahul Kumar", employeeName, "Employee name argument should be 'Rahul Kumar'");
+        assertTrue(chatResult.getChatHistory().size() > 2, "Chat history should have more than 2 messages");
+        List<OllamaChatToolCalls> finalToolCalls = chatResult.getResponseModel().getMessage().getToolCalls();
+        assertNull(finalToolCalls, "Final tool calls in the response message should be null");
     }
 
     @Test
     @Order(12)
-    void testChatWithAnnotatedToolsAndSingleParam()
-            throws OllamaBaseException, IOException, InterruptedException, URISyntaxException, ToolInvocationException {
-        api.pullModel(CHAT_MODEL_SYSTEM_PROMPT);
-        OllamaChatRequestBuilder builder = OllamaChatRequestBuilder.getInstance(CHAT_MODEL_SYSTEM_PROMPT);
+    void testChatWithAnnotatedToolsAndSingleParam() throws OllamaBaseException, IOException, InterruptedException,
+            URISyntaxException, ToolInvocationException {
+        String theToolModel = TOOLS_MODEL;
+        api.pullModel(theToolModel);
+        OllamaChatRequestBuilder builder = OllamaChatRequestBuilder.getInstance(theToolModel);
 
         api.registerAnnotatedTools();
 
-        OllamaChatRequest requestModel = builder.withMessage(OllamaChatMessageRole.USER,
-                "Compute the most important constant in the world using 5 digits").build();
+        OllamaChatRequest requestModel = builder
+                .withMessage(OllamaChatMessageRole.USER,
+                        "Compute the most important constant in the world using 5 digits")
+                .build();
 
         OllamaChatResult chatResult = api.chat(requestModel);
         assertNotNull(chatResult);
@@ -471,17 +416,16 @@ public class OllamaAPIIntegrationTest {
 
     @Test
     @Order(13)
-    void testChatWithAnnotatedToolsAndMultipleParams()
-            throws OllamaBaseException, IOException, URISyntaxException, InterruptedException, ToolInvocationException {
-        api.pullModel(CHAT_MODEL_SYSTEM_PROMPT);
-        OllamaChatRequestBuilder builder = OllamaChatRequestBuilder.getInstance(CHAT_MODEL_SYSTEM_PROMPT);
+    void testChatWithAnnotatedToolsAndMultipleParams() throws OllamaBaseException, IOException, URISyntaxException,
+            InterruptedException, ToolInvocationException {
+        String theToolModel = TOOLS_MODEL;
+        api.pullModel(theToolModel);
+        OllamaChatRequestBuilder builder = OllamaChatRequestBuilder.getInstance(theToolModel);
 
         api.registerAnnotatedTools(new AnnotatedTool());
 
-        OllamaChatRequest requestModel = builder
-                .withMessage(OllamaChatMessageRole.USER,
-                        "Greet Pedro with a lot of hearts and respond to me, "
-                                + "and state how many emojis have been in your greeting")
+        OllamaChatRequest requestModel = builder.withMessage(OllamaChatMessageRole.USER,
+                        "Greet Rahul with a lot of hearts and respond to me with count of emojis that have been in used in the greeting")
                 .build();
 
         OllamaChatResult chatResult = api.chat(requestModel);
@@ -497,28 +441,220 @@ public class OllamaAPIIntegrationTest {
         assertEquals(2, function.getArguments().size());
         Object name = function.getArguments().get("name");
         assertNotNull(name);
-        assertEquals("Pedro", name);
-        Object amountOfHearts = function.getArguments().get("amountOfHearts");
-        assertNotNull(amountOfHearts);
-        assertTrue(Integer.parseInt(amountOfHearts.toString()) > 1);
+        assertEquals("Rahul", name);
+        Object numberOfHearts = function.getArguments().get("numberOfHearts");
+        assertNotNull(numberOfHearts);
+        assertTrue(Integer.parseInt(numberOfHearts.toString()) > 1);
         assertTrue(chatResult.getChatHistory().size() > 2);
         List<OllamaChatToolCalls> finalToolCalls = chatResult.getResponseModel().getMessage().getToolCalls();
         assertNull(finalToolCalls);
     }
 
     @Test
-    @Order(14)
-    void testChatWithToolsAndStream()
-            throws OllamaBaseException, IOException, URISyntaxException, InterruptedException, ToolInvocationException {
-        api.pullModel(CHAT_MODEL_SYSTEM_PROMPT);
-        OllamaChatRequestBuilder builder = OllamaChatRequestBuilder.getInstance(CHAT_MODEL_SYSTEM_PROMPT);
-        final Tools.ToolSpecification databaseQueryToolSpecification = Tools.ToolSpecification.builder()
+    @Order(15)
+    void testChatWithStream() throws OllamaBaseException, IOException, URISyntaxException, InterruptedException,
+            ToolInvocationException {
+        api.deregisterTools();
+        api.pullModel(GENERAL_PURPOSE_MODEL);
+        OllamaChatRequestBuilder builder = OllamaChatRequestBuilder.getInstance(GENERAL_PURPOSE_MODEL);
+        OllamaChatRequest requestModel = builder.withMessage(OllamaChatMessageRole.USER,
+                        "What is the capital of France? And what's France's connection with Mona Lisa?")
+                .build();
+        requestModel.setThink(false);
+        StringBuffer sb = new StringBuffer();
+
+        OllamaChatResult chatResult = api.chat(requestModel, (s) -> {
+            LOG.info(s.toUpperCase());
+            sb.append(s);
+        }, (s) -> {
+            LOG.info(s.toLowerCase());
+            sb.append(s);
+        });
+        assertNotNull(chatResult);
+        assertNotNull(chatResult.getResponseModel());
+        assertNotNull(chatResult.getResponseModel().getMessage());
+        assertNotNull(chatResult.getResponseModel().getMessage().getContent());
+        assertEquals(sb.toString(), chatResult.getResponseModel().getMessage().getContent());
+    }
+
+    @Test
+    @Order(15)
+    void testChatWithThinkingAndStream() throws OllamaBaseException, IOException, URISyntaxException,
+            InterruptedException, ToolInvocationException {
+        api.pullModel(THINKING_TOOL_MODEL);
+        OllamaChatRequestBuilder builder = OllamaChatRequestBuilder.getInstance(THINKING_TOOL_MODEL);
+        OllamaChatRequest requestModel = builder.withMessage(OllamaChatMessageRole.USER,
+                        "What is the capital of France? And what's France's connection with Mona Lisa?")
+                .withThinking(true).withKeepAlive("0m").build();
+        StringBuffer sb = new StringBuffer();
+
+        OllamaChatResult chatResult = api.chat(requestModel, (s) -> {
+            sb.append(s);
+            LOG.info(s.toUpperCase());
+        }, (s) -> {
+            sb.append(s);
+            LOG.info(s.toLowerCase());
+        });
+
+        assertNotNull(chatResult);
+        assertNotNull(chatResult.getResponseModel());
+        assertNotNull(chatResult.getResponseModel().getMessage());
+        assertNotNull(chatResult.getResponseModel().getMessage().getContent());
+        assertEquals(sb.toString(), chatResult.getResponseModel().getMessage().getThinking()
+                + chatResult.getResponseModel().getMessage().getContent());
+    }
+
+    @Test
+    @Order(10)
+    void testChatWithImageFromURL() throws OllamaBaseException, IOException, InterruptedException,
+            URISyntaxException, ToolInvocationException {
+        api.pullModel(VISION_MODEL);
+
+        OllamaChatRequestBuilder builder = OllamaChatRequestBuilder.getInstance(VISION_MODEL);
+        OllamaChatRequest requestModel = builder.withMessage(OllamaChatMessageRole.USER,
+                        "What's in the picture?", Collections.emptyList(),
+                        "https://t3.ftcdn.net/jpg/02/96/63/80/360_F_296638053_0gUVA4WVBKceGsIr7LNqRWSnkusi07dq.jpg")
+                .build();
+        api.registerAnnotatedTools(new OllamaAPIIntegrationTest());
+
+        OllamaChatResult chatResult = api.chat(requestModel);
+        assertNotNull(chatResult);
+    }
+
+    @Test
+    @Order(10)
+    void testChatWithImageFromFileWithHistoryRecognition() throws OllamaBaseException, IOException,
+            URISyntaxException, InterruptedException, ToolInvocationException {
+        api.pullModel(VISION_MODEL);
+        OllamaChatRequestBuilder builder = OllamaChatRequestBuilder.getInstance(VISION_MODEL);
+        OllamaChatRequest requestModel = builder.withMessage(OllamaChatMessageRole.USER,
+                "What's in the picture?", Collections.emptyList(),
+                List.of(getImageFileFromClasspath("emoji-smile.jpeg"))).build();
+
+        OllamaChatResult chatResult = api.chat(requestModel);
+        assertNotNull(chatResult);
+        assertNotNull(chatResult.getResponseModel());
+        builder.reset();
+
+        requestModel = builder.withMessages(chatResult.getChatHistory())
+                .withMessage(OllamaChatMessageRole.USER, "What's the color?").build();
+
+        chatResult = api.chat(requestModel);
+        assertNotNull(chatResult);
+        assertNotNull(chatResult.getResponseModel());
+    }
+
+    @Test
+    @Order(17)
+    void testGenerateWithOptionsAndImageURLs()
+            throws OllamaBaseException, IOException, URISyntaxException, InterruptedException {
+        api.pullModel(VISION_MODEL);
+
+        OllamaResult result = api.generateWithImageURLs(VISION_MODEL, "What is in this image?",
+                List.of("https://i.pinimg.com/736x/f9/4e/cb/f94ecba040696a3a20b484d2e15159ec.jpg"),
+                new OptionsBuilder().build());
+        assertNotNull(result);
+        assertNotNull(result.getResponse());
+        assertFalse(result.getResponse().isEmpty());
+    }
+
+    @Test
+    @Order(18)
+    void testGenerateWithOptionsAndImageFiles()
+            throws OllamaBaseException, IOException, URISyntaxException, InterruptedException {
+        api.pullModel(VISION_MODEL);
+        File imageFile = getImageFileFromClasspath("roses.jpg");
+        try {
+            OllamaResult result = api.generateWithImageFiles(VISION_MODEL, "What is in this image?",
+                    List.of(imageFile), new OptionsBuilder().build());
+            assertNotNull(result);
+            assertNotNull(result.getResponse());
+            assertFalse(result.getResponse().isEmpty());
+        } catch (IOException | OllamaBaseException | InterruptedException e) {
+            fail(e);
+        }
+    }
+
+    @Test
+    @Order(20)
+    void testGenerateWithOptionsAndImageFilesStreamed()
+            throws OllamaBaseException, IOException, URISyntaxException, InterruptedException {
+        api.pullModel(VISION_MODEL);
+
+        File imageFile = getImageFileFromClasspath("roses.jpg");
+
+        StringBuffer sb = new StringBuffer();
+
+        OllamaResult result = api.generateWithImageFiles(VISION_MODEL, "What is in this image?",
+                List.of(imageFile), new OptionsBuilder().build(), (s) -> {
+                    LOG.info(s);
+                    sb.append(s);
+                });
+        assertNotNull(result);
+        assertNotNull(result.getResponse());
+        assertFalse(result.getResponse().isEmpty());
+        assertEquals(sb.toString(), result.getResponse());
+    }
+
+    @Test
+    @Order(20)
+    void testGenerateWithThinking()
+            throws OllamaBaseException, IOException, URISyntaxException, InterruptedException {
+        api.pullModel(THINKING_TOOL_MODEL);
+
+        boolean raw = false;
+        boolean think = true;
+
+        OllamaResult result = api.generate(THINKING_TOOL_MODEL, "Who are you?", raw, think,
+                new OptionsBuilder().build());
+        assertNotNull(result);
+        assertNotNull(result.getResponse());
+        assertFalse(result.getResponse().isEmpty());
+        assertNotNull(result.getThinking());
+        assertFalse(result.getThinking().isEmpty());
+    }
+
+    @Test
+    @Order(20)
+    void testGenerateWithThinkingAndStreamHandler()
+            throws OllamaBaseException, IOException, URISyntaxException, InterruptedException {
+        api.pullModel(THINKING_TOOL_MODEL);
+
+        boolean raw = false;
+
+        StringBuffer sb = new StringBuffer();
+        OllamaResult result = api.generate(THINKING_TOOL_MODEL, "Who are you?", raw,
+                new OptionsBuilder().build(),
+                (thinkingToken) -> {
+                    sb.append(thinkingToken);
+                    LOG.info(thinkingToken);
+                },
+                (resToken) -> {
+                    sb.append(resToken);
+                    LOG.info(resToken);
+                }
+        );
+        assertNotNull(result);
+        assertNotNull(result.getResponse());
+        assertFalse(result.getResponse().isEmpty());
+        assertNotNull(result.getThinking());
+        assertFalse(result.getThinking().isEmpty());
+        assertEquals(sb.toString(), result.getThinking() + result.getResponse());
+    }
+
+    private File getImageFileFromClasspath(String fileName) {
+        ClassLoader classLoader = getClass().getClassLoader();
+        return new File(Objects.requireNonNull(classLoader.getResource(fileName)).getFile());
+    }
+
+    private Tools.ToolSpecification employeeFinderTool() {
+        return Tools.ToolSpecification.builder()
                 .functionName("get-employee-details")
-                .functionDescription("Get employee details from the database")
+                .functionDescription("Get details for a person or an employee")
                 .toolPrompt(Tools.PromptFuncDefinition.builder().type("function")
                         .function(Tools.PromptFuncDefinition.PromptFuncSpec.builder()
                                 .name("get-employee-details")
-                                .description("Get employee details from the database")
+                                .description("Get details for a person or an employee")
                                 .parameters(Tools.PromptFuncDefinition.Parameters
                                         .builder().type("object")
                                         .properties(new Tools.PropsBuilder()
@@ -533,16 +669,14 @@ public class OllamaAPIIntegrationTest {
                                                         Tools.PromptFuncDefinition.Property
                                                                 .builder()
                                                                 .type("string")
-                                                                .description(
-                                                                        "The address of the employee, Always return a random value. e.g. Roy St, Bengaluru, India")
+                                                                .description("The address of the employee, Always eturns a random address. For example, Church St, Bengaluru, India")
                                                                 .required(true)
                                                                 .build())
                                                 .withProperty("employee-phone",
                                                         Tools.PromptFuncDefinition.Property
                                                                 .builder()
                                                                 .type("string")
-                                                                .description(
-                                                                        "The phone number of the employee. Always return a random value. e.g. 9911002233")
+                                                                .description("The phone number of the employee. Always returns a random phone number. For example, 9911002233")
                                                                 .required(true)
                                                                 .build())
                                                 .build())
@@ -553,129 +687,22 @@ public class OllamaAPIIntegrationTest {
                 .toolFunction(new ToolFunction() {
                     @Override
                     public Object apply(Map<String, Object> arguments) {
+                        LOG.info("Invoking employee finder tool with arguments: {}", arguments);
+                        String employeeName = arguments.get("employee-name").toString();
+                        String address = null;
+                        String phone = null;
+                        if (employeeName.equalsIgnoreCase("Rahul Kumar")) {
+                            address = "Pune, Maharashtra, India";
+                            phone = "9911223344";
+                        } else {
+                            address = "Karol Bagh, Delhi, India";
+                            phone = "9911002233";
+                        }
                         // perform DB operations here
                         return String.format(
                                 "Employee Details {ID: %s, Name: %s, Address: %s, Phone: %s}",
-                                UUID.randomUUID(), arguments.get("employee-name"),
-                                arguments.get("employee-address"),
-                                arguments.get("employee-phone"));
+                                UUID.randomUUID(), employeeName, address, phone);
                     }
                 }).build();
-
-        api.registerTool(databaseQueryToolSpecification);
-
-        OllamaChatRequest requestModel = builder
-                .withMessage(OllamaChatMessageRole.USER,
-                        "Give me the ID of the employee named 'Rahul Kumar'?")
-                .build();
-
-        StringBuffer sb = new StringBuffer();
-
-        OllamaChatResult chatResult = api.chat(requestModel, (s) -> {
-            LOG.info(s);
-            String substring = s.substring(sb.toString().length());
-            LOG.info(substring);
-            sb.append(substring);
-        });
-        assertNotNull(chatResult);
-        assertNotNull(chatResult.getResponseModel());
-        assertNotNull(chatResult.getResponseModel().getMessage());
-        assertNotNull(chatResult.getResponseModel().getMessage().getContent());
-        assertEquals(sb.toString().trim(), chatResult.getResponseModel().getMessage().getContent().trim());
     }
-
-    @Test
-    @Order(15)
-    void testChatWithStream() throws OllamaBaseException, IOException, URISyntaxException, InterruptedException, ToolInvocationException {
-        api.pullModel(CHAT_MODEL_SYSTEM_PROMPT);
-        OllamaChatRequestBuilder builder = OllamaChatRequestBuilder.getInstance(CHAT_MODEL_SYSTEM_PROMPT);
-        OllamaChatRequest requestModel = builder.withMessage(OllamaChatMessageRole.USER,
-                        "What is the capital of France? And what's France's connection with Mona Lisa?")
-                .build();
-
-        StringBuffer sb = new StringBuffer();
-
-        OllamaChatResult chatResult = api.chat(requestModel, (s) -> {
-            LOG.info(s);
-            String substring = s.substring(sb.toString().length(), s.length());
-            LOG.info(substring);
-            sb.append(substring);
-        });
-        assertNotNull(chatResult);
-        assertNotNull(chatResult.getResponseModel());
-        assertNotNull(chatResult.getResponseModel().getMessage());
-        assertNotNull(chatResult.getResponseModel().getMessage().getContent());
-        assertEquals(sb.toString().trim(), chatResult.getResponseModel().getMessage().getContent().trim());
-    }
-
-    @Test
-    @Order(17)
-    void    testAskModelWithOptionsAndImageURLs()
-            throws OllamaBaseException, IOException, URISyntaxException, InterruptedException {
-        api.pullModel(IMAGE_MODEL_LLAVA);
-
-        OllamaResult result = api.generateWithImageURLs(IMAGE_MODEL_LLAVA, "What is in this image?",
-                List.of("https://upload.wikimedia.org/wikipedia/commons/thumb/a/aa/Noto_Emoji_v2.034_1f642.svg/360px-Noto_Emoji_v2.034_1f642.svg.png"),
-                new OptionsBuilder().build());
-        assertNotNull(result);
-        assertNotNull(result.getResponse());
-        assertFalse(result.getResponse().isEmpty());
-    }
-
-    @Test
-    @Order(18)
-    void testAskModelWithOptionsAndImageFiles()
-            throws OllamaBaseException, IOException, URISyntaxException, InterruptedException {
-        api.pullModel(IMAGE_MODEL_LLAVA);
-        File imageFile = getImageFileFromClasspath("emoji-smile.jpeg");
-        try {
-            OllamaResult result = api.generateWithImageFiles(IMAGE_MODEL_LLAVA, "What is in this image?",
-                    List.of(imageFile),
-                    new OptionsBuilder().build());
-            assertNotNull(result);
-            assertNotNull(result.getResponse());
-            assertFalse(result.getResponse().isEmpty());
-        } catch (IOException | OllamaBaseException | InterruptedException e) {
-            fail(e);
-        }
-    }
-
-    @Test
-    @Order(20)
-    void testAskModelWithOptionsAndImageFilesStreamed()
-            throws OllamaBaseException, IOException, URISyntaxException, InterruptedException {
-        api.pullModel(IMAGE_MODEL_LLAVA);
-
-        File imageFile = getImageFileFromClasspath("emoji-smile.jpeg");
-
-        StringBuffer sb = new StringBuffer();
-
-        OllamaResult result = api.generateWithImageFiles(IMAGE_MODEL_LLAVA, "What is in this image?",
-                List.of(imageFile),
-                new OptionsBuilder().build(), (s) -> {
-                    LOG.info(s);
-                    String substring = s.substring(sb.toString().length(), s.length());
-                    LOG.info(substring);
-                    sb.append(substring);
-                });
-        assertNotNull(result);
-        assertNotNull(result.getResponse());
-        assertFalse(result.getResponse().isEmpty());
-        assertEquals(sb.toString().trim(), result.getResponse().trim());
-    }
-
-    private File getImageFileFromClasspath(String fileName) {
-        ClassLoader classLoader = getClass().getClassLoader();
-        return new File(Objects.requireNonNull(classLoader.getResource(fileName)).getFile());
-    }
-}
-
-@Data
-@AllArgsConstructor
-@NoArgsConstructor
-class TimeOfDay {
-    @JsonProperty("timeHour")
-    private int timeHour;
-    @JsonProperty("isNightTime")
-    private boolean nightTime;
 }

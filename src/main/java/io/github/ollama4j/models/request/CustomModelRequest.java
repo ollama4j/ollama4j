@@ -1,16 +1,14 @@
 package io.github.ollama4j.models.request;
 
-import static io.github.ollama4j.utils.Utils.getObjectMapper;
-
 import com.fasterxml.jackson.core.JsonProcessingException;
 import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.Data;
-import lombok.AllArgsConstructor;
 import lombok.Builder;
+import lombok.Data;
 
 import java.util.List;
 import java.util.Map;
+
+import static io.github.ollama4j.utils.Utils.getObjectMapper;
 
 
 @Data
