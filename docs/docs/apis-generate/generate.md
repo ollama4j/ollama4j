@@ -29,7 +29,7 @@ You will get a response similar to:
 
 ### Try asking a question, receiving the answer streamed
 
-<CodeEmbed src="https://raw.githubusercontent.com/ollama4j/ollama4j-examples/refs/heads/main/src/main/java/io/github/ollama4j/examples/GenerateStreamingWithTokenConcatenation.java" />
+<CodeEmbed src="https://raw.githubusercontent.com/ollama4j/ollama4j-examples/refs/heads/main/src/main/java/io/github/ollama4j/examples/GenerateStreaming.java" />
 
 You will get a response similar to:
 
