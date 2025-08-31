@@ -34,6 +34,7 @@ Find more details on the [website](https://ollama4j.github.io/ollama4j/).
 
 [![Run Unit and Integration Tests](https://github.com/ollama4j/ollama4j/actions/workflows/run-tests.yml/badge.svg)](https://github.com/ollama4j/ollama4j/actions/workflows/run-tests.yml)
 ![Build Status](https://github.com/ollama4j/ollama4j/actions/workflows/maven-publish.yml/badge.svg)
+![Sonar Quality Gate](https://img.shields.io/sonar/quality_gate/ollama4j_ollama4j?server=https%3A%2F%2Fsonarcloud.io&label=Sonar%20Quality%20Gate)
 
 
 </div>
