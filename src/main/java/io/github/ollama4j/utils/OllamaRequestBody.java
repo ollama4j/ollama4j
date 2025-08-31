@@ -1,10 +1,10 @@
 package io.github.ollama4j.utils;
 
-import java.net.http.HttpRequest.BodyPublisher;
-import java.net.http.HttpRequest.BodyPublishers;
-
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.core.JsonProcessingException;
+
+import java.net.http.HttpRequest.BodyPublisher;
+import java.net.http.HttpRequest.BodyPublishers;
 
 /**
  * Interface to represent a OllamaRequest as HTTP-Request Body via {@link BodyPublishers}.

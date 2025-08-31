@@ -1,10 +1,10 @@
 package io.github.ollama4j.models.request;
 
-import java.util.Base64;
-
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+
+import java.util.Base64;
 
 @Data
 @AllArgsConstructor

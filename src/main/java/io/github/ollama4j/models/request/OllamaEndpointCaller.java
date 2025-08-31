@@ -1,15 +1,14 @@
 package io.github.ollama4j.models.request;
 
-import java.net.URI;
-import java.net.http.HttpRequest;
-import java.time.Duration;
-
+import io.github.ollama4j.OllamaAPI;
 import io.github.ollama4j.utils.Constants;
+import lombok.Getter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import io.github.ollama4j.OllamaAPI;
-import lombok.Getter;
+import java.net.URI;
+import java.net.http.HttpRequest;
+import java.time.Duration;
 
 /**
  * Abstract helperclass to call the ollama api server.

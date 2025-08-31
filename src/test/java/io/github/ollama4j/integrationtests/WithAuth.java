@@ -24,7 +24,6 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.time.Duration;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -42,9 +41,8 @@ public class WithAuth {
     private static final String OLLAMA_VERSION = "0.6.1";
     private static final String NGINX_VERSION = "nginx:1.23.4-alpine";
     private static final String BEARER_AUTH_TOKEN = "secret-token";
-
     private static final String GENERAL_PURPOSE_MODEL = "gemma3:270m";
-    private static final String THINKING_MODEL = "gpt-oss:20b";
+//    private static final String THINKING_MODEL = "gpt-oss:20b";
 
 
     private static OllamaContainer ollama;
@@ -52,7 +50,7 @@ public class WithAuth {
     private static OllamaAPI api;
 
     @BeforeAll
-    public static void setUp() {
+    static void setUp() {
         ollama = createOllamaContainer();
         ollama.start();
 
@@ -135,14 +133,14 @@ public class WithAuth {
 
     @Test
     @Order(1)
-    void testOllamaBehindProxy() throws InterruptedException {
+    void testOllamaBehindProxy() {
         api.setBearerAuth(BEARER_AUTH_TOKEN);
         assertTrue(api.ping(), "Expected OllamaAPI to successfully ping through NGINX with valid auth token.");
     }
 
     @Test
     @Order(1)
-    void testWithWrongToken() throws InterruptedException {
+    void testWithWrongToken() {
         api.setBearerAuth("wrong-token");
         assertFalse(api.ping(), "Expected OllamaAPI ping to fail through NGINX with an invalid auth token.");
     }
@@ -152,8 +150,8 @@ public class WithAuth {
     void testAskModelWithStructuredOutput()
             throws OllamaBaseException, IOException, InterruptedException, URISyntaxException {
         api.setBearerAuth(BEARER_AUTH_TOKEN);
-
-        api.pullModel(THINKING_MODEL);
+        String model = GENERAL_PURPOSE_MODEL;
+        api.pullModel(model);
 
         String prompt = "The sun is shining brightly and is directly overhead at the zenith, casting my shadow over my foot, so it must be noon.";
 
@@ -170,7 +168,7 @@ public class WithAuth {
         });
         format.put("required", List.of("isNoon"));
 
-        OllamaResult result = api.generate(THINKING_MODEL, prompt, format);
+        OllamaResult result = api.generate(model, prompt, format);
 
         assertNotNull(result);
         assertNotNull(result.getResponse());

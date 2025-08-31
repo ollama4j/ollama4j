@@ -52,7 +52,7 @@ import java.util.stream.Collectors;
 /**
  * The base Ollama API class.
  */
-@SuppressWarnings({ "DuplicatedCode", "resource" })
+@SuppressWarnings({"DuplicatedCode", "resource"})
 public class OllamaAPI {
 
     private static final Logger logger = LoggerFactory.getLogger(OllamaAPI.class);
@@ -101,7 +101,7 @@ public class OllamaAPI {
      * Default is 0 (no retries).
      */
     @Setter
-    @SuppressWarnings({ "FieldMayBeFinal", "FieldCanBeLocal" })
+    @SuppressWarnings({"FieldMayBeFinal", "FieldCanBeLocal"})
     private int numberOfRetriesForModelPull = 0;
 
     /**
@@ -244,7 +244,7 @@ public class OllamaAPI {
      * tags, tag count, and the time when model was updated.
      *
      * @return A list of {@link LibraryModel} objects representing the models
-     *         available in the Ollama library.
+     * available in the Ollama library.
      * @throws OllamaBaseException  If the HTTP request fails or the response is not
      *                              successful (non-200 status code).
      * @throws IOException          If an I/O error occurs during the HTTP request
@@ -312,7 +312,7 @@ public class OllamaAPI {
      *                     of the library model
      *                     for which the tags need to be fetched.
      * @return a list of {@link LibraryModelTag} objects containing the extracted
-     *         tags and their associated metadata.
+     * tags and their associated metadata.
      * @throws OllamaBaseException  if the HTTP response status code indicates an
      *                              error (i.e., not 200 OK),
      *                              or if there is any other issue during the
@@ -389,7 +389,7 @@ public class OllamaAPI {
      * @param modelName The name of the model to search for in the library.
      * @param tag       The tag name to search for within the specified model.
      * @return The {@link LibraryModelTag} associated with the specified model and
-     *         tag.
+     * tag.
      * @throws OllamaBaseException    If there is a problem with the Ollama library
      *                                operations.
      * @throws IOException            If an I/O error occurs during the operation.
@@ -397,8 +397,8 @@ public class OllamaAPI {
      * @throws InterruptedException   If the operation is interrupted.
      * @throws NoSuchElementException If the model or the tag is not found.
      * @deprecated This method relies on the HTML structure of the Ollama website,
-     *             which can change at any time and break this API. It is deprecated
-     *             and may be removed in the future.
+     * which can change at any time and break this API. It is deprecated
+     * and may be removed in the future.
      */
     @Deprecated
     public LibraryModelTag findModelTagFromLibrary(String modelName, String tag)
@@ -855,7 +855,7 @@ public class OllamaAPI {
      * @throws InterruptedException if the operation is interrupted
      */
     public OllamaResult generate(String model, String prompt, boolean raw, Options options,
-            OllamaStreamHandler responseStreamHandler) throws OllamaBaseException, IOException, InterruptedException {
+                                 OllamaStreamHandler responseStreamHandler) throws OllamaBaseException, IOException, InterruptedException {
         OllamaGenerateRequest ollamaRequestModel = new OllamaGenerateRequest(model, prompt);
         ollamaRequestModel.setRaw(raw);
         ollamaRequestModel.setThink(false);
@@ -891,7 +891,7 @@ public class OllamaAPI {
      * @throws InterruptedException if the operation is interrupted
      */
     public OllamaResult generate(String model, String prompt, boolean raw, Options options,
-            OllamaStreamHandler thinkingStreamHandler, OllamaStreamHandler responseStreamHandler)
+                                 OllamaStreamHandler thinkingStreamHandler, OllamaStreamHandler responseStreamHandler)
             throws OllamaBaseException, IOException, InterruptedException {
         OllamaGenerateRequest ollamaRequestModel = new OllamaGenerateRequest(model, prompt);
         ollamaRequestModel.setRaw(raw);
@@ -943,7 +943,7 @@ public class OllamaAPI {
      * @param format A map containing the format specification for the structured
      *               output.
      * @return An instance of {@link OllamaResult} containing the structured
-     *         response.
+     * response.
      * @throws OllamaBaseException  if the response indicates an error status.
      * @throws IOException          if an I/O error occurs during the HTTP request.
      * @throws InterruptedException if the operation is interrupted.
@@ -984,6 +984,18 @@ public class OllamaAPI {
                     OllamaStructuredResult.class);
             OllamaResult ollamaResult = new OllamaResult(structuredResult.getResponse(), structuredResult.getThinking(),
                     structuredResult.getResponseTime(), statusCode);
+
+            ollamaResult.setModel(structuredResult.getModel());
+            ollamaResult.setCreatedAt(structuredResult.getCreatedAt());
+            ollamaResult.setDone(structuredResult.isDone());
+            ollamaResult.setDoneReason(structuredResult.getDoneReason());
+            ollamaResult.setContext(structuredResult.getContext());
+            ollamaResult.setTotalDuration(structuredResult.getTotalDuration());
+            ollamaResult.setLoadDuration(structuredResult.getLoadDuration());
+            ollamaResult.setPromptEvalCount(structuredResult.getPromptEvalCount());
+            ollamaResult.setPromptEvalDuration(structuredResult.getPromptEvalDuration());
+            ollamaResult.setEvalCount(structuredResult.getEvalCount());
+            ollamaResult.setEvalDuration(structuredResult.getEvalDuration());
             if (verbose) {
                 logger.info("Model response:\n{}", ollamaResult);
             }
@@ -1008,8 +1020,8 @@ public class OllamaAPI {
      * @param options Additional options or configurations to use when generating
      *                the response.
      * @return {@link OllamaToolsResult} An OllamaToolsResult object containing the
-     *         response from the AI model and the results of invoking the tools on
-     *         that output.
+     * response from the AI model and the results of invoking the tools on
+     * that output.
      * @throws OllamaBaseException  if the response indicates an error status
      * @throws IOException          if an I/O error occurs during the HTTP request
      * @throws InterruptedException if the operation is interrupted
@@ -1094,7 +1106,7 @@ public class OllamaAPI {
      * @param think  if {@code true}, streams "thinking" tokens as well as response
      *               tokens
      * @return an {@link OllamaAsyncResultStreamer} handle for polling and
-     *         retrieving streamed results
+     * retrieving streamed results
      */
     public OllamaAsyncResultStreamer generateAsync(String model, String prompt, boolean raw, boolean think) {
         OllamaGenerateRequest ollamaRequestModel = new OllamaGenerateRequest(model, prompt);
@@ -1128,7 +1140,7 @@ public class OllamaAPI {
      * @throws InterruptedException if the operation is interrupted
      */
     public OllamaResult generateWithImageFiles(String model, String prompt, List<File> imageFiles, Options options,
-            OllamaStreamHandler streamHandler) throws OllamaBaseException, IOException, InterruptedException {
+                                               OllamaStreamHandler streamHandler) throws OllamaBaseException, IOException, InterruptedException {
         List<String> images = new ArrayList<>();
         for (File imageFile : imageFiles) {
             images.add(encodeFileToBase64(imageFile));
@@ -1175,7 +1187,7 @@ public class OllamaAPI {
      * @throws URISyntaxException   if the URI for the request is malformed
      */
     public OllamaResult generateWithImageURLs(String model, String prompt, List<String> imageURLs, Options options,
-            OllamaStreamHandler streamHandler)
+                                              OllamaStreamHandler streamHandler)
             throws OllamaBaseException, IOException, InterruptedException, URISyntaxException {
         List<String> images = new ArrayList<>();
         for (String imageURL : imageURLs) {
@@ -1217,13 +1229,13 @@ public class OllamaAPI {
      * @param streamHandler optional callback that will be invoked with each
      *                      streamed response; if null, streaming is disabled
      * @return OllamaResult containing the response text and the time taken for the
-     *         response
+     * response
      * @throws OllamaBaseException  if the response indicates an error status
      * @throws IOException          if an I/O error occurs during the HTTP request
      * @throws InterruptedException if the operation is interrupted
      */
     public OllamaResult generateWithImages(String model, String prompt, List<byte[]> images, Options options,
-            OllamaStreamHandler streamHandler) throws OllamaBaseException, IOException, InterruptedException {
+                                           OllamaStreamHandler streamHandler) throws OllamaBaseException, IOException, InterruptedException {
         List<String> encodedImages = new ArrayList<>();
         for (byte[] image : images) {
             encodedImages.add(encodeByteArrayToBase64(image));
@@ -1257,7 +1269,7 @@ public class OllamaAPI {
      * @param model    the ollama model to ask the question to
      * @param messages chat history / message stack to send to the model
      * @return {@link OllamaChatResult} containing the api response and the message
-     *         history including the newly acquired assistant response.
+     * history including the newly acquired assistant response.
      * @throws OllamaBaseException     any response code than 200 has been returned
      * @throws IOException             in case the responseStream can not be read
      * @throws InterruptedException    in case the server is not reachable or
@@ -1323,7 +1335,7 @@ public class OllamaAPI {
      * @throws ToolInvocationException if the tool invocation fails
      */
     public OllamaChatResult chat(OllamaChatRequest request, OllamaStreamHandler thinkingStreamHandler,
-            OllamaStreamHandler responseStreamHandler)
+                                 OllamaStreamHandler responseStreamHandler)
             throws OllamaBaseException, IOException, InterruptedException, ToolInvocationException {
         return chatStreaming(request, new OllamaChatStreamObserver(thinkingStreamHandler, responseStreamHandler));
     }
@@ -1468,7 +1480,7 @@ public class OllamaAPI {
                 registerAnnotatedTools(provider.getDeclaredConstructor().newInstance());
             }
         } catch (InstantiationException | NoSuchMethodException | IllegalAccessException
-                | InvocationTargetException e) {
+                 | InvocationTargetException e) {
             throw new RuntimeException(e);
         }
     }
@@ -1607,7 +1619,7 @@ public class OllamaAPI {
      * @throws InterruptedException if the thread is interrupted during the request.
      */
     private OllamaResult generateSyncForOllamaRequestModel(OllamaGenerateRequest ollamaRequestModel,
-            OllamaStreamHandler thinkingStreamHandler, OllamaStreamHandler responseStreamHandler)
+                                                           OllamaStreamHandler thinkingStreamHandler, OllamaStreamHandler responseStreamHandler)
             throws OllamaBaseException, IOException, InterruptedException {
         OllamaGenerateEndpointCaller requestCaller = new OllamaGenerateEndpointCaller(host, auth, requestTimeoutSeconds,
                 verbose);

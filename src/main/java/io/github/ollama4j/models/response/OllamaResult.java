@@ -1,19 +1,16 @@
 package io.github.ollama4j.models.response;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
-
-import io.github.ollama4j.models.generate.OllamaGenerateResponseModel;
 import lombok.Data;
 import lombok.Getter;
-
-import static io.github.ollama4j.utils.Utils.getObjectMapper;
 
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import static io.github.ollama4j.utils.Utils.getObjectMapper;
 
 /**
  * The type Ollama result.

@@ -1,13 +1,12 @@
 package io.github.ollama4j.models.chat;
 
-import java.util.List;
-
 import io.github.ollama4j.models.request.OllamaCommonRequest;
 import io.github.ollama4j.tools.Tools;
 import io.github.ollama4j.utils.OllamaRequestBody;
-
 import lombok.Getter;
 import lombok.Setter;
+
+import java.util.List;
 
 /**
  * Defines a Request to use against the ollama /api/chat endpoint.

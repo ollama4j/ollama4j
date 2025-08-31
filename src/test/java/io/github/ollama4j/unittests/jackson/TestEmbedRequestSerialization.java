@@ -1,12 +1,12 @@
 package io.github.ollama4j.unittests.jackson;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-
 import io.github.ollama4j.models.embeddings.OllamaEmbedRequestBuilder;
 import io.github.ollama4j.models.embeddings.OllamaEmbedRequestModel;
+import io.github.ollama4j.utils.OptionsBuilder;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import io.github.ollama4j.utils.OptionsBuilder;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class TestEmbedRequestSerialization extends AbstractSerializationTest<OllamaEmbedRequestModel> {
 

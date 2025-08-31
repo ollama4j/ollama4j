@@ -1,9 +1,9 @@
 package io.github.ollama4j.models.chat;
 
-import java.util.List;
-
 import com.fasterxml.jackson.core.JsonProcessingException;
 import lombok.Getter;
+
+import java.util.List;
 
 import static io.github.ollama4j.utils.Utils.getObjectMapper;
 

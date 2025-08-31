@@ -1,21 +1,15 @@
 package io.github.ollama4j.models.chat;
 
-import static io.github.ollama4j.utils.Utils.getObjectMapper;
-
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-
 import io.github.ollama4j.utils.FileToBase64Serializer;
+import lombok.*;
 
 import java.util.List;
 
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
-import lombok.NonNull;
-import lombok.RequiredArgsConstructor;
+import static io.github.ollama4j.utils.Utils.getObjectMapper;
 
 /**
  * Defines a single Message to be used inside a chat request against the ollama /api/chat endpoint.

@@ -1,7 +1,8 @@
 package io.github.ollama4j.utils;
 
-import java.util.Map;
 import lombok.Data;
+
+import java.util.Map;
 
 /** Class for options for Ollama model. */
 @Data

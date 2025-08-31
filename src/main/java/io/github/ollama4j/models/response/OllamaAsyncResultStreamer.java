@@ -3,12 +3,12 @@ package io.github.ollama4j.models.response;
 import io.github.ollama4j.exceptions.OllamaBaseException;
 import io.github.ollama4j.models.generate.OllamaGenerateRequest;
 import io.github.ollama4j.models.generate.OllamaGenerateResponseModel;
+import io.github.ollama4j.utils.Constants;
 import io.github.ollama4j.utils.Utils;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
-import io.github.ollama4j.utils.Constants;
 
 import java.io.BufferedReader;
 import java.io.IOException;
