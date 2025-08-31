@@ -28,6 +28,6 @@ If you have this image downloaded and you pass the path to the downloaded image 
 You will get a response similar to:
 
 ::::tip[LLM Response]
-> This image features a white boat with brown cushions, where a dog is sitting on the back of the boat. The dog seems to
-> be enjoying its time outdoors, perhaps on a lake.
+This image features a white boat with brown cushions, where a dog is sitting on the back of the boat. The dog seems to
+be enjoying its time outdoors, perhaps on a lake.
 ::::

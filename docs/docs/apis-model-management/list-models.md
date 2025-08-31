@@ -4,7 +4,7 @@ sidebar_position: 2
 
 import CodeEmbed from '@site/src/components/CodeEmbed';
 
-# List Local Models
+# List Library Models
 
 This API lets you list downloaded/available models on the Ollama server.
 
