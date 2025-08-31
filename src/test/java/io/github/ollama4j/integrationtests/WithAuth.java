@@ -44,6 +44,7 @@ public class WithAuth {
     private static final String BEARER_AUTH_TOKEN = "secret-token";
 
     private static final String GENERAL_PURPOSE_MODEL = "gemma3:270m";
+    private static final String THINKING_MODEL = "gpt-oss:20b";
 
 
     private static OllamaContainer ollama;
@@ -152,7 +153,7 @@ public class WithAuth {
             throws OllamaBaseException, IOException, InterruptedException, URISyntaxException {
         api.setBearerAuth(BEARER_AUTH_TOKEN);
 
-        api.pullModel(GENERAL_PURPOSE_MODEL);
+        api.pullModel(THINKING_MODEL);
 
         String prompt = "The sun is shining brightly and is directly overhead at the zenith, casting my shadow over my foot, so it must be noon.";
 
@@ -169,7 +170,7 @@ public class WithAuth {
         });
         format.put("required", List.of("isNoon"));
 
-        OllamaResult result = api.generate(GENERAL_PURPOSE_MODEL, prompt, format);
+        OllamaResult result = api.generate(THINKING_MODEL, prompt, format);
 
         assertNotNull(result);
         assertNotNull(result.getResponse());
