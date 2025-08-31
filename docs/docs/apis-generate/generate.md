@@ -23,8 +23,8 @@ to [this](/apis-extras/options-builder).
 You will get a response similar to:
 
 ::::tip[LLM Response]
-> I am a large language model created by Alibaba Cloud. My purpose is to assist users in generating text, answering
-> questions, and completing tasks. I aim to be user-friendly and easy to understand for everyone who interacts with me.
+I am a model of an AI trained by Mistral AI. I was designed to assist with a wide range of tasks, from answering
+questions to helping with complex computations and research. How can I help you toda
 ::::
 
 ### Try asking a question, receiving the answer streamed
@@ -33,51 +33,37 @@ You will get a response similar to:
 
 You will get a response similar to:
 
-<!-- ::::tip[LLM Response]
-> The
->
-> The capital
->
-> The capital of
->
-> The capital of France
->
-> The capital of France is
->
-> The capital of France is Paris
->
-> The capital of France is Paris.
-:::: -->
-
 <TypewriterTextarea
-    textContent='The capital of France is Paris.'
-    typingSpeed={30}
-    pauseBetweenSentences={1200}
-    height='55px'
-    width='100%'
+textContent='The capital of France is Paris.'
+typingSpeed={30}
+pauseBetweenSentences={1200}
+height='55px'
+width='100%'
 />
 
 ## Generate structured output
 
 ### With response as a `Map`
 
-<CodeEmbed src="https://raw.githubusercontent.com/ollama4j/ollama4j-examples/refs/heads/main/src/main/java/io/github/ollama4j/examples/StructuredOutput.java" />
+<CodeEmbed src="https://raw.githubusercontent.com/ollama4j/ollama4j-examples/refs/heads/main/src/main/java/io/github/ollama4j/examples/GenerateStructuredOutput.java" />
 
 You will get a response similar to:
 
 ::::tip[LLM Response]
+
 ```json
 {
-    "available": true,
-    "age": 22
+  "heroName" : "Batman",
+  "ageOfPerson" : 30
 }
 ```
+
 ::::
 
 ### With response mapped to specified class type
 
-<CodeEmbed src="https://raw.githubusercontent.com/ollama4j/ollama4j-examples/refs/heads/main/src/main/java/io/github/ollama4j/examples/StructuredOutputMappedToObject.java" />
+<CodeEmbed src="https://raw.githubusercontent.com/ollama4j/ollama4j-examples/refs/heads/main/src/main/java/io/github/ollama4j/examples/GenerateStructuredOutputMappedToObject.java" />
 
 ::::tip[LLM Response]
-Person(age=28, available=false)
+HeroInfo(heroName=Batman, ageOfPerson=30)
 ::::

@@ -210,7 +210,9 @@ pip install pre-commit
 #### Setup dev environment
 
 > **Note**
-> If you're on Windows, install [Chocolatey Package Manager for Windows](https://chocolatey.org/install) and then install `make` by running `choco install make`. Just a little tip - run the command with administrator privileges if installation faiils.
+> If you're on Windows, install [Chocolatey Package Manager for Windows](https://chocolatey.org/install) and then
+> install `make` by running `choco install make`. Just a little tip - run the command with administrator privileges if
+> installation faiils.
 
 ```shell
 make dev
@@ -265,6 +267,7 @@ If you like or are using this project to build your own, please give us a star. 
 | 9  | moqui-wechat      | A moqui-wechat component                                                                                                                                           | [GitHub](https://github.com/heguangyong/moqui-wechat)                                                                                                                                         |
 | 10 | B4X               | A set of simple and powerful RAD tool for Desktop and Server development                                                                                           | [Website](https://www.b4x.com/android/forum/threads/ollama4j-library-pnd_ollama4j-your-local-offline-llm-like-chatgpt.165003/)                                                                |
 | 11 | Research Article  | Article: `Large language model based mutations in genetic improvement` - published on National Library of Medicine (National Center for Biotechnology Information) | [Website](https://pmc.ncbi.nlm.nih.gov/articles/PMC11750896/)                                                                                                                                 |
+| 12 | renaime           | Renaime is a LLaVa powered tool that automatically renames those files for you.                                                                                    | [Website](https://devpost.com/software/renaime)                                                                                                                                               |
 
 ## Traction
 

@@ -22,9 +22,9 @@ session. The tool invocation and response handling are all managed internally by
 <CodeEmbed src="https://raw.githubusercontent.com/ollama4j/ollama4j-examples/refs/heads/main/src/main/java/io/github/ollama4j/examples/ChatWithTools.java"/>
 
 ::::tip[LLM Response]
-> First answer: 6527fb60-9663-4073-b59e-855526e0a0c2 is the ID of the employee named 'Rahul Kumar'.
->
-> Second answer:  Kumar is the last name of the employee named 'Rahul Kumar'.
+**First answer:** 6527fb60-9663-4073-b59e-855526e0a0c2 is the ID of the employee named 'Rahul Kumar'.
+
+**Second answer:**  _Kumar_ is the last name of the employee named 'Rahul Kumar'.
 ::::
 
 This tool calling can also be done using the streaming API.
@@ -63,7 +63,7 @@ The annotated method can then be used as a tool in the chat session:
 Running the above would produce a response similar to:
 
 ::::tip[LLM Response]
-> First answer: 0.0000112061 is the most important constant in the world using 10 digits, according to my function. This constant is known as Planck's constant and plays a fundamental role in quantum mechanics. It relates energy and frequency in electromagnetic radiation and action (the product of momentum and distance) for particles.
->
-> Second answer: 3-digit constant: 8.001
+**First answer:** 0.0000112061 is the most important constant in the world using 10 digits, according to my function. This constant is known as Planck's constant and plays a fundamental role in quantum mechanics. It relates energy and frequency in electromagnetic radiation and action (the product of momentum and distance) for particles.
+
+**Second answer:** 3-digit constant: 8.001
 ::::

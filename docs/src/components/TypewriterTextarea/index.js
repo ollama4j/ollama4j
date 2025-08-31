@@ -1,53 +1,54 @@
 import React, { useEffect, useState, useRef } from 'react';
 
-const TypewriterTextarea = ({ textContent, typingSpeed = 50, pauseBetweenSentences = 1000, height = '200px', width = '100%', align = 'left' }) => {
-  const [text, setText] = useState('');
-  const [sentenceIndex, setSentenceIndex] = useState(0);
+const TypewriterTextarea = ({
+  textContent,
+  typingSpeed = 50,
+  pauseBetweenSentences = 1000,
+  height = '200px',
+  width = '100%',
+  align = 'left',
+  style = {},
+}) => {
+  const [displayedText, setDisplayedText] = useState('');
   const [charIndex, setCharIndex] = useState(0);
-  const sentences = textContent ? textContent.split('\n') : [];
   const isTyping = useRef(false);
 
+  // Flatten textContent to a string, preserving \n
+  const fullText = textContent || '';
+
   useEffect(() => {
-    if (!textContent) return;
+    if (!fullText) return;
 
     if (!isTyping.current) {
       isTyping.current = true;
     }
 
-    if (sentenceIndex >= sentences.length) {
+    if (charIndex > fullText.length) {
       // Reset to start from the beginning
-      setSentenceIndex(0);
       setCharIndex(0);
-      setText('');
+      setDisplayedText('');
       return;
     }
 
-    const currentSentence = sentences[sentenceIndex];
-
-    if (charIndex < currentSentence.length) {
+    if (charIndex < fullText.length) {
       const timeout = setTimeout(() => {
-        setText((prevText) => prevText + currentSentence[charIndex]);
+        setDisplayedText(fullText.slice(0, charIndex + 1));
         setCharIndex((prevCharIndex) => prevCharIndex + 1);
-      }, typingSpeed);
-
+      }, fullText[charIndex] === '\n' ? typingSpeed : typingSpeed);
       return () => clearTimeout(timeout);
     } else {
-      // Wait a bit, then go to the next sentence
+      // Wait a bit, then restart
       const timeout = setTimeout(() => {
-        setSentenceIndex((prev) => prev + 1);
         setCharIndex(0);
+        setDisplayedText('');
       }, pauseBetweenSentences);
-
       return () => clearTimeout(timeout);
     }
-  }, [charIndex, sentenceIndex, sentences, typingSpeed, pauseBetweenSentences, textContent]);
+    // eslint-disable-next-line
+  }, [charIndex, fullText, typingSpeed, pauseBetweenSentences]);
 
   return (
-    <textarea
-      value={text}
-      readOnly
-      rows={10}
-      cols={5}
+    <div
       style={{
         width: typeof width === 'number' ? `${width}px` : width,
         height: height,
@@ -60,8 +61,12 @@ const TypewriterTextarea = ({ textContent, typingSpeed = 50, pauseBetweenSentenc
         resize: 'none',
         whiteSpace: 'pre-wrap',
         color: 'black',
+        overflow: 'auto',
+        ...style,
       }}
-    />
+    >
+      {displayedText}
+    </div>
   );
 };
 
