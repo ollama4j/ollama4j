@@ -155,7 +155,7 @@ class TestMockedAPIs {
         try {
             when(ollamaAPI.generateWithImageFiles(
                     model, prompt, Collections.emptyList(), new OptionsBuilder().build()))
-                    .thenReturn(new OllamaResult("","", 0, 200));
+                    .thenReturn(new OllamaResult("", "", 0, 200));
             ollamaAPI.generateWithImageFiles(
                     model, prompt, Collections.emptyList(), new OptionsBuilder().build());
             verify(ollamaAPI, times(1))
@@ -174,7 +174,7 @@ class TestMockedAPIs {
         try {
             when(ollamaAPI.generateWithImageURLs(
                     model, prompt, Collections.emptyList(), new OptionsBuilder().build()))
-                    .thenReturn(new OllamaResult("","", 0, 200));
+                    .thenReturn(new OllamaResult("", "", 0, 200));
             ollamaAPI.generateWithImageURLs(
                     model, prompt, Collections.emptyList(), new OptionsBuilder().build());
             verify(ollamaAPI, times(1))
@@ -190,10 +190,10 @@ class TestMockedAPIs {
         OllamaAPI ollamaAPI = Mockito.mock(OllamaAPI.class);
         String model = OllamaModelType.LLAMA2;
         String prompt = "some prompt text";
-        when(ollamaAPI.generateAsync(model, prompt, false))
+        when(ollamaAPI.generateAsync(model, prompt, false, false))
                 .thenReturn(new OllamaAsyncResultStreamer(null, null, 3));
-        ollamaAPI.generateAsync(model, prompt, false);
-        verify(ollamaAPI, times(1)).generateAsync(model, prompt, false);
+        ollamaAPI.generateAsync(model, prompt, false, false);
+        verify(ollamaAPI, times(1)).generateAsync(model, prompt, false, false);
     }
 
     @Test

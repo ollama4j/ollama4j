@@ -1,15 +1,18 @@
 package io.github.ollama4j.models.response;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 
+import io.github.ollama4j.models.generate.OllamaGenerateResponseModel;
 import lombok.Data;
 import lombok.Getter;
 
 import static io.github.ollama4j.utils.Utils.getObjectMapper;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -21,29 +24,33 @@ import java.util.Map;
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class OllamaResult {
     /**
-     * -- GETTER --
      * Get the completion/response text
-     *
-     * @return String completion/response text
      */
     private final String response;
-    private final String thinking;
-
     /**
-     * -- GETTER --
+     * Get the thinking text (if available)
+     */
+    private final String thinking;
+    /**
      * Get the response status code.
-     *
-     * @return int - response status code
      */
     private int httpStatusCode;
-
     /**
-     * -- GETTER --
      * Get the response time in milliseconds.
-     *
-     * @return long - response time in milliseconds
      */
     private long responseTime = 0;
+
+    private String model;
+    private String createdAt;
+    private boolean done;
+    private String doneReason;
+    private List<Integer> context;
+    private Long totalDuration;
+    private Long loadDuration;
+    private Integer promptEvalCount;
+    private Long promptEvalDuration;
+    private Integer evalCount;
+    private Long evalDuration;
 
     public OllamaResult(String response, String thinking, long responseTime, int httpStatusCode) {
         this.response = response;
@@ -60,6 +67,17 @@ public class OllamaResult {
             responseMap.put("thinking", this.thinking);
             responseMap.put("httpStatusCode", this.httpStatusCode);
             responseMap.put("responseTime", this.responseTime);
+            responseMap.put("model", this.model);
+            responseMap.put("createdAt", this.createdAt);
+            responseMap.put("done", this.done);
+            responseMap.put("doneReason", this.doneReason);
+            responseMap.put("context", this.context);
+            responseMap.put("totalDuration", this.totalDuration);
+            responseMap.put("loadDuration", this.loadDuration);
+            responseMap.put("promptEvalCount", this.promptEvalCount);
+            responseMap.put("promptEvalDuration", this.promptEvalDuration);
+            responseMap.put("evalCount", this.evalCount);
+            responseMap.put("evalDuration", this.evalDuration);
             return getObjectMapper().writerWithDefaultPrettyPrinter().writeValueAsString(responseMap);
         } catch (JsonProcessingException e) {
             throw new RuntimeException(e);

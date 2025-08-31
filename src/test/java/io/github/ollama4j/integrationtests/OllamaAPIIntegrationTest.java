@@ -202,14 +202,12 @@ class OllamaAPIIntegrationTest {
             throws OllamaBaseException, IOException, URISyntaxException, InterruptedException {
         api.pullModel(GENERAL_PURPOSE_MODEL);
         boolean raw = false;
-        boolean thinking = false;
         StringBuffer sb = new StringBuffer();
         OllamaResult result = api.generate(GENERAL_PURPOSE_MODEL,
                 "What is the capital of France? And what's France's connection with Mona Lisa?", raw,
-                thinking, new OptionsBuilder().build(), (s) -> {
-                    String substring = s.substring(sb.toString().length());
-                    LOG.info(substring);
-                    sb.append(substring);
+                new OptionsBuilder().build(), (s) -> {
+                    LOG.info(s);
+                    sb.append(s);
                 });
 
         assertNotNull(result);
@@ -355,12 +353,10 @@ class OllamaAPIIntegrationTest {
                 .withKeepAlive("0m").withOptions(new OptionsBuilder().setTemperature(0.9f).build())
                 .build();
 
-        StringBuffer sb = new StringBuffer();
-
         OllamaChatResult chatResult = api.chat(requestModel, (s) -> {
-            String substring = s.substring(sb.toString().length());
-            sb.append(substring);
-            LOG.info(substring);
+            LOG.info(s.toUpperCase());
+        }, (s) -> {
+            LOG.info(s.toLowerCase());
         });
 
         assertNotNull(chatResult, "chatResult should not be null");
@@ -468,9 +464,11 @@ class OllamaAPIIntegrationTest {
         StringBuffer sb = new StringBuffer();
 
         OllamaChatResult chatResult = api.chat(requestModel, (s) -> {
-            String substring = s.substring(sb.toString().length());
-            sb.append(substring);
-            LOG.info(substring);
+            LOG.info(s.toUpperCase());
+            sb.append(s);
+        }, (s) -> {
+            LOG.info(s.toLowerCase());
+            sb.append(s);
         });
         assertNotNull(chatResult);
         assertNotNull(chatResult.getResponseModel());
@@ -491,10 +489,13 @@ class OllamaAPIIntegrationTest {
         StringBuffer sb = new StringBuffer();
 
         OllamaChatResult chatResult = api.chat(requestModel, (s) -> {
-            String substring = s.substring(sb.toString().length());
-            sb.append(substring);
-            LOG.info(substring);
+            sb.append(s);
+            LOG.info(s.toUpperCase());
+        }, (s) -> {
+            sb.append(s);
+            LOG.info(s.toLowerCase());
         });
+
         assertNotNull(chatResult);
         assertNotNull(chatResult.getResponseModel());
         assertNotNull(chatResult.getResponseModel().getMessage());
@@ -586,9 +587,8 @@ class OllamaAPIIntegrationTest {
 
         OllamaResult result = api.generateWithImageFiles(VISION_MODEL, "What is in this image?",
                 List.of(imageFile), new OptionsBuilder().build(), (s) -> {
-                    String substring = s.substring(sb.toString().length());
-                    LOG.info(substring);
-                    sb.append(substring);
+                    LOG.info(s);
+                    sb.append(s);
                 });
         assertNotNull(result);
         assertNotNull(result.getResponse());
@@ -603,10 +603,10 @@ class OllamaAPIIntegrationTest {
         api.pullModel(THINKING_TOOL_MODEL);
 
         boolean raw = false;
-        boolean thinking = true;
+        boolean think = true;
 
-        OllamaResult result = api.generate(THINKING_TOOL_MODEL, "Who are you?", raw, thinking,
-                new OptionsBuilder().build(), null);
+        OllamaResult result = api.generate(THINKING_TOOL_MODEL, "Who are you?", raw, think,
+                new OptionsBuilder().build());
         assertNotNull(result);
         assertNotNull(result.getResponse());
         assertFalse(result.getResponse().isEmpty());
@@ -621,15 +621,19 @@ class OllamaAPIIntegrationTest {
         api.pullModel(THINKING_TOOL_MODEL);
 
         boolean raw = false;
-        boolean thinking = true;
 
         StringBuffer sb = new StringBuffer();
-        OllamaResult result = api.generate(THINKING_TOOL_MODEL, "Who are you?", raw, thinking,
-                new OptionsBuilder().build(), (s) -> {
-                    String substring = s.substring(sb.toString().length());
-                    sb.append(substring);
-                    LOG.info(substring);
-                });
+        OllamaResult result = api.generate(THINKING_TOOL_MODEL, "Who are you?", raw,
+                new OptionsBuilder().build(),
+                (thinkingToken) -> {
+                    sb.append(thinkingToken);
+                    LOG.info(thinkingToken);
+                },
+                (resToken) -> {
+                    sb.append(resToken);
+                    LOG.info(resToken);
+                }
+        );
         assertNotNull(result);
         assertNotNull(result.getResponse());
         assertFalse(result.getResponse().isEmpty());

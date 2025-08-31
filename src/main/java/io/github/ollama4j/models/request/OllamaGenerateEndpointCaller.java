@@ -27,7 +27,7 @@ public class OllamaGenerateEndpointCaller extends OllamaEndpointCaller {
 
     private static final Logger LOG = LoggerFactory.getLogger(OllamaGenerateEndpointCaller.class);
 
-    private OllamaGenerateStreamObserver streamObserver;
+    private OllamaGenerateStreamObserver responseStreamObserver;
 
     public OllamaGenerateEndpointCaller(String host, Auth basicAuth, long requestTimeoutSeconds, boolean verbose) {
         super(host, basicAuth, requestTimeoutSeconds, verbose);
@@ -48,8 +48,8 @@ public class OllamaGenerateEndpointCaller extends OllamaEndpointCaller {
             if (ollamaResponseModel.getThinking() != null) {
                 thinkingBuffer.append(ollamaResponseModel.getThinking());
             }
-            if (streamObserver != null) {
-                streamObserver.notify(ollamaResponseModel);
+            if (responseStreamObserver != null) {
+                responseStreamObserver.notify(ollamaResponseModel);
             }
             return ollamaResponseModel.isDone();
         } catch (JsonProcessingException e) {
@@ -58,9 +58,8 @@ public class OllamaGenerateEndpointCaller extends OllamaEndpointCaller {
         }
     }
 
-    public OllamaResult call(OllamaRequestBody body, OllamaStreamHandler streamHandler)
-            throws OllamaBaseException, IOException, InterruptedException {
-        streamObserver = new OllamaGenerateStreamObserver(streamHandler);
+    public OllamaResult call(OllamaRequestBody body, OllamaStreamHandler thinkingStreamHandler, OllamaStreamHandler responseStreamHandler) throws OllamaBaseException, IOException, InterruptedException {
+        responseStreamObserver = new OllamaGenerateStreamObserver(thinkingStreamHandler, responseStreamHandler);
         return callSync(body);
     }
 
@@ -73,47 +72,41 @@ public class OllamaGenerateEndpointCaller extends OllamaEndpointCaller {
      * @throws IOException          in case the responseStream can not be read
      * @throws InterruptedException in case the server is not reachable or network issues happen
      */
+    @SuppressWarnings("DuplicatedCode")
     public OllamaResult callSync(OllamaRequestBody body) throws OllamaBaseException, IOException, InterruptedException {
         // Create Request
         long startTime = System.currentTimeMillis();
         HttpClient httpClient = HttpClient.newHttpClient();
         URI uri = URI.create(getHost() + getEndpointSuffix());
-        HttpRequest.Builder requestBuilder =
-                getRequestBuilderDefault(uri)
-                        .POST(
-                                body.getBodyPublisher());
+        HttpRequest.Builder requestBuilder = getRequestBuilderDefault(uri).POST(body.getBodyPublisher());
         HttpRequest request = requestBuilder.build();
-        if (isVerbose()) LOG.info("Asking model: " + body.toString());
-        HttpResponse<InputStream> response =
-                httpClient.send(request, HttpResponse.BodyHandlers.ofInputStream());
+        if (isVerbose()) LOG.info("Asking model: {}", body);
+        HttpResponse<InputStream> response = httpClient.send(request, HttpResponse.BodyHandlers.ofInputStream());
 
         int statusCode = response.statusCode();
         InputStream responseBodyStream = response.body();
         StringBuilder responseBuffer = new StringBuilder();
         StringBuilder thinkingBuffer = new StringBuilder();
-        try (BufferedReader reader =
-                     new BufferedReader(new InputStreamReader(responseBodyStream, StandardCharsets.UTF_8))) {
+        OllamaGenerateResponseModel ollamaGenerateResponseModel = null;
+        try (BufferedReader reader = new BufferedReader(new InputStreamReader(responseBodyStream, StandardCharsets.UTF_8))) {
             String line;
             while ((line = reader.readLine()) != null) {
                 if (statusCode == 404) {
                     LOG.warn("Status code: 404 (Not Found)");
-                    OllamaErrorResponse ollamaResponseModel =
-                            Utils.getObjectMapper().readValue(line, OllamaErrorResponse.class);
+                    OllamaErrorResponse ollamaResponseModel = Utils.getObjectMapper().readValue(line, OllamaErrorResponse.class);
                     responseBuffer.append(ollamaResponseModel.getError());
                 } else if (statusCode == 401) {
                     LOG.warn("Status code: 401 (Unauthorized)");
-                    OllamaErrorResponse ollamaResponseModel =
-                            Utils.getObjectMapper()
-                                    .readValue("{\"error\":\"Unauthorized\"}", OllamaErrorResponse.class);
+                    OllamaErrorResponse ollamaResponseModel = Utils.getObjectMapper().readValue("{\"error\":\"Unauthorized\"}", OllamaErrorResponse.class);
                     responseBuffer.append(ollamaResponseModel.getError());
                 } else if (statusCode == 400) {
                     LOG.warn("Status code: 400 (Bad Request)");
-                    OllamaErrorResponse ollamaResponseModel = Utils.getObjectMapper().readValue(line,
-                            OllamaErrorResponse.class);
+                    OllamaErrorResponse ollamaResponseModel = Utils.getObjectMapper().readValue(line, OllamaErrorResponse.class);
                     responseBuffer.append(ollamaResponseModel.getError());
                 } else {
                     boolean finished = parseResponseAndAddToBuffer(line, responseBuffer, thinkingBuffer);
                     if (finished) {
+                        ollamaGenerateResponseModel = Utils.getObjectMapper().readValue(line, OllamaGenerateResponseModel.class);
                         break;
                     }
                 }
@@ -121,13 +114,25 @@ public class OllamaGenerateEndpointCaller extends OllamaEndpointCaller {
         }
 
         if (statusCode != 200) {
-            LOG.error("Status code " + statusCode);
+            LOG.error("Status code: {}", statusCode);
             throw new OllamaBaseException(responseBuffer.toString());
         } else {
             long endTime = System.currentTimeMillis();
-            OllamaResult ollamaResult =
-                    new OllamaResult(responseBuffer.toString(), thinkingBuffer.toString(), endTime - startTime, statusCode);
-            if (isVerbose()) LOG.info("Model response: " + ollamaResult);
+            OllamaResult ollamaResult = new OllamaResult(responseBuffer.toString(), thinkingBuffer.toString(), endTime - startTime, statusCode);
+
+            ollamaResult.setModel(ollamaGenerateResponseModel.getModel());
+            ollamaResult.setCreatedAt(ollamaGenerateResponseModel.getCreatedAt());
+            ollamaResult.setDone(ollamaGenerateResponseModel.isDone());
+            ollamaResult.setDoneReason(ollamaGenerateResponseModel.getDoneReason());
+            ollamaResult.setContext(ollamaGenerateResponseModel.getContext());
+            ollamaResult.setTotalDuration(ollamaGenerateResponseModel.getTotalDuration());
+            ollamaResult.setLoadDuration(ollamaGenerateResponseModel.getLoadDuration());
+            ollamaResult.setPromptEvalCount(ollamaGenerateResponseModel.getPromptEvalCount());
+            ollamaResult.setPromptEvalDuration(ollamaGenerateResponseModel.getPromptEvalDuration());
+            ollamaResult.setEvalCount(ollamaGenerateResponseModel.getEvalCount());
+            ollamaResult.setEvalDuration(ollamaGenerateResponseModel.getEvalDuration());
+
+            if (isVerbose()) LOG.info("Model response: {}", ollamaResult);
             return ollamaResult;
         }
     }

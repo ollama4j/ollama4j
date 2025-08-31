@@ -26,8 +26,10 @@ import java.time.Duration;
 public class OllamaAsyncResultStreamer extends Thread {
     private final HttpRequest.Builder requestBuilder;
     private final OllamaGenerateRequest ollamaRequestModel;
-    private final OllamaResultStream stream = new OllamaResultStream();
+    private final OllamaResultStream thinkingResponseStream = new OllamaResultStream();
+    private final OllamaResultStream responseStream = new OllamaResultStream();
     private String completeResponse;
+    private String completeThinkingResponse;
 
 
     /**
@@ -54,14 +56,11 @@ public class OllamaAsyncResultStreamer extends Thread {
     @Getter
     private long responseTime = 0;
 
-    public OllamaAsyncResultStreamer(
-            HttpRequest.Builder requestBuilder,
-            OllamaGenerateRequest ollamaRequestModel,
-            long requestTimeoutSeconds) {
+    public OllamaAsyncResultStreamer(HttpRequest.Builder requestBuilder, OllamaGenerateRequest ollamaRequestModel, long requestTimeoutSeconds) {
         this.requestBuilder = requestBuilder;
         this.ollamaRequestModel = ollamaRequestModel;
         this.completeResponse = "";
-        this.stream.add("");
+        this.responseStream.add("");
         this.requestTimeoutSeconds = requestTimeoutSeconds;
     }
 
@@ -71,16 +70,8 @@ public class OllamaAsyncResultStreamer extends Thread {
         HttpClient httpClient = HttpClient.newHttpClient();
         long startTime = System.currentTimeMillis();
         try {
-            HttpRequest request =
-                    requestBuilder
-                            .POST(
-                                    HttpRequest.BodyPublishers.ofString(
-                                            Utils.getObjectMapper().writeValueAsString(ollamaRequestModel)))
-                            .header(Constants.HttpConstants.HEADER_KEY_CONTENT_TYPE, Constants.HttpConstants.APPLICATION_JSON)
-                            .timeout(Duration.ofSeconds(requestTimeoutSeconds))
-                            .build();
-            HttpResponse<InputStream> response =
-                    httpClient.send(request, HttpResponse.BodyHandlers.ofInputStream());
+            HttpRequest request = requestBuilder.POST(HttpRequest.BodyPublishers.ofString(Utils.getObjectMapper().writeValueAsString(ollamaRequestModel))).header(Constants.HttpConstants.HEADER_KEY_CONTENT_TYPE, Constants.HttpConstants.APPLICATION_JSON).timeout(Duration.ofSeconds(requestTimeoutSeconds)).build();
+            HttpResponse<InputStream> response = httpClient.send(request, HttpResponse.BodyHandlers.ofInputStream());
             int statusCode = response.statusCode();
             this.httpStatusCode = statusCode;
 
@@ -89,25 +80,33 @@ public class OllamaAsyncResultStreamer extends Thread {
             try {
                 reader = new BufferedReader(new InputStreamReader(responseBodyStream, StandardCharsets.UTF_8));
                 String line;
+                StringBuilder thinkingBuffer = new StringBuilder();
                 StringBuilder responseBuffer = new StringBuilder();
                 while ((line = reader.readLine()) != null) {
                     if (statusCode == 404) {
-                        OllamaErrorResponse ollamaResponseModel =
-                                Utils.getObjectMapper().readValue(line, OllamaErrorResponse.class);
-                        stream.add(ollamaResponseModel.getError());
+                        OllamaErrorResponse ollamaResponseModel = Utils.getObjectMapper().readValue(line, OllamaErrorResponse.class);
+                        responseStream.add(ollamaResponseModel.getError());
                         responseBuffer.append(ollamaResponseModel.getError());
                     } else {
-                        OllamaGenerateResponseModel ollamaResponseModel =
-                                Utils.getObjectMapper().readValue(line, OllamaGenerateResponseModel.class);
-                        String res = ollamaResponseModel.getResponse();
-                        stream.add(res);
+                        OllamaGenerateResponseModel ollamaResponseModel = Utils.getObjectMapper().readValue(line, OllamaGenerateResponseModel.class);
+                        String thinkingTokens = ollamaResponseModel.getThinking();
+                        String responseTokens = ollamaResponseModel.getResponse();
+                        if (thinkingTokens == null) {
+                            thinkingTokens = "";
+                        }
+                        if (responseTokens == null) {
+                            responseTokens = "";
+                        }
+                        thinkingResponseStream.add(thinkingTokens);
+                        responseStream.add(responseTokens);
                         if (!ollamaResponseModel.isDone()) {
-                            responseBuffer.append(res);
+                            responseBuffer.append(responseTokens);
+                            thinkingBuffer.append(thinkingTokens);
                         }
                     }
                 }
-
                 this.succeeded = true;
+                this.completeThinkingResponse = thinkingBuffer.toString();
                 this.completeResponse = responseBuffer.toString();
                 long endTime = System.currentTimeMillis();
                 responseTime = endTime - startTime;
