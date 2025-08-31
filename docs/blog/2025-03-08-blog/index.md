@@ -21,6 +21,8 @@ your database using natural, conversational language — just like interacting w
 through the code, explain the key components, and show you how to set up your environment to ensure everything runs
 smoothly.
 
+<!-- truncate -->
+
 ### Overview of the Technologies Involved
 
 Before diving into the implementation, let’s understand the core technologies we’re using:

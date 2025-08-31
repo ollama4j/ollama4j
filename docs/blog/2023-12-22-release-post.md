@@ -23,6 +23,8 @@ applications! 🌐🚀
 - Ability to ask questions along with image files or image URLs! 🤩
 - Open-source and primed for collaborative contributions from the community!
 
+<!-- truncate -->
+
 🦙 What is Ollama?
 
 Ollama is an advanced AI tool that allows users to easily set up and run large language models locally (in CPU and GPU
