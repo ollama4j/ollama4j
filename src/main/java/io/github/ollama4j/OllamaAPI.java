@@ -1643,18 +1643,18 @@ public class OllamaAPI {
         HttpRequest.Builder requestBuilder = HttpRequest.newBuilder(uri)
                 .header(Constants.HttpConstants.HEADER_KEY_CONTENT_TYPE, Constants.HttpConstants.APPLICATION_JSON)
                 .timeout(Duration.ofSeconds(requestTimeoutSeconds));
-        if (isBasicAuthCredentialsSet()) {
+        if (isAuthSet()) {
             requestBuilder.header("Authorization", auth.getAuthHeaderValue());
         }
         return requestBuilder;
     }
 
     /**
-     * Check if Basic Auth credentials set.
+     * Check if auth param is set.
      *
-     * @return true when Basic Auth credentials set
+     * @return true when auth param is set
      */
-    private boolean isBasicAuthCredentialsSet() {
+    private boolean isAuthSet() {
         return auth != null;
     }
 
