@@ -302,22 +302,6 @@ Contributions are most welcome! Whether it's reporting a bug, proposing an enhan
 with code - any sort
 of contribution is much appreciated.
 
-## 🏷️ License and Citation
-
-The code is available under [MIT License](./LICENSE).
-
-If you find this project helpful in your research, please cite this work at
-
-```
-@misc{ollama4j2024,
-    author       = {Amith Koujalgi},
-    title        = {Ollama4j: A Java Library (Wrapper/Binding) for Ollama Server},
-    year         = {2024},
-    month        = {January},
-    url          = {https://github.com/ollama4j/ollama4j}
-}
-```
-
 ### References
 
 - [Ollama REST APIs](https://github.com/jmorganca/ollama/blob/main/docs/api.md)
