@@ -1,0 +1,10 @@
+# See https://docs.github.com/repositories/managing-your-repositorys-settings-and-features/customizing-your-repository/about-code-owners
+
+# Default owners for everything in the repo
+* @amithkoujalgi
+
+# Example for scoping ownership (uncomment and adjust as teams evolve)
+# /docs/ @amithkoujalgi
+# /src/ @amithkoujalgi
+
+
