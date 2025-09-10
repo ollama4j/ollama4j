@@ -54,7 +54,7 @@ import java.util.stream.Collectors;
 @SuppressWarnings({"DuplicatedCode", "resource"})
 public class OllamaAPI {
 
-    private static final Logger logger = LoggerFactory.getLogger(OllamaAPI.class);
+    private static final Logger LOG = LoggerFactory.getLogger(OllamaAPI.class);
 
     private final String host;
     private Auth auth;
@@ -112,7 +112,7 @@ public class OllamaAPI {
         } else {
             this.host = host;
         }
-        logger.info("Ollama API initialized with host: {}", this.host);
+        LOG.info("Ollama API initialized with host: {}", this.host);
     }
 
     /**
@@ -450,7 +450,7 @@ public class OllamaAPI {
         int attempt = currentRetry + 1;
         if (attempt < maxRetries) {
             long backoffMillis = baseDelayMillis * (1L << currentRetry);
-            logger.error("Failed to pull model {}, retrying in {}s... (attempt {}/{})",
+            LOG.error("Failed to pull model {}, retrying in {}s... (attempt {}/{})",
                     modelName, backoffMillis / 1000, attempt, maxRetries);
             try {
                 Thread.sleep(backoffMillis);
@@ -459,7 +459,7 @@ public class OllamaAPI {
                 throw ie;
             }
         } else {
-            logger.error("Failed to pull model {} after {} attempts, no more retries.", modelName, maxRetries);
+            LOG.error("Failed to pull model {} after {} attempts, no more retries.", modelName, maxRetries);
         }
     }
 
@@ -489,19 +489,19 @@ public class OllamaAPI {
                     }
 
                     if (modelPullResponse.getStatus() != null) {
-                        logger.info("{}: {}", modelName, modelPullResponse.getStatus());
+                        LOG.info("{}: {}", modelName, modelPullResponse.getStatus());
                         // Check if status is "success" and set success flag to true.
                         if ("success".equalsIgnoreCase(modelPullResponse.getStatus())) {
                             success = true;
                         }
                     }
                 } else {
-                    logger.error("Received null response for model pull.");
+                    LOG.error("Received null response for model pull.");
                 }
             }
         }
         if (!success) {
-            logger.error("Model pull failed or returned invalid status.");
+            LOG.error("Model pull failed or returned invalid status.");
             throw new OllamaBaseException("Model pull failed or returned invalid status.");
         }
         if (statusCode != 200) {
@@ -610,7 +610,7 @@ public class OllamaAPI {
         if (responseString.contains("error")) {
             throw new OllamaBaseException(responseString);
         }
-        logger.debug(responseString);
+        LOG.debug(responseString);
     }
 
     /**
@@ -646,7 +646,7 @@ public class OllamaAPI {
         if (responseString.contains("error")) {
             throw new OllamaBaseException(responseString);
         }
-        logger.debug(responseString);
+        LOG.debug(responseString);
     }
 
     /**
@@ -678,7 +678,7 @@ public class OllamaAPI {
         if (responseString.contains("error")) {
             throw new OllamaBaseException(responseString);
         }
-        logger.debug(responseString);
+        LOG.debug(responseString);
     }
 
     /**
@@ -949,9 +949,9 @@ public class OllamaAPI {
         try {
             String prettyJson = Utils.getObjectMapper().writerWithDefaultPrettyPrinter()
                     .writeValueAsString(Utils.getObjectMapper().readValue(jsonData, Object.class));
-            logger.debug("Asking model:\n{}", prettyJson);
+            LOG.debug("Asking model:\n{}", prettyJson);
         } catch (Exception e) {
-            logger.debug("Asking model: {}", jsonData);
+            LOG.debug("Asking model: {}", jsonData);
         }
 
         HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
@@ -974,10 +974,10 @@ public class OllamaAPI {
             ollamaResult.setPromptEvalDuration(structuredResult.getPromptEvalDuration());
             ollamaResult.setEvalCount(structuredResult.getEvalCount());
             ollamaResult.setEvalDuration(structuredResult.getEvalDuration());
-            logger.debug("Model response:\n{}", ollamaResult);
+            LOG.debug("Model response:\n{}", ollamaResult);
             return ollamaResult;
         } else {
-            logger.debug("Model response:\n{}",
+            LOG.debug("Model response:\n{}",
                     Utils.getObjectMapper().writerWithDefaultPrettyPrinter().writeValueAsString(responseBody));
             throw new OllamaBaseException(statusCode + " - " + responseBody);
         }
@@ -1031,7 +1031,7 @@ public class OllamaAPI {
                 // Try to parse the string to see if it's a valid JSON
                 objectMapper.readTree(toolsResponse);
             } catch (JsonParseException e) {
-                logger.warn("Response from model does not contain any tool calls. Returning the response as is.");
+                LOG.warn("Response from model does not contain any tool calls. Returning the response as is.");
                 return toolResult;
             }
             toolFunctionCallSpecs = objectMapper.readValue(toolsResponse,
@@ -1390,7 +1390,7 @@ public class OllamaAPI {
      */
     public void registerTool(Tools.ToolSpecification toolSpecification) {
         toolRegistry.addTool(toolSpecification.getFunctionName(), toolSpecification);
-        logger.debug("Registered tool: {}", toolSpecification.getFunctionName());
+        LOG.debug("Registered tool: {}", toolSpecification.getFunctionName());
     }
 
     /**
@@ -1415,7 +1415,7 @@ public class OllamaAPI {
      */
     public void deregisterTools() {
         toolRegistry.clear();
-        logger.debug("All tools have been deregistered.");
+        LOG.debug("All tools have been deregistered.");
     }
 
     /**
@@ -1631,7 +1631,7 @@ public class OllamaAPI {
             String methodName = toolFunctionCallSpec.getName();
             Map<String, Object> arguments = toolFunctionCallSpec.getArguments();
             ToolFunction function = toolRegistry.getToolFunction(methodName);
-            logger.debug("Invoking function {} with arguments {}", methodName, arguments);
+            LOG.debug("Invoking function {} with arguments {}", methodName, arguments);
             if (function == null) {
                 throw new ToolNotFoundException(
                         "No such tool: " + methodName + ". Please register the tool before invoking it.");
