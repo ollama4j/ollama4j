@@ -10,29 +10,29 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class TestEmbedRequestSerialization extends AbstractSerializationTest<OllamaEmbedRequestModel> {
 
-        private OllamaEmbedRequestBuilder builder;
+    private OllamaEmbedRequestBuilder builder;
 
-        @BeforeEach
-        public void init() {
-            builder = OllamaEmbedRequestBuilder.getInstance("DummyModel","DummyPrompt");
-        }
+    @BeforeEach
+    public void init() {
+        builder = OllamaEmbedRequestBuilder.getInstance("DummyModel", "DummyPrompt");
+    }
 
-            @Test
+    @Test
     public void testRequestOnlyMandatoryFields() {
         OllamaEmbedRequestModel req = builder.build();
         String jsonRequest = serialize(req);
-        assertEqualsAfterUnmarshalling(deserialize(jsonRequest,OllamaEmbedRequestModel.class), req);
+        assertEqualsAfterUnmarshalling(deserialize(jsonRequest, OllamaEmbedRequestModel.class), req);
     }
 
-        @Test
-        public void testRequestWithOptions() {
-            OptionsBuilder b = new OptionsBuilder();
-            OllamaEmbedRequestModel req = builder
-                    .withOptions(b.setMirostat(1).build()).build();
+    @Test
+    public void testRequestWithOptions() {
+        OptionsBuilder b = new OptionsBuilder();
+        OllamaEmbedRequestModel req = builder
+                .withOptions(b.setMirostat(1).build()).build();
 
-            String jsonRequest = serialize(req);
-            OllamaEmbedRequestModel deserializeRequest = deserialize(jsonRequest,OllamaEmbedRequestModel.class);
-            assertEqualsAfterUnmarshalling(deserializeRequest, req);
-            assertEquals(1, deserializeRequest.getOptions().get("mirostat"));
-        }
+        String jsonRequest = serialize(req);
+        OllamaEmbedRequestModel deserializeRequest = deserialize(jsonRequest, OllamaEmbedRequestModel.class);
+        assertEqualsAfterUnmarshalling(deserializeRequest, req);
+        assertEquals(1, deserializeRequest.getOptions().get("mirostat"));
+    }
 }

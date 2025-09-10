@@ -61,7 +61,6 @@ public class WithAuth {
 
         api = new OllamaAPI("http://" + nginx.getHost() + ":" + nginx.getMappedPort(NGINX_PORT));
         api.setRequestTimeoutSeconds(120);
-        api.setVerbose(true);
         api.setNumberOfRetriesForModelPull(3);
 
         String ollamaUrl = "http://" + ollama.getHost() + ":" + ollama.getMappedPort(OLLAMA_INTERNAL_PORT);

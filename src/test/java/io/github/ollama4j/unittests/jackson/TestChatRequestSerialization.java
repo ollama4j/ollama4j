@@ -34,8 +34,8 @@ public class TestChatRequestSerialization extends AbstractSerializationTest<Olla
     @Test
     public void testRequestMultipleMessages() {
         OllamaChatRequest req = builder.withMessage(OllamaChatMessageRole.SYSTEM, "System prompt")
-        .withMessage(OllamaChatMessageRole.USER, "Some prompt")
-        .build();
+                .withMessage(OllamaChatMessageRole.USER, "Some prompt")
+                .build();
         String jsonRequest = serialize(req);
         assertEqualsAfterUnmarshalling(deserialize(jsonRequest, OllamaChatRequest.class), req);
     }
@@ -52,19 +52,19 @@ public class TestChatRequestSerialization extends AbstractSerializationTest<Olla
     public void testRequestWithOptions() {
         OptionsBuilder b = new OptionsBuilder();
         OllamaChatRequest req = builder.withMessage(OllamaChatMessageRole.USER, "Some prompt")
-            .withOptions(b.setMirostat(1).build())
-            .withOptions(b.setTemperature(1L).build())
-            .withOptions(b.setMirostatEta(1L).build())
-            .withOptions(b.setMirostatTau(1L).build())
-            .withOptions(b.setNumGpu(1).build())
-            .withOptions(b.setSeed(1).build())
-            .withOptions(b.setTopK(1).build())
-            .withOptions(b.setTopP(1).build())
-            .withOptions(b.setMinP(1).build())
-            .withOptions(b.setCustomOption("cust_float", 1.0f).build())
-            .withOptions(b.setCustomOption("cust_int", 1).build())
-            .withOptions(b.setCustomOption("cust_str", "custom").build())
-            .build();
+                .withOptions(b.setMirostat(1).build())
+                .withOptions(b.setTemperature(1L).build())
+                .withOptions(b.setMirostatEta(1L).build())
+                .withOptions(b.setMirostatTau(1L).build())
+                .withOptions(b.setNumGpu(1).build())
+                .withOptions(b.setSeed(1).build())
+                .withOptions(b.setTopK(1).build())
+                .withOptions(b.setTopP(1).build())
+                .withOptions(b.setMinP(1).build())
+                .withOptions(b.setCustomOption("cust_float", 1.0f).build())
+                .withOptions(b.setCustomOption("cust_int", 1).build())
+                .withOptions(b.setCustomOption("cust_str", "custom").build())
+                .build();
 
         String jsonRequest = serialize(req);
         OllamaChatRequest deserializeRequest = deserialize(jsonRequest, OllamaChatRequest.class);
@@ -87,9 +87,9 @@ public class TestChatRequestSerialization extends AbstractSerializationTest<Olla
     public void testRequestWithInvalidCustomOption() {
         OptionsBuilder b = new OptionsBuilder();
         assertThrowsExactly(IllegalArgumentException.class, () -> {
-                OllamaChatRequest req = builder.withMessage(OllamaChatMessageRole.USER, "Some prompt")
-                .withOptions(b.setCustomOption("cust_obj", new Object()).build())
-                .build();
+            OllamaChatRequest req = builder.withMessage(OllamaChatMessageRole.USER, "Some prompt")
+                    .withOptions(b.setCustomOption("cust_obj", new Object()).build())
+                    .build();
         });
     }
 
@@ -109,7 +109,7 @@ public class TestChatRequestSerialization extends AbstractSerializationTest<Olla
     @Test
     public void testWithTemplate() {
         OllamaChatRequest req = builder.withTemplate("System Template")
-            .build();
+                .build();
         String jsonRequest = serialize(req);
         assertEqualsAfterUnmarshalling(deserialize(jsonRequest, OllamaChatRequest.class), req);
     }
@@ -125,7 +125,7 @@ public class TestChatRequestSerialization extends AbstractSerializationTest<Olla
     public void testWithKeepAlive() {
         String expectedKeepAlive = "5m";
         OllamaChatRequest req = builder.withKeepAlive(expectedKeepAlive)
-            .build();
+                .build();
         String jsonRequest = serialize(req);
         assertEquals(deserialize(jsonRequest, OllamaChatRequest.class).getKeepAlive(), expectedKeepAlive);
     }

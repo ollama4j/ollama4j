@@ -1,7 +1,6 @@
 package io.github.ollama4j;
 
 import com.fasterxml.jackson.core.JsonParseException;
-import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.github.ollama4j.exceptions.OllamaBaseException;
 import io.github.ollama4j.exceptions.RoleNotFoundException;
@@ -55,7 +54,7 @@ import java.util.stream.Collectors;
 @SuppressWarnings({"DuplicatedCode", "resource"})
 public class OllamaAPI {
 
-    private static final Logger logger = LoggerFactory.getLogger(OllamaAPI.class);
+    private static final Logger LOG = LoggerFactory.getLogger(OllamaAPI.class);
 
     private final String host;
     private Auth auth;
@@ -70,16 +69,6 @@ public class OllamaAPI {
      */
     @Setter
     private long requestTimeoutSeconds = 10;
-
-    /**
-     * Enables or disables verbose logging of responses.
-     * <p>
-     * If set to {@code true}, the API will log detailed information about requests
-     * and responses.
-     * Default is {@code true}.
-     */
-    @Setter
-    private boolean verbose = true;
 
     /**
      * The maximum number of retries for tool calls during chat interactions.
@@ -123,9 +112,7 @@ public class OllamaAPI {
         } else {
             this.host = host;
         }
-        if (this.verbose) {
-            logger.info("Ollama API initialized with host: {}", this.host);
-        }
+        LOG.info("Ollama API initialized with host: {}", this.host);
     }
 
     /**
@@ -463,7 +450,7 @@ public class OllamaAPI {
         int attempt = currentRetry + 1;
         if (attempt < maxRetries) {
             long backoffMillis = baseDelayMillis * (1L << currentRetry);
-            logger.error("Failed to pull model {}, retrying in {}s... (attempt {}/{})",
+            LOG.error("Failed to pull model {}, retrying in {}s... (attempt {}/{})",
                     modelName, backoffMillis / 1000, attempt, maxRetries);
             try {
                 Thread.sleep(backoffMillis);
@@ -472,7 +459,7 @@ public class OllamaAPI {
                 throw ie;
             }
         } else {
-            logger.error("Failed to pull model {} after {} attempts, no more retries.", modelName, maxRetries);
+            LOG.error("Failed to pull model {} after {} attempts, no more retries.", modelName, maxRetries);
         }
     }
 
@@ -502,21 +489,19 @@ public class OllamaAPI {
                     }
 
                     if (modelPullResponse.getStatus() != null) {
-                        if (verbose) {
-                            logger.info("{}: {}", modelName, modelPullResponse.getStatus());
-                        }
+                        LOG.info("{}: {}", modelName, modelPullResponse.getStatus());
                         // Check if status is "success" and set success flag to true.
                         if ("success".equalsIgnoreCase(modelPullResponse.getStatus())) {
                             success = true;
                         }
                     }
                 } else {
-                    logger.error("Received null response for model pull.");
+                    LOG.error("Received null response for model pull.");
                 }
             }
         }
         if (!success) {
-            logger.error("Model pull failed or returned invalid status.");
+            LOG.error("Model pull failed or returned invalid status.");
             throw new OllamaBaseException("Model pull failed or returned invalid status.");
         }
         if (statusCode != 200) {
@@ -625,9 +610,7 @@ public class OllamaAPI {
         if (responseString.contains("error")) {
             throw new OllamaBaseException(responseString);
         }
-        if (verbose) {
-            logger.info(responseString);
-        }
+        LOG.debug(responseString);
     }
 
     /**
@@ -663,9 +646,7 @@ public class OllamaAPI {
         if (responseString.contains("error")) {
             throw new OllamaBaseException(responseString);
         }
-        if (verbose) {
-            logger.info(responseString);
-        }
+        LOG.debug(responseString);
     }
 
     /**
@@ -697,9 +678,7 @@ public class OllamaAPI {
         if (responseString.contains("error")) {
             throw new OllamaBaseException(responseString);
         }
-        if (verbose) {
-            logger.info(responseString);
-        }
+        LOG.debug(responseString);
     }
 
     /**
@@ -967,15 +946,14 @@ public class OllamaAPI {
                 .header(Constants.HttpConstants.HEADER_KEY_CONTENT_TYPE, Constants.HttpConstants.APPLICATION_JSON)
                 .POST(HttpRequest.BodyPublishers.ofString(jsonData)).build();
 
-        if (verbose) {
-            try {
-                String prettyJson = Utils.getObjectMapper().writerWithDefaultPrettyPrinter()
-                        .writeValueAsString(Utils.getObjectMapper().readValue(jsonData, Object.class));
-                logger.info("Asking model:\n{}", prettyJson);
-            } catch (Exception e) {
-                logger.info("Asking model: {}", jsonData);
-            }
+        try {
+            String prettyJson = Utils.getObjectMapper().writerWithDefaultPrettyPrinter()
+                    .writeValueAsString(Utils.getObjectMapper().readValue(jsonData, Object.class));
+            LOG.debug("Asking model:\n{}", prettyJson);
+        } catch (Exception e) {
+            LOG.debug("Asking model: {}", jsonData);
         }
+
         HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
         int statusCode = response.statusCode();
         String responseBody = response.body();
@@ -996,15 +974,11 @@ public class OllamaAPI {
             ollamaResult.setPromptEvalDuration(structuredResult.getPromptEvalDuration());
             ollamaResult.setEvalCount(structuredResult.getEvalCount());
             ollamaResult.setEvalDuration(structuredResult.getEvalDuration());
-            if (verbose) {
-                logger.info("Model response:\n{}", ollamaResult);
-            }
+            LOG.debug("Model response:\n{}", ollamaResult);
             return ollamaResult;
         } else {
-            if (verbose) {
-                logger.info("Model response:\n{}",
-                        Utils.getObjectMapper().writerWithDefaultPrettyPrinter().writeValueAsString(responseBody));
-            }
+            LOG.debug("Model response:\n{}",
+                    Utils.getObjectMapper().writerWithDefaultPrettyPrinter().writeValueAsString(responseBody));
             throw new OllamaBaseException(statusCode + " - " + responseBody);
         }
     }
@@ -1055,9 +1029,9 @@ public class OllamaAPI {
         if (!toolsResponse.isEmpty()) {
             try {
                 // Try to parse the string to see if it's a valid JSON
-                JsonNode jsonNode = objectMapper.readTree(toolsResponse);
+                objectMapper.readTree(toolsResponse);
             } catch (JsonParseException e) {
-                logger.warn("Response from model does not contain any tool calls. Returning the response as is.");
+                LOG.warn("Response from model does not contain any tool calls. Returning the response as is.");
                 return toolResult;
             }
             toolFunctionCallSpecs = objectMapper.readValue(toolsResponse,
@@ -1361,8 +1335,7 @@ public class OllamaAPI {
      */
     public OllamaChatResult chatStreaming(OllamaChatRequest request, OllamaTokenHandler tokenHandler)
             throws OllamaBaseException, IOException, InterruptedException, ToolInvocationException {
-        OllamaChatEndpointCaller requestCaller = new OllamaChatEndpointCaller(host, auth, requestTimeoutSeconds,
-                verbose);
+        OllamaChatEndpointCaller requestCaller = new OllamaChatEndpointCaller(host, auth, requestTimeoutSeconds);
         OllamaChatResult result;
 
         // add all registered tools to Request
@@ -1417,9 +1390,7 @@ public class OllamaAPI {
      */
     public void registerTool(Tools.ToolSpecification toolSpecification) {
         toolRegistry.addTool(toolSpecification.getFunctionName(), toolSpecification);
-        if (this.verbose) {
-            logger.debug("Registered tool: {}", toolSpecification.getFunctionName());
-        }
+        LOG.debug("Registered tool: {}", toolSpecification.getFunctionName());
     }
 
     /**
@@ -1444,9 +1415,7 @@ public class OllamaAPI {
      */
     public void deregisterTools() {
         toolRegistry.clear();
-        if (this.verbose) {
-            logger.debug("All tools have been deregistered.");
-        }
+        LOG.debug("All tools have been deregistered.");
     }
 
     /**
@@ -1621,8 +1590,7 @@ public class OllamaAPI {
     private OllamaResult generateSyncForOllamaRequestModel(OllamaGenerateRequest ollamaRequestModel,
                                                            OllamaStreamHandler thinkingStreamHandler, OllamaStreamHandler responseStreamHandler)
             throws OllamaBaseException, IOException, InterruptedException {
-        OllamaGenerateEndpointCaller requestCaller = new OllamaGenerateEndpointCaller(host, auth, requestTimeoutSeconds,
-                verbose);
+        OllamaGenerateEndpointCaller requestCaller = new OllamaGenerateEndpointCaller(host, auth, requestTimeoutSeconds);
         OllamaResult result;
         if (responseStreamHandler != null) {
             ollamaRequestModel.setStream(true);
@@ -1663,9 +1631,7 @@ public class OllamaAPI {
             String methodName = toolFunctionCallSpec.getName();
             Map<String, Object> arguments = toolFunctionCallSpec.getArguments();
             ToolFunction function = toolRegistry.getToolFunction(methodName);
-            if (verbose) {
-                logger.debug("Invoking function {} with arguments {}", methodName, arguments);
-            }
+            LOG.debug("Invoking function {} with arguments {}", methodName, arguments);
             if (function == null) {
                 throw new ToolNotFoundException(
                         "No such tool: " + methodName + ". Please register the tool before invoking it.");
