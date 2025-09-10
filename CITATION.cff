@@ -1,0 +1,9 @@
+cff-version: 1.2.0
+message: "If you use this software, please cite it as below."
+authors:
+  - family-names: "Koujalgi"
+    given-names: "Amith"
+title: "Ollama4j: A Java Library (Wrapper/Binding) for Ollama Server"
+version: "1.1.0"
+date-released: 2023-12-19
+url: "https://github.com/ollama4j/ollama4j"
