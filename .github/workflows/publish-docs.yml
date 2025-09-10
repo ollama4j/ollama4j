@@ -57,7 +57,7 @@ jobs:
         run: mvn --file pom.xml -U clean package && cp -r ./target/apidocs/. ./docs/build/apidocs
 
       - name: Doxygen Action
-        uses: mattnotmitt/doxygen-action@v1.1.0
+        uses: mattnotmitt/doxygen-action@v1.12.0
         with:
           doxyfile-path: "./Doxyfile"
           working-directory: "."
