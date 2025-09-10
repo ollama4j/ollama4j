@@ -1,0 +1,59 @@
+name: Bug report
+description: File a bug report
+labels: [bug]
+assignees: []
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for taking the time to fill out this bug report!
+  - type: input
+    id: version
+    attributes:
+      label: ollama4j version
+      description: e.g., 1.1.0
+      placeholder: 1.1.0
+    validations:
+      required: true
+  - type: input
+    id: java
+    attributes:
+      label: Java version
+      description: Output of `java -version`
+      placeholder: 11/17/21
+    validations:
+      required: true
+  - type: input
+    id: environment
+    attributes:
+      label: Environment
+      description: OS, build tool, Docker/Testcontainers, etc.
+      placeholder: macOS 13, Maven 3.9.x, Docker 24.x
+  - type: textarea
+    id: what-happened
+    attributes:
+      label: What happened?
+      description: Also tell us what you expected to happen
+    validations:
+      required: true
+  - type: textarea
+    id: steps
+    attributes:
+      label: Steps to reproduce
+      description: Be as specific as possible
+      placeholder: |
+        1. Setup ...
+        2. Run ...
+        3. Observe ...
+    validations:
+      required: true
+  - type: textarea
+    id: logs
+    attributes:
+      label: Relevant logs/stack traces
+      render: shell
+  - type: textarea
+    id: additional
+    attributes:
+      label: Additional context
+
