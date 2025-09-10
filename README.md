@@ -68,7 +68,7 @@ _Find more details on the **[website](https://ollama4j.github.io/ollama4j/)**._
 <p align="center">
   <img src="https://img.shields.io/badge/Java-11%2B-green.svg?style=for-the-badge&labelColor=gray&label=Java&color=orange" alt="Java"/>
   <a href="https://ollama.com/" target="_blank">
-    <img src="https://img.shields.io/badge/Ollama-0.3.0-blue.svg?style=for-the-badge&labelColor=gray&label=Ollama&color=blue" alt="Ollama"/>
+    <img src="https://img.shields.io/badge/Ollama-0.11.10+-blue.svg?style=for-the-badge&labelColor=gray&label=Ollama&color=blue" alt="Ollama"/>
   </a>
 </p>
 
