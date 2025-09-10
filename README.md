@@ -1,25 +1,29 @@
-### Ollama4j
-
-<p align="center">
+<div align="center">
   <img src='https://raw.githubusercontent.com/ollama4j/ollama4j/65a9d526150da8fcd98e2af6a164f055572bf722/ollama4j.jpeg' width='100' alt="ollama4j-icon">
-</p>
+  <div style="font-weight: bold; font-size: 25px; ">Ollama4j</div>
+</div>
 
 <div align="center">
 A Java library (wrapper/binding) for Ollama server.
 
-Find more details on the [website](https://ollama4j.github.io/ollama4j/).
+_Find more details on the **[website](https://ollama4j.github.io/ollama4j/)**._
 
 ![GitHub stars](https://img.shields.io/github/stars/ollama4j/ollama4j)
 ![GitHub forks](https://img.shields.io/github/forks/ollama4j/ollama4j)
-![GitHub watchers](https://img.shields.io/github/watchers/ollama4j/ollama4j)
 ![Contributors](https://img.shields.io/github/contributors/ollama4j/ollama4j?style=social)
+
+![GitHub last commit](https://img.shields.io/github/last-commit/ollama4j/ollama4j?color=green)
 ![GitHub License](https://img.shields.io/github/license/ollama4j/ollama4j)
+
+[![Run Unit and Integration Tests](https://github.com/ollama4j/ollama4j/actions/workflows/run-tests.yml/badge.svg)](https://github.com/ollama4j/ollama4j/actions/workflows/run-tests.yml)
+![Sonar Quality Gate](https://img.shields.io/sonar/quality_gate/ollama4j_ollama4j?server=https%3A%2F%2Fsonarcloud.io&label=Sonar%20Quality%20Gate)
+[![codecov](https://codecov.io/gh/ollama4j/ollama4j/graph/badge.svg?token=U0TE7BGP8L)](https://codecov.io/gh/ollama4j/ollama4j)
+</div>
 
 
 [//]: # (![GitHub repo size]&#40;https://img.shields.io/github/repo-size/ollama4j/ollama4j&#41;)
 
 [//]: # (![GitHub top language]&#40;https://img.shields.io/github/languages/top/ollama4j/ollama4j&#41;)
-
 
 [//]: # (![JitPack Downloads This Month Badge]&#40;https://img.shields.io/badge/dynamic/json?url=https%3A%2F%2Fjitpack.io%2Fapi%2Fdownloads%2Fio.github.ollama4j%2Follama4j&query=%24.month&label=JitPack%20Downloads%20-%20This%20Month&#41;)
 
@@ -28,16 +32,6 @@ Find more details on the [website](https://ollama4j.github.io/ollama4j/).
 [//]: # (![JitPack Downloads Per Month Badge]&#40;https://jitpack.io/v/ollama4j/ollama4j/month.svg&#41;)
 
 [//]: # (![GitHub Downloads &#40;all assets, all releases&#41;]&#40;https://img.shields.io/github/downloads/ollama4j/ollama4j/total?label=GitHub%20Package%20Downloads&#41;)
-
-![GitHub last commit](https://img.shields.io/github/last-commit/ollama4j/ollama4j?color=green)
-[![codecov](https://codecov.io/gh/ollama4j/ollama4j/graph/badge.svg?token=U0TE7BGP8L)](https://codecov.io/gh/ollama4j/ollama4j)
-
-[![Run Unit and Integration Tests](https://github.com/ollama4j/ollama4j/actions/workflows/run-tests.yml/badge.svg)](https://github.com/ollama4j/ollama4j/actions/workflows/run-tests.yml)
-![Build Status](https://github.com/ollama4j/ollama4j/actions/workflows/maven-publish.yml/badge.svg)
-![Sonar Quality Gate](https://img.shields.io/sonar/quality_gate/ollama4j_ollama4j?server=https%3A%2F%2Fsonarcloud.io&label=Sonar%20Quality%20Gate)
-
-
-</div>
 
 [//]: # (![Hits]&#40;https://hits.seeyoufarm.com/api/count/incr/badge.svg?url=https%3A%2F%2Fgithub.com%2Follama4j%2Follama4j&count_bg=%2379C83D&title_bg=%23555555&icon=&icon_color=%23E7E7E7&title=hits&edge_flat=false&#41;)
 
@@ -55,7 +49,7 @@ Find more details on the [website](https://ollama4j.github.io/ollama4j/).
 - [Contributions](#get-involved)
 - [References](#references)
 
-#### How does it work?
+## How does it work?
 
 ```mermaid
   flowchart LR
@@ -69,14 +63,14 @@ Find more details on the [website](https://ollama4j.github.io/ollama4j/).
     end
 ```
 
-#### Requirements
+## Requirements
 
-![Java](https://img.shields.io/badge/Java-11_+-green.svg?style=for-the-badge&labelColor=gray&label=Java&color=orange)
-
-
-<a href="https://ollama.com/" target="_blank">
-  <img src="https://img.shields.io/badge/v0.3.0-green.svg?style=for-the-badge&labelColor=gray&label=Ollama&color=blue" alt=""/>
-</a>
+<p align="center">
+  <img src="https://img.shields.io/badge/Java-11%2B-green.svg?style=for-the-badge&labelColor=gray&label=Java&color=orange" alt="Java"/>
+  <a href="https://ollama.com/" target="_blank">
+    <img src="https://img.shields.io/badge/Ollama-0.3.0-blue.svg?style=for-the-badge&labelColor=gray&label=Ollama&color=blue" alt="Ollama"/>
+  </a>
+</p>
 
 ## Installation
 
@@ -192,7 +186,12 @@ dependencies {
 > [!TIP]
 > Find the full API specifications on the [website](https://ollama4j.github.io/ollama4j/).
 
-### Development
+## Examples
+
+For practical examples and usage patterns of the Ollama4j library, check out
+the [ollama4j-examples](https://github.com/ollama4j/ollama4j-examples) repository.
+
+## Development
 
 Make sure you have `pre-commit` installed.
 
@@ -244,14 +243,24 @@ make integration-tests
 
 Newer artifacts are published via GitHub Actions CI workflow when a new release is created from `main` branch.
 
-## Examples
+## Get Involved
 
-The `ollama4j-examples` repository contains examples for using the Ollama4j library. You can explore
-it [here](https://github.com/ollama4j/ollama4j-examples).
+<div align="center">
 
-## ⭐ Give us a Star!
+<a href="">![Open Issues](https://img.shields.io/github/issues-raw/ollama4j/ollama4j)</a>
+<a href="">![Closed Issues](https://img.shields.io/github/issues-closed-raw/ollama4j/ollama4j)</a>
+<a href="">![Open PRs](https://img.shields.io/github/issues-pr-raw/ollama4j/ollama4j)</a>
+<a href="">![Closed PRs](https://img.shields.io/github/issues-pr-closed-raw/ollama4j/ollama4j)</a>
+<a href="">![Discussions](https://img.shields.io/github/discussions/ollama4j/ollama4j)</a>
 
-If you like or are using this project to build your own, please give us a star. It's a free way to show your support.
+</div>
+
+Contributions are most welcome! Whether it's reporting a bug, proposing an enhancement, or helping
+with code - any sort of contribution is much appreciated.
+
+<div style="font-size: 15px; font-weight: bold; padding-top: 10px; padding-bottom: 10px; border: 1px solid" align="center">
+If you like or are use this project, please give us a ⭐. It's a free way to show your support.
+</div>
 
 ## Who's using Ollama4j?
 
@@ -270,22 +279,16 @@ If you like or are using this project to build your own, please give us a star. 
 | 11 | Research Article  | Article: `Large language model based mutations in genetic improvement` - published on National Library of Medicine (National Center for Biotechnology Information) | [Website](https://pmc.ncbi.nlm.nih.gov/articles/PMC11750896/)                                                                                                                                 |
 | 12 | renaime           | A LLaVa powered tool that automatically renames image files having messy file names.                                                                               | [Website](https://devpost.com/software/renaime)                                                                                                                                               |
 
-## Traction
+## Growth
 
-[![Star History Chart](https://api.star-history.com/svg?repos=ollama4j/ollama4j&type=Date)](https://star-history.com/#ollama4j/ollama4j&Date)
-
-## Get Involved
-
-<div align="center">
-
-<a href="">![Open Issues](https://img.shields.io/github/issues-raw/ollama4j/ollama4j)</a>
-<a href="">![Closed Issues](https://img.shields.io/github/issues-closed-raw/ollama4j/ollama4j)</a>
-<a href="">![Open PRs](https://img.shields.io/github/issues-pr-raw/ollama4j/ollama4j)</a>
-<a href="">![Closed PRs](https://img.shields.io/github/issues-pr-closed-raw/ollama4j/ollama4j)</a>
-<a href="">![Discussions](https://img.shields.io/github/discussions/ollama4j/ollama4j)</a>
-
-</div>
-
+<p align="center">
+  <a href="https://star-history.com/#ollama4j/ollama4j&Date" target="_blank" rel="noopener noreferrer">
+    <img
+      src="https://api.star-history.com/svg?repos=ollama4j/ollama4j&type=Date"
+      alt="Star History Chart"
+    />
+  </a>
+</p>
 
 [//]: # (![GitHub Issues or Pull Requests]&#40;https://img.shields.io/github/issues-raw/ollama4j/ollama4j&#41;)
 
@@ -296,27 +299,6 @@ If you like or are using this project to build your own, please give us a star. 
 [//]: # (![GitHub Issues or Pull Requests]&#40;https://img.shields.io/github/issues-pr-closed-raw/ollama4j/ollama4j&#41;)
 
 [//]: # (![GitHub Discussions]&#40;https://img.shields.io/github/discussions/ollama4j/ollama4j&#41;)
-
-
-Contributions are most welcome! Whether it's reporting a bug, proposing an enhancement, or helping
-with code - any sort
-of contribution is much appreciated.
-
-## 🏷️ License and Citation
-
-The code is available under [MIT License](./LICENSE).
-
-If you find this project helpful in your research, please cite this work at
-
-```
-@misc{ollama4j2024,
-    author       = {Amith Koujalgi},
-    title        = {Ollama4j: A Java Library (Wrapper/Binding) for Ollama Server},
-    year         = {2024},
-    month        = {January},
-    url          = {https://github.com/ollama4j/ollama4j}
-}
-```
 
 ### References
 
@@ -331,7 +313,7 @@ project.
 
 <p align="center">
   <a href="https://github.com/ollama4j/ollama4j/graphs/contributors">
-    <img src="https://contrib.rocks/image?repo=ollama4j/ollama4j"  alt=""/>
+    <img src="https://contrib.rocks/image?repo=ollama4j/ollama4j" alt=""/>
   </a>
 </p>
 
