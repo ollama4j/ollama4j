@@ -9,10 +9,10 @@ import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-public class TestToolRegistry {
+class TestToolRegistry {
 
     @Test
-    public void testAddAndGetToolFunction() {
+    void testAddAndGetToolFunction() {
         ToolRegistry registry = new ToolRegistry();
         ToolFunction fn = args -> "ok:" + args.get("x");
 
@@ -29,13 +29,13 @@ public class TestToolRegistry {
     }
 
     @Test
-    public void testGetUnknownReturnsNull() {
+    void testGetUnknownReturnsNull() {
         ToolRegistry registry = new ToolRegistry();
         assertNull(registry.getToolFunction("nope"));
     }
 
     @Test
-    public void testClearRemovesAll() {
+    void testClearRemovesAll() {
         ToolRegistry registry = new ToolRegistry();
         registry.addTool("a", Tools.ToolSpecification.builder().toolFunction(args -> 1).build());
         registry.addTool("b", Tools.ToolSpecification.builder().toolFunction(args -> 2).build());

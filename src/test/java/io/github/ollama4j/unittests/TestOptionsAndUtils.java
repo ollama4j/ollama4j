@@ -11,10 +11,10 @@ import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-public class TestOptionsAndUtils {
+class TestOptionsAndUtils {
 
     @Test
-    public void testOptionsBuilderSetsValues() {
+    void testOptionsBuilderSetsValues() {
         Options options = new OptionsBuilder()
                 .setMirostat(1)
                 .setMirostatEta(0.2f)
@@ -58,13 +58,13 @@ public class TestOptionsAndUtils {
     }
 
     @Test
-    public void testOptionsBuilderRejectsUnsupportedCustomType() {
+    void testOptionsBuilderRejectsUnsupportedCustomType() {
         OptionsBuilder builder = new OptionsBuilder();
         assertThrows(IllegalArgumentException.class, () -> builder.setCustomOption("bad", new Object()));
     }
 
     @Test
-    public void testPromptBuilderBuildsExpectedString() {
+    void testPromptBuilderBuildsExpectedString() {
         String prompt = new PromptBuilder()
                 .add("Hello")
                 .addLine(", world!")
@@ -77,14 +77,14 @@ public class TestOptionsAndUtils {
     }
 
     @Test
-    public void testUtilsGetObjectMapperSingletonAndModule() {
+    void testUtilsGetObjectMapperSingletonAndModule() {
         assertSame(Utils.getObjectMapper(), Utils.getObjectMapper());
         // Basic serialization sanity check with JavaTimeModule registered
         assertDoesNotThrow(() -> Utils.getObjectMapper().writeValueAsString(java.time.OffsetDateTime.now()));
     }
 
     @Test
-    public void testGetFileFromClasspath() {
+    void testGetFileFromClasspath() {
         File f = Utils.getFileFromClasspath("test-config.properties");
         assertTrue(f.exists());
         assertTrue(f.getName().contains("test-config.properties"));

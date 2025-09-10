@@ -9,10 +9,10 @@ import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-public class TestToolsPromptBuilder {
+class TestToolsPromptBuilder {
 
     @Test
-    public void testPromptBuilderIncludesToolsAndPrompt() throws JsonProcessingException {
+    void testPromptBuilderIncludesToolsAndPrompt() throws JsonProcessingException {
         Tools.PromptFuncDefinition.Property cityProp = Tools.PromptFuncDefinition.Property.builder()
                 .type("string")
                 .description("city name")

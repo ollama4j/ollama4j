@@ -6,10 +6,10 @@ import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-public class TestAuth {
+class TestAuth {
 
     @Test
-    public void testBasicAuthHeaderEncoding() {
+    void testBasicAuthHeaderEncoding() {
         BasicAuth auth = new BasicAuth("alice", "s3cr3t");
         String header = auth.getAuthHeaderValue();
         assertTrue(header.startsWith("Basic "));
@@ -18,7 +18,7 @@ public class TestAuth {
     }
 
     @Test
-    public void testBearerAuthHeaderFormat() {
+    void testBearerAuthHeaderFormat() {
         BearerAuth auth = new BearerAuth("abc.def.ghi");
         String header = auth.getAuthHeaderValue();
         assertEquals("Bearer abc.def.ghi", header);

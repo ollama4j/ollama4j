@@ -30,7 +30,7 @@ public abstract class AbstractSerializationTest<T> {
     }
 
     protected void assertEqualsAfterUnmarshalling(T unmarshalledObject,
-        T req) {
+                                                  T req) {
         assertEquals(req, unmarshalledObject);
     }
 }
