@@ -31,8 +31,8 @@ public class OllamaChatEndpointCaller extends OllamaEndpointCaller {
 
     private OllamaTokenHandler tokenHandler;
 
-    public OllamaChatEndpointCaller(String host, Auth auth, long requestTimeoutSeconds, boolean verbose) {
-        super(host, auth, requestTimeoutSeconds, verbose);
+    public OllamaChatEndpointCaller(String host, Auth auth, long requestTimeoutSeconds) {
+        super(host, auth, requestTimeoutSeconds);
     }
 
     @Override
@@ -91,7 +91,7 @@ public class OllamaChatEndpointCaller extends OllamaEndpointCaller {
                         .POST(
                                 body.getBodyPublisher());
         HttpRequest request = requestBuilder.build();
-        if (isVerbose()) LOG.info("Asking model: {}", body);
+        LOG.debug("Asking model: {}", body);
         HttpResponse<InputStream> response =
                 httpClient.send(request, HttpResponse.BodyHandlers.ofInputStream());
 
@@ -150,7 +150,7 @@ public class OllamaChatEndpointCaller extends OllamaEndpointCaller {
             }
             OllamaChatResult ollamaResult =
                     new OllamaChatResult(ollamaChatResponseModel, body.getMessages());
-            if (isVerbose()) LOG.info("Model response: " + ollamaResult);
+            LOG.debug("Model response: {}", ollamaResult);
             return ollamaResult;
         }
     }

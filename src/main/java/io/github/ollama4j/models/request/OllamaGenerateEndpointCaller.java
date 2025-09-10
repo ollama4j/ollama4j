@@ -29,8 +29,8 @@ public class OllamaGenerateEndpointCaller extends OllamaEndpointCaller {
 
     private OllamaGenerateStreamObserver responseStreamObserver;
 
-    public OllamaGenerateEndpointCaller(String host, Auth basicAuth, long requestTimeoutSeconds, boolean verbose) {
-        super(host, basicAuth, requestTimeoutSeconds, verbose);
+    public OllamaGenerateEndpointCaller(String host, Auth basicAuth, long requestTimeoutSeconds) {
+        super(host, basicAuth, requestTimeoutSeconds);
     }
 
     @Override
@@ -80,7 +80,7 @@ public class OllamaGenerateEndpointCaller extends OllamaEndpointCaller {
         URI uri = URI.create(getHost() + getEndpointSuffix());
         HttpRequest.Builder requestBuilder = getRequestBuilderDefault(uri).POST(body.getBodyPublisher());
         HttpRequest request = requestBuilder.build();
-        if (isVerbose()) LOG.info("Asking model: {}", body);
+        LOG.debug("Asking model: {}", body);
         HttpResponse<InputStream> response = httpClient.send(request, HttpResponse.BodyHandlers.ofInputStream());
 
         int statusCode = response.statusCode();
@@ -132,7 +132,7 @@ public class OllamaGenerateEndpointCaller extends OllamaEndpointCaller {
             ollamaResult.setEvalCount(ollamaGenerateResponseModel.getEvalCount());
             ollamaResult.setEvalDuration(ollamaGenerateResponseModel.getEvalDuration());
 
-            if (isVerbose()) LOG.info("Model response: {}", ollamaResult);
+            LOG.debug("Model response: {}", ollamaResult);
             return ollamaResult;
         }
     }

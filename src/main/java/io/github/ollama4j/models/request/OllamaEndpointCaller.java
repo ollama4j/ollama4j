@@ -1,10 +1,7 @@
 package io.github.ollama4j.models.request;
 
-import io.github.ollama4j.OllamaAPI;
 import io.github.ollama4j.utils.Constants;
 import lombok.Getter;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.net.URI;
 import java.net.http.HttpRequest;
@@ -16,18 +13,14 @@ import java.time.Duration;
 @Getter
 public abstract class OllamaEndpointCaller {
 
-    private static final Logger LOG = LoggerFactory.getLogger(OllamaAPI.class);
-
     private final String host;
     private final Auth auth;
     private final long requestTimeoutSeconds;
-    private final boolean verbose;
 
-    public OllamaEndpointCaller(String host, Auth auth, long requestTimeoutSeconds, boolean verbose) {
+    public OllamaEndpointCaller(String host, Auth auth, long requestTimeoutSeconds) {
         this.host = host;
         this.auth = auth;
         this.requestTimeoutSeconds = requestTimeoutSeconds;
-        this.verbose = verbose;
     }
 
     protected abstract String getEndpointSuffix();

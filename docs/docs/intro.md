@@ -139,8 +139,6 @@ public class OllamaAPITest {
 
         OllamaAPI ollamaAPI = new OllamaAPI(host);
 
-        ollamaAPI.setVerbose(true);
-
         boolean isOllamaServerReachable = ollamaAPI.ping();
 
         System.out.println("Is Ollama server running: " + isOllamaServerReachable);

@@ -373,7 +373,6 @@ public class CouchbaseToolCallingExample {
         String modelName = Utilities.getFromConfig("tools_model_mistral");
 
         OllamaAPI ollamaAPI = new OllamaAPI(host);
-        ollamaAPI.setVerbose(false);
         ollamaAPI.setRequestTimeoutSeconds(60);
 
         Tools.ToolSpecification callSignFinderToolSpec = getCallSignFinderToolSpec(cluster, bucketName);
