@@ -1,6 +1,7 @@
 <div align="center">
   <img src='https://raw.githubusercontent.com/ollama4j/ollama4j/65a9d526150da8fcd98e2af6a164f055572bf722/ollama4j.jpeg' width='100' alt="ollama4j-icon">
-  <div style="font-weight: bold; font-size: 25px; ">Ollama4j</div>
+  
+  ### Ollama4j
 </div>
 
 <div align="center">
@@ -68,7 +69,7 @@ _Find more details on the **[website](https://ollama4j.github.io/ollama4j/)**._
 <p align="center">
   <img src="https://img.shields.io/badge/Java-11%2B-green.svg?style=for-the-badge&labelColor=gray&label=Java&color=orange" alt="Java"/>
   <a href="https://ollama.com/" target="_blank">
-    <img src="https://img.shields.io/badge/Ollama-0.3.0-blue.svg?style=for-the-badge&labelColor=gray&label=Ollama&color=blue" alt="Ollama"/>
+    <img src="https://img.shields.io/badge/Ollama-0.11.10+-blue.svg?style=for-the-badge&labelColor=gray&label=Ollama&color=blue" alt="Ollama"/>
   </a>
 </p>
 
