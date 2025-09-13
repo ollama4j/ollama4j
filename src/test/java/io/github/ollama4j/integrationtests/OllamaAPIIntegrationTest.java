@@ -303,6 +303,8 @@ class OllamaAPIIntegrationTest {
     @Order(11)
     void testChatWithExplicitToolDefinition() throws OllamaBaseException, IOException, URISyntaxException,
             InterruptedException, ToolInvocationException {
+        // Ensure default behavior (library handles tools) for baseline assertions
+        api.setClientHandlesTools(false);
         String theToolModel = TOOLS_MODEL;
         api.pullModel(theToolModel);
         OllamaChatRequestBuilder builder = OllamaChatRequestBuilder.getInstance(theToolModel);
@@ -337,9 +339,60 @@ class OllamaAPIIntegrationTest {
     }
 
     @Test
+    @Order(13)
+    void testChatWithExplicitToolDefinitionWithClientHandlesTools() throws OllamaBaseException, IOException, URISyntaxException,
+            InterruptedException, ToolInvocationException {
+        String theToolModel = TOOLS_MODEL;
+        api.pullModel(theToolModel);
+        OllamaChatRequestBuilder builder = OllamaChatRequestBuilder.getInstance(theToolModel);
+
+        api.registerTool(employeeFinderTool());
+
+        try {
+            // enable client-handled tools so the library does not auto-execute tool calls
+            api.setClientHandlesTools(true);
+
+            OllamaChatRequest requestModel = builder
+                    .withMessage(OllamaChatMessageRole.USER, "Give me the ID and address of the employee Rahul Kumar.")
+                    .build();
+            requestModel.setOptions(new OptionsBuilder().setTemperature(0.9f).build().getOptionsMap());
+
+            OllamaChatResult chatResult = api.chat(requestModel);
+
+            assertNotNull(chatResult, "chatResult should not be null");
+            assertNotNull(chatResult.getResponseModel(), "Response model should not be null");
+            assertNotNull(chatResult.getResponseModel().getMessage(), "Response message should not be null");
+            assertEquals(
+                    OllamaChatMessageRole.ASSISTANT.getRoleName(),
+                    chatResult.getResponseModel().getMessage().getRole().getRoleName(),
+                    "Role of the response message should be ASSISTANT"
+            );
+
+            // When clientHandlesTools is true, the assistant message should contain tool calls
+            List<OllamaChatToolCalls> toolCalls = chatResult.getResponseModel().getMessage().getToolCalls();
+            assertNotNull(toolCalls, "Assistant message should contain tool calls when clientHandlesTools is true");
+            assertFalse(toolCalls.isEmpty(), "Tool calls should not be empty");
+            OllamaToolCallsFunction function = toolCalls.get(0).getFunction();
+            assertEquals("get-employee-details", function.getName(), "Tool function name should be 'get-employee-details'");
+            Object employeeName = function.getArguments().get("employee-name");
+            assertNotNull(employeeName, "Employee name argument should not be null");
+            assertEquals("Rahul Kumar", employeeName, "Employee name argument should be 'Rahul Kumar'");
+
+            // Since tools were not auto-executed, chat history should contain only the user and assistant messages
+            assertEquals(2, chatResult.getChatHistory().size(),
+                    "Chat history should contain only user and assistant (tool call) messages when clientHandlesTools is true");
+        } finally {
+            // reset to default to avoid affecting other tests
+            api.setClientHandlesTools(false);
+        }
+    }
+
+    @Test
     @Order(14)
     void testChatWithToolsAndStream() throws OllamaBaseException, IOException, URISyntaxException,
             InterruptedException, ToolInvocationException {
+        // Ensure default behavior (library handles tools) for streamed test
+        api.setClientHandlesTools(false);
         String theToolModel = TOOLS_MODEL;
         api.pullModel(theToolModel);
 
