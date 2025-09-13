@@ -94,6 +94,15 @@ public class OllamaAPI {
     private int numberOfRetriesForModelPull = 0;
 
     /**
+     * When set to true, tools will not be automatically executed by the library.
+     * Instead, tool calls will be returned to the client for manual handling.
+     * <p>
+     * Default is false for backward compatibility.
+     */
+    @Setter
+    private boolean clientHandlesTools = false;
+
+    /**
      * Instantiates the Ollama API with default Ollama host:
      * <a href="http://localhost:11434">http://localhost:11434</a>
      **/
@@ -1347,6 +1356,10 @@ public class OllamaAPI {
             result = requestCaller.call(request, tokenHandler);
         } else {
             result = requestCaller.callSync(request);
+        }
+
+        if (clientHandlesTools) {
+            return result;
         }
 
         // check if toolCallIsWanted
