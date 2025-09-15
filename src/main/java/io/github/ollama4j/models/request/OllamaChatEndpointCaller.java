@@ -61,8 +61,7 @@ public class OllamaChatEndpointCaller extends OllamaEndpointCaller {
             if (message != null) {
                 if (message.getThinking() != null) {
                     thinkingBuffer.append(message.getThinking());
-                }
-                else {
+                } else {
                     responseBuffer.append(message.getContent());
                 }
                 if (tokenHandler != null) {

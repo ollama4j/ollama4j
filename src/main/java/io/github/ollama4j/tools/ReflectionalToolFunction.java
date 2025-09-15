@@ -15,17 +15,17 @@ import java.util.Map;
 @Setter
 @Getter
 @AllArgsConstructor
-public class ReflectionalToolFunction implements ToolFunction{
+public class ReflectionalToolFunction implements ToolFunction {
 
     private Object functionHolder;
     private Method function;
-    private LinkedHashMap<String,String> propertyDefinition;
+    private LinkedHashMap<String, String> propertyDefinition;
 
     @Override
     public Object apply(Map<String, Object> arguments) {
         LinkedHashMap<String, Object> argumentsCopy = new LinkedHashMap<>(this.propertyDefinition);
-        for (Map.Entry<String,String> param : this.propertyDefinition.entrySet()){
-            argumentsCopy.replace(param.getKey(),typeCast(arguments.get(param.getKey()),param.getValue()));
+        for (Map.Entry<String, String> param : this.propertyDefinition.entrySet()) {
+            argumentsCopy.replace(param.getKey(), typeCast(arguments.get(param.getKey()), param.getValue()));
         }
         try {
             return function.invoke(functionHolder, argumentsCopy.values().toArray());
@@ -35,7 +35,7 @@ public class ReflectionalToolFunction implements ToolFunction{
     }
 
     private Object typeCast(Object inputValue, String className) {
-        if(className == null || inputValue == null) {
+        if (className == null || inputValue == null) {
             return null;
         }
         String inputValueString = inputValue.toString();

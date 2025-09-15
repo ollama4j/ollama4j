@@ -8,46 +8,46 @@ import io.github.ollama4j.utils.Options;
  */
 public class OllamaGenerateRequestBuilder {
 
-    private OllamaGenerateRequestBuilder(String model, String prompt){
+    private OllamaGenerateRequestBuilder(String model, String prompt) {
         request = new OllamaGenerateRequest(model, prompt);
     }
 
     private OllamaGenerateRequest request;
 
-    public static OllamaGenerateRequestBuilder getInstance(String model){
-        return new OllamaGenerateRequestBuilder(model,"");
+    public static OllamaGenerateRequestBuilder getInstance(String model) {
+        return new OllamaGenerateRequestBuilder(model, "");
     }
 
-    public OllamaGenerateRequest build(){
+    public OllamaGenerateRequest build() {
         return request;
     }
 
-    public OllamaGenerateRequestBuilder withPrompt(String prompt){
+    public OllamaGenerateRequestBuilder withPrompt(String prompt) {
         request.setPrompt(prompt);
         return this;
     }
 
-    public OllamaGenerateRequestBuilder withGetJsonResponse(){
+    public OllamaGenerateRequestBuilder withGetJsonResponse() {
         this.request.setFormat("json");
         return this;
     }
 
-    public OllamaGenerateRequestBuilder withOptions(Options options){
+    public OllamaGenerateRequestBuilder withOptions(Options options) {
         this.request.setOptions(options.getOptionsMap());
         return this;
     }
 
-    public OllamaGenerateRequestBuilder withTemplate(String template){
+    public OllamaGenerateRequestBuilder withTemplate(String template) {
         this.request.setTemplate(template);
         return this;
     }
 
-    public OllamaGenerateRequestBuilder withStreaming(){
+    public OllamaGenerateRequestBuilder withStreaming() {
         this.request.setStream(true);
         return this;
     }
 
-    public OllamaGenerateRequestBuilder withKeepAlive(String keepAlive){
+    public OllamaGenerateRequestBuilder withKeepAlive(String keepAlive) {
         this.request.setKeepAlive(keepAlive);
         return this;
     }

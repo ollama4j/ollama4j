@@ -11,8 +11,7 @@ import java.util.Map;
 @NoArgsConstructor
 @AllArgsConstructor
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class OllamaToolCallsFunction
-{
+public class OllamaToolCallsFunction {
     private String name;
-    private Map<String,Object> arguments;
+    private Map<String, Object> arguments;
 }

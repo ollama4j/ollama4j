@@ -9,22 +9,22 @@ import lombok.Data;
 @Data
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class ModelDetail {
-  private String license;
+    private String license;
 
-  @JsonProperty("modelfile")
-  private String modelFile;
+    @JsonProperty("modelfile")
+    private String modelFile;
 
-  private String parameters;
-  private String template;
-  private String system;
-  private ModelMeta details;
+    private String parameters;
+    private String template;
+    private String system;
+    private ModelMeta details;
 
     @Override
-  public String toString() {
-    try {
-      return Utils.getObjectMapper().writerWithDefaultPrettyPrinter().writeValueAsString(this);
-    } catch (JsonProcessingException e) {
-      throw new RuntimeException(e);
+    public String toString() {
+        try {
+            return Utils.getObjectMapper().writerWithDefaultPrettyPrinter().writeValueAsString(this);
+        } catch (JsonProcessingException e) {
+            throw new RuntimeException(e);
+        }
     }
-  }
 }

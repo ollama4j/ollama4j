@@ -7,5 +7,5 @@ import lombok.Data;
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class OllamaErrorResponse {
 
-  private String error;
+    private String error;
 }

@@ -4,9 +4,11 @@ import lombok.Data;
 
 import java.util.Map;
 
-/** Class for options for Ollama model. */
+/**
+ * Class for options for Ollama model.
+ */
 @Data
 public class Options {
 
-  private final Map<String, Object> optionsMap;
+    private final Map<String, Object> optionsMap;
 }

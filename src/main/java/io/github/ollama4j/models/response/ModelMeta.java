@@ -9,27 +9,27 @@ import lombok.Data;
 @Data
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class ModelMeta {
-  @JsonProperty("format")
-  private String format;
+    @JsonProperty("format")
+    private String format;
 
-  @JsonProperty("family")
-  private String family;
+    @JsonProperty("family")
+    private String family;
 
-  @JsonProperty("families")
-  private String[] families;
+    @JsonProperty("families")
+    private String[] families;
 
-  @JsonProperty("parameter_size")
-  private String parameterSize;
+    @JsonProperty("parameter_size")
+    private String parameterSize;
 
-  @JsonProperty("quantization_level")
-  private String quantizationLevel;
+    @JsonProperty("quantization_level")
+    private String quantizationLevel;
 
     @Override
-  public String toString() {
-    try {
-      return Utils.getObjectMapper().writerWithDefaultPrettyPrinter().writeValueAsString(this);
-    } catch (JsonProcessingException e) {
-      throw new RuntimeException(e);
+    public String toString() {
+        try {
+            return Utils.getObjectMapper().writerWithDefaultPrettyPrinter().writeValueAsString(this);
+        } catch (JsonProcessingException e) {
+            throw new RuntimeException(e);
+        }
     }
-  }
 }

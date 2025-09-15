@@ -10,16 +10,16 @@ import java.util.Base64;
 @AllArgsConstructor
 @EqualsAndHashCode(callSuper = false)
 public class BasicAuth extends Auth {
-  private String username;
-  private String password;
+    private String username;
+    private String password;
 
-  /**
-   * Get basic authentication header value.
-   *
-   * @return basic authentication header value (encoded credentials)
-   */
-  public String getAuthHeaderValue() {
-      final String credentialsToEncode = this.getUsername() + ":" + this.getPassword();
-      return "Basic " + Base64.getEncoder().encodeToString(credentialsToEncode.getBytes());
-  }
+    /**
+     * Get basic authentication header value.
+     *
+     * @return basic authentication header value (encoded credentials)
+     */
+    public String getAuthHeaderValue() {
+        final String credentialsToEncode = this.getUsername() + ":" + this.getPassword();
+        return "Basic " + Base64.getEncoder().encodeToString(credentialsToEncode.getBytes());
+    }
 }

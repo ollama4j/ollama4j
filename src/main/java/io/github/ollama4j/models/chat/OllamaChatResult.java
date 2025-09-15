@@ -38,17 +38,17 @@ public class OllamaChatResult {
     }
 
     @Deprecated
-    public String getResponse(){
+    public String getResponse() {
         return responseModel != null ? responseModel.getMessage().getContent() : "";
     }
 
     @Deprecated
-    public int getHttpStatusCode(){
+    public int getHttpStatusCode() {
         return 200;
     }
 
     @Deprecated
-    public long getResponseTime(){
+    public long getResponseTime() {
         return responseModel != null ? responseModel.getTotalDuration() : 0L;
     }
 }

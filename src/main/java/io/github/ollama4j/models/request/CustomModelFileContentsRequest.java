@@ -9,15 +9,15 @@ import static io.github.ollama4j.utils.Utils.getObjectMapper;
 @Data
 @AllArgsConstructor
 public class CustomModelFileContentsRequest {
-  private String name;
-  private String modelfile;
+    private String name;
+    private String modelfile;
 
-  @Override
-  public String toString() {
-    try {
-      return getObjectMapper().writerWithDefaultPrettyPrinter().writeValueAsString(this);
-    } catch (JsonProcessingException e) {
-      throw new RuntimeException(e);
+    @Override
+    public String toString() {
+        try {
+            return getObjectMapper().writerWithDefaultPrettyPrinter().writeValueAsString(this);
+        } catch (JsonProcessingException e) {
+            throw new RuntimeException(e);
+        }
     }
-  }
 }

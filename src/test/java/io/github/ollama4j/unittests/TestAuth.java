@@ -4,7 +4,8 @@ import io.github.ollama4j.models.request.BasicAuth;
 import io.github.ollama4j.models.request.BearerAuth;
 import org.junit.jupiter.api.Test;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class TestAuth {
 

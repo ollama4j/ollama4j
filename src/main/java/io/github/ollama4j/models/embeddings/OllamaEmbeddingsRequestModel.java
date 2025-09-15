@@ -14,23 +14,23 @@ import static io.github.ollama4j.utils.Utils.getObjectMapper;
 @Data
 @RequiredArgsConstructor
 @NoArgsConstructor
-@Deprecated(since="1.0.90")
+@Deprecated(since = "1.0.90")
 public class OllamaEmbeddingsRequestModel {
-  @NonNull
-  private String model;
-  @NonNull
-  private String prompt;
+    @NonNull
+    private String model;
+    @NonNull
+    private String prompt;
 
-  protected Map<String, Object> options;
-  @JsonProperty(value = "keep_alive")
-  private String keepAlive;
+    protected Map<String, Object> options;
+    @JsonProperty(value = "keep_alive")
+    private String keepAlive;
 
-  @Override
-  public String toString() {
-    try {
-      return getObjectMapper().writerWithDefaultPrettyPrinter().writeValueAsString(this);
-    } catch (JsonProcessingException e) {
-      throw new RuntimeException(e);
+    @Override
+    public String toString() {
+        try {
+            return getObjectMapper().writerWithDefaultPrettyPrinter().writeValueAsString(this);
+        } catch (JsonProcessingException e) {
+            throw new RuntimeException(e);
+        }
     }
-  }
 }

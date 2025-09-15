@@ -17,12 +17,12 @@ public interface OllamaRequestBody {
      * @return JSON representation of a OllamaRequest
      */
     @JsonIgnore
-    default BodyPublisher getBodyPublisher(){
-                try {
-          return BodyPublishers.ofString(
-                      Utils.getObjectMapper().writeValueAsString(this));
+    default BodyPublisher getBodyPublisher() {
+        try {
+            return BodyPublishers.ofString(
+                    Utils.getObjectMapper().writeValueAsString(this));
         } catch (JsonProcessingException e) {
-          throw new IllegalArgumentException("Request not Body convertible.",e);
+            throw new IllegalArgumentException("Request not Body convertible.", e);
         }
     }
 }

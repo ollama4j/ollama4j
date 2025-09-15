@@ -5,7 +5,8 @@ import io.github.ollama4j.models.chat.OllamaChatMessageRole;
 import org.json.JSONObject;
 import org.junit.jupiter.api.Test;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class TestOllamaChatMessage {
 

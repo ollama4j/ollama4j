@@ -4,8 +4,8 @@ import io.github.ollama4j.OllamaAPI;
 import io.github.ollama4j.exceptions.OllamaBaseException;
 import io.github.ollama4j.exceptions.ToolInvocationException;
 import io.github.ollama4j.models.chat.*;
+import io.github.ollama4j.models.embeddings.OllamaEmbedRequestModel;
 import io.github.ollama4j.models.embeddings.OllamaEmbedResponseModel;
-import io.github.ollama4j.models.response.LibraryModel;
 import io.github.ollama4j.models.response.Model;
 import io.github.ollama4j.models.response.ModelDetail;
 import io.github.ollama4j.models.response.OllamaResult;
@@ -114,15 +114,6 @@ class OllamaAPIIntegrationTest {
     }
 
     @Test
-    @Order(2)
-    void testListModelsFromLibrary()
-            throws OllamaBaseException, IOException, URISyntaxException, InterruptedException {
-        List<LibraryModel> models = api.listModelsFromLibrary();
-        assertNotNull(models);
-        assertFalse(models.isEmpty());
-    }
-
-    @Test
     @Order(3)
     void testPullModelAPI() throws URISyntaxException, IOException, OllamaBaseException, InterruptedException {
         api.pullModel(EMBEDDING_MODEL);
@@ -144,8 +135,10 @@ class OllamaAPIIntegrationTest {
     @Order(5)
     void testEmbeddings() throws Exception {
         api.pullModel(EMBEDDING_MODEL);
-        OllamaEmbedResponseModel embeddings = api.embed(EMBEDDING_MODEL,
-                Arrays.asList("Why is the sky blue?", "Why is the grass green?"));
+        OllamaEmbedRequestModel m = new OllamaEmbedRequestModel();
+        m.setModel(EMBEDDING_MODEL);
+        m.setInput(Arrays.asList("Why is the sky blue?", "Why is the grass green?"));
+        OllamaEmbedResponseModel embeddings = api.embed(m);
         assertNotNull(embeddings, "Embeddings should not be null");
         assertFalse(embeddings.getEmbeddings().isEmpty(), "Embeddings should not be empty");
     }
@@ -228,7 +221,7 @@ class OllamaAPIIntegrationTest {
         requestModel = builder.withMessages(requestModel.getMessages())
                 .withMessage(OllamaChatMessageRole.USER, "Give me a cool name")
                 .withOptions(new OptionsBuilder().setTemperature(0.5f).build()).build();
-        OllamaChatResult chatResult = api.chat(requestModel);
+        OllamaChatResult chatResult = api.chat(requestModel, null);
 
         assertNotNull(chatResult);
         assertNotNull(chatResult.getResponseModel());
@@ -249,7 +242,7 @@ class OllamaAPIIntegrationTest {
                         expectedResponse)).withMessage(OllamaChatMessageRole.USER, "Who are you?")
                 .withOptions(new OptionsBuilder().setTemperature(0.0f).build()).build();
 
-        OllamaChatResult chatResult = api.chat(requestModel);
+        OllamaChatResult chatResult = api.chat(requestModel, null);
         assertNotNull(chatResult);
         assertNotNull(chatResult.getResponseModel());
         assertNotNull(chatResult.getResponseModel().getMessage());
@@ -270,7 +263,7 @@ class OllamaAPIIntegrationTest {
                 .build();
 
         // Start conversation with model
-        OllamaChatResult chatResult = api.chat(requestModel);
+        OllamaChatResult chatResult = api.chat(requestModel, null);
 
         assertTrue(chatResult.getChatHistory().stream().anyMatch(chat -> chat.getContent().contains("2")),
                 "Expected chat history to contain '2'");
@@ -279,7 +272,7 @@ class OllamaAPIIntegrationTest {
                 .withMessage(OllamaChatMessageRole.USER, "And what is its squared value?").build();
 
         // Continue conversation with model
-        chatResult = api.chat(requestModel);
+        chatResult = api.chat(requestModel, null);
 
         assertTrue(chatResult.getChatHistory().stream().anyMatch(chat -> chat.getContent().contains("4")),
                 "Expected chat history to contain '4'");
@@ -289,7 +282,7 @@ class OllamaAPIIntegrationTest {
                 "What is the largest value between 2, 4 and 6?").build();
 
         // Continue conversation with the model for the third question
-        chatResult = api.chat(requestModel);
+        chatResult = api.chat(requestModel, null);
 
         // verify the result
         assertNotNull(chatResult, "Chat result should not be null");
@@ -315,7 +308,7 @@ class OllamaAPIIntegrationTest {
                 "Give me the ID and address of the employee Rahul Kumar.").build();
         requestModel.setOptions(new OptionsBuilder().setTemperature(0.9f).build().getOptionsMap());
 
-        OllamaChatResult chatResult = api.chat(requestModel);
+        OllamaChatResult chatResult = api.chat(requestModel, null);
 
         assertNotNull(chatResult, "chatResult should not be null");
         assertNotNull(chatResult.getResponseModel(), "Response model should not be null");
@@ -357,7 +350,7 @@ class OllamaAPIIntegrationTest {
                     .build();
             requestModel.setOptions(new OptionsBuilder().setTemperature(0.9f).build().getOptionsMap());
 
-            OllamaChatResult chatResult = api.chat(requestModel);
+            OllamaChatResult chatResult = api.chat(requestModel, null);
 
             assertNotNull(chatResult, "chatResult should not be null");
             assertNotNull(chatResult.getResponseModel(), "Response model should not be null");
@@ -405,11 +398,11 @@ class OllamaAPIIntegrationTest {
                 .withKeepAlive("0m").withOptions(new OptionsBuilder().setTemperature(0.9f).build())
                 .build();
 
-        OllamaChatResult chatResult = api.chat(requestModel, (s) -> {
+        OllamaChatResult chatResult = api.chat(requestModel, new OllamaChatStreamObserver((s) -> {
             LOG.info(s.toUpperCase());
         }, (s) -> {
             LOG.info(s.toLowerCase());
-        });
+        }));
 
         assertNotNull(chatResult, "chatResult should not be null");
         assertNotNull(chatResult.getResponseModel(), "Response model should not be null");
@@ -447,7 +440,7 @@ class OllamaAPIIntegrationTest {
                         "Compute the most important constant in the world using 5 digits")
                 .build();
 
-        OllamaChatResult chatResult = api.chat(requestModel);
+        OllamaChatResult chatResult = api.chat(requestModel, null);
         assertNotNull(chatResult);
         assertNotNull(chatResult.getResponseModel());
         assertNotNull(chatResult.getResponseModel().getMessage());
@@ -480,7 +473,7 @@ class OllamaAPIIntegrationTest {
                         "Greet Rahul with a lot of hearts and respond to me with count of emojis that have been in used in the greeting")
                 .build();
 
-        OllamaChatResult chatResult = api.chat(requestModel);
+        OllamaChatResult chatResult = api.chat(requestModel, null);
         assertNotNull(chatResult);
         assertNotNull(chatResult.getResponseModel());
         assertNotNull(chatResult.getResponseModel().getMessage());
@@ -515,13 +508,11 @@ class OllamaAPIIntegrationTest {
         requestModel.setThink(false);
         StringBuffer sb = new StringBuffer();
 
-        OllamaChatResult chatResult = api.chat(requestModel, (s) -> {
+        OllamaChatResult chatResult = api.chat(requestModel, new OllamaChatStreamObserver((s) -> {
             LOG.info(s.toUpperCase());
-            sb.append(s);
         }, (s) -> {
             LOG.info(s.toLowerCase());
-            sb.append(s);
-        });
+        }));
         assertNotNull(chatResult);
         assertNotNull(chatResult.getResponseModel());
         assertNotNull(chatResult.getResponseModel().getMessage());
@@ -540,13 +531,11 @@ class OllamaAPIIntegrationTest {
                 .withThinking(true).withKeepAlive("0m").build();
         StringBuffer sb = new StringBuffer();
 
-        OllamaChatResult chatResult = api.chat(requestModel, (s) -> {
-            sb.append(s);
+        OllamaChatResult chatResult = api.chat(requestModel, new OllamaChatStreamObserver((s) -> {
             LOG.info(s.toUpperCase());
         }, (s) -> {
-            sb.append(s);
             LOG.info(s.toLowerCase());
-        });
+        }));
 
         assertNotNull(chatResult);
         assertNotNull(chatResult.getResponseModel());
@@ -569,7 +558,7 @@ class OllamaAPIIntegrationTest {
                 .build();
         api.registerAnnotatedTools(new OllamaAPIIntegrationTest());
 
-        OllamaChatResult chatResult = api.chat(requestModel);
+        OllamaChatResult chatResult = api.chat(requestModel, null);
         assertNotNull(chatResult);
     }
 
@@ -583,7 +572,7 @@ class OllamaAPIIntegrationTest {
                 "What's in the picture?", Collections.emptyList(),
                 List.of(getImageFileFromClasspath("emoji-smile.jpeg"))).build();
 
-        OllamaChatResult chatResult = api.chat(requestModel);
+        OllamaChatResult chatResult = api.chat(requestModel, null);
         assertNotNull(chatResult);
         assertNotNull(chatResult.getResponseModel());
         builder.reset();
@@ -591,7 +580,7 @@ class OllamaAPIIntegrationTest {
         requestModel = builder.withMessages(chatResult.getChatHistory())
                 .withMessage(OllamaChatMessageRole.USER, "What's the color?").build();
 
-        chatResult = api.chat(requestModel);
+        chatResult = api.chat(requestModel, null);
         assertNotNull(chatResult);
         assertNotNull(chatResult.getResponseModel());
     }

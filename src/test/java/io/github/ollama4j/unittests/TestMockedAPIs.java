@@ -96,9 +96,12 @@ class TestMockedAPIs {
         String model = OllamaModelType.LLAMA2;
         String prompt = "some prompt text";
         try {
-            when(ollamaAPI.generateEmbeddings(model, prompt)).thenReturn(new ArrayList<>());
-            ollamaAPI.generateEmbeddings(model, prompt);
-            verify(ollamaAPI, times(1)).generateEmbeddings(model, prompt);
+            OllamaEmbedRequestModel m = new OllamaEmbedRequestModel();
+            m.setModel(model);
+            m.setInput(List.of(prompt));
+            when(ollamaAPI.embed(m)).thenReturn(new OllamaEmbedResponseModel());
+            ollamaAPI.embed(m);
+            verify(ollamaAPI, times(1)).embed(m);
         } catch (IOException | OllamaBaseException | InterruptedException e) {
             throw new RuntimeException(e);
         }
@@ -110,9 +113,10 @@ class TestMockedAPIs {
         String model = OllamaModelType.LLAMA2;
         List<String> inputs = List.of("some prompt text");
         try {
-            when(ollamaAPI.embed(model, inputs)).thenReturn(new OllamaEmbedResponseModel());
-            ollamaAPI.embed(model, inputs);
-            verify(ollamaAPI, times(1)).embed(model, inputs);
+            OllamaEmbedRequestModel m = new OllamaEmbedRequestModel(model, inputs);
+            when(ollamaAPI.embed(m)).thenReturn(new OllamaEmbedResponseModel());
+            ollamaAPI.embed(m);
+            verify(ollamaAPI, times(1)).embed(m);
         } catch (IOException | OllamaBaseException | InterruptedException e) {
             throw new RuntimeException(e);
         }
