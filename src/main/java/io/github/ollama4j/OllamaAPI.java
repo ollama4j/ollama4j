@@ -1091,7 +1091,7 @@ public class OllamaAPI {
      * @return an {@link OllamaAsyncResultStreamer} handle for polling and
      * retrieving streamed results
      */
-    public OllamaAsyncResultStreamer generateAsync(String model, String prompt, boolean raw, boolean think) {
+    public OllamaAsyncResultStreamer generate(String model, String prompt, boolean raw, boolean think) {
         OllamaGenerateRequest ollamaRequestModel = new OllamaGenerateRequest(model, prompt);
         ollamaRequestModel.setRaw(raw);
         ollamaRequestModel.setThink(think);
@@ -1103,145 +1103,55 @@ public class OllamaAPI {
     }
 
     /**
-     * With one or more image files, ask a question to a model running on Ollama
-     * server. This is a
-     * sync/blocking call.
-     *
-     * @param model         the ollama model to ask the question to
-     * @param prompt        the prompt/question text
-     * @param imageFiles    the list of image files to use for the question
-     * @param options       the Options object - <a
-     *                      href=
-     *                      "https://github.com/jmorganca/ollama/blob/main/docs/modelfile.md#valid-parameters-and-values">More
-     *                      details on the options</a>
-     * @param streamHandler optional callback consumer that will be applied every
-     *                      time a streamed response is received. If not set, the
-     *                      stream parameter of the request is set to false.
-     * @return OllamaResult that includes response text and time taken for response
-     * @throws OllamaBaseException  if the response indicates an error status
-     * @throws IOException          if an I/O error occurs during the HTTP request
-     * @throws InterruptedException if the operation is interrupted
-     */
-    public OllamaResult generateWithImageFiles(String model, String prompt, List<File> imageFiles, Options options,
-                                               OllamaStreamHandler streamHandler) throws OllamaBaseException, IOException, InterruptedException {
-        List<String> images = new ArrayList<>();
-        for (File imageFile : imageFiles) {
-            images.add(encodeFileToBase64(imageFile));
-        }
-        OllamaGenerateRequest ollamaRequestModel = new OllamaGenerateRequest(model, prompt, images);
-        ollamaRequestModel.setOptions(options.getOptionsMap());
-        return generateSyncForOllamaRequestModel(ollamaRequestModel, null, streamHandler);
-    }
-
-    /**
-     * Convenience method to call Ollama API without streaming responses.
+     * Generates a response from a model running on the Ollama server using one or more images as input.
      * <p>
-     * Uses
-     * {@link #generateWithImageFiles(String, String, List, Options, OllamaStreamHandler)}
+     * This method allows you to provide images (as {@link File}, {@code byte[]}, or image URL {@link String})
+     * along with a prompt to the specified model. The images are automatically encoded as base64 before being sent.
+     * Additional model options can be specified via the {@link Options} parameter.
+     * </p>
      *
-     * @throws OllamaBaseException  if the response indicates an error status
-     * @throws IOException          if an I/O error occurs during the HTTP request
-     * @throws InterruptedException if the operation is interrupted
-     */
-    public OllamaResult generateWithImageFiles(String model, String prompt, List<File> imageFiles, Options options)
-            throws OllamaBaseException, IOException, InterruptedException {
-        return generateWithImageFiles(model, prompt, imageFiles, options, null);
-    }
-
-    /**
-     * With one or more image URLs, ask a question to a model running on Ollama
-     * server. This is a
-     * sync/blocking call.
-     *
-     * @param model         the ollama model to ask the question to
-     * @param prompt        the prompt/question text
-     * @param imageURLs     the list of image URLs to use for the question
-     * @param options       the Options object - <a
-     *                      href=
-     *                      "https://github.com/jmorganca/ollama/blob/main/docs/modelfile.md#valid-parameters-and-values">More
-     *                      details on the options</a>
-     * @param streamHandler optional callback consumer that will be applied every
-     *                      time a streamed response is received. If not set, the
-     *                      stream parameter of the request is set to false.
-     * @return OllamaResult that includes response text and time taken for response
-     * @throws OllamaBaseException  if the response indicates an error status
-     * @throws IOException          if an I/O error occurs during the HTTP request
-     * @throws InterruptedException if the operation is interrupted
-     * @throws URISyntaxException   if the URI for the request is malformed
-     */
-    public OllamaResult generateWithImageURLs(String model, String prompt, List<String> imageURLs, Options options,
-                                              OllamaStreamHandler streamHandler)
-            throws OllamaBaseException, IOException, InterruptedException, URISyntaxException {
-        List<String> images = new ArrayList<>();
-        for (String imageURL : imageURLs) {
-            images.add(encodeByteArrayToBase64(Utils.loadImageBytesFromUrl(imageURL)));
-        }
-        OllamaGenerateRequest ollamaRequestModel = new OllamaGenerateRequest(model, prompt, images);
-        ollamaRequestModel.setOptions(options.getOptionsMap());
-        return generateSyncForOllamaRequestModel(ollamaRequestModel, null, streamHandler);
-    }
-
-    /**
-     * Convenience method to call Ollama API without streaming responses.
      * <p>
-     * Uses
-     * {@link #generateWithImageURLs(String, String, List, Options, OllamaStreamHandler)}
+     * If a {@code streamHandler} is provided, the response will be streamed and the handler will be called
+     * for each streamed response chunk. If {@code streamHandler} is {@code null}, streaming is disabled and
+     * the full response is returned synchronously.
+     * </p>
      *
-     * @throws OllamaBaseException  if the response indicates an error status
-     * @throws IOException          if an I/O error occurs during the HTTP request
-     * @throws InterruptedException if the operation is interrupted
-     * @throws URISyntaxException   if the URI for the request is malformed
-     */
-    public OllamaResult generateWithImageURLs(String model, String prompt, List<String> imageURLs, Options options)
-            throws OllamaBaseException, IOException, InterruptedException, URISyntaxException {
-        return generateWithImageURLs(model, prompt, imageURLs, options, null);
-    }
-
-    /**
-     * Synchronously generates a response using a list of image byte arrays.
-     * <p>
-     * This method encodes the provided byte arrays into Base64 and sends them to
-     * the Ollama server.
-     *
-     * @param model         the Ollama model to use for generating the response
+     * @param model         the name of the Ollama model to use for generating the response
      * @param prompt        the prompt or question text to send to the model
-     * @param images        the list of image data as byte arrays
-     * @param options       the Options object - <a href=
-     *                      "https://github.com/jmorganca/ollama/blob/main/docs/modelfile.md#valid-parameters-and-values">More
-     *                      details on the options</a>
-     * @param streamHandler optional callback that will be invoked with each
-     *                      streamed response; if null, streaming is disabled
-     * @return OllamaResult containing the response text and the time taken for the
-     * response
-     * @throws OllamaBaseException  if the response indicates an error status
+     * @param images        a list of images to use for the question; each element must be a {@link File}, {@code byte[]}, or a URL {@link String}
+     * @param options       the {@link Options} object containing model parameters;
+     *                      see <a href="https://github.com/jmorganca/ollama/blob/main/docs/modelfile.md#valid-parameters-and-values">Ollama model options documentation</a>
+     * @param streamHandler an optional callback that is invoked for each streamed response chunk;
+     *                      if {@code null}, disables streaming and returns the full response synchronously
+     * @return an {@link OllamaResult} containing the response text and time taken for the response
+     * @throws OllamaBaseException  if the response indicates an error status or an invalid image type is provided
      * @throws IOException          if an I/O error occurs during the HTTP request
      * @throws InterruptedException if the operation is interrupted
+     * @throws URISyntaxException   if an image URL is malformed
      */
-    public OllamaResult generateWithImages(String model, String prompt, List<byte[]> images, Options options,
-                                           OllamaStreamHandler streamHandler) throws OllamaBaseException, IOException, InterruptedException {
+    public OllamaResult generateWithImages(String model, String prompt, List<Object> images, Options options, Map<String, Object> format,
+                                           OllamaStreamHandler streamHandler) throws OllamaBaseException, IOException, InterruptedException, URISyntaxException {
         List<String> encodedImages = new ArrayList<>();
-        for (byte[] image : images) {
-            encodedImages.add(encodeByteArrayToBase64(image));
+        for (Object image : images) {
+            if (image instanceof File) {
+                LOG.debug("Using image file: {}", ((File) image).getAbsolutePath());
+                encodedImages.add(encodeFileToBase64((File) image));
+            } else if (image instanceof byte[]) {
+                LOG.debug("Using image bytes: {}", ((byte[]) image).length + " bytes");
+                encodedImages.add(encodeByteArrayToBase64((byte[]) image));
+            } else if (image instanceof String) {
+                LOG.debug("Using image URL: {}", image);
+                encodedImages.add(encodeByteArrayToBase64(Utils.loadImageBytesFromUrl((String) image)));
+            } else {
+                throw new OllamaBaseException("Unsupported image type. Please provide a File, byte[], or a URL String.");
+            }
         }
         OllamaGenerateRequest ollamaRequestModel = new OllamaGenerateRequest(model, prompt, encodedImages);
+        if (format != null) {
+            ollamaRequestModel.setFormat(format);
+        }
         ollamaRequestModel.setOptions(options.getOptionsMap());
         return generateSyncForOllamaRequestModel(ollamaRequestModel, null, streamHandler);
-    }
-
-    /**
-     * Convenience method to call the Ollama API using image byte arrays without
-     * streaming responses.
-     * <p>
-     * Uses
-     * {@link #generateWithImages(String, String, List, Options, OllamaStreamHandler)}
-     *
-     * @throws OllamaBaseException  if the response indicates an error status
-     * @throws IOException          if an I/O error occurs during the HTTP request
-     * @throws InterruptedException if the operation is interrupted
-     */
-    public OllamaResult generateWithImages(String model, String prompt, List<byte[]> images, Options options)
-            throws OllamaBaseException, IOException, InterruptedException {
-        return generateWithImages(model, prompt, images, options, null);
     }
 
     /**

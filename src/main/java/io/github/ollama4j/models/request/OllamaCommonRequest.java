@@ -15,9 +15,10 @@ import java.util.Map;
 public abstract class OllamaCommonRequest {
 
   protected String model;
-  @JsonSerialize(using = BooleanToJsonFormatFlagSerializer.class)
-  @JsonProperty(value = "format")
-  protected Boolean returnFormatJson;
+//  @JsonSerialize(using = BooleanToJsonFormatFlagSerializer.class)
+//  this can either be set to format=json or format={"key1": "val1", "key2": "val2"}
+  @JsonProperty(value = "format", required = false, defaultValue = "json")
+  protected Object format;
   protected Map<String, Object> options;
   protected String template;
   protected boolean stream;

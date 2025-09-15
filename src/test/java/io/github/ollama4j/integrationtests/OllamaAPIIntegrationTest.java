@@ -602,9 +602,9 @@ class OllamaAPIIntegrationTest {
             throws OllamaBaseException, IOException, URISyntaxException, InterruptedException {
         api.pullModel(VISION_MODEL);
 
-        OllamaResult result = api.generateWithImageURLs(VISION_MODEL, "What is in this image?",
+        OllamaResult result = api.generateWithImages(VISION_MODEL, "What is in this image?",
                 List.of("https://i.pinimg.com/736x/f9/4e/cb/f94ecba040696a3a20b484d2e15159ec.jpg"),
-                new OptionsBuilder().build());
+                new OptionsBuilder().build(), null, null);
         assertNotNull(result);
         assertNotNull(result.getResponse());
         assertFalse(result.getResponse().isEmpty());
@@ -617,8 +617,8 @@ class OllamaAPIIntegrationTest {
         api.pullModel(VISION_MODEL);
         File imageFile = getImageFileFromClasspath("roses.jpg");
         try {
-            OllamaResult result = api.generateWithImageFiles(VISION_MODEL, "What is in this image?",
-                    List.of(imageFile), new OptionsBuilder().build());
+            OllamaResult result = api.generateWithImages(VISION_MODEL, "What is in this image?",
+                    List.of(imageFile), new OptionsBuilder().build(), null, null);
             assertNotNull(result);
             assertNotNull(result.getResponse());
             assertFalse(result.getResponse().isEmpty());
@@ -637,11 +637,17 @@ class OllamaAPIIntegrationTest {
 
         StringBuffer sb = new StringBuffer();
 
-        OllamaResult result = api.generateWithImageFiles(VISION_MODEL, "What is in this image?",
-                List.of(imageFile), new OptionsBuilder().build(), (s) -> {
+        OllamaResult result = api.generateWithImages(
+                VISION_MODEL,
+                "What is in this image?",
+                List.of(imageFile),
+                new OptionsBuilder().build(),
+                null,
+                (s) -> {
                     LOG.info(s);
                     sb.append(s);
-                });
+                }
+        );
         assertNotNull(result);
         assertNotNull(result.getResponse());
         assertFalse(result.getResponse().isEmpty());

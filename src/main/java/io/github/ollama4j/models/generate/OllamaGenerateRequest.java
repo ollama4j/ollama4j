@@ -7,40 +7,38 @@ import lombok.Getter;
 import lombok.Setter;
 
 import java.util.List;
+import java.util.Map;
 
 @Getter
 @Setter
-public class OllamaGenerateRequest extends OllamaCommonRequest implements OllamaRequestBody{
+public class OllamaGenerateRequest extends OllamaCommonRequest implements OllamaRequestBody {
 
-  private String prompt;
-  private List<String> images;
+    private String prompt;
+    private List<String> images;
+    private String system;
+    private String context;
+    private boolean raw;
+    private boolean think;
 
-  private String system;
-  private String context;
-  private boolean raw;
-  private boolean think;
-
-  public OllamaGenerateRequest() {
-  }
-
-  public OllamaGenerateRequest(String model, String prompt) {
-    this.model = model;
-    this.prompt = prompt;
-  }
-
-  public OllamaGenerateRequest(String model, String prompt, List<String> images) {
-    this.model = model;
-    this.prompt = prompt;
-    this.images = images;
-  }
-
-    @Override
-  public boolean equals(Object o) {
-    if (!(o instanceof OllamaGenerateRequest)) {
-      return false;
+    public OllamaGenerateRequest() {
     }
 
-    return this.toString().equals(o.toString());
-  }
+    public OllamaGenerateRequest(String model, String prompt) {
+        this.model = model;
+        this.prompt = prompt;
+    }
 
+    public OllamaGenerateRequest(String model, String prompt, List<String> images) {
+        this.model = model;
+        this.prompt = prompt;
+        this.images = images;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (!(o instanceof OllamaGenerateRequest)) {
+            return false;
+        }
+        return this.toString().equals(o.toString());
+    }
 }

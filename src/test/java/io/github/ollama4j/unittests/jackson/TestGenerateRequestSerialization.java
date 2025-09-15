@@ -44,11 +44,11 @@ public class TestGenerateRequestSerialization extends AbstractSerializationTest<
                 builder.withPrompt("Some prompt").withGetJsonResponse().build();
 
         String jsonRequest = serialize(req);
+        System.out.printf(jsonRequest);
         // no jackson deserialization as format property is not boolean ==> omit as deserialization
         // of request is never used in real code anyways
         JSONObject jsonObject = new JSONObject(jsonRequest);
         String requestFormatProperty = jsonObject.getString("format");
         assertEquals("json", requestFormatProperty);
     }
-
 }

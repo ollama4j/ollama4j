@@ -6,16 +6,15 @@ import com.fasterxml.jackson.databind.SerializerProvider;
 
 import java.io.IOException;
 
-public class BooleanToJsonFormatFlagSerializer extends JsonSerializer<Boolean>{
+public class BooleanToJsonFormatFlagSerializer extends JsonSerializer<Boolean> {
 
     @Override
     public void serialize(Boolean value, JsonGenerator gen, SerializerProvider serializers) throws IOException {
-            gen.writeString("json");
+        gen.writeString("json");
     }
 
     @Override
-    public boolean isEmpty(SerializerProvider provider,Boolean value){
+    public boolean isEmpty(SerializerProvider provider, Boolean value) {
         return !value;
     }
-
 }
