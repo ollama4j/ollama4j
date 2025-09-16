@@ -7,7 +7,6 @@ import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.io.IOException;
-import java.net.URISyntaxException;
 import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -20,6 +19,19 @@ import java.util.stream.Collectors;
 public class OllamaChatRequestBuilder {
 
     private static final Logger LOG = LoggerFactory.getLogger(OllamaChatRequestBuilder.class);
+
+    private int imageURLConnectTimeoutSeconds = 10;
+    private int imageURLReadTimeoutSeconds = 10;
+
+    public OllamaChatRequestBuilder withImageURLConnectTimeoutSeconds(int imageURLConnectTimeoutSeconds) {
+        this.imageURLConnectTimeoutSeconds = imageURLConnectTimeoutSeconds;
+        return this;
+    }
+
+    public OllamaChatRequestBuilder withImageURLReadTimeoutSeconds(int imageURLReadTimeoutSeconds) {
+        this.imageURLReadTimeoutSeconds = imageURLReadTimeoutSeconds;
+        return this;
+    }
 
     private OllamaChatRequestBuilder(String model, List<OllamaChatMessage> messages) {
         request = new OllamaChatRequest(model, false, messages);
@@ -72,11 +84,11 @@ public class OllamaChatRequestBuilder {
             binaryImages = new ArrayList<>();
             for (String imageUrl : imageUrls) {
                 try {
-                    binaryImages.add(Utils.loadImageBytesFromUrl(imageUrl));
-                } catch (URISyntaxException e) {
-                    LOG.warn("URL '{}' could not be accessed, will not add to message!", imageUrl, e);
+                    binaryImages.add(Utils.loadImageBytesFromUrl(imageUrl, imageURLConnectTimeoutSeconds, imageURLReadTimeoutSeconds));
                 } catch (IOException e) {
                     LOG.warn("Content of URL '{}' could not be read, will not add to message!", imageUrl, e);
+                } catch (InterruptedException e) {
+                    LOG.warn("Loading image from URL '{}' was interrupted, will not add to message!", imageUrl, e);
                 }
             }
         }

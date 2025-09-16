@@ -64,6 +64,11 @@ public class OllamaAPI {
     @Setter
     private long requestTimeoutSeconds = 10;
 
+    @Setter
+    private int imageURLReadTimeoutSeconds = 10;
+
+    @Setter
+    private int imageURLConnectTimeoutSeconds = 10;
     /**
      * The maximum number of retries for tool calls during chat interactions.
      * <p>
@@ -821,7 +826,7 @@ public class OllamaAPI {
                 encodedImages.add(encodeByteArrayToBase64((byte[]) image));
             } else if (image instanceof String) {
                 LOG.debug("Using image URL: {}", image);
-                encodedImages.add(encodeByteArrayToBase64(Utils.loadImageBytesFromUrl((String) image)));
+                encodedImages.add(encodeByteArrayToBase64(Utils.loadImageBytesFromUrl((String) image, imageURLConnectTimeoutSeconds, imageURLReadTimeoutSeconds)));
             } else {
                 throw new OllamaBaseException("Unsupported image type. Please provide a File, byte[], or a URL String.");
             }

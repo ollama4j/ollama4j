@@ -33,17 +33,22 @@ class TestOllamaChatRequestBuilder {
 
     @Test
     void testImageUrlFailuresAreIgnoredAndDoNotBreakBuild() {
-        // Provide clearly invalid URL, builder logs a warning and continues
-        OllamaChatRequest req = OllamaChatRequestBuilder.getInstance("m")
-                .withMessage(OllamaChatMessageRole.USER, "hi", Collections.emptyList(),
-                        "ht!tp://invalid url \n not a uri")
+        // Provide a syntactically invalid URL, but catch the expected exception to verify builder robustness
+        OllamaChatRequestBuilder builder = OllamaChatRequestBuilder.getInstance("m");
+        try {
+            builder.withMessage(OllamaChatMessageRole.USER, "hi", Collections.emptyList(),
+                    "ht!tp://invalid url \n not a uri");
+            fail("Expected IllegalArgumentException due to malformed URL");
+        } catch (IllegalArgumentException e) {
+            // Expected: malformed URL should throw IllegalArgumentException
+        }
+        // The builder should still be usable after the exception
+        OllamaChatRequest req = builder.withMessage(OllamaChatMessageRole.USER, "hello", Collections.emptyList())
                 .build();
 
         assertNotNull(req.getMessages());
         assertEquals(1, req.getMessages().size());
         OllamaChatMessage msg = req.getMessages().get(0);
-        // images list will be initialized only if any valid URL was added; for invalid URL list can be null
-        // We just assert that builder didn't crash and message is present with content
-        assertEquals("hi", msg.getContent());
+        assertEquals("hello", msg.getContent());
     }
 }

@@ -2,17 +2,20 @@ package io.github.ollama4j.utils;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
-import java.io.InputStream;
 import java.net.URI;
-import java.net.URISyntaxException;
-import java.net.URL;
+import java.net.http.HttpClient;
+import java.net.http.HttpRequest;
+import java.net.http.HttpResponse;
+import java.time.Duration;
 import java.util.Objects;
 
 public class Utils {
+    private static final Logger LOG = LoggerFactory.getLogger(Utils.class);
 
     private static ObjectMapper objectMapper;
 
@@ -24,21 +27,32 @@ public class Utils {
         return objectMapper;
     }
 
-    public static byte[] loadImageBytesFromUrl(String imageUrl)
-            throws IOException, URISyntaxException {
-        URL url = new URI(imageUrl).toURL();
-        try (InputStream in = url.openStream();
-             ByteArrayOutputStream out = new ByteArrayOutputStream()) {
-            byte[] buffer = new byte[1024];
-            int bytesRead;
-            while ((bytesRead = in.read(buffer)) != -1) {
-                out.write(buffer, 0, bytesRead);
-            }
-            return out.toByteArray();
+    public static byte[] loadImageBytesFromUrl(String imageUrl, int connectTimeoutSeconds, int readTimeoutSeconds)
+            throws IOException, InterruptedException {
+        LOG.debug("Attempting to load image from URL: {} (connectTimeout={}s, readTimeout={}s)", imageUrl, connectTimeoutSeconds, readTimeoutSeconds);
+        HttpClient client = HttpClient.newBuilder()
+                .connectTimeout(Duration.ofSeconds(connectTimeoutSeconds))
+                .build();
+        HttpRequest request = HttpRequest.newBuilder()
+                .uri(URI.create(imageUrl))
+                .timeout(Duration.ofSeconds(readTimeoutSeconds))
+                .header("User-Agent", "Mozilla/5.0")
+                .GET()
+                .build();
+        LOG.debug("Sending HTTP GET request to {}", imageUrl);
+        HttpResponse<byte[]> response = client.send(request, HttpResponse.BodyHandlers.ofByteArray());
+        LOG.debug("Received HTTP response with status code: {}", response.statusCode());
+        if (response.statusCode() >= 200 && response.statusCode() < 300) {
+            LOG.debug("Successfully loaded image from URL: {} ({} bytes)", imageUrl, response.body().length);
+            return response.body();
+        } else {
+            LOG.error("Failed to load image from URL: {}. HTTP status: {}", imageUrl, response.statusCode());
+            throw new IOException("Failed to load image: HTTP " + response.statusCode());
         }
     }
 
     public static File getFileFromClasspath(String fileName) {
+        LOG.debug("Trying to load file from classpath: {}", fileName);
         ClassLoader classLoader = Utils.class.getClassLoader();
         return new File(Objects.requireNonNull(classLoader.getResource(fileName)).getFile());
     }
