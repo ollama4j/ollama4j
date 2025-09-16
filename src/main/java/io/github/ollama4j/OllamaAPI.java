@@ -678,23 +678,42 @@ public class OllamaAPI {
     }
 
     /**
-     * Generates response using the specified AI model and prompt (in blocking
-     * mode), and then invokes a set of tools
-     * on the generated response.
+     * Generates a response using the specified AI model and prompt, then automatically
+     * detects and invokes any tool calls present in the model's output.
+     * <p>
+     * This method operates in blocking mode. It first augments the prompt with all
+     * registered tool specifications (unless the prompt already begins with
+     * {@code [AVAILABLE_TOOLS]}), sends the prompt to the model, and parses the model's
+     * response for tool call instructions. If tool calls are found, each is invoked
+     * using the registered tool implementations, and their results are collected.
+     * </p>
      *
-     * @param model   The name or identifier of the AI model to use for generating
-     *                the response.
-     * @param prompt  The input text or prompt to provide to the AI model.
-     * @param options Additional options or configurations to use when generating
-     *                the response.
-     * @return {@link OllamaToolsResult} An OllamaToolsResult object containing the
-     * response from the AI model and the results of invoking the tools on
-     * that output.
-     * @throws OllamaBaseException  if the response indicates an error status
-     * @throws IOException          if an I/O error occurs during the HTTP request
-     * @throws InterruptedException if the operation is interrupted
+     * <p>
+     * <b>Typical usage:</b>
+     * <pre>{@code
+     * OllamaToolsResult result = ollamaAPI.generateWithTools(
+     *     "my-model",
+     *     "What is the weather in Bengaluru?",
+     *     Options.defaultOptions(),
+     *     null // or a custom OllamaStreamHandler for streaming
+     * );
+     * String modelResponse = result.getModelResult().getResponse();
+     * Map<ToolFunctionCallSpec, Object> toolResults = result.getToolResults();
+     * }</pre>
+     * </p>
+     *
+     * @param model         the name or identifier of the AI model to use for generating the response
+     * @param prompt        the input text or prompt to provide to the AI model
+     * @param options       additional options or configurations to use when generating the response
+     * @param streamHandler handler for streaming responses; if {@code null}, streaming is disabled
+     * @return an {@link OllamaToolsResult} containing the model's response and the results of any invoked tools.
+     *         If the model does not request any tool calls, the tool results map will be empty.
+     * @throws OllamaBaseException      if the Ollama API returns an error status
+     * @throws IOException              if an I/O error occurs during the HTTP request
+     * @throws InterruptedException     if the operation is interrupted
+     * @throws ToolInvocationException  if a tool call fails to execute
      */
-    public OllamaToolsResult generateWithTools(String model, String prompt, Options options)
+    public OllamaToolsResult generateWithTools(String model, String prompt, Options options, OllamaStreamHandler streamHandler)
             throws OllamaBaseException, IOException, InterruptedException, ToolInvocationException {
         boolean raw = true;
         OllamaToolsResult toolResult = new OllamaToolsResult();
@@ -709,7 +728,7 @@ public class OllamaAPI {
             prompt = promptBuilder.build();
         }
 
-        OllamaResult result = generate(model, prompt, raw, options, null);
+        OllamaResult result = generate(model, prompt, raw, options, streamHandler);
         toolResult.setModelResult(result);
 
         String toolsResponse = result.getResponse();
