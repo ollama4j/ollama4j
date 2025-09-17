@@ -14,6 +14,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 
+@SuppressWarnings("SpellCheckingInspection")
 @Data
 @AllArgsConstructor
 public class CustomModelFileContentsRequest {

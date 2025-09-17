@@ -114,8 +114,7 @@ class OllamaAPIIntegrationTest {
 
     @Test
     @Order(1)
-    void testPing()
-            throws URISyntaxException, IOException, OllamaBaseException, InterruptedException {
+    void testPing() throws OllamaBaseException {
         boolean pingResponse = api.ping();
         assertTrue(pingResponse, "Ping should return true");
     }

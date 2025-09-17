@@ -8,6 +8,7 @@
 */
 package io.github.ollama4j.utils;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import java.io.File;
@@ -22,6 +23,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class Utils {
+    private Utils() {}
+
     private static final Logger LOG = LoggerFactory.getLogger(Utils.class);
 
     private static ObjectMapper objectMapper;
@@ -76,5 +79,9 @@ public class Utils {
         LOG.debug("Trying to load file from classpath: {}", fileName);
         ClassLoader classLoader = Utils.class.getClassLoader();
         return new File(Objects.requireNonNull(classLoader.getResource(fileName)).getFile());
+    }
+
+    public static String toJSON(Object object) throws JsonProcessingException {
+        return Utils.getObjectMapper().writerWithDefaultPrettyPrinter().writeValueAsString(object);
     }
 }

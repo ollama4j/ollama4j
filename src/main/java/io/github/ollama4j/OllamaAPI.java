@@ -694,10 +694,7 @@ public class OllamaAPI {
 
         try {
             String prettyJson =
-                    Utils.getObjectMapper()
-                            .writerWithDefaultPrettyPrinter()
-                            .writeValueAsString(
-                                    Utils.getObjectMapper().readValue(jsonData, Object.class));
+                    Utils.toJSON(Utils.getObjectMapper().readValue(jsonData, Object.class));
             LOG.debug("Asking model:\n{}", prettyJson);
         } catch (Exception e) {
             LOG.debug("Asking model: {}", jsonData);
@@ -730,11 +727,7 @@ public class OllamaAPI {
             LOG.debug("Model response:\n{}", ollamaResult);
             return ollamaResult;
         } else {
-            LOG.debug(
-                    "Model response:\n{}",
-                    Utils.getObjectMapper()
-                            .writerWithDefaultPrettyPrinter()
-                            .writeValueAsString(responseBody));
+            LOG.debug("Model response:\n{}", Utils.toJSON(responseBody));
             throw new OllamaBaseException(statusCode + " - " + responseBody);
         }
     }

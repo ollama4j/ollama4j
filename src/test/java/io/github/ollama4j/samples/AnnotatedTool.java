@@ -11,6 +11,7 @@ package io.github.ollama4j.samples;
 import io.github.ollama4j.tools.annotations.ToolProperty;
 import io.github.ollama4j.tools.annotations.ToolSpec;
 import java.math.BigDecimal;
+import java.util.Random;
 
 public class AnnotatedTool {
 
@@ -18,7 +19,8 @@ public class AnnotatedTool {
     public String computeImportantConstant(
             @ToolProperty(name = "noOfDigits", desc = "Number of digits that shall be returned")
                     Integer noOfDigits) {
-        return BigDecimal.valueOf((long) (Math.random() * 1000000L), noOfDigits).toString();
+        return BigDecimal.valueOf((long) (new Random().nextLong() * 1000000L), noOfDigits)
+                .toString();
     }
 
     @ToolSpec(desc = "Says hello to a friend!")

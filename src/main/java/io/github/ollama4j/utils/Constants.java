@@ -9,6 +9,8 @@
 package io.github.ollama4j.utils;
 
 public final class Constants {
+    private Constants() {}
+
     public static final class HttpConstants {
         private HttpConstants() {}
 
