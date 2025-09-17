@@ -338,7 +338,7 @@ public class OllamaAPI {
         }
         String status = modelPullResponse.getStatus();
         if (status != null) {
-            LOG.info("{}: {}", modelName, status);
+            LOG.debug("{}: {}", modelName, status);
             if ("success".equalsIgnoreCase(status)) {
                 return true;
             }
