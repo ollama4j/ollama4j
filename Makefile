@@ -47,7 +47,7 @@ list-releases:
 
 docs-build:
 	@echo "\033[0;34mBuilding documentation site...\033[0m"
-	@cd ./docs && npm install --prefix && npm run build
+	@cd ./docs && npm ci --no-audit --fund=false && npm run build
 
 docs-serve:
 	@echo "\033[0;34mServing documentation site...\033[0m"

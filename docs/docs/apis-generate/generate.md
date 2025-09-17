@@ -22,10 +22,10 @@ to [this](/apis-extras/options-builder).
 
 You will get a response similar to:
 
-::::tip[LLM Response]
+:::tip[LLM Response]
 I am a model of an AI trained by Mistral AI. I was designed to assist with a wide range of tasks, from answering
 questions to helping with complex computations and research. How can I help you toda
-::::
+:::
 
 ### Try asking a question, receiving the answer streamed
 
@@ -49,7 +49,7 @@ width='100%'
 
 You will get a response similar to:
 
-::::tip[LLM Response]
+:::tip[LLM Response]
 
 ```json
 {
@@ -58,12 +58,12 @@ You will get a response similar to:
 }
 ```
 
-::::
+:::
 
 ### With response mapped to specified class type
 
 <CodeEmbed src="https://raw.githubusercontent.com/ollama4j/ollama4j-examples/refs/heads/main/src/main/java/io/github/ollama4j/examples/GenerateStructuredOutputMappedToObject.java" />
 
-::::tip[LLM Response]
+:::tip[LLM Response]
 HeroInfo(heroName=Batman, ageOfPerson=30)
-::::
+:::

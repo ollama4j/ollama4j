@@ -79,7 +79,7 @@ Now put it all together by registering the tools and prompting with tools.
 
 Run this full example and you will get a response similar to:
 
-::::tip[LLM Response]
+:::tip[LLM Response]
 
 [Result of executing tool 'current-fuel-price']: Current price of petrol in Bengaluru is Rs.103/L
 
@@ -88,4 +88,4 @@ Run this full example and you will get a response similar to:
 [Result of executing tool 'get-employee-details']: Employee Details `{ID: 6bad82e6-b1a1-458f-a139-e3b646e092b1, Name:
 Rahul Kumar, Address: King St, Hyderabad, India, Phone: 9876543210}`
 
-::::
+:::

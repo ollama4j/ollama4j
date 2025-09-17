@@ -94,7 +94,6 @@ public class OllamaChatEndpointCaller extends OllamaEndpointCaller {
 
     public OllamaChatResult callSync(OllamaChatRequest body)
             throws OllamaBaseException, IOException, InterruptedException {
-        // Create Request
         HttpClient httpClient = HttpClient.newHttpClient();
         URI uri = URI.create(getHost() + getEndpointSuffix());
         HttpRequest.Builder requestBuilder =
@@ -110,63 +109,81 @@ public class OllamaChatEndpointCaller extends OllamaEndpointCaller {
         StringBuilder thinkingBuffer = new StringBuilder();
         OllamaChatResponseModel ollamaChatResponseModel = null;
         List<OllamaChatToolCalls> wantedToolsForStream = null;
+
         try (BufferedReader reader =
                 new BufferedReader(
                         new InputStreamReader(responseBodyStream, StandardCharsets.UTF_8))) {
 
             String line;
             while ((line = reader.readLine()) != null) {
-                if (statusCode == 404) {
-                    LOG.warn("Status code: 404 (Not Found)");
-                    OllamaErrorResponse ollamaResponseModel =
-                            Utils.getObjectMapper().readValue(line, OllamaErrorResponse.class);
-                    responseBuffer.append(ollamaResponseModel.getError());
-                } else if (statusCode == 401) {
-                    LOG.warn("Status code: 401 (Unauthorized)");
-                    OllamaErrorResponse ollamaResponseModel =
-                            Utils.getObjectMapper()
-                                    .readValue(
-                                            "{\"error\":\"Unauthorized\"}",
-                                            OllamaErrorResponse.class);
-                    responseBuffer.append(ollamaResponseModel.getError());
-                } else if (statusCode == 400) {
-                    LOG.warn("Status code: 400 (Bad Request)");
-                    OllamaErrorResponse ollamaResponseModel =
-                            Utils.getObjectMapper().readValue(line, OllamaErrorResponse.class);
-                    responseBuffer.append(ollamaResponseModel.getError());
-                } else if (statusCode == 500) {
-                    LOG.warn("Status code: 500 (Internal Server Error)");
-                    OllamaErrorResponse ollamaResponseModel =
-                            Utils.getObjectMapper().readValue(line, OllamaErrorResponse.class);
-                    responseBuffer.append(ollamaResponseModel.getError());
-                } else {
-                    boolean finished =
-                            parseResponseAndAddToBuffer(line, responseBuffer, thinkingBuffer);
-                    ollamaChatResponseModel =
-                            Utils.getObjectMapper().readValue(line, OllamaChatResponseModel.class);
-                    if (body.stream
-                            && ollamaChatResponseModel.getMessage().getToolCalls() != null) {
-                        wantedToolsForStream = ollamaChatResponseModel.getMessage().getToolCalls();
-                    }
-                    if (finished && body.stream) {
-                        ollamaChatResponseModel.getMessage().setContent(responseBuffer.toString());
-                        ollamaChatResponseModel.getMessage().setThinking(thinkingBuffer.toString());
-                        break;
-                    }
+                if (handleErrorStatus(statusCode, line, responseBuffer)) {
+                    continue;
+                }
+                boolean finished =
+                        parseResponseAndAddToBuffer(line, responseBuffer, thinkingBuffer);
+                ollamaChatResponseModel =
+                        Utils.getObjectMapper().readValue(line, OllamaChatResponseModel.class);
+                if (body.stream && ollamaChatResponseModel.getMessage().getToolCalls() != null) {
+                    wantedToolsForStream = ollamaChatResponseModel.getMessage().getToolCalls();
+                }
+                if (finished && body.stream) {
+                    ollamaChatResponseModel.getMessage().setContent(responseBuffer.toString());
+                    ollamaChatResponseModel.getMessage().setThinking(thinkingBuffer.toString());
+                    break;
                 }
             }
         }
         if (statusCode != 200) {
             LOG.error("Status code " + statusCode);
             throw new OllamaBaseException(responseBuffer.toString());
-        } else {
-            if (wantedToolsForStream != null) {
-                ollamaChatResponseModel.getMessage().setToolCalls(wantedToolsForStream);
-            }
-            OllamaChatResult ollamaResult =
-                    new OllamaChatResult(ollamaChatResponseModel, body.getMessages());
-            LOG.debug("Model response: {}", ollamaResult);
-            return ollamaResult;
+        }
+        if (wantedToolsForStream != null && ollamaChatResponseModel != null) {
+            ollamaChatResponseModel.getMessage().setToolCalls(wantedToolsForStream);
+        }
+        OllamaChatResult ollamaResult =
+                new OllamaChatResult(ollamaChatResponseModel, body.getMessages());
+        LOG.debug("Model response: {}", ollamaResult);
+        return ollamaResult;
+    }
+
+    /**
+     * Handles error status codes and appends error messages to the response buffer.
+     * Returns true if an error was handled, false otherwise.
+     */
+    private boolean handleErrorStatus(int statusCode, String line, StringBuilder responseBuffer)
+            throws IOException {
+        switch (statusCode) {
+            case 404:
+                LOG.warn("Status code: 404 (Not Found)");
+                responseBuffer.append(
+                        Utils.getObjectMapper()
+                                .readValue(line, OllamaErrorResponse.class)
+                                .getError());
+                return true;
+            case 401:
+                LOG.warn("Status code: 401 (Unauthorized)");
+                responseBuffer.append(
+                        Utils.getObjectMapper()
+                                .readValue(
+                                        "{\"error\":\"Unauthorized\"}", OllamaErrorResponse.class)
+                                .getError());
+                return true;
+            case 400:
+                LOG.warn("Status code: 400 (Bad Request)");
+                responseBuffer.append(
+                        Utils.getObjectMapper()
+                                .readValue(line, OllamaErrorResponse.class)
+                                .getError());
+                return true;
+            case 500:
+                LOG.warn("Status code: 500 (Internal Server Error)");
+                responseBuffer.append(
+                        Utils.getObjectMapper()
+                                .readValue(line, OllamaErrorResponse.class)
+                                .getError());
+                return true;
+            default:
+                return false;
         }
     }
 }

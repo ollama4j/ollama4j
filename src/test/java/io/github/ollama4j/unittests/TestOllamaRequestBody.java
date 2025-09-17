@@ -58,10 +58,12 @@ class TestOllamaRequestBody {
                     }
 
                     @Override
-                    // This method is intentionally left empty because for this test,
-                    // all the data is synchronously delivered by the publisher, so no action is
-                    // needed on completion.
-                    public void onComplete() {}
+                    public void onComplete() {
+                        // This method is intentionally left empty because, for this test,
+                        // we do not need to perform any action when the publishing completes.
+                        // The assertion is performed after subscription, and no cleanup or
+                        // further processing is required here.
+                    }
                 });
 
         // Trigger the publishing by converting it to a string via the same mapper for determinism

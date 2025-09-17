@@ -12,7 +12,7 @@ Generate embeddings from a model.
 
 <CodeEmbed src="https://raw.githubusercontent.com/ollama4j/ollama4j-examples/refs/heads/main/src/main/java/io/github/ollama4j/examples/GenerateEmbeddings.java" />
 
-::::tip[LLM Response]
+:::tip[LLM Response]
 
 ```json
 [
@@ -40,7 +40,7 @@ Generate embeddings from a model.
 ]
 ```
 
-::::
+:::
 
 You could also use the `OllamaEmbedRequestModel` to specify the options such as `seed`, `temperature`, etc., to apply
 for generating embeddings.
@@ -49,7 +49,7 @@ for generating embeddings.
 
 You will get a response similar to:
 
-::::tip[LLM Response]
+:::tip[LLM Response]
 
 ```json
 [
@@ -77,4 +77,4 @@ You will get a response similar to:
 ]
 ```
 
-::::
+:::

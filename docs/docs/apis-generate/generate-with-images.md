@@ -4,7 +4,7 @@ sidebar_position: 4
 
 import CodeEmbed from '@site/src/components/CodeEmbed';
 
-# Generate with Image Files
+# Generate with Images
 
 This API lets you ask questions along with the image files to the LLMs.
 This API corresponds to
@@ -27,10 +27,10 @@ If you have this image downloaded and you pass the path to the downloaded image 
 
 You will get a response similar to:
 
-::::tip[LLM Response]
+:::tip[LLM Response]
 This image features a white boat with brown cushions, where a dog is sitting on the back of the boat. The dog seems to
 be enjoying its time outdoors, perhaps on a lake.
-::::
+:::
 
 # Generate with Image URLs
 
@@ -55,7 +55,7 @@ Passing the link of this image the following code:
 
 You will get a response similar to:
 
-::::tip[LLM Response]
+:::tip[LLM Response]
 This image features a white boat with brown cushions, where a dog is sitting on the back of the boat. The dog seems to
 be enjoying its time outdoors, perhaps on a lake.
-::::
+:::
