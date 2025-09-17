@@ -8,10 +8,10 @@ dev:
 
 #pre-commit run --all-files
 
-format:
+apply-formatting:
 	mvn spotless:apply
 
-check:
+check-formatting:
 	mvn spotless:check
 
 build:
