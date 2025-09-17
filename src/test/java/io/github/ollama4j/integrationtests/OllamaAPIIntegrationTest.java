@@ -61,9 +61,6 @@ class OllamaAPIIntegrationTest {
                     Boolean.parseBoolean(System.getenv("USE_EXTERNAL_OLLAMA_HOST"));
             String ollamaHost = System.getenv("OLLAMA_HOST");
 
-            useExternalOllamaHost = true;
-            ollamaHost ="http://192.168.29.229:11434/";
-
             if (useExternalOllamaHost) {
                 LOG.info("Using external Ollama host...");
                 api = new OllamaAPI(ollamaHost);
