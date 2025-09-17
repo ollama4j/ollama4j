@@ -1,11 +1,11 @@
 ---
-sidebar_position: 1
+sidebar_position: 2
 ---
 
 import CodeEmbed from '@site/src/components/CodeEmbed';
 import TypewriterTextarea from '@site/src/components/TypewriterTextarea';
 
-# Generate (Sync)
+# Generate
 
 This API lets you ask questions to the LLMs in a synchronous way.
 This API corresponds to

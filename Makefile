@@ -30,10 +30,10 @@ list-releases:
       --silent | jq -r '.components[].version'
 
 docs-build:
-	npm i --prefix docs && npm run build --prefix docs
+	cd ./docs && npm install --prefix && npm run build
 
 docs-serve:
-	npm i --prefix docs && npm run start --prefix docs
+	cd ./docs && npm install && npm run start
 
 start-cpu:
 	docker run -it -v ~/ollama:/root/.ollama -p 11434:11434 ollama/ollama
