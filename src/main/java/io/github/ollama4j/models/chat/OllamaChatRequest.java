@@ -1,12 +1,19 @@
+/*
+ * Ollama4j - Java library for interacting with Ollama server.
+ * Copyright (c) 2025 Amith Koujalgi and contributors.
+ *
+ * Licensed under the MIT License (the "License");
+ * you may not use this file except in compliance with the License.
+ *
+*/
 package io.github.ollama4j.models.chat;
 
 import io.github.ollama4j.models.request.OllamaCommonRequest;
 import io.github.ollama4j.tools.Tools;
 import io.github.ollama4j.utils.OllamaRequestBody;
+import java.util.List;
 import lombok.Getter;
 import lombok.Setter;
-
-import java.util.List;
 
 /**
  * Defines a Request to use against the ollama /api/chat endpoint.
@@ -25,8 +32,7 @@ public class OllamaChatRequest extends OllamaCommonRequest implements OllamaRequ
 
     private boolean think;
 
-    public OllamaChatRequest() {
-    }
+    public OllamaChatRequest() {}
 
     public OllamaChatRequest(String model, boolean think, List<OllamaChatMessage> messages) {
         this.model = model;
@@ -42,5 +48,4 @@ public class OllamaChatRequest extends OllamaCommonRequest implements OllamaRequ
 
         return this.toString().equals(o.toString());
     }
-
 }

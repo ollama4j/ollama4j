@@ -1,3 +1,11 @@
+/*
+ * Ollama4j - Java library for interacting with Ollama server.
+ * Copyright (c) 2025 Amith Koujalgi and contributors.
+ *
+ * Licensed under the MIT License (the "License");
+ * you may not use this file except in compliance with the License.
+ *
+*/
 package io.github.ollama4j.utils;
 
 import java.util.HashMap;
@@ -230,14 +238,15 @@ public class OptionsBuilder {
      * @return The updated OptionsBuilder.
      * @throws IllegalArgumentException if parameter has an unsupported type
      */
-    public OptionsBuilder setCustomOption(String name, Object value) throws IllegalArgumentException {
+    public OptionsBuilder setCustomOption(String name, Object value)
+            throws IllegalArgumentException {
         if (!(value instanceof Integer || value instanceof Float || value instanceof String)) {
-            throw new IllegalArgumentException("Invalid type for parameter. Allowed types are: Integer, Float, or String.");
+            throw new IllegalArgumentException(
+                    "Invalid type for parameter. Allowed types are: Integer, Float, or String.");
         }
         options.getOptionsMap().put(name, value);
         return this;
     }
-
 
     /**
      * Builds the options map.
@@ -247,6 +256,4 @@ public class OptionsBuilder {
     public Options build() {
         return options;
     }
-
-
 }

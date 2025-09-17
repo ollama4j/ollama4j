@@ -1,4 +1,14 @@
+/*
+ * Ollama4j - Java library for interacting with Ollama server.
+ * Copyright (c) 2025 Amith Koujalgi and contributors.
+ *
+ * Licensed under the MIT License (the "License");
+ * you may not use this file except in compliance with the License.
+ *
+*/
 package io.github.ollama4j.unittests.jackson;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import io.github.ollama4j.models.generate.OllamaGenerateRequest;
 import io.github.ollama4j.models.generate.OllamaGenerateRequestBuilder;
@@ -7,9 +17,8 @@ import org.json.JSONObject;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-
-public class TestGenerateRequestSerialization extends AbstractSerializationTest<OllamaGenerateRequest> {
+public class TestGenerateRequestSerialization
+        extends AbstractSerializationTest<OllamaGenerateRequest> {
 
     private OllamaGenerateRequestBuilder builder;
 
@@ -33,15 +42,15 @@ public class TestGenerateRequestSerialization extends AbstractSerializationTest<
                 builder.withPrompt("Some prompt").withOptions(b.setMirostat(1).build()).build();
 
         String jsonRequest = serialize(req);
-        OllamaGenerateRequest deserializeRequest = deserialize(jsonRequest, OllamaGenerateRequest.class);
+        OllamaGenerateRequest deserializeRequest =
+                deserialize(jsonRequest, OllamaGenerateRequest.class);
         assertEqualsAfterUnmarshalling(deserializeRequest, req);
         assertEquals(1, deserializeRequest.getOptions().get("mirostat"));
     }
 
     @Test
     public void testWithJsonFormat() {
-        OllamaGenerateRequest req =
-                builder.withPrompt("Some prompt").withGetJsonResponse().build();
+        OllamaGenerateRequest req = builder.withPrompt("Some prompt").withGetJsonResponse().build();
 
         String jsonRequest = serialize(req);
         System.out.printf(jsonRequest);

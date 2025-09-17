@@ -1,25 +1,32 @@
+/*
+ * Ollama4j - Java library for interacting with Ollama server.
+ * Copyright (c) 2025 Amith Koujalgi and contributors.
+ *
+ * Licensed under the MIT License (the "License");
+ * you may not use this file except in compliance with the License.
+ *
+*/
 package io.github.ollama4j.unittests;
+
+import static org.junit.jupiter.api.Assertions.*;
 
 import io.github.ollama4j.tools.annotations.OllamaToolService;
 import io.github.ollama4j.tools.annotations.ToolProperty;
 import io.github.ollama4j.tools.annotations.ToolSpec;
-import org.junit.jupiter.api.Test;
-
 import java.lang.reflect.Method;
 import java.lang.reflect.Parameter;
-
-import static org.junit.jupiter.api.Assertions.*;
+import org.junit.jupiter.api.Test;
 
 class TestAnnotations {
 
     @OllamaToolService(providers = {SampleProvider.class})
-    static class SampleToolService {
-    }
+    static class SampleToolService {}
 
     static class SampleProvider {
         @ToolSpec(name = "sum", desc = "adds two numbers")
-        public int sum(@ToolProperty(name = "a", desc = "first addend") int a,
-                       @ToolProperty(name = "b", desc = "second addend", required = false) int b) {
+        public int sum(
+                @ToolProperty(name = "a", desc = "first addend") int a,
+                @ToolProperty(name = "b", desc = "second addend", required = false) int b) {
             return a + b;
         }
     }
@@ -28,7 +35,7 @@ class TestAnnotations {
     void testOllamaToolServiceProvidersPresent() throws Exception {
         OllamaToolService ann = SampleToolService.class.getAnnotation(OllamaToolService.class);
         assertNotNull(ann);
-        assertArrayEquals(new Class<?>[]{SampleProvider.class}, ann.providers());
+        assertArrayEquals(new Class<?>[] {SampleProvider.class}, ann.providers());
     }
 
     @Test

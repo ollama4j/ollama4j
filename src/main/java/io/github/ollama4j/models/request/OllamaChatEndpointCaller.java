@@ -1,3 +1,11 @@
+/*
+ * Ollama4j - Java library for interacting with Ollama server.
+ * Copyright (c) 2025 Amith Koujalgi and contributors.
+ *
+ * Licensed under the MIT License (the "License");
+ * you may not use this file except in compliance with the License.
+ *
+*/
 package io.github.ollama4j.models.request;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -7,9 +15,6 @@ import io.github.ollama4j.models.chat.*;
 import io.github.ollama4j.models.generate.OllamaTokenHandler;
 import io.github.ollama4j.models.response.OllamaErrorResponse;
 import io.github.ollama4j.utils.Utils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
@@ -20,6 +25,8 @@ import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Specialization class for requests
@@ -52,11 +59,15 @@ public class OllamaChatEndpointCaller extends OllamaEndpointCaller {
      * @return TRUE, if ollama-Response has 'done' state
      */
     @Override
-    protected boolean parseResponseAndAddToBuffer(String line, StringBuilder responseBuffer, StringBuilder thinkingBuffer) {
+    protected boolean parseResponseAndAddToBuffer(
+            String line, StringBuilder responseBuffer, StringBuilder thinkingBuffer) {
         try {
-            OllamaChatResponseModel ollamaResponseModel = Utils.getObjectMapper().readValue(line, OllamaChatResponseModel.class);
-            // it seems that under heavy load ollama responds with an empty chat message part in the streamed response
-            // thus, we null check the message and hope that the next streamed response has some message content again
+            OllamaChatResponseModel ollamaResponseModel =
+                    Utils.getObjectMapper().readValue(line, OllamaChatResponseModel.class);
+            // it seems that under heavy load ollama responds with an empty chat message part in the
+            // streamed response
+            // thus, we null check the message and hope that the next streamed response has some
+            // message content again
             OllamaChatMessage message = ollamaResponseModel.getMessage();
             if (message != null) {
                 if (message.getThinking() != null) {
@@ -81,14 +92,13 @@ public class OllamaChatEndpointCaller extends OllamaEndpointCaller {
         return callSync(body);
     }
 
-    public OllamaChatResult callSync(OllamaChatRequest body) throws OllamaBaseException, IOException, InterruptedException {
+    public OllamaChatResult callSync(OllamaChatRequest body)
+            throws OllamaBaseException, IOException, InterruptedException {
         // Create Request
         HttpClient httpClient = HttpClient.newHttpClient();
         URI uri = URI.create(getHost() + getEndpointSuffix());
         HttpRequest.Builder requestBuilder =
-                getRequestBuilderDefault(uri)
-                        .POST(
-                                body.getBodyPublisher());
+                getRequestBuilderDefault(uri).POST(body.getBodyPublisher());
         HttpRequest request = requestBuilder.build();
         LOG.debug("Asking model: {}", body);
         HttpResponse<InputStream> response =
@@ -101,7 +111,8 @@ public class OllamaChatEndpointCaller extends OllamaEndpointCaller {
         OllamaChatResponseModel ollamaChatResponseModel = null;
         List<OllamaChatToolCalls> wantedToolsForStream = null;
         try (BufferedReader reader =
-                     new BufferedReader(new InputStreamReader(responseBodyStream, StandardCharsets.UTF_8))) {
+                new BufferedReader(
+                        new InputStreamReader(responseBodyStream, StandardCharsets.UTF_8))) {
 
             String line;
             while ((line = reader.readLine()) != null) {
@@ -114,22 +125,27 @@ public class OllamaChatEndpointCaller extends OllamaEndpointCaller {
                     LOG.warn("Status code: 401 (Unauthorized)");
                     OllamaErrorResponse ollamaResponseModel =
                             Utils.getObjectMapper()
-                                    .readValue("{\"error\":\"Unauthorized\"}", OllamaErrorResponse.class);
+                                    .readValue(
+                                            "{\"error\":\"Unauthorized\"}",
+                                            OllamaErrorResponse.class);
                     responseBuffer.append(ollamaResponseModel.getError());
                 } else if (statusCode == 400) {
                     LOG.warn("Status code: 400 (Bad Request)");
-                    OllamaErrorResponse ollamaResponseModel = Utils.getObjectMapper().readValue(line,
-                            OllamaErrorResponse.class);
+                    OllamaErrorResponse ollamaResponseModel =
+                            Utils.getObjectMapper().readValue(line, OllamaErrorResponse.class);
                     responseBuffer.append(ollamaResponseModel.getError());
                 } else if (statusCode == 500) {
                     LOG.warn("Status code: 500 (Internal Server Error)");
-                    OllamaErrorResponse ollamaResponseModel = Utils.getObjectMapper().readValue(line,
-                            OllamaErrorResponse.class);
+                    OllamaErrorResponse ollamaResponseModel =
+                            Utils.getObjectMapper().readValue(line, OllamaErrorResponse.class);
                     responseBuffer.append(ollamaResponseModel.getError());
                 } else {
-                    boolean finished = parseResponseAndAddToBuffer(line, responseBuffer, thinkingBuffer);
-                    ollamaChatResponseModel = Utils.getObjectMapper().readValue(line, OllamaChatResponseModel.class);
-                    if (body.stream && ollamaChatResponseModel.getMessage().getToolCalls() != null) {
+                    boolean finished =
+                            parseResponseAndAddToBuffer(line, responseBuffer, thinkingBuffer);
+                    ollamaChatResponseModel =
+                            Utils.getObjectMapper().readValue(line, OllamaChatResponseModel.class);
+                    if (body.stream
+                            && ollamaChatResponseModel.getMessage().getToolCalls() != null) {
                         wantedToolsForStream = ollamaChatResponseModel.getMessage().getToolCalls();
                     }
                     if (finished && body.stream) {

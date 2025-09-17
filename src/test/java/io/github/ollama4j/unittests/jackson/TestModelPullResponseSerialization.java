@@ -1,9 +1,17 @@
+/*
+ * Ollama4j - Java library for interacting with Ollama server.
+ * Copyright (c) 2025 Amith Koujalgi and contributors.
+ *
+ * Licensed under the MIT License (the "License");
+ * you may not use this file except in compliance with the License.
+ *
+*/
 package io.github.ollama4j.unittests.jackson;
+
+import static org.junit.jupiter.api.Assertions.*;
 
 import io.github.ollama4j.models.response.ModelPullResponse;
 import org.junit.jupiter.api.Test;
-
-import static org.junit.jupiter.api.Assertions.*;
 
 /**
  * Test serialization and deserialization of ModelPullResponse,
@@ -11,7 +19,8 @@ import static org.junit.jupiter.api.Assertions.*;
  * error responses from Ollama server that return HTTP 200 with error messages
  * in the JSON body.
  */
-public class TestModelPullResponseSerialization extends AbstractSerializationTest<ModelPullResponse> {
+public class TestModelPullResponseSerialization
+        extends AbstractSerializationTest<ModelPullResponse> {
 
     /**
      * Test the specific error case reported in GitHub issue #138.
@@ -20,7 +29,16 @@ public class TestModelPullResponseSerialization extends AbstractSerializationTes
     @Test
     public void testDeserializationWithErrorFromGitHubIssue138() {
         // This is the exact error JSON from GitHub issue #138
-        String errorJson = "{\"error\":\"pull model manifest: 412: \\n\\nThe model you are attempting to pull requires a newer version of Ollama.\\n\\nPlease download the latest version at:\\n\\n\\thttps://ollama.com/download\\n\\n\"}";
+        String errorJson =
+                "{\"error\":\"pull model manifest: 412: \\n"
+                    + "\\n"
+                    + "The model you are attempting to pull requires a newer version of Ollama.\\n"
+                    + "\\n"
+                    + "Please download the latest version at:\\n"
+                    + "\\n"
+                    + "\\thttps://ollama.com/download\\n"
+                    + "\\n"
+                    + "\"}";
 
         ModelPullResponse response = deserialize(errorJson, ModelPullResponse.class);
 
@@ -59,7 +77,9 @@ public class TestModelPullResponseSerialization extends AbstractSerializationTes
      */
     @Test
     public void testDeserializationWithProgressFields() {
-        String progressJson = "{\"status\":\"pulling digestname\",\"digest\":\"sha256:abc123\",\"total\":2142590208,\"completed\":241970}";
+        String progressJson =
+                "{\"status\":\"pulling"
+                    + " digestname\",\"digest\":\"sha256:abc123\",\"total\":2142590208,\"completed\":241970}";
 
         ModelPullResponse response = deserialize(progressJson, ModelPullResponse.class);
 
@@ -95,7 +115,8 @@ public class TestModelPullResponseSerialization extends AbstractSerializationTes
      */
     @Test
     public void testDeserializationWithAllFields() {
-        String completeJson = "{\"status\":\"downloading\",\"digest\":\"sha256:def456\",\"total\":1000000,\"completed\":500000,\"error\":null}";
+        String completeJson =
+                "{\"status\":\"downloading\",\"digest\":\"sha256:def456\",\"total\":1000000,\"completed\":500000,\"error\":null}";
 
         ModelPullResponse response = deserialize(completeJson, ModelPullResponse.class);
 
@@ -115,7 +136,9 @@ public class TestModelPullResponseSerialization extends AbstractSerializationTes
     @Test
     public void testDeserializationWithUnknownFields() {
         // Test that unknown fields are ignored due to @JsonIgnoreProperties(ignoreUnknown = true)
-        String jsonWithUnknownFields = "{\"status\":\"pulling\",\"unknown_field\":\"should_be_ignored\",\"error\":\"test error\",\"another_unknown\":123,\"nested_unknown\":{\"key\":\"value\"}}";
+        String jsonWithUnknownFields =
+                "{\"status\":\"pulling\",\"unknown_field\":\"should_be_ignored\",\"error\":\"test"
+                    + " error\",\"another_unknown\":123,\"nested_unknown\":{\"key\":\"value\"}}";
 
         ModelPullResponse response = deserialize(jsonWithUnknownFields, ModelPullResponse.class);
 
@@ -227,21 +250,25 @@ public class TestModelPullResponseSerialization extends AbstractSerializationTes
         String errorJson = "{\"error\":\"test error\"}";
         ModelPullResponse errorResponse = deserialize(errorJson, ModelPullResponse.class);
 
-        assertTrue(errorResponse.getError() != null && !errorResponse.getError().trim().isEmpty(),
+        assertTrue(
+                errorResponse.getError() != null && !errorResponse.getError().trim().isEmpty(),
                 "Error response should trigger error handling logic");
 
         // Normal case - should not trigger error handling
         String normalJson = "{\"status\":\"pulling\"}";
         ModelPullResponse normalResponse = deserialize(normalJson, ModelPullResponse.class);
 
-        assertFalse(normalResponse.getError() != null && !normalResponse.getError().trim().isEmpty(),
+        assertFalse(
+                normalResponse.getError() != null && !normalResponse.getError().trim().isEmpty(),
                 "Normal response should not trigger error handling logic");
 
         // Empty error case - should not trigger error handling
         String emptyErrorJson = "{\"error\":\"\",\"status\":\"pulling\"}";
         ModelPullResponse emptyErrorResponse = deserialize(emptyErrorJson, ModelPullResponse.class);
 
-        assertFalse(emptyErrorResponse.getError() != null && !emptyErrorResponse.getError().trim().isEmpty(),
+        assertFalse(
+                emptyErrorResponse.getError() != null
+                        && !emptyErrorResponse.getError().trim().isEmpty(),
                 "Empty error response should not trigger error handling logic");
     }
 }

@@ -1,14 +1,21 @@
+/*
+ * Ollama4j - Java library for interacting with Ollama server.
+ * Copyright (c) 2025 Amith Koujalgi and contributors.
+ *
+ * Licensed under the MIT License (the "License");
+ * you may not use this file except in compliance with the License.
+ *
+*/
 package io.github.ollama4j.unittests;
 
-import io.github.ollama4j.tools.ReflectionalToolFunction;
-import org.junit.jupiter.api.Test;
+import static org.junit.jupiter.api.Assertions.*;
 
+import io.github.ollama4j.tools.ReflectionalToolFunction;
 import java.lang.reflect.Method;
 import java.math.BigDecimal;
 import java.util.LinkedHashMap;
 import java.util.Map;
-
-import static org.junit.jupiter.api.Assertions.*;
+import org.junit.jupiter.api.Test;
 
 class TestReflectionalToolFunction {
 
@@ -25,7 +32,9 @@ class TestReflectionalToolFunction {
     @Test
     void testApplyInvokesMethodWithTypeCasting() throws Exception {
         SampleToolHolder holder = new SampleToolHolder();
-        Method method = SampleToolHolder.class.getMethod("combine", Integer.class, Boolean.class, BigDecimal.class, String.class);
+        Method method =
+                SampleToolHolder.class.getMethod(
+                        "combine", Integer.class, Boolean.class, BigDecimal.class, String.class);
 
         LinkedHashMap<String, String> propDef = new LinkedHashMap<>();
         // preserve order to match method parameters
@@ -36,12 +45,13 @@ class TestReflectionalToolFunction {
 
         ReflectionalToolFunction fn = new ReflectionalToolFunction(holder, method, propDef);
 
-        Map<String, Object> args = Map.of(
-                "i", "42",
-                "b", "true",
-                "d", "3.14",
-                "s", 123 // not a string; should be toString()'d by implementation
-        );
+        Map<String, Object> args =
+                Map.of(
+                        "i", "42",
+                        "b", "true",
+                        "d", "3.14",
+                        "s", 123 // not a string; should be toString()'d by implementation
+                        );
 
         Object result = fn.apply(args);
         assertEquals("i=42,b=true,d=3.14,s=123", result);
@@ -50,7 +60,9 @@ class TestReflectionalToolFunction {
     @Test
     void testTypeCastNullsWhenClassOrValueIsNull() throws Exception {
         SampleToolHolder holder = new SampleToolHolder();
-        Method method = SampleToolHolder.class.getMethod("combine", Integer.class, Boolean.class, BigDecimal.class, String.class);
+        Method method =
+                SampleToolHolder.class.getMethod(
+                        "combine", Integer.class, Boolean.class, BigDecimal.class, String.class);
 
         LinkedHashMap<String, String> propDef = new LinkedHashMap<>();
         propDef.put("i", null); // className null -> expect null passed

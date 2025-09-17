@@ -1,17 +1,24 @@
+/*
+ * Ollama4j - Java library for interacting with Ollama server.
+ * Copyright (c) 2025 Amith Koujalgi and contributors.
+ *
+ * Licensed under the MIT License (the "License");
+ * you may not use this file except in compliance with the License.
+ *
+*/
 package io.github.ollama4j.models.response;
+
+import static io.github.ollama4j.utils.Utils.getObjectMapper;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
+import java.util.List;
+import java.util.Map;
 import lombok.Data;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-
-import java.util.List;
-import java.util.Map;
-
-import static io.github.ollama4j.utils.Utils.getObjectMapper;
 
 @Getter
 @SuppressWarnings("unused")
@@ -58,9 +65,11 @@ public class OllamaStructuredResult {
      */
     public Map<String, Object> getStructuredResponse() {
         try {
-            Map<String, Object> response = getObjectMapper().readValue(this.getResponse(),
-                    new TypeReference<Map<String, Object>>() {
-                    });
+            Map<String, Object> response =
+                    getObjectMapper()
+                            .readValue(
+                                    this.getResponse(),
+                                    new TypeReference<Map<String, Object>>() {});
             return response;
         } catch (JsonProcessingException e) {
             throw new RuntimeException(e);

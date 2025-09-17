@@ -1,40 +1,48 @@
+/*
+ * Ollama4j - Java library for interacting with Ollama server.
+ * Copyright (c) 2025 Amith Koujalgi and contributors.
+ *
+ * Licensed under the MIT License (the "License");
+ * you may not use this file except in compliance with the License.
+ *
+*/
 package io.github.ollama4j.unittests;
+
+import static org.junit.jupiter.api.Assertions.*;
 
 import io.github.ollama4j.utils.Options;
 import io.github.ollama4j.utils.OptionsBuilder;
 import io.github.ollama4j.utils.PromptBuilder;
 import io.github.ollama4j.utils.Utils;
-import org.junit.jupiter.api.Test;
-
 import java.io.File;
 import java.util.Map;
-
-import static org.junit.jupiter.api.Assertions.*;
+import org.junit.jupiter.api.Test;
 
 class TestOptionsAndUtils {
 
     @Test
     void testOptionsBuilderSetsValues() {
-        Options options = new OptionsBuilder()
-                .setMirostat(1)
-                .setMirostatEta(0.2f)
-                .setMirostatTau(4.5f)
-                .setNumCtx(1024)
-                .setNumGqa(8)
-                .setNumGpu(2)
-                .setNumThread(6)
-                .setRepeatLastN(32)
-                .setRepeatPenalty(1.2f)
-                .setTemperature(0.7f)
-                .setSeed(42)
-                .setStop("STOP")
-                .setTfsZ(1.5f)
-                .setNumPredict(256)
-                .setTopK(50)
-                .setTopP(0.95f)
-                .setMinP(0.05f)
-                .setCustomOption("custom_param", 123)
-                .build();
+        Options options =
+                new OptionsBuilder()
+                        .setMirostat(1)
+                        .setMirostatEta(0.2f)
+                        .setMirostatTau(4.5f)
+                        .setNumCtx(1024)
+                        .setNumGqa(8)
+                        .setNumGpu(2)
+                        .setNumThread(6)
+                        .setRepeatLastN(32)
+                        .setRepeatPenalty(1.2f)
+                        .setTemperature(0.7f)
+                        .setSeed(42)
+                        .setStop("STOP")
+                        .setTfsZ(1.5f)
+                        .setNumPredict(256)
+                        .setTopK(50)
+                        .setTopP(0.95f)
+                        .setMinP(0.05f)
+                        .setCustomOption("custom_param", 123)
+                        .build();
 
         Map<String, Object> map = options.getOptionsMap();
         assertEquals(1, map.get("mirostat"));
@@ -60,19 +68,22 @@ class TestOptionsAndUtils {
     @Test
     void testOptionsBuilderRejectsUnsupportedCustomType() {
         OptionsBuilder builder = new OptionsBuilder();
-        assertThrows(IllegalArgumentException.class, () -> builder.setCustomOption("bad", new Object()));
+        assertThrows(
+                IllegalArgumentException.class, () -> builder.setCustomOption("bad", new Object()));
     }
 
     @Test
     void testPromptBuilderBuildsExpectedString() {
-        String prompt = new PromptBuilder()
-                .add("Hello")
-                .addLine(", world!")
-                .addSeparator()
-                .add("Continue.")
-                .build();
+        String prompt =
+                new PromptBuilder()
+                        .add("Hello")
+                        .addLine(", world!")
+                        .addSeparator()
+                        .add("Continue.")
+                        .build();
 
-        String expected = "Hello, world!\n\n--------------------------------------------------\nContinue.";
+        String expected =
+                "Hello, world!\n\n--------------------------------------------------\nContinue.";
         assertEquals(expected, prompt);
     }
 
@@ -80,7 +91,8 @@ class TestOptionsAndUtils {
     void testUtilsGetObjectMapperSingletonAndModule() {
         assertSame(Utils.getObjectMapper(), Utils.getObjectMapper());
         // Basic serialization sanity check with JavaTimeModule registered
-        assertDoesNotThrow(() -> Utils.getObjectMapper().writeValueAsString(java.time.OffsetDateTime.now()));
+        assertDoesNotThrow(
+                () -> Utils.getObjectMapper().writeValueAsString(java.time.OffsetDateTime.now()));
     }
 
     @Test

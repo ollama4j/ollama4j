@@ -1,3 +1,11 @@
+/*
+ * Ollama4j - Java library for interacting with Ollama server.
+ * Copyright (c) 2025 Amith Koujalgi and contributors.
+ *
+ * Licensed under the MIT License (the "License");
+ * you may not use this file except in compliance with the License.
+ *
+*/
 package io.github.ollama4j.models.chat;
 
 import io.github.ollama4j.models.generate.OllamaStreamHandler;
@@ -23,16 +31,15 @@ public class OllamaChatStreamObserver implements OllamaTokenHandler {
         boolean hasThinking = thinking != null && !thinking.isEmpty();
         boolean hasContent = !content.isEmpty();
 
-//        if (hasThinking && !hasContent) {
-////            message += thinking;
-//            message = thinking;
-//        } else {
-////            message += content;
-//            message = content;
-//        }
-//
-//        responseStreamHandler.accept(message);
-
+        //        if (hasThinking && !hasContent) {
+        ////            message += thinking;
+        //            message = thinking;
+        //        } else {
+        ////            message += content;
+        //            message = content;
+        //        }
+        //
+        //        responseStreamHandler.accept(message);
 
         if (!hasContent && hasThinking && thinkingStreamHandler != null) {
             // message = message + thinking;

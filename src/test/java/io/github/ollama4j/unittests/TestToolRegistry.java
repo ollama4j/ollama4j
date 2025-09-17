@@ -1,13 +1,20 @@
+/*
+ * Ollama4j - Java library for interacting with Ollama server.
+ * Copyright (c) 2025 Amith Koujalgi and contributors.
+ *
+ * Licensed under the MIT License (the "License");
+ * you may not use this file except in compliance with the License.
+ *
+*/
 package io.github.ollama4j.unittests;
+
+import static org.junit.jupiter.api.Assertions.*;
 
 import io.github.ollama4j.tools.ToolFunction;
 import io.github.ollama4j.tools.ToolRegistry;
 import io.github.ollama4j.tools.Tools;
-import org.junit.jupiter.api.Test;
-
 import java.util.Map;
-
-import static org.junit.jupiter.api.Assertions.*;
+import org.junit.jupiter.api.Test;
 
 class TestToolRegistry {
 
@@ -16,11 +23,12 @@ class TestToolRegistry {
         ToolRegistry registry = new ToolRegistry();
         ToolFunction fn = args -> "ok:" + args.get("x");
 
-        Tools.ToolSpecification spec = Tools.ToolSpecification.builder()
-                .functionName("test")
-                .functionDescription("desc")
-                .toolFunction(fn)
-                .build();
+        Tools.ToolSpecification spec =
+                Tools.ToolSpecification.builder()
+                        .functionName("test")
+                        .functionDescription("desc")
+                        .toolFunction(fn)
+                        .build();
 
         registry.addTool("test", spec);
         ToolFunction retrieved = registry.getToolFunction("test");

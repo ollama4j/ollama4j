@@ -1,8 +1,15 @@
+/*
+ * Ollama4j - Java library for interacting with Ollama server.
+ * Copyright (c) 2025 Amith Koujalgi and contributors.
+ *
+ * Licensed under the MIT License (the "License");
+ * you may not use this file except in compliance with the License.
+ *
+*/
 package io.github.ollama4j.utils;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.core.JsonProcessingException;
-
 import java.net.http.HttpRequest.BodyPublisher;
 import java.net.http.HttpRequest.BodyPublishers;
 
@@ -19,8 +26,7 @@ public interface OllamaRequestBody {
     @JsonIgnore
     default BodyPublisher getBodyPublisher() {
         try {
-            return BodyPublishers.ofString(
-                    Utils.getObjectMapper().writeValueAsString(this));
+            return BodyPublishers.ofString(Utils.getObjectMapper().writeValueAsString(this));
         } catch (JsonProcessingException e) {
             throw new IllegalArgumentException("Request not Body convertible.", e);
         }

@@ -1,4 +1,16 @@
+/*
+ * Ollama4j - Java library for interacting with Ollama server.
+ * Copyright (c) 2025 Amith Koujalgi and contributors.
+ *
+ * Licensed under the MIT License (the "License");
+ * you may not use this file except in compliance with the License.
+ *
+*/
 package io.github.ollama4j.unittests;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.fail;
+import static org.mockito.Mockito.*;
 
 import io.github.ollama4j.OllamaAPI;
 import io.github.ollama4j.exceptions.OllamaBaseException;
@@ -12,18 +24,13 @@ import io.github.ollama4j.models.response.OllamaAsyncResultStreamer;
 import io.github.ollama4j.models.response.OllamaResult;
 import io.github.ollama4j.types.OllamaModelType;
 import io.github.ollama4j.utils.OptionsBuilder;
-import org.junit.jupiter.api.Test;
-import org.mockito.Mockito;
-
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.fail;
-import static org.mockito.Mockito.*;
+import org.junit.jupiter.api.Test;
+import org.mockito.Mockito;
 
 class TestMockedAPIs {
     @Test
@@ -54,7 +61,12 @@ class TestMockedAPIs {
     @Test
     void testCreateModel() {
         OllamaAPI ollamaAPI = Mockito.mock(OllamaAPI.class);
-        CustomModelRequest customModelRequest = CustomModelRequest.builder().model("mario").from("llama3.2:latest").system("You are Mario from Super Mario Bros.").build();
+        CustomModelRequest customModelRequest =
+                CustomModelRequest.builder()
+                        .model("mario")
+                        .from("llama3.2:latest")
+                        .system("You are Mario from Super Mario Bros.")
+                        .build();
         try {
             doNothing().when(ollamaAPI).createModel(customModelRequest);
             ollamaAPI.createModel(customModelRequest);
@@ -128,7 +140,8 @@ class TestMockedAPIs {
         String model = OllamaModelType.LLAMA2;
         List<String> inputs = List.of("some prompt text");
         try {
-            when(ollamaAPI.embed(new OllamaEmbedRequestModel(model, inputs))).thenReturn(new OllamaEmbedResponseModel());
+            when(ollamaAPI.embed(new OllamaEmbedRequestModel(model, inputs)))
+                    .thenReturn(new OllamaEmbedResponseModel());
             ollamaAPI.embed(new OllamaEmbedRequestModel(model, inputs));
             verify(ollamaAPI, times(1)).embed(new OllamaEmbedRequestModel(model, inputs));
         } catch (IOException | OllamaBaseException | InterruptedException e) {
@@ -146,7 +159,8 @@ class TestMockedAPIs {
             when(ollamaAPI.generate(model, prompt, false, false, optionsBuilder.build()))
                     .thenReturn(new OllamaResult("", "", 0, 200));
             ollamaAPI.generate(model, prompt, false, false, optionsBuilder.build());
-            verify(ollamaAPI, times(1)).generate(model, prompt, false, false, optionsBuilder.build());
+            verify(ollamaAPI, times(1))
+                    .generate(model, prompt, false, false, optionsBuilder.build());
         } catch (IOException | OllamaBaseException | InterruptedException e) {
             throw new RuntimeException(e);
         }
@@ -159,13 +173,28 @@ class TestMockedAPIs {
         String prompt = "some prompt text";
         try {
             when(ollamaAPI.generateWithImages(
-                    model, prompt, Collections.emptyList(), new OptionsBuilder().build(), null, null))
+                            model,
+                            prompt,
+                            Collections.emptyList(),
+                            new OptionsBuilder().build(),
+                            null,
+                            null))
                     .thenReturn(new OllamaResult("", "", 0, 200));
             ollamaAPI.generateWithImages(
-                    model, prompt, Collections.emptyList(), new OptionsBuilder().build(), null, null);
+                    model,
+                    prompt,
+                    Collections.emptyList(),
+                    new OptionsBuilder().build(),
+                    null,
+                    null);
             verify(ollamaAPI, times(1))
                     .generateWithImages(
-                            model, prompt, Collections.emptyList(), new OptionsBuilder().build(), null, null);
+                            model,
+                            prompt,
+                            Collections.emptyList(),
+                            new OptionsBuilder().build(),
+                            null,
+                            null);
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
@@ -178,13 +207,28 @@ class TestMockedAPIs {
         String prompt = "some prompt text";
         try {
             when(ollamaAPI.generateWithImages(
-                    model, prompt, Collections.emptyList(), new OptionsBuilder().build(), null, null))
+                            model,
+                            prompt,
+                            Collections.emptyList(),
+                            new OptionsBuilder().build(),
+                            null,
+                            null))
                     .thenReturn(new OllamaResult("", "", 0, 200));
             ollamaAPI.generateWithImages(
-                    model, prompt, Collections.emptyList(), new OptionsBuilder().build(), null, null);
+                    model,
+                    prompt,
+                    Collections.emptyList(),
+                    new OptionsBuilder().build(),
+                    null,
+                    null);
             verify(ollamaAPI, times(1))
                     .generateWithImages(
-                            model, prompt, Collections.emptyList(), new OptionsBuilder().build(), null, null);
+                            model,
+                            prompt,
+                            Collections.emptyList(),
+                            new OptionsBuilder().build(),
+                            null,
+                            null);
         } catch (IOException | OllamaBaseException | InterruptedException | URISyntaxException e) {
             throw new RuntimeException(e);
         }
@@ -229,7 +273,8 @@ class TestMockedAPIs {
         OllamaAPI ollamaAPI = mock(OllamaAPI.class);
         String roleName = "non-existing-role";
         try {
-            when(ollamaAPI.getRole(roleName)).thenThrow(new RoleNotFoundException("Role not found"));
+            when(ollamaAPI.getRole(roleName))
+                    .thenThrow(new RoleNotFoundException("Role not found"));
         } catch (RoleNotFoundException exception) {
             throw new RuntimeException("Failed to run test: testGetRoleNotFound");
         }

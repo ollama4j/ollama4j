@@ -1,10 +1,15 @@
+/*
+ * Ollama4j - Java library for interacting with Ollama server.
+ * Copyright (c) 2025 Amith Koujalgi and contributors.
+ *
+ * Licensed under the MIT License (the "License");
+ * you may not use this file except in compliance with the License.
+ *
+*/
 package io.github.ollama4j.models.chat;
 
 import io.github.ollama4j.utils.Options;
 import io.github.ollama4j.utils.Utils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
@@ -12,6 +17,8 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Helper class for creating {@link OllamaChatRequest} objects using the builder-pattern.
@@ -23,7 +30,8 @@ public class OllamaChatRequestBuilder {
     private int imageURLConnectTimeoutSeconds = 10;
     private int imageURLReadTimeoutSeconds = 10;
 
-    public OllamaChatRequestBuilder withImageURLConnectTimeoutSeconds(int imageURLConnectTimeoutSeconds) {
+    public OllamaChatRequestBuilder withImageURLConnectTimeoutSeconds(
+            int imageURLConnectTimeoutSeconds) {
         this.imageURLConnectTimeoutSeconds = imageURLConnectTimeoutSeconds;
         return this;
     }
@@ -55,40 +63,67 @@ public class OllamaChatRequestBuilder {
         return withMessage(role, content, Collections.emptyList());
     }
 
-    public OllamaChatRequestBuilder withMessage(OllamaChatMessageRole role, String content, List<OllamaChatToolCalls> toolCalls) {
+    public OllamaChatRequestBuilder withMessage(
+            OllamaChatMessageRole role, String content, List<OllamaChatToolCalls> toolCalls) {
         List<OllamaChatMessage> messages = this.request.getMessages();
         messages.add(new OllamaChatMessage(role, content, null, toolCalls, null));
         return this;
     }
 
-    public OllamaChatRequestBuilder withMessage(OllamaChatMessageRole role, String content, List<OllamaChatToolCalls> toolCalls, List<File> images) {
+    public OllamaChatRequestBuilder withMessage(
+            OllamaChatMessageRole role,
+            String content,
+            List<OllamaChatToolCalls> toolCalls,
+            List<File> images) {
         List<OllamaChatMessage> messages = this.request.getMessages();
 
-        List<byte[]> binaryImages = images.stream().map(file -> {
-            try {
-                return Files.readAllBytes(file.toPath());
-            } catch (IOException e) {
-                LOG.warn("File '{}' could not be accessed, will not add to message!", file.toPath(), e);
-                return new byte[0];
-            }
-        }).collect(Collectors.toList());
+        List<byte[]> binaryImages =
+                images.stream()
+                        .map(
+                                file -> {
+                                    try {
+                                        return Files.readAllBytes(file.toPath());
+                                    } catch (IOException e) {
+                                        LOG.warn(
+                                                "File '{}' could not be accessed, will not add to"
+                                                        + " message!",
+                                                file.toPath(),
+                                                e);
+                                        return new byte[0];
+                                    }
+                                })
+                        .collect(Collectors.toList());
 
         messages.add(new OllamaChatMessage(role, content, null, toolCalls, binaryImages));
         return this;
     }
 
-    public OllamaChatRequestBuilder withMessage(OllamaChatMessageRole role, String content, List<OllamaChatToolCalls> toolCalls, String... imageUrls) {
+    public OllamaChatRequestBuilder withMessage(
+            OllamaChatMessageRole role,
+            String content,
+            List<OllamaChatToolCalls> toolCalls,
+            String... imageUrls) {
         List<OllamaChatMessage> messages = this.request.getMessages();
         List<byte[]> binaryImages = null;
         if (imageUrls.length > 0) {
             binaryImages = new ArrayList<>();
             for (String imageUrl : imageUrls) {
                 try {
-                    binaryImages.add(Utils.loadImageBytesFromUrl(imageUrl, imageURLConnectTimeoutSeconds, imageURLReadTimeoutSeconds));
+                    binaryImages.add(
+                            Utils.loadImageBytesFromUrl(
+                                    imageUrl,
+                                    imageURLConnectTimeoutSeconds,
+                                    imageURLReadTimeoutSeconds));
                 } catch (IOException e) {
-                    LOG.warn("Content of URL '{}' could not be read, will not add to message!", imageUrl, e);
+                    LOG.warn(
+                            "Content of URL '{}' could not be read, will not add to message!",
+                            imageUrl,
+                            e);
                 } catch (InterruptedException e) {
-                    LOG.warn("Loading image from URL '{}' was interrupted, will not add to message!", imageUrl, e);
+                    LOG.warn(
+                            "Loading image from URL '{}' was interrupted, will not add to message!",
+                            imageUrl,
+                            e);
                 }
             }
         }
