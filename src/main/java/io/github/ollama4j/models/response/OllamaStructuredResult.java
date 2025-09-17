@@ -65,12 +65,8 @@ public class OllamaStructuredResult {
      */
     public Map<String, Object> getStructuredResponse() {
         try {
-            Map<String, Object> response =
-                    getObjectMapper()
-                            .readValue(
-                                    this.getResponse(),
-                                    new TypeReference<Map<String, Object>>() {});
-            return response;
+            return getObjectMapper()
+                    .readValue(this.getResponse(), new TypeReference<Map<String, Object>>() {});
         } catch (JsonProcessingException e) {
             throw new RuntimeException(e);
         }

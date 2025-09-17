@@ -112,10 +112,8 @@ public class OllamaResult {
                 throw new IllegalArgumentException("Response is not a valid JSON object");
             }
 
-            Map<String, Object> response =
-                    getObjectMapper()
-                            .readValue(responseStr, new TypeReference<Map<String, Object>>() {});
-            return response;
+            return getObjectMapper()
+                    .readValue(responseStr, new TypeReference<Map<String, Object>>() {});
         } catch (JsonProcessingException e) {
             throw new IllegalArgumentException(
                     "Failed to parse response as JSON: " + e.getMessage(), e);

@@ -17,8 +17,7 @@ import org.json.JSONObject;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-public class TestGenerateRequestSerialization
-        extends AbstractSerializationTest<OllamaGenerateRequest> {
+class TestGenerateRequestSerialization extends AbstractSerializationTest<OllamaGenerateRequest> {
 
     private OllamaGenerateRequestBuilder builder;
 

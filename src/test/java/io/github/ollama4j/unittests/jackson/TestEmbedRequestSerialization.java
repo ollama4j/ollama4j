@@ -16,8 +16,7 @@ import io.github.ollama4j.utils.OptionsBuilder;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-public class TestEmbedRequestSerialization
-        extends AbstractSerializationTest<OllamaEmbedRequestModel> {
+class TestEmbedRequestSerialization extends AbstractSerializationTest<OllamaEmbedRequestModel> {
 
     private OllamaEmbedRequestBuilder builder;
 

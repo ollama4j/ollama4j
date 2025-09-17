@@ -104,11 +104,9 @@ public class TestChatRequestSerialization extends AbstractSerializationTest<Olla
         assertThrowsExactly(
                 IllegalArgumentException.class,
                 () -> {
-                    OllamaChatRequest req =
-                            builder.withMessage(OllamaChatMessageRole.USER, "Some prompt")
-                                    .withOptions(
-                                            b.setCustomOption("cust_obj", new Object()).build())
-                                    .build();
+                    builder.withMessage(OllamaChatMessageRole.USER, "Some prompt")
+                            .withOptions(b.setCustomOption("cust_obj", new Object()).build())
+                            .build();
                 });
     }
 
@@ -120,7 +118,8 @@ public class TestChatRequestSerialization extends AbstractSerializationTest<Olla
                         .build();
 
         String jsonRequest = serialize(req);
-        // no jackson deserialization as format property is not boolean ==> omit as deserialization
+        // no jackson deserialization as format property is not boolean ==> omit as
+        // deserialization
         // of request is never used in real code anyways
         JSONObject jsonObject = new JSONObject(jsonRequest);
         String requestFormatProperty = jsonObject.getString("format");

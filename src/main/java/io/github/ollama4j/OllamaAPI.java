@@ -727,7 +727,8 @@ public class OllamaAPI {
             LOG.debug("Model response:\n{}", ollamaResult);
             return ollamaResult;
         } else {
-            LOG.debug("Model response:\n{}", Utils.toJSON(responseBody));
+            String errorResponse = Utils.toJSON(responseBody);
+            LOG.debug("Model response:\n{}", errorResponse);
             throw new OllamaBaseException(statusCode + " - " + responseBody);
         }
     }

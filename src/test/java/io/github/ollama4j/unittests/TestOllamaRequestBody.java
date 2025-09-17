@@ -50,9 +50,17 @@ class TestOllamaRequestBody {
                     }
 
                     @Override
-                    public void onError(Throwable throwable) {}
+                    // This method is intentionally left empty because, for this test,
+                    // we do not expect any errors to occur during synchronous publishing.
+                    // If an error does occur, the test will fail elsewhere.
+                    public void onError(Throwable throwable) {
+                        // No action needed for this test
+                    }
 
                     @Override
+                    // This method is intentionally left empty because for this test,
+                    // all the data is synchronously delivered by the publisher, so no action is
+                    // needed on completion.
                     public void onComplete() {}
                 });
 

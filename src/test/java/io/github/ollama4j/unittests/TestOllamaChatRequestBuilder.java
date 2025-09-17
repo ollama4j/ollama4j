@@ -40,14 +40,18 @@ class TestOllamaChatRequestBuilder {
     }
 
     @Test
-    void testImageUrlFailuresAreHandledAndBuilderRemainsUsable() {
+    void testImageUrlFailuresThrowExceptionAndBuilderRemainsUsable() {
         OllamaChatRequestBuilder builder = OllamaChatRequestBuilder.getInstance("m");
         String invalidUrl = "ht!tp:/bad_url"; // clearly invalid URL format
 
-        // No exception should be thrown; builder should handle invalid URL gracefully
-        builder.withMessage(OllamaChatMessageRole.USER, "hi", Collections.emptyList(), invalidUrl);
+        // Exception should be thrown for invalid URL
+        assertThrows(
+                Exception.class,
+                () -> {
+                    builder.withMessage(
+                            OllamaChatMessageRole.USER, "hi", Collections.emptyList(), invalidUrl);
+                });
 
-        // The builder should still be usable after the exception
         OllamaChatRequest req =
                 builder.withMessage(OllamaChatMessageRole.USER, "hello", Collections.emptyList())
                         .build();

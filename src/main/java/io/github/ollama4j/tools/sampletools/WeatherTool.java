@@ -15,7 +15,14 @@ import java.util.Map;
 public class WeatherTool {
     private String paramCityName = "cityName";
 
-    public WeatherTool() {}
+    /**
+     * Default constructor for WeatherTool.
+     * This constructor is intentionally left empty because no initialization is required
+     * for this sample tool. If future state or dependencies are needed, they can be added here.
+     */
+    public WeatherTool() {
+        // No initialization required
+    }
 
     public String getCurrentWeather(Map<String, Object> arguments) {
         String city = (String) arguments.get(paramCityName);

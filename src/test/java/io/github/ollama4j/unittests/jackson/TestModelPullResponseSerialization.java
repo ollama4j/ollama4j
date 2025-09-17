@@ -19,8 +19,7 @@ import org.junit.jupiter.api.Test;
  * error responses from Ollama server that return HTTP 200 with error messages
  * in the JSON body.
  */
-public class TestModelPullResponseSerialization
-        extends AbstractSerializationTest<ModelPullResponse> {
+class TestModelPullResponseSerialization extends AbstractSerializationTest<ModelPullResponse> {
 
     /**
      * Test the specific error case reported in GitHub issue #138.

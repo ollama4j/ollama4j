@@ -100,7 +100,8 @@ public class OllamaChatRequestBuilder {
             OllamaChatMessageRole role,
             String content,
             List<OllamaChatToolCalls> toolCalls,
-            String... imageUrls) {
+            String... imageUrls)
+            throws IOException, InterruptedException {
         List<OllamaChatMessage> messages = this.request.getMessages();
         List<byte[]> binaryImages = null;
         if (imageUrls.length > 0) {
@@ -112,11 +113,18 @@ public class OllamaChatRequestBuilder {
                                     imageUrl,
                                     imageURLConnectTimeoutSeconds,
                                     imageURLReadTimeoutSeconds));
-                } catch (Exception e) {
-                    LOG.warn(
-                            "Loading image from URL '{}' failed, will not add to message!",
+                } catch (InterruptedException e) {
+                    LOG.error(
+                            "Failed to load image from URL: {}. Cause: {}",
                             imageUrl,
-                            e);
+                            e.getMessage());
+                    throw e;
+                } catch (IOException e) {
+                    LOG.warn(
+                            "Failed to load image from URL: {}. Cause: {}",
+                            imageUrl,
+                            e.getMessage());
+                    throw e;
                 }
             }
         }

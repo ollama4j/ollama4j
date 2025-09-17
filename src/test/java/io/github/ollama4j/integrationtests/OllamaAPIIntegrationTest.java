@@ -619,25 +619,27 @@ class OllamaAPIIntegrationTest {
                 OllamaChatMessageRole.ASSISTANT.getRoleName(),
                 chatResult.getResponseModel().getMessage().getRole().getRoleName());
 
-        // Reproducing this scenario consistently is challenging, as the model's behavior can vary.
-        // Therefore, these checks are currently skipped until a more reliable approach is found.
-
-        //        List<OllamaChatToolCalls> toolCalls =
-        // chatResult.getChatHistory().get(1).getToolCalls();
-        //        assertEquals(1, toolCalls.size());
-        //        OllamaToolCallsFunction function = toolCalls.get(0).getFunction();
-        //        assertEquals("sayHello", function.getName());
-        //        assertEquals(2, function.getArguments().size());
-        //        Object name = function.getArguments().get("name");
-        //        assertNotNull(name);
-        //        assertEquals("Rahul", name);
-        //        Object numberOfHearts = function.getArguments().get("numberOfHearts");
-        //        assertNotNull(numberOfHearts);
-        //        assertTrue(Integer.parseInt(numberOfHearts.toString()) > 1);
-        //        assertTrue(chatResult.getChatHistory().size() > 2);
-        //        List<OllamaChatToolCalls> finalToolCalls =
-        //                chatResult.getResponseModel().getMessage().getToolCalls();
-        //        assertNull(finalToolCalls);
+        /*
+         * Reproducing this scenario consistently is challenging, as the model's behavior can vary.
+         * Therefore, these checks are currently skipped until a more reliable approach is found.
+         *
+         * //        List<OllamaChatToolCalls> toolCalls =
+         * // chatResult.getChatHistory().get(1).getToolCalls();
+         * //        assertEquals(1, toolCalls.size());
+         * //        OllamaToolCallsFunction function = toolCalls.get(0).getFunction();
+         * //        assertEquals("sayHello", function.getName());
+         * //        assertEquals(2, function.getArguments().size());
+         * //        Object name = function.getArguments().get("name");
+         * //        assertNotNull(name);
+         * //        assertEquals("Rahul", name);
+         * //        Object numberOfHearts = function.getArguments().get("numberOfHearts");
+         * //        assertNotNull(numberOfHearts);
+         * //        assertTrue(Integer.parseInt(numberOfHearts.toString()) > 1);
+         * //        assertTrue(chatResult.getChatHistory().size() > 2);
+         * //        List<OllamaChatToolCalls> finalToolCalls =
+         * //                chatResult.getResponseModel().getMessage().getToolCalls();
+         * //        assertNull(finalToolCalls);
+         */
     }
 
     @Test

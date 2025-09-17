@@ -169,8 +169,6 @@
                 <artifactId>spotless-maven-plugin</artifactId>
                 <version>2.46.1</version>
                 <configuration>
-<!--                    &lt;!&ndash; optional: limit format enforcement to just the files changed by this feature branch &ndash;&gt;-->
-<!--                    <ratchetFrom>origin/main</ratchetFrom>-->
                     <formats>
                         <!-- you can define as many formats as you want, each is independent -->
                         <format>

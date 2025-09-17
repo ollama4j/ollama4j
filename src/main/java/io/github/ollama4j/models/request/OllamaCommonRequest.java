@@ -21,8 +21,12 @@ public abstract class OllamaCommonRequest {
 
     protected String model;
 
-    //  @JsonSerialize(using = BooleanToJsonFormatFlagSerializer.class)
-    //  this can either be set to format=json or format={"key1": "val1", "key2": "val2"}
+    /**
+     * The value can either be
+     *     <pre>{@code json }</pre>
+     * or
+     *     <pre>{@code {"key1": "val1", "key2": "val2"} }</pre>
+     */
     @JsonProperty(value = "format", required = false, defaultValue = "json")
     protected Object format;
 
