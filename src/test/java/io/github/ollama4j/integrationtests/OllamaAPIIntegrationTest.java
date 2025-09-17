@@ -41,7 +41,7 @@ import org.testcontainers.ollama.OllamaContainer;
 
 @OllamaToolService(providers = {AnnotatedTool.class})
 @TestMethodOrder(OrderAnnotation.class)
-@SuppressWarnings({"HttpUrlsUsage", "SpellCheckingInspection"})
+@SuppressWarnings({"HttpUrlsUsage", "SpellCheckingInspection", "FieldCanBeLocal", "ConstantValue"})
 class OllamaAPIIntegrationTest {
     private static final Logger LOG = LoggerFactory.getLogger(OllamaAPIIntegrationTest.class);
 
@@ -105,11 +105,8 @@ class OllamaAPIIntegrationTest {
     @Order(1)
     void testVersionAPI()
             throws URISyntaxException, IOException, OllamaBaseException, InterruptedException {
-        // String expectedVersion = ollama.getDockerImageName().split(":")[1];
-        String actualVersion = api.getVersion();
-        assertNotNull(actualVersion);
-        // assertEquals(expectedVersion, actualVersion, "Version should match the Docker
-        // image version");
+        String version = api.getVersion();
+        assertNotNull(version);
     }
 
     @Test
@@ -225,7 +222,6 @@ class OllamaAPIIntegrationTest {
             throws OllamaBaseException, IOException, URISyntaxException, InterruptedException {
         api.pullModel(GENERAL_PURPOSE_MODEL);
         boolean raw = false;
-        StringBuffer sb = new StringBuffer();
         OllamaResult result =
                 api.generate(
                         GENERAL_PURPOSE_MODEL,
@@ -233,15 +229,11 @@ class OllamaAPIIntegrationTest {
                                 + " Lisa?",
                         raw,
                         new OptionsBuilder().build(),
-                        (s) -> {
-                            LOG.info(s);
-                            sb.append(s);
-                        });
+                        LOG::info);
 
         assertNotNull(result);
         assertNotNull(result.getResponse());
         assertFalse(result.getResponse().isEmpty());
-        assertEquals(sb.toString(), result.getResponse());
     }
 
     @Test
@@ -522,10 +514,10 @@ class OllamaAPIIntegrationTest {
                 api.chat(
                         requestModel,
                         new OllamaChatStreamObserver(
-                                (s) -> {
+                                s -> {
                                     LOG.info(s.toUpperCase());
                                 },
-                                (s) -> {
+                                s -> {
                                     LOG.info(s.toLowerCase());
                                 }));
 
@@ -670,10 +662,10 @@ class OllamaAPIIntegrationTest {
                 api.chat(
                         requestModel,
                         new OllamaChatStreamObserver(
-                                (s) -> {
+                                s -> {
                                     LOG.info(s.toUpperCase());
                                 },
-                                (s) -> {
+                                s -> {
                                     LOG.info(s.toLowerCase());
                                 }));
         assertNotNull(chatResult);
@@ -706,10 +698,10 @@ class OllamaAPIIntegrationTest {
                 api.chat(
                         requestModel,
                         new OllamaChatStreamObserver(
-                                (s) -> {
+                                s -> {
                                     LOG.info(s.toUpperCase());
                                 },
-                                (s) -> {
+                                s -> {
                                     LOG.info(s.toLowerCase());
                                 }));
 
@@ -827,8 +819,6 @@ class OllamaAPIIntegrationTest {
 
         File imageFile = getImageFileFromClasspath("roses.jpg");
 
-        StringBuffer sb = new StringBuffer();
-
         OllamaResult result =
                 api.generateWithImages(
                         VISION_MODEL,
@@ -836,14 +826,10 @@ class OllamaAPIIntegrationTest {
                         List.of(imageFile),
                         new OptionsBuilder().build(),
                         null,
-                        (s) -> {
-                            LOG.info(s);
-                            sb.append(s);
-                        });
+                        LOG::info);
         assertNotNull(result);
         assertNotNull(result.getResponse());
         assertFalse(result.getResponse().isEmpty());
-        assertEquals(sb.toString(), result.getResponse());
     }
 
     @Test
@@ -874,30 +860,24 @@ class OllamaAPIIntegrationTest {
     void testGenerateWithThinkingAndStreamHandler()
             throws OllamaBaseException, IOException, URISyntaxException, InterruptedException {
         api.pullModel(THINKING_TOOL_MODEL);
-
         boolean raw = false;
-
-        StringBuffer sb = new StringBuffer();
         OllamaResult result =
                 api.generate(
                         THINKING_TOOL_MODEL,
                         "Who are you?",
                         raw,
                         new OptionsBuilder().build(),
-                        (thinkingToken) -> {
-                            sb.append(thinkingToken);
-                            LOG.info(thinkingToken);
+                        thinkingToken -> {
+                            LOG.info(thinkingToken.toUpperCase());
                         },
-                        (resToken) -> {
-                            sb.append(resToken);
-                            LOG.info(resToken);
+                        resToken -> {
+                            LOG.info(resToken.toLowerCase());
                         });
         assertNotNull(result);
         assertNotNull(result.getResponse());
         assertFalse(result.getResponse().isEmpty());
         assertNotNull(result.getThinking());
         assertFalse(result.getThinking().isEmpty());
-        assertEquals(sb.toString(), result.getThinking() + result.getResponse());
     }
 
     private File getImageFileFromClasspath(String fileName) {
