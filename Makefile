@@ -33,7 +33,7 @@ integration-tests:
 
 integration-tests-remote:
 	@echo "\033[0;34mRunning integration tests (remote)...\033[0m"
-	@export USE_EXTERNAL_OLLAMA_HOST=true && export OLLAMA_HOST=http://192.168.29.223:11434 && mvn clean verify -Pintegration-tests -Dgpg.skip=true
+	@export USE_EXTERNAL_OLLAMA_HOST=true && export OLLAMA_HOST=http://192.168.29.229:11434 && mvn clean verify -Pintegration-tests -Dgpg.skip=true
 
 doxygen:
 	@echo "\033[0;34mGenerating documentation with Doxygen...\033[0m"

@@ -61,6 +61,9 @@ class OllamaAPIIntegrationTest {
                     Boolean.parseBoolean(System.getenv("USE_EXTERNAL_OLLAMA_HOST"));
             String ollamaHost = System.getenv("OLLAMA_HOST");
 
+            useExternalOllamaHost = true;
+            ollamaHost ="http://192.168.29.229:11434/";
+
             if (useExternalOllamaHost) {
                 LOG.info("Using external Ollama host...");
                 api = new OllamaAPI(ollamaHost);
@@ -201,7 +204,7 @@ class OllamaAPIIntegrationTest {
 
     @Test
     @Order(6)
-    void testGennerateModelWithDefaultOptions()
+    void testGenerateModelWithDefaultOptions()
             throws OllamaBaseException, IOException, InterruptedException, URISyntaxException {
         api.pullModel(GENERAL_PURPOSE_MODEL);
         boolean raw = false;
@@ -665,7 +668,6 @@ class OllamaAPIIntegrationTest {
                                         + " Mona Lisa?")
                         .build();
         requestModel.setThink(false);
-        StringBuffer sb = new StringBuffer();
 
         OllamaChatResult chatResult =
                 api.chat(
@@ -681,7 +683,6 @@ class OllamaAPIIntegrationTest {
         assertNotNull(chatResult.getResponseModel());
         assertNotNull(chatResult.getResponseModel().getMessage());
         assertNotNull(chatResult.getResponseModel().getMessage().getContent());
-        assertEquals(sb.toString(), chatResult.getResponseModel().getMessage().getContent());
     }
 
     @Test
@@ -703,7 +704,6 @@ class OllamaAPIIntegrationTest {
                         .withThinking(true)
                         .withKeepAlive("0m")
                         .build();
-        StringBuffer sb = new StringBuffer();
 
         OllamaChatResult chatResult =
                 api.chat(
@@ -720,10 +720,6 @@ class OllamaAPIIntegrationTest {
         assertNotNull(chatResult.getResponseModel());
         assertNotNull(chatResult.getResponseModel().getMessage());
         assertNotNull(chatResult.getResponseModel().getMessage().getContent());
-        assertEquals(
-                sb.toString(),
-                chatResult.getResponseModel().getMessage().getThinking()
-                        + chatResult.getResponseModel().getMessage().getContent());
     }
 
     @Test
