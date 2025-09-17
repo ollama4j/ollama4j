@@ -20,9 +20,7 @@ import java.util.stream.Collectors;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-/**
- * Helper class for creating {@link OllamaChatRequest} objects using the builder-pattern.
- */
+/** Helper class for creating {@link OllamaChatRequest} objects using the builder-pattern. */
 public class OllamaChatRequestBuilder {
 
     private static final Logger LOG = LoggerFactory.getLogger(OllamaChatRequestBuilder.class);
@@ -114,14 +112,9 @@ public class OllamaChatRequestBuilder {
                                     imageUrl,
                                     imageURLConnectTimeoutSeconds,
                                     imageURLReadTimeoutSeconds));
-                } catch (IOException e) {
+                } catch (Exception e) {
                     LOG.warn(
-                            "Content of URL '{}' could not be read, will not add to message!",
-                            imageUrl,
-                            e);
-                } catch (InterruptedException e) {
-                    LOG.warn(
-                            "Loading image from URL '{}' was interrupted, will not add to message!",
+                            "Loading image from URL '{}' failed, will not add to message!",
                             imageUrl,
                             e);
                 }
