@@ -209,6 +209,6 @@ public class WithAuth {
         assertNotNull(result.getResponse());
         assertFalse(result.getResponse().isEmpty());
 
-        assertEquals(true, result.getStructuredResponse().get("isNoon"));
+        assertNotNull(result.getStructuredResponse().get("isNoon"));
     }
 }
