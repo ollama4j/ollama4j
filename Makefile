@@ -15,11 +15,11 @@ apply-formatting:
 	@mvn spotless:apply
 	# pre-commit run --all-files
 
-build:
+build: apply-formatting
 	@echo "\033[0;34mBuilding project (GPG skipped)...\033[0m"
 	@mvn -B clean install -Dgpg.skip=true
 
-full-build:
+full-build: apply-formatting
 	@echo "\033[0;34mPerforming full build...\033[0m"
 	@mvn -B clean install
 
