@@ -6,6 +6,14 @@ dev:
 	pre-commit autoupdate
 	pre-commit install --install-hooks
 
+#pre-commit run --all-files
+
+format:
+	mvn spotless:apply
+
+check:
+	mvn spotless:check
+
 build:
 	mvn -B clean install -Dgpg.skip=true
 
