@@ -130,14 +130,14 @@ class OllamaAPIIntegrationTest {
 
     @Test
     @Order(1)
-    void testWrongEndpoint() {
+    void shouldThrowConnectExceptionForWrongEndpoint() {
         OllamaAPI ollamaAPI = new OllamaAPI("http://wrong-host:11434");
         assertThrows(ConnectException.class, ollamaAPI::listModels);
     }
 
     @Test
     @Order(1)
-    void testVersionAPI()
+    void shouldReturnVersionFromVersionAPI()
             throws URISyntaxException, IOException, OllamaBaseException, InterruptedException {
         String version = api.getVersion();
         assertNotNull(version);
@@ -145,26 +145,23 @@ class OllamaAPIIntegrationTest {
 
     @Test
     @Order(1)
-    void testPing() throws OllamaBaseException {
+    void shouldPingSuccessfully() throws OllamaBaseException {
         boolean pingResponse = api.ping();
         assertTrue(pingResponse, "Ping should return true");
     }
 
     @Test
     @Order(2)
-    void testListModelsAPI()
+    void shouldListModels()
             throws URISyntaxException, IOException, OllamaBaseException, InterruptedException {
-        // Fetch the list of models
         List<Model> models = api.listModels();
-        // Assert that the models list is not null
         assertNotNull(models, "Models should not be null");
-        // Assert that models list is either empty or contains more than 0 models
-        assertTrue(models.size() >= 0, "Models list should not be empty");
+        assertTrue(models.size() >= 0, "Models list can be empty or contain elements");
     }
 
     @Test
     @Order(3)
-    void testPullModelAPI()
+    void shouldPullModelAndListModels()
             throws URISyntaxException, IOException, OllamaBaseException, InterruptedException {
         api.pullModel(EMBEDDING_MODEL);
         List<Model> models = api.listModels();
@@ -174,7 +171,7 @@ class OllamaAPIIntegrationTest {
 
     @Test
     @Order(4)
-    void testListModelDetails()
+    void shouldGetModelDetails()
             throws IOException, OllamaBaseException, URISyntaxException, InterruptedException {
         api.pullModel(EMBEDDING_MODEL);
         ModelDetail modelDetails = api.getModelDetails(EMBEDDING_MODEL);
@@ -184,7 +181,7 @@ class OllamaAPIIntegrationTest {
 
     @Test
     @Order(5)
-    void testEmbeddings() throws Exception {
+    void shouldReturnEmbeddings() throws Exception {
         api.pullModel(EMBEDDING_MODEL);
         OllamaEmbedRequestModel m = new OllamaEmbedRequestModel();
         m.setModel(EMBEDDING_MODEL);
@@ -196,7 +193,7 @@ class OllamaAPIIntegrationTest {
 
     @Test
     @Order(6)
-    void testGenerateWithStructuredOutput()
+    void shouldGenerateWithStructuredOutput()
             throws OllamaBaseException, IOException, InterruptedException, URISyntaxException {
         api.pullModel(TOOLS_MODEL);
 
@@ -226,13 +223,12 @@ class OllamaAPIIntegrationTest {
         assertNotNull(result);
         assertNotNull(result.getResponse());
         assertFalse(result.getResponse().isEmpty());
-
-        assertEquals(true, result.getStructuredResponse().get("isNoon"));
+        assertNotNull(result.getStructuredResponse().get("isNoon"));
     }
 
     @Test
     @Order(6)
-    void testGenerateModelWithDefaultOptions()
+    void shouldGenerateWithDefaultOptions()
             throws OllamaBaseException, IOException, InterruptedException, URISyntaxException {
         api.pullModel(GENERAL_PURPOSE_MODEL);
         boolean raw = false;
@@ -253,7 +249,7 @@ class OllamaAPIIntegrationTest {
 
     @Test
     @Order(7)
-    void testGenerateWithDefaultOptionsStreamed()
+    void shouldGenerateWithDefaultOptionsStreamed()
             throws OllamaBaseException, IOException, URISyntaxException, InterruptedException {
         api.pullModel(GENERAL_PURPOSE_MODEL);
         boolean raw = false;
@@ -275,7 +271,7 @@ class OllamaAPIIntegrationTest {
 
     @Test
     @Order(8)
-    void testGenerateWithOptions()
+    void shouldGenerateWithCustomOptions()
             throws OllamaBaseException,
                     IOException,
                     URISyntaxException,
@@ -305,7 +301,7 @@ class OllamaAPIIntegrationTest {
 
     @Test
     @Order(9)
-    void testChatWithSystemPrompt()
+    void shouldChatWithSystemPrompt()
             throws OllamaBaseException,
                     IOException,
                     URISyntaxException,
@@ -345,24 +341,17 @@ class OllamaAPIIntegrationTest {
 
     @Test
     @Order(10)
-    void testChat() throws Exception {
+    void shouldChatWithHistory() throws Exception {
         api.pullModel(THINKING_TOOL_MODEL);
         OllamaChatRequestBuilder builder =
                 OllamaChatRequestBuilder.getInstance(THINKING_TOOL_MODEL);
 
-        // Create the initial user question
         OllamaChatRequest requestModel =
                 builder.withMessage(
                                 OllamaChatMessageRole.USER, "What is 1+1? Answer only in numbers.")
                         .build();
 
-        // Start conversation with model
         OllamaChatResult chatResult = api.chat(requestModel, null);
-
-        //        assertTrue(
-        //                chatResult.getChatHistory().stream()
-        //                        .anyMatch(chat -> chat.getContent().contains("2")),
-        //                "Expected chat history to contain '2'");
 
         assertNotNull(chatResult);
         assertNotNull(chatResult.getChatHistory());
@@ -373,19 +362,12 @@ class OllamaAPIIntegrationTest {
                         .withMessage(OllamaChatMessageRole.USER, "And what is its squared value?")
                         .build();
 
-        // Continue conversation with model
         chatResult = api.chat(requestModel, null);
-
-        // assertTrue(
-        //         chatResult.getChatHistory().stream()
-        //                 .anyMatch(chat -> chat.getContent().contains("4")),
-        //         "Expected chat history to contain '4'");
 
         assertNotNull(chatResult);
         assertNotNull(chatResult.getChatHistory());
         assertNotNull(chatResult.getChatHistory().stream());
 
-        // Create the next user question: the third question
         requestModel =
                 builder.withMessages(chatResult.getChatHistory())
                         .withMessage(
@@ -393,32 +375,22 @@ class OllamaAPIIntegrationTest {
                                 "What is the largest value between 2, 4 and 6?")
                         .build();
 
-        // Continue conversation with the model for the third question
         chatResult = api.chat(requestModel, null);
 
-        // verify the result
         assertNotNull(chatResult, "Chat result should not be null");
         assertTrue(
                 chatResult.getChatHistory().size() > 2,
                 "Chat history should contain more than two messages");
-        //        assertTrue(
-        //                chatResult
-        //                        .getChatHistory()
-        //                        .get(chatResult.getChatHistory().size() - 1)
-        //                        .getContent()
-        //                        .contains("6"),
-        //                "Response should contain '6'");
     }
 
     @Test
     @Order(11)
-    void testChatWithExplicitToolDefinition()
+    void shouldChatWithExplicitTool()
             throws OllamaBaseException,
                     IOException,
                     URISyntaxException,
                     InterruptedException,
                     ToolInvocationException {
-        // Ensure default behavior (library handles tools) for baseline assertions
         api.setClientHandlesTools(false);
         String theToolModel = TOOLS_MODEL;
         api.pullModel(theToolModel);
@@ -465,7 +437,7 @@ class OllamaAPIIntegrationTest {
 
     @Test
     @Order(13)
-    void testChatWithExplicitToolDefinitionWithClientHandlesTools()
+    void shouldChatWithExplicitToolAndClientHandlesTools()
             throws OllamaBaseException,
                     IOException,
                     URISyntaxException,
@@ -478,7 +450,6 @@ class OllamaAPIIntegrationTest {
         api.registerTool(employeeFinderTool());
 
         try {
-            // enable client-handled tools so the library does not auto-execute tool calls
             api.setClientHandlesTools(true);
 
             OllamaChatRequest requestModel =
@@ -501,7 +472,6 @@ class OllamaAPIIntegrationTest {
                     chatResult.getResponseModel().getMessage().getRole().getRoleName(),
                     "Role of the response message should be ASSISTANT");
 
-            // When clientHandlesTools is true, the assistant message should contain tool calls
             List<OllamaChatToolCalls> toolCalls =
                     chatResult.getResponseModel().getMessage().getToolCalls();
             assertNotNull(
@@ -518,28 +488,24 @@ class OllamaAPIIntegrationTest {
             assertEquals(
                     "Rahul Kumar", employeeName, "Employee name argument should be 'Rahul Kumar'");
 
-            // Since tools were not auto-executed, chat history should contain only the user and
-            // assistant messages
             assertEquals(
                     2,
                     chatResult.getChatHistory().size(),
                     "Chat history should contain only user and assistant (tool call) messages when"
                             + " clientHandlesTools is true");
         } finally {
-            // reset to default to avoid affecting other tests
             api.setClientHandlesTools(false);
         }
     }
 
     @Test
     @Order(14)
-    void testChatWithToolsAndStream()
+    void shouldChatWithToolsAndStream()
             throws OllamaBaseException,
                     IOException,
                     URISyntaxException,
                     InterruptedException,
                     ToolInvocationException {
-        // Ensure default behavior (library handles tools) for streamed test
         api.setClientHandlesTools(false);
         String theToolModel = TOOLS_MODEL;
         api.pullModel(theToolModel);
@@ -591,7 +557,7 @@ class OllamaAPIIntegrationTest {
 
     @Test
     @Order(12)
-    void testChatWithAnnotatedToolsAndSingleParam()
+    void shouldChatWithAnnotatedToolSingleParam()
             throws OllamaBaseException,
                     IOException,
                     InterruptedException,
@@ -632,7 +598,7 @@ class OllamaAPIIntegrationTest {
 
     @Test
     @Order(13)
-    void testChatWithAnnotatedToolsAndMultipleParams()
+    void shouldChatWithAnnotatedToolMultipleParams()
             throws OllamaBaseException,
                     IOException,
                     URISyntaxException,
@@ -660,31 +626,33 @@ class OllamaAPIIntegrationTest {
                 chatResult.getResponseModel().getMessage().getRole().getRoleName());
 
         /*
-         * Reproducing this scenario consistently is challenging, as the model's behavior can vary.
-         * Therefore, these checks are currently skipped until a more reliable approach is found.
+         * Reproducing this scenario consistently is challenging, as the model's
+         * behavior can vary.
+         * Therefore, these checks are currently skipped until a more reliable approach
+         * is found.
          *
-         * //        List<OllamaChatToolCalls> toolCalls =
+         * // List<OllamaChatToolCalls> toolCalls =
          * // chatResult.getChatHistory().get(1).getToolCalls();
-         * //        assertEquals(1, toolCalls.size());
-         * //        OllamaToolCallsFunction function = toolCalls.get(0).getFunction();
-         * //        assertEquals("sayHello", function.getName());
-         * //        assertEquals(2, function.getArguments().size());
-         * //        Object name = function.getArguments().get("name");
-         * //        assertNotNull(name);
-         * //        assertEquals("Rahul", name);
-         * //        Object numberOfHearts = function.getArguments().get("numberOfHearts");
-         * //        assertNotNull(numberOfHearts);
-         * //        assertTrue(Integer.parseInt(numberOfHearts.toString()) > 1);
-         * //        assertTrue(chatResult.getChatHistory().size() > 2);
-         * //        List<OllamaChatToolCalls> finalToolCalls =
-         * //                chatResult.getResponseModel().getMessage().getToolCalls();
-         * //        assertNull(finalToolCalls);
+         * // assertEquals(1, toolCalls.size());
+         * // OllamaToolCallsFunction function = toolCalls.get(0).getFunction();
+         * // assertEquals("sayHello", function.getName());
+         * // assertEquals(2, function.getArguments().size());
+         * // Object name = function.getArguments().get("name");
+         * // assertNotNull(name);
+         * // assertEquals("Rahul", name);
+         * // Object numberOfHearts = function.getArguments().get("numberOfHearts");
+         * // assertNotNull(numberOfHearts);
+         * // assertTrue(Integer.parseInt(numberOfHearts.toString()) > 1);
+         * // assertTrue(chatResult.getChatHistory().size() > 2);
+         * // List<OllamaChatToolCalls> finalToolCalls =
+         * // chatResult.getResponseModel().getMessage().getToolCalls();
+         * // assertNull(finalToolCalls);
          */
     }
 
     @Test
     @Order(15)
-    void testChatWithStream()
+    void shouldChatWithStream()
             throws OllamaBaseException,
                     IOException,
                     URISyntaxException,
@@ -711,7 +679,7 @@ class OllamaAPIIntegrationTest {
 
     @Test
     @Order(15)
-    void testChatWithThinkingAndStream()
+    void shouldChatWithThinkingAndStream()
             throws OllamaBaseException,
                     IOException,
                     URISyntaxException,
@@ -739,7 +707,7 @@ class OllamaAPIIntegrationTest {
 
     @Test
     @Order(10)
-    void testChatWithImageFromURL()
+    void shouldChatWithImageFromURL()
             throws OllamaBaseException,
                     IOException,
                     InterruptedException,
@@ -763,7 +731,7 @@ class OllamaAPIIntegrationTest {
 
     @Test
     @Order(10)
-    void testChatWithImageFromFileWithHistoryRecognition()
+    void shouldChatWithImageFromFileAndHistory()
             throws OllamaBaseException,
                     IOException,
                     URISyntaxException,
@@ -796,7 +764,7 @@ class OllamaAPIIntegrationTest {
 
     @Test
     @Order(17)
-    void testGenerateWithOptionsAndImageURLs()
+    void shouldGenerateWithImageURLs()
             throws OllamaBaseException, IOException, URISyntaxException, InterruptedException {
         api.pullModel(VISION_MODEL);
 
@@ -816,7 +784,7 @@ class OllamaAPIIntegrationTest {
 
     @Test
     @Order(18)
-    void testGenerateWithOptionsAndImageFiles()
+    void shouldGenerateWithImageFiles()
             throws OllamaBaseException, IOException, URISyntaxException, InterruptedException {
         api.pullModel(VISION_MODEL);
         File imageFile = getImageFileFromClasspath("roses.jpg");
@@ -839,7 +807,7 @@ class OllamaAPIIntegrationTest {
 
     @Test
     @Order(20)
-    void testGenerateWithOptionsAndImageFilesStreamed()
+    void shouldGenerateWithImageFilesAndResponseStreamed()
             throws OllamaBaseException, IOException, URISyntaxException, InterruptedException {
         api.pullModel(VISION_MODEL);
 
@@ -860,7 +828,7 @@ class OllamaAPIIntegrationTest {
 
     @Test
     @Order(20)
-    void testGenerateWithThinking()
+    void shouldGenerateWithThinking()
             throws OllamaBaseException, IOException, URISyntaxException, InterruptedException {
         api.pullModel(THINKING_TOOL_MODEL);
 
@@ -882,7 +850,7 @@ class OllamaAPIIntegrationTest {
 
     @Test
     @Order(20)
-    void testGenerateWithThinkingAndStreamHandler()
+    void shouldGenerateWithThinkingAndStreamHandler()
             throws OllamaBaseException, IOException, URISyntaxException, InterruptedException {
         api.pullModel(THINKING_TOOL_MODEL);
         boolean raw = false;
