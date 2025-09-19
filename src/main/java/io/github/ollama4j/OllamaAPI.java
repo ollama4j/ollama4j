@@ -15,11 +15,12 @@ import io.github.ollama4j.exceptions.RoleNotFoundException;
 import io.github.ollama4j.exceptions.ToolInvocationException;
 import io.github.ollama4j.exceptions.ToolNotFoundException;
 import io.github.ollama4j.models.chat.*;
+import io.github.ollama4j.models.chat.OllamaChatTokenHandler;
 import io.github.ollama4j.models.embeddings.OllamaEmbedRequestModel;
 import io.github.ollama4j.models.embeddings.OllamaEmbedResponseModel;
 import io.github.ollama4j.models.generate.OllamaGenerateRequest;
-import io.github.ollama4j.models.generate.OllamaStreamHandler;
-import io.github.ollama4j.models.generate.OllamaTokenHandler;
+import io.github.ollama4j.models.generate.OllamaGenerateStreamObserver;
+import io.github.ollama4j.models.generate.OllamaGenerateTokenHandler;
 import io.github.ollama4j.models.ps.ModelsProcessResponse;
 import io.github.ollama4j.models.request.*;
 import io.github.ollama4j.models.response.*;
@@ -118,7 +119,7 @@ public class OllamaAPI {
         } else {
             this.host = host;
         }
-        LOG.info("Ollama API initialized with host: {}", this.host);
+        LOG.info("Ollama4j client initialized. Connected to Ollama server at: {}", this.host);
     }
 
     /**
@@ -470,16 +471,26 @@ public class OllamaAPI {
                         .POST(HttpRequest.BodyPublishers.ofString(jsonData, StandardCharsets.UTF_8))
                         .build();
         HttpClient client = HttpClient.newHttpClient();
-        HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
+        HttpResponse<InputStream> response =
+                client.send(request, HttpResponse.BodyHandlers.ofInputStream());
         int statusCode = response.statusCode();
-        String responseString = response.body();
         if (statusCode != 200) {
-            throw new OllamaBaseException(statusCode + " - " + responseString);
+            String errorBody = new String(response.body().readAllBytes(), StandardCharsets.UTF_8);
+            throw new OllamaBaseException(statusCode + " - " + errorBody);
         }
-        if (responseString.contains("error")) {
-            throw new OllamaBaseException(responseString);
+        try (BufferedReader reader =
+                new BufferedReader(
+                        new InputStreamReader(response.body(), StandardCharsets.UTF_8))) {
+            String line;
+            while ((line = reader.readLine()) != null) {
+                ModelPullResponse res =
+                        Utils.getObjectMapper().readValue(line, ModelPullResponse.class);
+                LOG.debug(res.getStatus());
+                if (res.getError() != null) {
+                    throw new OllamaBaseException(res.getError());
+                }
+            }
         }
-        LOG.debug(responseString);
     }
 
     /**
@@ -559,98 +570,32 @@ public class OllamaAPI {
         }
     }
 
-    /**
-     * Generate response for a question to a model running on Ollama server. This is a sync/blocking
-     * call. This API does not support "thinking" models.
-     *
-     * @param model the ollama model to ask the question to
-     * @param prompt the prompt/question text
-     * @param raw if true no formatting will be applied to the prompt. You may choose to use the raw
-     *     parameter if you are specifying a full templated prompt in your request to the API
-     * @param options the Options object - <a href=
-     *     "https://github.com/jmorganca/ollama/blob/main/docs/modelfile.md#valid-parameters-and-values">More
-     *     details on the options</a>
-     * @param responseStreamHandler optional callback consumer that will be applied every time a
-     *     streamed response is received. If not set, the stream parameter of the request is set to
-     *     false.
-     * @return OllamaResult that includes response text and time taken for response
-     * @throws OllamaBaseException if the response indicates an error status
-     * @throws IOException if an I/O error occurs during the HTTP request
-     * @throws InterruptedException if the operation is interrupted
-     */
     public OllamaResult generate(
             String model,
             String prompt,
             boolean raw,
+            boolean think,
             Options options,
-            OllamaStreamHandler responseStreamHandler)
+            OllamaGenerateStreamObserver streamObserver)
             throws OllamaBaseException, IOException, InterruptedException {
+
+        // Create the OllamaGenerateRequest and configure common properties
         OllamaGenerateRequest ollamaRequestModel = new OllamaGenerateRequest(model, prompt);
         ollamaRequestModel.setRaw(raw);
-        ollamaRequestModel.setThink(false);
+        ollamaRequestModel.setThink(think);
         ollamaRequestModel.setOptions(options.getOptionsMap());
-        return generateSyncForOllamaRequestModel(ollamaRequestModel, null, responseStreamHandler);
-    }
 
-    /**
-     * Generate thinking and response tokens for a question to a thinking model running on Ollama
-     * server. This is a sync/blocking call.
-     *
-     * @param model the ollama model to ask the question to
-     * @param prompt the prompt/question text
-     * @param raw if true no formatting will be applied to the prompt. You may choose to use the raw
-     *     parameter if you are specifying a full templated prompt in your request to the API
-     * @param options the Options object - <a href=
-     *     "https://github.com/jmorganca/ollama/blob/main/docs/modelfile.md#valid-parameters-and-values">More
-     *     details on the options</a>
-     * @param responseStreamHandler optional callback consumer that will be applied every time a
-     *     streamed response is received. If not set, the stream parameter of the request is set to
-     *     false.
-     * @return OllamaResult that includes response text and time taken for response
-     * @throws OllamaBaseException if the response indicates an error status
-     * @throws IOException if an I/O error occurs during the HTTP request
-     * @throws InterruptedException if the operation is interrupted
-     */
-    public OllamaResult generate(
-            String model,
-            String prompt,
-            boolean raw,
-            Options options,
-            OllamaStreamHandler thinkingStreamHandler,
-            OllamaStreamHandler responseStreamHandler)
-            throws OllamaBaseException, IOException, InterruptedException {
-        OllamaGenerateRequest ollamaRequestModel = new OllamaGenerateRequest(model, prompt);
-        ollamaRequestModel.setRaw(raw);
-        ollamaRequestModel.setThink(true);
-        ollamaRequestModel.setOptions(options.getOptionsMap());
-        return generateSyncForOllamaRequestModel(
-                ollamaRequestModel, thinkingStreamHandler, responseStreamHandler);
-    }
-
-    /**
-     * Generates response using the specified AI model and prompt (in blocking mode).
-     *
-     * <p>Uses {@link #generate(String, String, boolean, Options, OllamaStreamHandler)}
-     *
-     * @param model The name or identifier of the AI model to use for generating the response.
-     * @param prompt The input text or prompt to provide to the AI model.
-     * @param raw In some cases, you may wish to bypass the templating system and provide a full
-     *     prompt. In this case, you can use the raw parameter to disable templating. Also note that
-     *     raw mode will not return a context.
-     * @param options Additional options or configurations to use when generating the response.
-     * @param think if true the model will "think" step-by-step before generating the final response
-     * @return {@link OllamaResult}
-     * @throws OllamaBaseException if the response indicates an error status
-     * @throws IOException if an I/O error occurs during the HTTP request
-     * @throws InterruptedException if the operation is interrupted
-     */
-    public OllamaResult generate(
-            String model, String prompt, boolean raw, boolean think, Options options)
-            throws OllamaBaseException, IOException, InterruptedException {
+        // Based on 'think' flag, choose the appropriate stream handler(s)
         if (think) {
-            return generate(model, prompt, raw, options, null, null);
+            // Call with thinking
+            return generateSyncForOllamaRequestModel(
+                    ollamaRequestModel,
+                    streamObserver.getThinkingStreamHandler(),
+                    streamObserver.getResponseStreamHandler());
         } else {
-            return generate(model, prompt, raw, options, null);
+            // Call without thinking
+            return generateSyncForOllamaRequestModel(
+                    ollamaRequestModel, null, streamObserver.getResponseStreamHandler());
         }
     }
 
@@ -668,7 +613,7 @@ public class OllamaAPI {
      * @throws InterruptedException if the operation is interrupted.
      */
     @SuppressWarnings("LoggingSimilarMessage")
-    public OllamaResult generate(String model, String prompt, Map<String, Object> format)
+    public OllamaResult generateWithFormat(String model, String prompt, Map<String, Object> format)
             throws OllamaBaseException, IOException, InterruptedException {
         URI uri = URI.create(this.host + "/api/generate");
 
@@ -767,7 +712,7 @@ public class OllamaAPI {
      * @throws ToolInvocationException if a tool call fails to execute
      */
     public OllamaToolsResult generateWithTools(
-            String model, String prompt, Options options, OllamaStreamHandler streamHandler)
+            String model, String prompt, Options options, OllamaGenerateTokenHandler streamHandler)
             throws OllamaBaseException, IOException, InterruptedException, ToolInvocationException {
         boolean raw = true;
         OllamaToolsResult toolResult = new OllamaToolsResult();
@@ -782,7 +727,14 @@ public class OllamaAPI {
             prompt = promptBuilder.build();
         }
 
-        OllamaResult result = generate(model, prompt, raw, options, streamHandler);
+        OllamaResult result =
+                generate(
+                        model,
+                        prompt,
+                        raw,
+                        false,
+                        options,
+                        new OllamaGenerateStreamObserver(null, streamHandler));
         toolResult.setModelResult(result);
 
         String toolsResponse = result.getResponse();
@@ -898,7 +850,7 @@ public class OllamaAPI {
             List<Object> images,
             Options options,
             Map<String, Object> format,
-            OllamaStreamHandler streamHandler)
+            OllamaGenerateTokenHandler streamHandler)
             throws OllamaBaseException, IOException, InterruptedException, URISyntaxException {
         List<String> encodedImages = new ArrayList<>();
         for (Object image : images) {
@@ -947,7 +899,7 @@ public class OllamaAPI {
      * @throws IOException if an I/O error occurs during the HTTP request
      * @throws InterruptedException if the operation is interrupted
      */
-    public OllamaChatResult chat(OllamaChatRequest request, OllamaTokenHandler tokenHandler)
+    public OllamaChatResult chat(OllamaChatRequest request, OllamaChatTokenHandler tokenHandler)
             throws OllamaBaseException, IOException, InterruptedException, ToolInvocationException {
         OllamaChatEndpointCaller requestCaller =
                 new OllamaChatEndpointCaller(host, auth, requestTimeoutSeconds);
@@ -1233,8 +1185,8 @@ public class OllamaAPI {
      */
     private OllamaResult generateSyncForOllamaRequestModel(
             OllamaGenerateRequest ollamaRequestModel,
-            OllamaStreamHandler thinkingStreamHandler,
-            OllamaStreamHandler responseStreamHandler)
+            OllamaGenerateTokenHandler thinkingStreamHandler,
+            OllamaGenerateTokenHandler responseStreamHandler)
             throws OllamaBaseException, IOException, InterruptedException {
         OllamaGenerateEndpointCaller requestCaller =
                 new OllamaGenerateEndpointCaller(host, auth, requestTimeoutSeconds);

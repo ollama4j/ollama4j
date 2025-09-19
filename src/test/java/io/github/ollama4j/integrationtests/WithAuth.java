@@ -203,7 +203,7 @@ public class WithAuth {
                 });
         format.put("required", List.of("isNoon"));
 
-        OllamaResult result = api.generate(model, prompt, format);
+        OllamaResult result = api.generateWithFormat(model, prompt, format);
 
         assertNotNull(result);
         assertNotNull(result.getResponse());

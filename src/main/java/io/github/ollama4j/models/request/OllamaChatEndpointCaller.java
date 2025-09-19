@@ -12,7 +12,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import io.github.ollama4j.exceptions.OllamaBaseException;
 import io.github.ollama4j.models.chat.*;
-import io.github.ollama4j.models.generate.OllamaTokenHandler;
+import io.github.ollama4j.models.chat.OllamaChatTokenHandler;
 import io.github.ollama4j.models.response.OllamaErrorResponse;
 import io.github.ollama4j.utils.Utils;
 import java.io.BufferedReader;
@@ -36,7 +36,7 @@ public class OllamaChatEndpointCaller extends OllamaEndpointCaller {
 
     private static final Logger LOG = LoggerFactory.getLogger(OllamaChatEndpointCaller.class);
 
-    private OllamaTokenHandler tokenHandler;
+    private OllamaChatTokenHandler tokenHandler;
 
     public OllamaChatEndpointCaller(String host, Auth auth, long requestTimeoutSeconds) {
         super(host, auth, requestTimeoutSeconds);
@@ -73,7 +73,7 @@ public class OllamaChatEndpointCaller extends OllamaEndpointCaller {
                 if (message.getThinking() != null) {
                     thinkingBuffer.append(message.getThinking());
                 } else {
-                    responseBuffer.append(message.getContent());
+                    responseBuffer.append(message.getResponse());
                 }
                 if (tokenHandler != null) {
                     tokenHandler.accept(ollamaResponseModel);
@@ -86,7 +86,7 @@ public class OllamaChatEndpointCaller extends OllamaEndpointCaller {
         }
     }
 
-    public OllamaChatResult call(OllamaChatRequest body, OllamaTokenHandler tokenHandler)
+    public OllamaChatResult call(OllamaChatRequest body, OllamaChatTokenHandler tokenHandler)
             throws OllamaBaseException, IOException, InterruptedException {
         this.tokenHandler = tokenHandler;
         return callSync(body);
@@ -127,7 +127,7 @@ public class OllamaChatEndpointCaller extends OllamaEndpointCaller {
                     wantedToolsForStream = ollamaChatResponseModel.getMessage().getToolCalls();
                 }
                 if (finished && body.stream) {
-                    ollamaChatResponseModel.getMessage().setContent(responseBuffer.toString());
+                    ollamaChatResponseModel.getMessage().setResponse(responseBuffer.toString());
                     ollamaChatResponseModel.getMessage().setThinking(thinkingBuffer.toString());
                     break;
                 }

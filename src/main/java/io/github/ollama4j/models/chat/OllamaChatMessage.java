@@ -21,7 +21,9 @@ import lombok.*;
 /**
  * Defines a single Message to be used inside a chat request against the ollama /api/chat endpoint.
  *
- * @see <a href="https://github.com/ollama/ollama/blob/main/docs/api.md#generate-a-chat-completion">Generate chat completion</a>
+ * @see <a
+ *     href="https://github.com/ollama/ollama/blob/main/docs/api.md#generate-a-chat-completion">Generate
+ *     chat completion</a>
  */
 @Data
 @AllArgsConstructor
@@ -32,7 +34,9 @@ public class OllamaChatMessage {
 
     @NonNull private OllamaChatMessageRole role;
 
-    @NonNull private String content;
+    @JsonProperty("content")
+    @NonNull
+    private String response;
 
     private String thinking;
 

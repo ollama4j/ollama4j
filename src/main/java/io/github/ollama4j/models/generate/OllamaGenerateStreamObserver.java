@@ -10,18 +10,18 @@ package io.github.ollama4j.models.generate;
 
 import java.util.ArrayList;
 import java.util.List;
+import lombok.Getter;
 
+@Getter
 public class OllamaGenerateStreamObserver {
-
-    private final OllamaStreamHandler thinkingStreamHandler;
-    private final OllamaStreamHandler responseStreamHandler;
+    private final OllamaGenerateTokenHandler thinkingStreamHandler;
+    private final OllamaGenerateTokenHandler responseStreamHandler;
 
     private final List<OllamaGenerateResponseModel> responseParts = new ArrayList<>();
 
-    private String message = "";
-
     public OllamaGenerateStreamObserver(
-            OllamaStreamHandler thinkingStreamHandler, OllamaStreamHandler responseStreamHandler) {
+            OllamaGenerateTokenHandler thinkingStreamHandler,
+            OllamaGenerateTokenHandler responseStreamHandler) {
         this.responseStreamHandler = responseStreamHandler;
         this.thinkingStreamHandler = thinkingStreamHandler;
     }
@@ -39,14 +39,10 @@ public class OllamaGenerateStreamObserver {
         boolean hasThinking = thinking != null && !thinking.isEmpty();
 
         if (!hasResponse && hasThinking && thinkingStreamHandler != null) {
-            // message = message + thinking;
-
             // use only new tokens received, instead of appending the tokens to the previous
             // ones and sending the full string again
             thinkingStreamHandler.accept(thinking);
         } else if (hasResponse && responseStreamHandler != null) {
-            // message = message + response;
-
             // use only new tokens received, instead of appending the tokens to the previous
             // ones and sending the full string again
             responseStreamHandler.accept(response);

@@ -114,11 +114,18 @@ public class OllamaChatRequestBuilder {
                                     imageURLConnectTimeoutSeconds,
                                     imageURLReadTimeoutSeconds));
                 } catch (InterruptedException e) {
-                    LOG.error("Failed to load image from URL: {}. Cause: {}", imageUrl, e);
-                    throw e;
+                    LOG.error("Failed to load image from URL: '{}'. Cause: {}", imageUrl, e);
+                    Thread.currentThread().interrupt();
+                    throw new InterruptedException(
+                            "Interrupted while loading image from URL: " + imageUrl);
                 } catch (IOException e) {
-                    LOG.warn("Failed to load image from URL: {}. Cause: {}", imageUrl, e);
-                    throw e;
+                    LOG.error(
+                            "IOException occurred while loading image from URL '{}'. Cause: {}",
+                            imageUrl,
+                            e.getMessage(),
+                            e);
+                    throw new IOException(
+                            "IOException while loading image from URL: " + imageUrl, e);
                 }
             }
         }

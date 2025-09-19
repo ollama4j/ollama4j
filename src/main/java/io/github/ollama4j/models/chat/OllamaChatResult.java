@@ -47,7 +47,7 @@ public class OllamaChatResult {
 
     @Deprecated
     public String getResponse() {
-        return responseModel != null ? responseModel.getMessage().getContent() : "";
+        return responseModel != null ? responseModel.getMessage().getResponse() : "";
     }
 
     @Deprecated

@@ -12,7 +12,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import io.github.ollama4j.exceptions.OllamaBaseException;
 import io.github.ollama4j.models.generate.OllamaGenerateResponseModel;
 import io.github.ollama4j.models.generate.OllamaGenerateStreamObserver;
-import io.github.ollama4j.models.generate.OllamaStreamHandler;
+import io.github.ollama4j.models.generate.OllamaGenerateTokenHandler;
 import io.github.ollama4j.models.response.OllamaErrorResponse;
 import io.github.ollama4j.models.response.OllamaResult;
 import io.github.ollama4j.utils.OllamaRequestBody;
@@ -69,8 +69,8 @@ public class OllamaGenerateEndpointCaller extends OllamaEndpointCaller {
 
     public OllamaResult call(
             OllamaRequestBody body,
-            OllamaStreamHandler thinkingStreamHandler,
-            OllamaStreamHandler responseStreamHandler)
+            OllamaGenerateTokenHandler thinkingStreamHandler,
+            OllamaGenerateTokenHandler responseStreamHandler)
             throws OllamaBaseException, IOException, InterruptedException {
         responseStreamObserver =
                 new OllamaGenerateStreamObserver(thinkingStreamHandler, responseStreamHandler);

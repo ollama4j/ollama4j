@@ -6,10 +6,8 @@
  * you may not use this file except in compliance with the License.
  *
 */
-package io.github.ollama4j.models.generate;
+package io.github.ollama4j.models.chat;
 
 import java.util.function.Consumer;
 
-public interface OllamaStreamHandler extends Consumer<String> {
-    void accept(String message);
-}
+public interface OllamaChatTokenHandler extends Consumer<OllamaChatResponseModel> {}

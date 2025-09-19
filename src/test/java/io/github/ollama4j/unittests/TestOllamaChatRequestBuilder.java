@@ -59,6 +59,6 @@ class TestOllamaChatRequestBuilder {
         assertNotNull(req.getMessages());
         assert (!req.getMessages().isEmpty());
         OllamaChatMessage msg = req.getMessages().get(0);
-        assertNotNull(msg.getContent());
+        assertNotNull(msg.getResponse());
     }
 }

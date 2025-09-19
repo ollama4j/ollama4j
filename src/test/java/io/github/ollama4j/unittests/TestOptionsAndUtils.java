@@ -67,12 +67,9 @@ class TestOptionsAndUtils {
 
     @Test
     void testOptionsBuilderRejectsUnsupportedCustomType() {
+        OptionsBuilder builder = new OptionsBuilder();
         assertThrows(
-                IllegalArgumentException.class,
-                () -> {
-                    OptionsBuilder builder = new OptionsBuilder();
-                    builder.setCustomOption("bad", new Object());
-                });
+                IllegalArgumentException.class, () -> builder.setCustomOption("bad", new Object()));
     }
 
     @Test

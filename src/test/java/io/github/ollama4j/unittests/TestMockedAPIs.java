@@ -18,6 +18,7 @@ import io.github.ollama4j.exceptions.RoleNotFoundException;
 import io.github.ollama4j.models.chat.OllamaChatMessageRole;
 import io.github.ollama4j.models.embeddings.OllamaEmbedRequestModel;
 import io.github.ollama4j.models.embeddings.OllamaEmbedResponseModel;
+import io.github.ollama4j.models.generate.OllamaGenerateStreamObserver;
 import io.github.ollama4j.models.request.CustomModelRequest;
 import io.github.ollama4j.models.response.ModelDetail;
 import io.github.ollama4j.models.response.OllamaAsyncResultStreamer;
@@ -170,12 +171,13 @@ class TestMockedAPIs {
         String model = "llama2";
         String prompt = "some prompt text";
         OptionsBuilder optionsBuilder = new OptionsBuilder();
+        OllamaGenerateStreamObserver observer = new OllamaGenerateStreamObserver(null, null);
         try {
-            when(ollamaAPI.generate(model, prompt, false, false, optionsBuilder.build()))
+            when(ollamaAPI.generate(model, prompt, false, false, optionsBuilder.build(), observer))
                     .thenReturn(new OllamaResult("", "", 0, 200));
-            ollamaAPI.generate(model, prompt, false, false, optionsBuilder.build());
+            ollamaAPI.generate(model, prompt, false, false, optionsBuilder.build(), observer);
             verify(ollamaAPI, times(1))
-                    .generate(model, prompt, false, false, optionsBuilder.build());
+                    .generate(model, prompt, false, false, optionsBuilder.build(), observer);
         } catch (IOException | OllamaBaseException | InterruptedException e) {
             throw new RuntimeException(e);
         }

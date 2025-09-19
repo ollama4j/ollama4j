@@ -8,15 +8,11 @@
 */
 package io.github.ollama4j.impl;
 
-import io.github.ollama4j.models.generate.OllamaStreamHandler;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import io.github.ollama4j.models.generate.OllamaGenerateTokenHandler;
 
-public class ConsoleOutputStreamHandler implements OllamaStreamHandler {
-    private static final Logger LOG = LoggerFactory.getLogger(ConsoleOutputStreamHandler.class);
-
+public class ConsoleOutputGenerateTokenHandler implements OllamaGenerateTokenHandler {
     @Override
     public void accept(String message) {
-        LOG.info(message);
+        System.out.print(message);
     }
 }
