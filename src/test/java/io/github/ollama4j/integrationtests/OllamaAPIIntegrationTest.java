@@ -5,7 +5,7 @@
  * Licensed under the MIT License (the "License");
  * you may not use this file except in compliance with the License.
  *
- */
+*/
 package io.github.ollama4j.integrationtests;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -58,14 +58,20 @@ class OllamaAPIIntegrationTest {
     private static final String GENERAL_PURPOSE_MODEL = "gemma3:270m";
     private static final String TOOLS_MODEL = "mistral:7b";
 
+    /**
+     * Initializes the OllamaAPI instance for integration tests.
+     * <p>
+     * This method sets up the OllamaAPI client, either using an external Ollama host
+     * (if environment variables are set) or by starting a Testcontainers-based Ollama instance.
+     * It also configures request timeout and model pull retry settings.
+     */
     @BeforeAll
     static void setUp() {
-        // defaults
+        // ... (no javadoc needed for private setup logic)
         int requestTimeoutSeconds = 60;
         int numberOfRetriesForModelPull = 5;
 
         try {
-            // Try to get from env vars first
             String useExternalOllamaHostEnv = System.getenv("USE_EXTERNAL_OLLAMA_HOST");
             String ollamaHostEnv = System.getenv("OLLAMA_HOST");
 
@@ -73,7 +79,6 @@ class OllamaAPIIntegrationTest {
             String ollamaHost;
 
             if (useExternalOllamaHostEnv == null && ollamaHostEnv == null) {
-                // Fallback to test-config.properties from classpath
                 Properties props = new Properties();
                 try {
                     props.load(
@@ -103,10 +108,10 @@ class OllamaAPIIntegrationTest {
             } else {
                 throw new RuntimeException(
                         "USE_EXTERNAL_OLLAMA_HOST is not set so, we will be using Testcontainers"
-                                + " Ollama host for the tests now. If you would like to use an external"
-                                + " host, please set the env var to USE_EXTERNAL_OLLAMA_HOST=true and"
-                                + " set the env var OLLAMA_HOST=http://localhost:11435 or a different"
-                                + " host/port.");
+                            + " Ollama host for the tests now. If you would like to use an external"
+                            + " host, please set the env var to USE_EXTERNAL_OLLAMA_HOST=true and"
+                            + " set the env var OLLAMA_HOST=http://localhost:11435 or a different"
+                            + " host/port.");
             }
         } catch (Exception e) {
             String ollamaVersion = "0.6.1";
@@ -130,6 +135,11 @@ class OllamaAPIIntegrationTest {
         api.setNumberOfRetriesForModelPull(numberOfRetriesForModelPull);
     }
 
+    /**
+     * Verifies that a ConnectException is thrown when attempting to connect to a non-existent Ollama endpoint.
+     * <p>
+     * Scenario: Ensures the API client fails gracefully when the Ollama server is unreachable.
+     */
     @Test
     @Order(1)
     void shouldThrowConnectExceptionForWrongEndpoint() {
@@ -137,6 +147,11 @@ class OllamaAPIIntegrationTest {
         assertThrows(ConnectException.class, ollamaAPI::listModels);
     }
 
+    /**
+     * Tests retrieval of the Ollama server version.
+     * <p>
+     * Scenario: Calls the /api/version endpoint and asserts a non-null version string is returned.
+     */
     @Test
     @Order(1)
     void shouldReturnVersionFromVersionAPI()
@@ -145,6 +160,11 @@ class OllamaAPIIntegrationTest {
         assertNotNull(version);
     }
 
+    /**
+     * Tests the /api/ping endpoint for server liveness.
+     * <p>
+     * Scenario: Ensures the Ollama server responds to ping requests.
+     */
     @Test
     @Order(1)
     void shouldPingSuccessfully() throws OllamaBaseException {
@@ -152,6 +172,11 @@ class OllamaAPIIntegrationTest {
         assertTrue(pingResponse, "Ping should return true");
     }
 
+    /**
+     * Tests listing all available models from the Ollama server.
+     * <p>
+     * Scenario: Calls /api/tags and verifies the returned list is not null (may be empty).
+     */
     @Test
     @Order(2)
     void shouldListModels()
@@ -161,6 +186,11 @@ class OllamaAPIIntegrationTest {
         assertTrue(models.size() >= 0, "Models list can be empty or contain elements");
     }
 
+    /**
+     * Tests pulling a model and verifying it appears in the model list.
+     * <p>
+     * Scenario: Pulls an embedding model, then checks that it is present in the list of models.
+     */
     @Test
     @Order(3)
     void shouldPullModelAndListModels()
@@ -171,6 +201,11 @@ class OllamaAPIIntegrationTest {
         assertFalse(models.isEmpty(), "Models list should contain elements");
     }
 
+    /**
+     * Tests fetching detailed information for a specific model.
+     * <p>
+     * Scenario: Pulls a model and retrieves its details, asserting the model file contains the model name.
+     */
     @Test
     @Order(4)
     void shouldGetModelDetails()
@@ -181,6 +216,11 @@ class OllamaAPIIntegrationTest {
         assertTrue(modelDetails.getModelFile().contains(EMBEDDING_MODEL));
     }
 
+    /**
+     * Tests generating embeddings for a batch of input texts.
+     * <p>
+     * Scenario: Uses the embedding model to generate vector embeddings for two input sentences.
+     */
     @Test
     @Order(5)
     void shouldReturnEmbeddings() throws Exception {
@@ -193,6 +233,12 @@ class OllamaAPIIntegrationTest {
         assertFalse(embeddings.getEmbeddings().isEmpty(), "Embeddings should not be empty");
     }
 
+    /**
+     * Tests generating structured output using the 'format' parameter.
+     * <p>
+     * Scenario: Calls generateWithFormat with a prompt and a JSON schema, expecting a structured response.
+     * Usage: generate with format, no thinking, no streaming.
+     */
     @Test
     @Order(6)
     void shouldGenerateWithStructuredOutput()
@@ -228,6 +274,12 @@ class OllamaAPIIntegrationTest {
         assertNotNull(result.getStructuredResponse().get("isNoon"));
     }
 
+    /**
+     * Tests basic text generation with default options.
+     * <p>
+     * Scenario: Calls generate with a general-purpose model, no thinking, no streaming, no format.
+     * Usage: generate, raw=false, think=false, no streaming.
+     */
     @Test
     @Order(6)
     void shouldGenerateWithDefaultOptions()
@@ -249,6 +301,12 @@ class OllamaAPIIntegrationTest {
         assertFalse(result.getResponse().isEmpty());
     }
 
+    /**
+     * Tests text generation with streaming enabled.
+     * <p>
+     * Scenario: Calls generate with a general-purpose model, streaming the response tokens.
+     * Usage: generate, raw=false, think=false, streaming enabled.
+     */
     @Test
     @Order(7)
     void shouldGenerateWithDefaultOptionsStreamed()
@@ -271,6 +329,12 @@ class OllamaAPIIntegrationTest {
         assertFalse(result.getResponse().isEmpty());
     }
 
+    /**
+     * Tests chat API with custom options (e.g., temperature).
+     * <p>
+     * Scenario: Builds a chat request with system and user messages, sets a custom temperature, and verifies the response.
+     * Usage: chat, no tools, no thinking, no streaming, custom options.
+     */
     @Test
     @Order(8)
     void shouldGenerateWithCustomOptions()
@@ -301,6 +365,12 @@ class OllamaAPIIntegrationTest {
         assertFalse(chatResult.getResponseModel().getMessage().getResponse().isEmpty());
     }
 
+    /**
+     * Tests chat API with a system prompt and verifies the assistant's response.
+     * <p>
+     * Scenario: Sends a system prompt instructing the assistant to reply with a specific word, then checks the response.
+     * Usage: chat, no tools, no thinking, no streaming, system prompt.
+     */
     @Test
     @Order(9)
     void shouldChatWithSystemPrompt()
@@ -320,8 +390,8 @@ class OllamaAPIIntegrationTest {
                                 OllamaChatMessageRole.SYSTEM,
                                 String.format(
                                         "[INSTRUCTION-START] You are an obidient and helpful bot"
-                                                + " named %s. You always answer with only one word and"
-                                                + " that word is your name. [INSTRUCTION-END]",
+                                            + " named %s. You always answer with only one word and"
+                                            + " that word is your name. [INSTRUCTION-END]",
                                         expectedResponse))
                         .withMessage(OllamaChatMessageRole.USER, "Who are you?")
                         .withOptions(new OptionsBuilder().setTemperature(0.0f).build())
@@ -341,6 +411,12 @@ class OllamaAPIIntegrationTest {
         assertEquals(3, chatResult.getChatHistory().size());
     }
 
+    /**
+     * Tests chat API with multi-turn conversation (chat history).
+     * <p>
+     * Scenario: Sends a sequence of user messages, each time including the chat history, and verifies the assistant's responses.
+     * Usage: chat, no tools, no thinking, no streaming, multi-turn.
+     */
     @Test
     @Order(10)
     void shouldChatWithHistory() throws Exception {
@@ -385,6 +461,12 @@ class OllamaAPIIntegrationTest {
                 "Chat history should contain more than two messages");
     }
 
+    /**
+     * Tests chat API with explicit tool invocation (client does not handle tools).
+     * <p>
+     * Scenario: Registers a tool, sends a user message that triggers a tool call, and verifies the tool call and arguments.
+     * Usage: chat, explicit tool, clientHandlesTools=false, no thinking, no streaming.
+     */
     @Test
     @Order(11)
     void shouldChatWithExplicitTool()
@@ -437,6 +519,12 @@ class OllamaAPIIntegrationTest {
         assertNull(finalToolCalls, "Final tool calls in the response message should be null");
     }
 
+    /**
+     * Tests chat API with explicit tool invocation and clientHandlesTools=true.
+     * <p>
+     * Scenario: Registers a tool, enables clientHandlesTools, sends a user message, and verifies the assistant's tool call.
+     * Usage: chat, explicit tool, clientHandlesTools=true, no thinking, no streaming.
+     */
     @Test
     @Order(13)
     void shouldChatWithExplicitToolAndClientHandlesTools()
@@ -500,6 +588,12 @@ class OllamaAPIIntegrationTest {
         }
     }
 
+    /**
+     * Tests chat API with explicit tool invocation and streaming enabled.
+     * <p>
+     * Scenario: Registers a tool, sends a user message, and streams the assistant's response (with tool call).
+     * Usage: chat, explicit tool, clientHandlesTools=false, streaming enabled.
+     */
     @Test
     @Order(14)
     void shouldChatWithToolsAndStream()
@@ -557,6 +651,12 @@ class OllamaAPIIntegrationTest {
         assertNull(finalToolCalls, "Final tool calls in the response message should be null");
     }
 
+    /**
+     * Tests chat API with an annotated tool (single parameter).
+     * <p>
+     * Scenario: Registers annotated tools, sends a user message that triggers a tool call, and verifies the tool call and arguments.
+     * Usage: chat, annotated tool, no thinking, no streaming.
+     */
     @Test
     @Order(12)
     void shouldChatWithAnnotatedToolSingleParam()
@@ -598,6 +698,14 @@ class OllamaAPIIntegrationTest {
         assertNull(finalToolCalls);
     }
 
+    /**
+     * Tests chat API with an annotated tool (multiple parameters).
+     * <p>
+     * Scenario: Registers annotated tools, sends a user message that may trigger a tool call with multiple arguments.
+     * Usage: chat, annotated tool, no thinking, no streaming, multiple parameters.
+     * <p>
+     * Note: This test is non-deterministic due to model variability; some assertions are commented out.
+     */
     @Test
     @Order(13)
     void shouldChatWithAnnotatedToolMultipleParams()
@@ -626,32 +734,14 @@ class OllamaAPIIntegrationTest {
         assertEquals(
                 OllamaChatMessageRole.ASSISTANT.getRoleName(),
                 chatResult.getResponseModel().getMessage().getRole().getRoleName());
-
-        /*
-         * Reproducing this scenario consistently is challenging, as the model's
-         * behavior can vary.
-         * Therefore, these checks are currently skipped until a more reliable approach
-         * is found.
-         *
-         * // List<OllamaChatToolCalls> toolCalls =
-         * // chatResult.getChatHistory().get(1).getToolCalls();
-         * // assertEquals(1, toolCalls.size());
-         * // OllamaToolCallsFunction function = toolCalls.get(0).getFunction();
-         * // assertEquals("sayHello", function.getName());
-         * // assertEquals(2, function.getArguments().size());
-         * // Object name = function.getArguments().get("name");
-         * // assertNotNull(name);
-         * // assertEquals("Rahul", name);
-         * // Object numberOfHearts = function.getArguments().get("numberOfHearts");
-         * // assertNotNull(numberOfHearts);
-         * // assertTrue(Integer.parseInt(numberOfHearts.toString()) > 1);
-         * // assertTrue(chatResult.getChatHistory().size() > 2);
-         * // List<OllamaChatToolCalls> finalToolCalls =
-         * // chatResult.getResponseModel().getMessage().getToolCalls();
-         * // assertNull(finalToolCalls);
-         */
     }
 
+    /**
+     * Tests chat API with streaming enabled (no tools, no thinking).
+     * <p>
+     * Scenario: Sends a user message and streams the assistant's response.
+     * Usage: chat, no tools, no thinking, streaming enabled.
+     */
     @Test
     @Order(15)
     void shouldChatWithStream()
@@ -679,6 +769,12 @@ class OllamaAPIIntegrationTest {
         assertNotNull(chatResult.getResponseModel().getMessage().getResponse());
     }
 
+    /**
+     * Tests chat API with thinking and streaming enabled.
+     * <p>
+     * Scenario: Sends a user message with thinking enabled and streams the assistant's response.
+     * Usage: chat, no tools, thinking enabled, streaming enabled.
+     */
     @Test
     @Order(15)
     void shouldChatWithThinkingAndStream()
@@ -707,6 +803,12 @@ class OllamaAPIIntegrationTest {
         assertNotNull(chatResult.getResponseModel().getMessage().getResponse());
     }
 
+    /**
+     * Tests chat API with an image input from a URL.
+     * <p>
+     * Scenario: Sends a user message with an image URL and verifies the assistant's response.
+     * Usage: chat, vision model, image from URL, no tools, no thinking, no streaming.
+     */
     @Test
     @Order(10)
     void shouldChatWithImageFromURL()
@@ -731,6 +833,12 @@ class OllamaAPIIntegrationTest {
         assertNotNull(chatResult);
     }
 
+    /**
+     * Tests chat API with an image input from a file and multi-turn history.
+     * <p>
+     * Scenario: Sends a user message with an image file, then continues the conversation with chat history.
+     * Usage: chat, vision model, image from file, multi-turn, no tools, no thinking, no streaming.
+     */
     @Test
     @Order(10)
     void shouldChatWithImageFromFileAndHistory()
@@ -764,6 +872,12 @@ class OllamaAPIIntegrationTest {
         assertNotNull(chatResult.getResponseModel());
     }
 
+    /**
+     * Tests generateWithImages using an image URL as input.
+     * <p>
+     * Scenario: Calls generateWithImages with a vision model and an image URL, expecting a non-empty response.
+     * Usage: generateWithImages, image from URL, no streaming.
+     */
     @Test
     @Order(17)
     void shouldGenerateWithImageURLs()
@@ -784,6 +898,12 @@ class OllamaAPIIntegrationTest {
         assertFalse(result.getResponse().isEmpty());
     }
 
+    /**
+     * Tests generateWithImages using an image file as input.
+     * <p>
+     * Scenario: Calls generateWithImages with a vision model and an image file, expecting a non-empty response.
+     * Usage: generateWithImages, image from file, no streaming.
+     */
     @Test
     @Order(18)
     void shouldGenerateWithImageFiles()
@@ -807,6 +927,12 @@ class OllamaAPIIntegrationTest {
         }
     }
 
+    /**
+     * Tests generateWithImages with image file input and streaming enabled.
+     * <p>
+     * Scenario: Calls generateWithImages with a vision model, an image file, and a streaming handler for the response.
+     * Usage: generateWithImages, image from file, streaming enabled.
+     */
     @Test
     @Order(20)
     void shouldGenerateWithImageFilesAndResponseStreamed()
@@ -828,6 +954,12 @@ class OllamaAPIIntegrationTest {
         assertFalse(result.getResponse().isEmpty());
     }
 
+    /**
+     * Tests generate with thinking enabled (no streaming).
+     * <p>
+     * Scenario: Calls generate with think=true, expecting both response and thinking fields to be populated.
+     * Usage: generate, think=true, no streaming.
+     */
     @Test
     @Order(20)
     void shouldGenerateWithThinking()
@@ -850,6 +982,12 @@ class OllamaAPIIntegrationTest {
         assertNotNull(result.getThinking());
     }
 
+    /**
+     * Tests generate with thinking and streaming enabled.
+     * <p>
+     * Scenario: Calls generate with think=true and a stream handler for both thinking and response tokens.
+     * Usage: generate, think=true, streaming enabled.
+     */
     @Test
     @Order(20)
     void shouldGenerateWithThinkingAndStreamHandler()
@@ -875,11 +1013,23 @@ class OllamaAPIIntegrationTest {
         assertNotNull(result.getThinking());
     }
 
+    /**
+     * Utility method to retrieve an image file from the classpath.
+     * <p>
+     * @param fileName the name of the image file
+     * @return the File object for the image
+     */
     private File getImageFileFromClasspath(String fileName) {
         ClassLoader classLoader = getClass().getClassLoader();
         return new File(Objects.requireNonNull(classLoader.getResource(fileName)).getFile());
     }
 
+    /**
+     * Returns a ToolSpecification for an employee finder tool.
+     * <p>
+     * This tool can be registered with the OllamaAPI to enable tool-calling scenarios in chat.
+     * The tool accepts employee-name, employee-address, and employee-phone as parameters.
+     */
     private Tools.ToolSpecification employeeFinderTool() {
         return Tools.ToolSpecification.builder()
                 .functionName("get-employee-details")
@@ -908,11 +1058,11 @@ class OllamaAPIIntegrationTest {
                                                                                                         "string")
                                                                                                 .description(
                                                                                                         "The name"
-                                                                                                                + " of the"
-                                                                                                                + " employee,"
-                                                                                                                + " e.g."
-                                                                                                                + " John"
-                                                                                                                + " Doe")
+                                                                                                            + " of the"
+                                                                                                            + " employee,"
+                                                                                                            + " e.g."
+                                                                                                            + " John"
+                                                                                                            + " Doe")
                                                                                                 .required(
                                                                                                         true)
                                                                                                 .build())
@@ -926,16 +1076,16 @@ class OllamaAPIIntegrationTest {
                                                                                                         "string")
                                                                                                 .description(
                                                                                                         "The address"
-                                                                                                                + " of the"
-                                                                                                                + " employee,"
-                                                                                                                + " Always"
-                                                                                                                + " eturns"
-                                                                                                                + " a random"
-                                                                                                                + " address."
-                                                                                                                + " For example,"
-                                                                                                                + " Church"
-                                                                                                                + " St, Bengaluru,"
-                                                                                                                + " India")
+                                                                                                            + " of the"
+                                                                                                            + " employee,"
+                                                                                                            + " Always"
+                                                                                                            + " eturns"
+                                                                                                            + " a random"
+                                                                                                            + " address."
+                                                                                                            + " For example,"
+                                                                                                            + " Church"
+                                                                                                            + " St, Bengaluru,"
+                                                                                                            + " India")
                                                                                                 .required(
                                                                                                         true)
                                                                                                 .build())
@@ -949,16 +1099,16 @@ class OllamaAPIIntegrationTest {
                                                                                                         "string")
                                                                                                 .description(
                                                                                                         "The phone"
-                                                                                                                + " number"
-                                                                                                                + " of the"
-                                                                                                                + " employee."
-                                                                                                                + " Always"
-                                                                                                                + " returns"
-                                                                                                                + " a random"
-                                                                                                                + " phone"
-                                                                                                                + " number."
-                                                                                                                + " For example,"
-                                                                                                                + " 9911002233")
+                                                                                                            + " number"
+                                                                                                            + " of the"
+                                                                                                            + " employee."
+                                                                                                            + " Always"
+                                                                                                            + " returns"
+                                                                                                            + " a random"
+                                                                                                            + " phone"
+                                                                                                            + " number."
+                                                                                                            + " For example,"
+                                                                                                            + " 9911002233")
                                                                                                 .required(
                                                                                                         true)
                                                                                                 .build())
