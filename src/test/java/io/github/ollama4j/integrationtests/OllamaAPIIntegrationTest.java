@@ -5,7 +5,7 @@
  * Licensed under the MIT License (the "License");
  * you may not use this file except in compliance with the License.
  *
-*/
+ */
 package io.github.ollama4j.integrationtests;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -54,11 +54,13 @@ class OllamaAPIIntegrationTest {
     private static final String EMBEDDING_MODEL = "all-minilm";
     private static final String VISION_MODEL = "moondream:1.8b";
     private static final String THINKING_TOOL_MODEL = "deepseek-r1:1.5b";
+    private static final String THINKING_TOOL_MODEL_2 = "qwen3:0.6b";
     private static final String GENERAL_PURPOSE_MODEL = "gemma3:270m";
     private static final String TOOLS_MODEL = "mistral:7b";
 
     @BeforeAll
     static void setUp() {
+        // defaults
         int requestTimeoutSeconds = 60;
         int numberOfRetriesForModelPull = 5;
 
@@ -101,10 +103,10 @@ class OllamaAPIIntegrationTest {
             } else {
                 throw new RuntimeException(
                         "USE_EXTERNAL_OLLAMA_HOST is not set so, we will be using Testcontainers"
-                            + " Ollama host for the tests now. If you would like to use an external"
-                            + " host, please set the env var to USE_EXTERNAL_OLLAMA_HOST=true and"
-                            + " set the env var OLLAMA_HOST=http://localhost:11435 or a different"
-                            + " host/port.");
+                                + " Ollama host for the tests now. If you would like to use an external"
+                                + " host, please set the env var to USE_EXTERNAL_OLLAMA_HOST=true and"
+                                + " set the env var OLLAMA_HOST=http://localhost:11435 or a different"
+                                + " host/port.");
             }
         } catch (Exception e) {
             String ollamaVersion = "0.6.1";
@@ -318,8 +320,8 @@ class OllamaAPIIntegrationTest {
                                 OllamaChatMessageRole.SYSTEM,
                                 String.format(
                                         "[INSTRUCTION-START] You are an obidient and helpful bot"
-                                            + " named %s. You always answer with only one word and"
-                                            + " that word is your name. [INSTRUCTION-END]",
+                                                + " named %s. You always answer with only one word and"
+                                                + " that word is your name. [INSTRUCTION-END]",
                                         expectedResponse))
                         .withMessage(OllamaChatMessageRole.USER, "Who are you?")
                         .withOptions(new OptionsBuilder().setTemperature(0.0f).build())
@@ -685,9 +687,9 @@ class OllamaAPIIntegrationTest {
                     URISyntaxException,
                     InterruptedException,
                     ToolInvocationException {
-        api.pullModel(THINKING_TOOL_MODEL);
+        api.pullModel(THINKING_TOOL_MODEL_2);
         OllamaChatRequestBuilder builder =
-                OllamaChatRequestBuilder.getInstance(THINKING_TOOL_MODEL);
+                OllamaChatRequestBuilder.getInstance(THINKING_TOOL_MODEL_2);
         OllamaChatRequest requestModel =
                 builder.withMessage(
                                 OllamaChatMessageRole.USER,
@@ -906,11 +908,11 @@ class OllamaAPIIntegrationTest {
                                                                                                         "string")
                                                                                                 .description(
                                                                                                         "The name"
-                                                                                                            + " of the"
-                                                                                                            + " employee,"
-                                                                                                            + " e.g."
-                                                                                                            + " John"
-                                                                                                            + " Doe")
+                                                                                                                + " of the"
+                                                                                                                + " employee,"
+                                                                                                                + " e.g."
+                                                                                                                + " John"
+                                                                                                                + " Doe")
                                                                                                 .required(
                                                                                                         true)
                                                                                                 .build())
@@ -924,16 +926,16 @@ class OllamaAPIIntegrationTest {
                                                                                                         "string")
                                                                                                 .description(
                                                                                                         "The address"
-                                                                                                            + " of the"
-                                                                                                            + " employee,"
-                                                                                                            + " Always"
-                                                                                                            + " eturns"
-                                                                                                            + " a random"
-                                                                                                            + " address."
-                                                                                                            + " For example,"
-                                                                                                            + " Church"
-                                                                                                            + " St, Bengaluru,"
-                                                                                                            + " India")
+                                                                                                                + " of the"
+                                                                                                                + " employee,"
+                                                                                                                + " Always"
+                                                                                                                + " eturns"
+                                                                                                                + " a random"
+                                                                                                                + " address."
+                                                                                                                + " For example,"
+                                                                                                                + " Church"
+                                                                                                                + " St, Bengaluru,"
+                                                                                                                + " India")
                                                                                                 .required(
                                                                                                         true)
                                                                                                 .build())
@@ -947,16 +949,16 @@ class OllamaAPIIntegrationTest {
                                                                                                         "string")
                                                                                                 .description(
                                                                                                         "The phone"
-                                                                                                            + " number"
-                                                                                                            + " of the"
-                                                                                                            + " employee."
-                                                                                                            + " Always"
-                                                                                                            + " returns"
-                                                                                                            + " a random"
-                                                                                                            + " phone"
-                                                                                                            + " number."
-                                                                                                            + " For example,"
-                                                                                                            + " 9911002233")
+                                                                                                                + " number"
+                                                                                                                + " of the"
+                                                                                                                + " employee."
+                                                                                                                + " Always"
+                                                                                                                + " returns"
+                                                                                                                + " a random"
+                                                                                                                + " phone"
+                                                                                                                + " number."
+                                                                                                                + " For example,"
+                                                                                                                + " 9911002233")
                                                                                                 .required(
                                                                                                         true)
                                                                                                 .build())
