@@ -54,7 +54,6 @@ public class WithAuth {
     private static final String NGINX_VERSION = "nginx:1.23.4-alpine";
     private static final String BEARER_AUTH_TOKEN = "secret-token";
     private static final String GENERAL_PURPOSE_MODEL = "gemma3:270m";
-    //    private static final String THINKING_MODEL = "gpt-oss:20b";
 
     private static OllamaContainer ollama;
     private static GenericContainer<?> nginx;
