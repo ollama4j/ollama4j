@@ -106,7 +106,7 @@ class OllamaAPIIntegrationTest {
             }
 
             if (useExternalOllamaHost) {
-                LOG.info("Using external Ollama host...");
+                LOG.info("Using external Ollama host: {}", ollamaHost);
                 api = new OllamaAPI(ollamaHost);
             } else {
                 throw new RuntimeException(

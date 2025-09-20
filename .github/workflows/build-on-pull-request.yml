@@ -20,6 +20,10 @@ jobs:
     permissions:
       contents: read
 
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+
     steps:
       - uses: actions/checkout@v5
       - name: Set up JDK 21
@@ -39,8 +43,6 @@ jobs:
     uses: ./.github/workflows/run-tests.yml
     with:
       branch: ${{ github.head_ref || github.ref_name }}
-    env:
-      USE_EXTERNAL_OLLAMA_HOST: "false"
 
   build-docs:
     name: Build Documentation
