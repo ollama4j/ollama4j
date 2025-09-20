@@ -26,6 +26,14 @@ repos:
       - id: commitizen
         stages: [commit-msg]
 
+  - repo: local
+    hooks:
+      - id: format-code
+        name: Format Code
+        entry: make apply-formatting
+        language: system
+        always_run: true
+
 #  # for java code quality
 #  - repo: https://github.com/gherynos/pre-commit-java
 #    rev: v0.6.10

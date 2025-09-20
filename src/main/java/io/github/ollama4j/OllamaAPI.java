@@ -5,7 +5,7 @@
  * Licensed under the MIT License (the "License");
  * you may not use this file except in compliance with the License.
  *
- */
+*/
 package io.github.ollama4j;
 
 import com.fasterxml.jackson.core.JsonParseException;
