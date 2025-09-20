@@ -13,7 +13,6 @@ check-formatting:
 apply-formatting:
 	@echo "\033[0;32mApplying code formatting...\033[0m"
 	@mvn spotless:apply
-	# pre-commit run --all-files
 
 build: apply-formatting
 	@echo "\033[0;34mBuilding project (GPG skipped)...\033[0m"
