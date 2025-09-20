@@ -614,6 +614,7 @@ public class OllamaAPI {
         ollamaRequestModel.setRaw(raw);
         ollamaRequestModel.setThink(think);
         ollamaRequestModel.setOptions(options.getOptionsMap());
+        ollamaRequestModel.setKeepAlive("0m");
 
         // Based on 'think' flag, choose the appropriate stream handler(s)
         if (think) {
