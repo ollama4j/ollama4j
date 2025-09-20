@@ -146,7 +146,7 @@ public class TestChatRequestSerialization extends AbstractSerializationTest<Olla
         OllamaChatRequest req = builder.withKeepAlive(expectedKeepAlive).build();
         String jsonRequest = serialize(req);
         assertEquals(
-                deserialize(jsonRequest, OllamaChatRequest.class).getKeepAlive(),
-                expectedKeepAlive);
+                expectedKeepAlive,
+                deserialize(jsonRequest, OllamaChatRequest.class).getKeepAlive());
     }
 }

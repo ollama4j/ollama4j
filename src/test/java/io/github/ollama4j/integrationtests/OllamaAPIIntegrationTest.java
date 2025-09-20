@@ -71,7 +71,6 @@ class OllamaAPIIntegrationTest {
         // ... (no javadoc needed for private setup logic)
         int requestTimeoutSeconds = 60;
         int numberOfRetriesForModelPull = 5;
-        int modelKeepAliveTime = 0;
 
         try {
             String useExternalOllamaHostEnv = System.getenv("USE_EXTERNAL_OLLAMA_HOST");
@@ -99,7 +98,6 @@ class OllamaAPIIntegrationTest {
                         Integer.parseInt(props.getProperty("REQUEST_TIMEOUT_SECONDS"));
                 numberOfRetriesForModelPull =
                         Integer.parseInt(props.getProperty("NUMBER_RETRIES_FOR_MODEL_PULL"));
-                modelKeepAliveTime = Integer.parseInt(props.getProperty("MODEL_KEEP_ALIVE_TIME"));
             } else {
                 useExternalOllamaHost = Boolean.parseBoolean(useExternalOllamaHostEnv);
                 ollamaHost = ollamaHostEnv;
@@ -136,7 +134,6 @@ class OllamaAPIIntegrationTest {
         }
         api.setRequestTimeoutSeconds(requestTimeoutSeconds);
         api.setNumberOfRetriesForModelPull(numberOfRetriesForModelPull);
-        api.setModelKeepAliveTime(modelKeepAliveTime);
     }
 
     /**

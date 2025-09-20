@@ -92,10 +92,6 @@ public class OllamaAPI {
     @SuppressWarnings({"FieldMayBeFinal", "FieldCanBeLocal"})
     private int numberOfRetriesForModelPull = 0;
 
-    @Setter
-    @SuppressWarnings({"FieldMayBeFinal", "FieldCanBeLocal"})
-    private int modelKeepAliveTime = 0;
-
     /**
      * Instantiates the Ollama API with default Ollama host: <a
      * href="http://localhost:11434">http://localhost:11434</a>

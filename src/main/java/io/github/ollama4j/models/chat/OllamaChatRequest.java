@@ -8,7 +8,6 @@
 */
 package io.github.ollama4j.models.chat;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
 import io.github.ollama4j.models.request.OllamaCommonRequest;
 import io.github.ollama4j.tools.Tools;
 import io.github.ollama4j.utils.OllamaRequestBody;
@@ -32,9 +31,6 @@ public class OllamaChatRequest extends OllamaCommonRequest implements OllamaRequ
     private List<Tools.PromptFuncDefinition> tools;
 
     private boolean think;
-
-    @JsonProperty("keep_alive")
-    private int modelKeepAliveTime;
 
     /**
      * Controls whether tools are automatically executed.
