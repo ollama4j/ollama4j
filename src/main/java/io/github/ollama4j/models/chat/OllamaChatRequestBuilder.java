@@ -5,7 +5,7 @@
  * Licensed under the MIT License (the "License");
  * you may not use this file except in compliance with the License.
  *
-*/
+ */
 package io.github.ollama4j.models.chat;
 
 import io.github.ollama4j.utils.Options;
@@ -17,6 +17,8 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
+
+import lombok.Setter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -27,6 +29,9 @@ public class OllamaChatRequestBuilder {
 
     private int imageURLConnectTimeoutSeconds = 10;
     private int imageURLReadTimeoutSeconds = 10;
+
+    @Setter
+    private boolean useTools = true;
 
     public OllamaChatRequestBuilder withImageURLConnectTimeoutSeconds(
             int imageURLConnectTimeoutSeconds) {
@@ -50,6 +55,7 @@ public class OllamaChatRequestBuilder {
     }
 
     public OllamaChatRequest build() {
+        request.setUseTools(useTools);
         return request;
     }
 

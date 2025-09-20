@@ -5,9 +5,10 @@
  * Licensed under the MIT License (the "License");
  * you may not use this file except in compliance with the License.
  *
-*/
+ */
 package io.github.ollama4j.models.chat;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import io.github.ollama4j.models.request.OllamaCommonRequest;
 import io.github.ollama4j.tools.Tools;
 import io.github.ollama4j.utils.OllamaRequestBody;
@@ -19,8 +20,8 @@ import lombok.Setter;
  * Defines a Request to use against the ollama /api/chat endpoint.
  *
  * @see <a href=
- * "https://github.com/ollama/ollama/blob/main/docs/api.md#generate-a-chat-completion">Generate
- * Chat Completion</a>
+ *     "https://github.com/ollama/ollama/blob/main/docs/api.md#generate-a-chat-completion">Generate
+ *     Chat Completion</a>
  */
 @Getter
 @Setter
@@ -31,6 +32,19 @@ public class OllamaChatRequest extends OllamaCommonRequest implements OllamaRequ
     private List<Tools.PromptFuncDefinition> tools;
 
     private boolean think;
+
+    @JsonProperty("keep_alive")
+    private int modelKeepAliveTime;
+
+    /**
+     * Controls whether tools are automatically executed.
+     * <p>
+     * If set to {@code true} (the default), tools will be automatically used/applied by the library.
+     * If set to {@code false}, tool calls will be returned to the client for manual handling.
+     * <p>
+     * Disabling this should be an explicit operation.
+     */
+    private boolean useTools = true;
 
     public OllamaChatRequest() {}
 

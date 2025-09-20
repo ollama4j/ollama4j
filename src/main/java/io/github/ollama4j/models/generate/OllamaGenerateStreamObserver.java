@@ -22,8 +22,8 @@ public class OllamaGenerateStreamObserver {
     public OllamaGenerateStreamObserver(
             OllamaGenerateTokenHandler thinkingStreamHandler,
             OllamaGenerateTokenHandler responseStreamHandler) {
-        this.responseStreamHandler = responseStreamHandler;
         this.thinkingStreamHandler = thinkingStreamHandler;
+        this.responseStreamHandler = responseStreamHandler;
     }
 
     public void notify(OllamaGenerateResponseModel currentResponsePart) {

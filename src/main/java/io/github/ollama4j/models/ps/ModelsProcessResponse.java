@@ -23,6 +23,7 @@ public class ModelsProcessResponse {
 
     @Data
     @NoArgsConstructor
+    @JsonIgnoreProperties(ignoreUnknown = true)
     public static class ModelProcess {
         @JsonProperty("name")
         private String name;

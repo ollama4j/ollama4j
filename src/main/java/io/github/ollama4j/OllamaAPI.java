@@ -5,7 +5,7 @@
  * Licensed under the MIT License (the "License");
  * you may not use this file except in compliance with the License.
  *
-*/
+ */
 package io.github.ollama4j;
 
 import com.fasterxml.jackson.core.JsonParseException;
@@ -92,13 +92,9 @@ public class OllamaAPI {
     @SuppressWarnings({"FieldMayBeFinal", "FieldCanBeLocal"})
     private int numberOfRetriesForModelPull = 0;
 
-    /**
-     * When set to true, tools will not be automatically executed by the library. Instead, tool
-     * calls will be returned to the client for manual handling.
-     *
-     * <p>Default is false for backward compatibility.
-     */
-    @Setter private boolean clientHandlesTools = false;
+    @Setter
+    @SuppressWarnings({"FieldMayBeFinal", "FieldCanBeLocal"})
+    private int modelKeepAliveTime = 0;
 
     /**
      * Instantiates the Ollama API with default Ollama host: <a
@@ -535,6 +531,44 @@ public class OllamaAPI {
         }
     }
 
+    /*
+    If an empty prompt is provided and the keep_alive parameter is set to 0, a model will be unloaded from memory.
+     */
+    public void unloadModel(String modelName)
+            throws URISyntaxException, IOException, InterruptedException, OllamaBaseException {
+        String url = this.host + "/api/generate";
+        ObjectMapper objectMapper = new ObjectMapper();
+        Map<String, Object> jsonMap = new java.util.HashMap<>();
+        jsonMap.put("model", modelName);
+        jsonMap.put("keep_alive", 0);
+        String jsonData = objectMapper.writeValueAsString(jsonMap);
+        HttpRequest request =
+                getRequestBuilderDefault(new URI(url))
+                        .method(
+                                "POST",
+                                HttpRequest.BodyPublishers.ofString(
+                                        jsonData, StandardCharsets.UTF_8))
+                        .header(
+                                Constants.HttpConstants.HEADER_KEY_ACCEPT,
+                                Constants.HttpConstants.APPLICATION_JSON)
+                        .header(
+                                Constants.HttpConstants.HEADER_KEY_CONTENT_TYPE,
+                                Constants.HttpConstants.APPLICATION_JSON)
+                        .build();
+        HttpClient client = HttpClient.newHttpClient();
+        HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
+        int statusCode = response.statusCode();
+        String responseBody = response.body();
+        if (statusCode == 404
+                && responseBody.contains("model")
+                && responseBody.contains("not found")) {
+            return;
+        }
+        if (statusCode != 200) {
+            throw new OllamaBaseException(statusCode + " - " + responseBody);
+        }
+    }
+
     /**
      * Generate embeddings using a {@link OllamaEmbedRequestModel}.
      *
@@ -905,21 +939,20 @@ public class OllamaAPI {
                 new OllamaChatEndpointCaller(host, auth, requestTimeoutSeconds);
         OllamaChatResult result;
 
-        // add all registered tools to Request
-        request.setTools(
-                toolRegistry.getRegisteredSpecs().stream()
-                        .map(Tools.ToolSpecification::getToolPrompt)
-                        .collect(Collectors.toList()));
+        // only add tools if tools flag is set
+        if (request.isUseTools()) {
+            // add all registered tools to request
+            request.setTools(
+                    toolRegistry.getRegisteredSpecs().stream()
+                            .map(Tools.ToolSpecification::getToolPrompt)
+                            .collect(Collectors.toList()));
+        }
 
         if (tokenHandler != null) {
             request.setStream(true);
             result = requestCaller.call(request, tokenHandler);
         } else {
             result = requestCaller.callSync(request);
-        }
-
-        if (clientHandlesTools) {
-            return result;
         }
 
         // check if toolCallIsWanted

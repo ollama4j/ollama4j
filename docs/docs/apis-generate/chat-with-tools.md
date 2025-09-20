@@ -29,17 +29,17 @@ session. The tool invocation and response handling are all managed internally by
 
 This tool calling can also be done using the streaming API.
 
-### Client-managed tool calls (clientHandlesTools)
+### Client-managed tool calls (useTools)
 
 By default, ollama4j automatically executes tool calls returned by the model during chat, runs the corresponding registered Java methods, and appends the tool results back into the conversation. For some applications, you may want to intercept tool calls and decide yourself when and how to execute them (for example, to queue them, to show a confirmation UI to the user, to run them in a sandbox, or to perform multi‑step orchestration).
 
-To enable this behavior, set the clientHandlesTools flag to true on your OllamaAPI instance. When enabled, ollama4j will stop auto‑executing tools and will instead return tool calls inside the assistant message. You can then inspect the tool calls and execute them manually.
+To enable this behavior, set the useTools flag to true on your OllamaAPI instance. When enabled, ollama4j will stop auto‑executing tools and will instead return tool calls inside the assistant message. You can then inspect the tool calls and execute them manually.
 
 
 Notes:
-- Default value: clientHandlesTools is false for backward compatibility.
-- When clientHandlesTools is false, ollama4j auto‑executes tools and loops internally until tools are resolved or max retries is reached.
-- When clientHandlesTools is true, ollama4j will not execute tools; you are responsible for invoking tools and passing results back as TOOL messages, then re‑calling chat() to continue.
+- Default value: useTools is true.
+- When useTools is false, ollama4j auto‑executes tools and loops internally until tools are resolved or max retries is reached.
+- When useTools is true, ollama4j will not execute tools; you are responsible for invoking tools and passing results back as TOOL messages, then re‑calling chat() to continue.
 
 ### Annotation-Based Tool Registration
 
