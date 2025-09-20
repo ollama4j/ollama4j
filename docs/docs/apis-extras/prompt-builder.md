@@ -1,5 +1,5 @@
 ---
-sidebar_position: 10
+sidebar_position: 2
 ---
 
 # Prompt Builder
@@ -51,6 +51,7 @@ public class Main {
 
 You will get a response similar to:
 
+:::tip[LLM Response]
 ```go
 package main
 
@@ -72,3 +73,4 @@ func readFile(fileName string) {
     }
 }
 ```
+:::

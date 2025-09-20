@@ -1,13 +1,20 @@
+/*
+ * Ollama4j - Java library for interacting with Ollama server.
+ * Copyright (c) 2025 Amith Koujalgi and contributors.
+ *
+ * Licensed under the MIT License (the "License");
+ * you may not use this file except in compliance with the License.
+ *
+*/
 package io.github.ollama4j.tools;
 
 import io.github.ollama4j.models.response.OllamaResult;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Data
 @NoArgsConstructor
@@ -22,7 +29,8 @@ public class OllamaToolsResult {
             return results;
         }
         for (Map.Entry<ToolFunctionCallSpec, Object> r : this.toolResults.entrySet()) {
-            results.add(new ToolResult(r.getKey().getName(), r.getKey().getArguments(), r.getValue()));
+            results.add(
+                    new ToolResult(r.getKey().getName(), r.getKey().getArguments(), r.getValue()));
         }
         return results;
     }

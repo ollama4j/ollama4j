@@ -6,11 +6,8 @@
  * you may not use this file except in compliance with the License.
  *
 */
-package io.github.ollama4j.exceptions;
+package io.github.ollama4j.models.chat;
 
-public class RoleNotFoundException extends Exception {
+import java.util.function.Consumer;
 
-    public RoleNotFoundException(String s) {
-        super(s);
-    }
-}
+public interface OllamaChatTokenHandler extends Consumer<OllamaChatResponseModel> {}

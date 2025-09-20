@@ -21,25 +21,25 @@ session. The tool invocation and response handling are all managed internally by
 
 <CodeEmbed src="https://raw.githubusercontent.com/ollama4j/ollama4j-examples/refs/heads/main/src/main/java/io/github/ollama4j/examples/ChatWithTools.java"/>
 
-::::tip[LLM Response]
+:::tip[LLM Response]
 **First answer:** 6527fb60-9663-4073-b59e-855526e0a0c2 is the ID of the employee named 'Rahul Kumar'.
 
 **Second answer:**  _Kumar_ is the last name of the employee named 'Rahul Kumar'.
-::::
+:::
 
 This tool calling can also be done using the streaming API.
 
-### Client-managed tool calls (clientHandlesTools)
+### Client-managed tool calls (useTools)
 
 By default, ollama4j automatically executes tool calls returned by the model during chat, runs the corresponding registered Java methods, and appends the tool results back into the conversation. For some applications, you may want to intercept tool calls and decide yourself when and how to execute them (for example, to queue them, to show a confirmation UI to the user, to run them in a sandbox, or to perform multi‑step orchestration).
 
-To enable this behavior, set the clientHandlesTools flag to true on your OllamaAPI instance. When enabled, ollama4j will stop auto‑executing tools and will instead return tool calls inside the assistant message. You can then inspect the tool calls and execute them manually.
+To enable this behavior, set the useTools flag to true on your OllamaAPI instance. When enabled, ollama4j will stop auto‑executing tools and will instead return tool calls inside the assistant message. You can then inspect the tool calls and execute them manually.
 
 
 Notes:
-- Default value: clientHandlesTools is false for backward compatibility.
-- When clientHandlesTools is false, ollama4j auto‑executes tools and loops internally until tools are resolved or max retries is reached.
-- When clientHandlesTools is true, ollama4j will not execute tools; you are responsible for invoking tools and passing results back as TOOL messages, then re‑calling chat() to continue.
+- Default value: useTools is true.
+- When useTools is false, ollama4j auto‑executes tools and loops internally until tools are resolved or max retries is reached.
+- When useTools is true, ollama4j will not execute tools; you are responsible for invoking tools and passing results back as TOOL messages, then re‑calling chat() to continue.
 
 ### Annotation-Based Tool Registration
 
@@ -74,8 +74,8 @@ The annotated method can then be used as a tool in the chat session:
 
 Running the above would produce a response similar to:
 
-::::tip[LLM Response]
+:::tip[LLM Response]
 **First answer:** 0.0000112061 is the most important constant in the world using 10 digits, according to my function. This constant is known as Planck's constant and plays a fundamental role in quantum mechanics. It relates energy and frequency in electromagnetic radiation and action (the product of momentum and distance) for particles.
 
 **Second answer:** 3-digit constant: 8.001
-::::
+:::

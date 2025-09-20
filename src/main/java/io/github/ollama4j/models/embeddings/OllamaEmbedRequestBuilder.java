@@ -1,7 +1,14 @@
+/*
+ * Ollama4j - Java library for interacting with Ollama server.
+ * Copyright (c) 2025 Amith Koujalgi and contributors.
+ *
+ * Licensed under the MIT License (the "License");
+ * you may not use this file except in compliance with the License.
+ *
+*/
 package io.github.ollama4j.models.embeddings;
 
 import io.github.ollama4j.utils.Options;
-
 import java.util.List;
 
 /**
@@ -12,24 +19,24 @@ public class OllamaEmbedRequestBuilder {
     private final OllamaEmbedRequestModel request;
 
     private OllamaEmbedRequestBuilder(String model, List<String> input) {
-        this.request = new OllamaEmbedRequestModel(model,input);
+        this.request = new OllamaEmbedRequestModel(model, input);
     }
 
-    public static OllamaEmbedRequestBuilder getInstance(String model, String... input){
+    public static OllamaEmbedRequestBuilder getInstance(String model, String... input) {
         return new OllamaEmbedRequestBuilder(model, List.of(input));
     }
 
-    public OllamaEmbedRequestBuilder withOptions(Options options){
+    public OllamaEmbedRequestBuilder withOptions(Options options) {
         this.request.setOptions(options.getOptionsMap());
         return this;
     }
 
-    public OllamaEmbedRequestBuilder withKeepAlive(String keepAlive){
+    public OllamaEmbedRequestBuilder withKeepAlive(String keepAlive) {
         this.request.setKeepAlive(keepAlive);
         return this;
     }
 
-    public OllamaEmbedRequestBuilder withoutTruncate(){
+    public OllamaEmbedRequestBuilder withoutTruncate() {
         this.request.setTruncate(false);
         return this;
     }

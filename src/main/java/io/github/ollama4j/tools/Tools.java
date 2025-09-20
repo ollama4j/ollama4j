@@ -1,3 +1,11 @@
+/*
+ * Ollama4j - Java library for interacting with Ollama server.
+ * Copyright (c) 2025 Amith Koujalgi and contributors.
+ *
+ * Licensed under the MIT License (the "License");
+ * you may not use this file except in compliance with the License.
+ *
+*/
 package io.github.ollama4j.tools;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -6,15 +14,14 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import io.github.ollama4j.utils.Utils;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
-
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
 public class Tools {
     @Data
@@ -62,11 +69,12 @@ public class Tools {
         public static class Property {
             private String type;
             private String description;
+
             @JsonProperty("enum")
             @JsonInclude(JsonInclude.Include.NON_NULL)
             private List<String> enumValues;
-            @JsonIgnore
-            private boolean required;
+
+            @JsonIgnore private boolean required;
         }
     }
 
@@ -89,7 +97,11 @@ public class Tools {
         private String promptText;
 
         public String build() throws JsonProcessingException {
-            return "[AVAILABLE_TOOLS] " + Utils.getObjectMapper().writeValueAsString(tools) + "[/AVAILABLE_TOOLS][INST] " + promptText + " [/INST]";
+            return "[AVAILABLE_TOOLS] "
+                    + Utils.getObjectMapper().writeValueAsString(tools)
+                    + "[/AVAILABLE_TOOLS][INST] "
+                    + promptText
+                    + " [/INST]";
         }
 
         public PromptBuilder withPrompt(String prompt) throws JsonProcessingException {
@@ -101,7 +113,8 @@ public class Tools {
             PromptFuncDefinition def = new PromptFuncDefinition();
             def.setType("function");
 
-            PromptFuncDefinition.PromptFuncSpec functionDetail = new PromptFuncDefinition.PromptFuncSpec();
+            PromptFuncDefinition.PromptFuncSpec functionDetail =
+                    new PromptFuncDefinition.PromptFuncSpec();
             functionDetail.setName(spec.getFunctionName());
             functionDetail.setDescription(spec.getFunctionDescription());
 
@@ -110,7 +123,8 @@ public class Tools {
             parameters.setProperties(spec.getToolPrompt().getFunction().parameters.getProperties());
 
             List<String> requiredValues = new ArrayList<>();
-            for (Map.Entry<String, PromptFuncDefinition.Property> p : spec.getToolPrompt().getFunction().getParameters().getProperties().entrySet()) {
+            for (Map.Entry<String, PromptFuncDefinition.Property> p :
+                    spec.getToolPrompt().getFunction().getParameters().getProperties().entrySet()) {
                 if (p.getValue().isRequired()) {
                     requiredValues.add(p.getKey());
                 }

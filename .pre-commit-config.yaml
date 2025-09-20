@@ -21,10 +21,18 @@ repos:
 
   # for commit message formatting
   - repo: https://github.com/commitizen-tools/commitizen
-    rev: v4.9.0
+    rev: v4.9.1
     hooks:
       - id: commitizen
         stages: [commit-msg]
+
+  - repo: local
+    hooks:
+      - id: format-code
+        name: Format Code
+        entry: make apply-formatting
+        language: system
+        always_run: true
 
 #  # for java code quality
 #  - repo: https://github.com/gherynos/pre-commit-java
