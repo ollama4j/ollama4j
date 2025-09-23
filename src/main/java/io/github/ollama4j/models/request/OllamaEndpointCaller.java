@@ -15,7 +15,7 @@ import java.time.Duration;
 import lombok.Getter;
 
 /**
- * Abstract helperclass to call the ollama api server.
+ * Abstract helper class to call the ollama api server.
  */
 @Getter
 public abstract class OllamaEndpointCaller {
@@ -29,8 +29,6 @@ public abstract class OllamaEndpointCaller {
         this.auth = auth;
         this.requestTimeoutSeconds = requestTimeoutSeconds;
     }
-
-    protected abstract String getEndpointSuffix();
 
     protected abstract boolean parseResponseAndAddToBuffer(
             String line, StringBuilder responseBuffer, StringBuilder thinkingBuffer);

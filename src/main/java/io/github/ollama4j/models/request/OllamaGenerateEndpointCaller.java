@@ -33,16 +33,12 @@ import org.slf4j.LoggerFactory;
 public class OllamaGenerateEndpointCaller extends OllamaEndpointCaller {
 
     private static final Logger LOG = LoggerFactory.getLogger(OllamaGenerateEndpointCaller.class);
+    public static final String endpoint = "/api/generate";
 
     private OllamaGenerateStreamObserver responseStreamObserver;
 
     public OllamaGenerateEndpointCaller(String host, Auth basicAuth, long requestTimeoutSeconds) {
         super(host, basicAuth, requestTimeoutSeconds);
-    }
-
-    @Override
-    protected String getEndpointSuffix() {
-        return "/api/generate";
     }
 
     @Override
@@ -78,12 +74,13 @@ public class OllamaGenerateEndpointCaller extends OllamaEndpointCaller {
     }
 
     /**
-     * Calls the api server on the given host and endpoint suffix asynchronously, aka waiting for the response.
+     * Calls the api server on the given host and endpoint suffix asynchronously, aka waiting for
+     * the response.
      *
      * @param body POST body payload
      * @return result answer given by the assistant
-     * @throws OllamaBaseException  any response code than 200 has been returned
-     * @throws IOException          in case the responseStream can not be read
+     * @throws OllamaBaseException any response code than 200 has been returned
+     * @throws IOException in case the responseStream can not be read
      * @throws InterruptedException in case the server is not reachable or network issues happen
      */
     @SuppressWarnings("DuplicatedCode")
@@ -92,7 +89,7 @@ public class OllamaGenerateEndpointCaller extends OllamaEndpointCaller {
         // Create Request
         long startTime = System.currentTimeMillis();
         HttpClient httpClient = HttpClient.newHttpClient();
-        URI uri = URI.create(getHost() + getEndpointSuffix());
+        URI uri = URI.create(getHost() + endpoint);
         HttpRequest.Builder requestBuilder =
                 getRequestBuilderDefault(uri).POST(body.getBodyPublisher());
         HttpRequest request = requestBuilder.build();

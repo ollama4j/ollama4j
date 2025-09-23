@@ -1386,19 +1386,40 @@ public class OllamaAPI {
             OllamaGenerateRequest ollamaRequestModel,
             OllamaGenerateTokenHandler thinkingStreamHandler,
             OllamaGenerateTokenHandler responseStreamHandler)
-            throws OllamaBaseException, IOException, InterruptedException {
-        OllamaGenerateEndpointCaller requestCaller =
-                new OllamaGenerateEndpointCaller(host, auth, requestTimeoutSeconds);
-        OllamaResult result;
-        if (responseStreamHandler != null) {
-            ollamaRequestModel.setStream(true);
-            result =
-                    requestCaller.call(
-                            ollamaRequestModel, thinkingStreamHandler, responseStreamHandler);
-        } else {
-            result = requestCaller.callSync(ollamaRequestModel);
+            throws OllamaBaseException {
+        long startTime = System.currentTimeMillis();
+        int statusCode = -1;
+        Object out = null;
+        try {
+            OllamaGenerateEndpointCaller requestCaller =
+                    new OllamaGenerateEndpointCaller(host, auth, requestTimeoutSeconds);
+            OllamaResult result;
+            if (responseStreamHandler != null) {
+                ollamaRequestModel.setStream(true);
+                result =
+                        requestCaller.call(
+                                ollamaRequestModel, thinkingStreamHandler, responseStreamHandler);
+            } else {
+                result = requestCaller.callSync(ollamaRequestModel);
+            }
+            statusCode = result.getHttpStatusCode();
+            out = result;
+            return result;
+        } catch (Exception e) {
+            throw new OllamaBaseException("Ping failed", e);
+        } finally {
+            MetricsRecorder.record(
+                    OllamaGenerateEndpointCaller.endpoint,
+                    ollamaRequestModel.getModel(),
+                    ollamaRequestModel.isRaw(),
+                    ollamaRequestModel.isThink(),
+                    ollamaRequestModel.isStream(),
+                    ollamaRequestModel.getOptions(),
+                    ollamaRequestModel.getFormat(),
+                    startTime,
+                    statusCode,
+                    out);
         }
-        return result;
     }
 
     /**

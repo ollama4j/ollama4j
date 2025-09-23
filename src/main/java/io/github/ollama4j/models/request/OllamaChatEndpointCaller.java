@@ -29,13 +29,12 @@ import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-/**
- * Specialization class for requests
- */
+/** Specialization class for requests */
 @SuppressWarnings("resource")
 public class OllamaChatEndpointCaller extends OllamaEndpointCaller {
 
     private static final Logger LOG = LoggerFactory.getLogger(OllamaChatEndpointCaller.class);
+    public static final String endpoint = "/api/chat";
 
     private OllamaChatTokenHandler tokenHandler;
 
@@ -43,19 +42,14 @@ public class OllamaChatEndpointCaller extends OllamaEndpointCaller {
         super(host, auth, requestTimeoutSeconds);
     }
 
-    @Override
-    protected String getEndpointSuffix() {
-        return "/api/chat";
-    }
-
     /**
-     * Parses streamed Response line from ollama chat.
-     * Using {@link com.fasterxml.jackson.databind.ObjectMapper#readValue(String, TypeReference)} should throw
-     * {@link IllegalArgumentException} in case of null line or {@link com.fasterxml.jackson.core.JsonParseException}
-     * in case the JSON Object cannot be parsed to a {@link OllamaChatResponseModel}. Thus, the ResponseModel should
-     * never be null.
+     * Parses streamed Response line from ollama chat. Using {@link
+     * com.fasterxml.jackson.databind.ObjectMapper#readValue(String, TypeReference)} should throw
+     * {@link IllegalArgumentException} in case of null line or {@link
+     * com.fasterxml.jackson.core.JsonParseException} in case the JSON Object cannot be parsed to a
+     * {@link OllamaChatResponseModel}. Thus, the ResponseModel should never be null.
      *
-     * @param line           streamed line of ollama stream response
+     * @param line streamed line of ollama stream response
      * @param responseBuffer Stringbuffer to add latest response message part to
      * @return TRUE, if ollama-Response has 'done' state
      */
@@ -97,7 +91,7 @@ public class OllamaChatEndpointCaller extends OllamaEndpointCaller {
             throws OllamaBaseException, IOException, InterruptedException {
         long startTime = System.currentTimeMillis();
         HttpClient httpClient = HttpClient.newHttpClient();
-        URI uri = URI.create(getHost() + getEndpointSuffix());
+        URI uri = URI.create(getHost() + endpoint);
         HttpRequest.Builder requestBuilder =
                 getRequestBuilderDefault(uri).POST(body.getBodyPublisher());
         HttpRequest request = requestBuilder.build();
@@ -136,7 +130,7 @@ public class OllamaChatEndpointCaller extends OllamaEndpointCaller {
             }
         }
         MetricsRecorder.record(
-                getEndpointSuffix(),
+                endpoint,
                 body.getModel(),
                 false,
                 body.isThink(),
@@ -160,8 +154,8 @@ public class OllamaChatEndpointCaller extends OllamaEndpointCaller {
     }
 
     /**
-     * Handles error status codes and appends error messages to the response buffer.
-     * Returns true if an error was handled, false otherwise.
+     * Handles error status codes and appends error messages to the response buffer. Returns true if
+     * an error was handled, false otherwise.
      */
     private boolean handleErrorStatus(int statusCode, String line, StringBuilder responseBuffer)
             throws IOException {
