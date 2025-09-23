@@ -11,6 +11,7 @@ package io.github.ollama4j.models.request;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import io.github.ollama4j.exceptions.OllamaBaseException;
+import io.github.ollama4j.metrics.MetricsRecorder;
 import io.github.ollama4j.models.chat.*;
 import io.github.ollama4j.models.chat.OllamaChatTokenHandler;
 import io.github.ollama4j.models.response.OllamaErrorResponse;
@@ -94,6 +95,7 @@ public class OllamaChatEndpointCaller extends OllamaEndpointCaller {
 
     public OllamaChatResult callSync(OllamaChatRequest body)
             throws OllamaBaseException, IOException, InterruptedException {
+        long startTime = System.currentTimeMillis();
         HttpClient httpClient = HttpClient.newHttpClient();
         URI uri = URI.create(getHost() + getEndpointSuffix());
         HttpRequest.Builder requestBuilder =
@@ -133,6 +135,17 @@ public class OllamaChatEndpointCaller extends OllamaEndpointCaller {
                 }
             }
         }
+        MetricsRecorder.record(
+                getEndpointSuffix(),
+                body.getModel(),
+                false,
+                body.isThink(),
+                body.isStream(),
+                body.getOptions(),
+                body.getFormat(),
+                startTime,
+                statusCode,
+                responseBuffer);
         if (statusCode != 200) {
             LOG.error("Status code " + statusCode);
             throw new OllamaBaseException(responseBuffer.toString());

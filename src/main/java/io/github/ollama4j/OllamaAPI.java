@@ -14,6 +14,7 @@ import io.github.ollama4j.exceptions.OllamaBaseException;
 import io.github.ollama4j.exceptions.RoleNotFoundException;
 import io.github.ollama4j.exceptions.ToolInvocationException;
 import io.github.ollama4j.exceptions.ToolNotFoundException;
+import io.github.ollama4j.metrics.MetricsRecorder;
 import io.github.ollama4j.models.chat.*;
 import io.github.ollama4j.models.chat.OllamaChatTokenHandler;
 import io.github.ollama4j.models.embeddings.OllamaEmbedRequestModel;
@@ -38,7 +39,6 @@ import java.lang.reflect.Parameter;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.http.HttpClient;
-import java.net.http.HttpConnectTimeoutException;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.nio.charset.StandardCharsets;
@@ -93,11 +93,20 @@ public class OllamaAPI {
     private int numberOfRetriesForModelPull = 0;
 
     /**
+     * Enable or disable Prometheus metrics collection.
+     *
+     * <p>When enabled, the API will collect and expose metrics for request counts, durations, model
+     * usage, and other operational statistics. Default is false.
+     */
+    @Setter private boolean metricsEnabled = false;
+
+    /**
      * Instantiates the Ollama API with default Ollama host: <a
      * href="http://localhost:11434">http://localhost:11434</a>
      */
     public OllamaAPI() {
         this.host = "http://localhost:11434";
+        //        initializeMetrics();
     }
 
     /**
@@ -112,6 +121,7 @@ public class OllamaAPI {
             this.host = host;
         }
         LOG.info("Ollama4j client initialized. Connected to Ollama server at: {}", this.host);
+        //        initializeMetrics();
     }
 
     /**
@@ -139,10 +149,14 @@ public class OllamaAPI {
      * @return true if the server is reachable, false otherwise.
      */
     public boolean ping() throws OllamaBaseException {
+        long startTime = System.currentTimeMillis();
         String url = this.host + "/api/tags";
-        HttpClient httpClient = HttpClient.newHttpClient();
-        HttpRequest httpRequest;
+        int statusCode = 0;
+        Object out = null;
         try {
+            HttpClient httpClient = HttpClient.newHttpClient();
+            HttpRequest httpRequest;
+            HttpResponse<String> response;
             httpRequest =
                     getRequestBuilderDefault(new URI(url))
                             .header(
@@ -153,22 +167,15 @@ public class OllamaAPI {
                                     Constants.HttpConstants.APPLICATION_JSON)
                             .GET()
                             .build();
-        } catch (URISyntaxException e) {
-            throw new OllamaBaseException(e.getMessage());
-        }
-        HttpResponse<String> response;
-        try {
             response = httpClient.send(httpRequest, HttpResponse.BodyHandlers.ofString());
-        } catch (HttpConnectTimeoutException e) {
-            return false;
-        } catch (IOException e) {
-            throw new OllamaBaseException(e.getMessage());
-        } catch (InterruptedException e) {
-            Thread.currentThread().interrupt();
-            throw new OllamaBaseException(e.getMessage());
+            statusCode = response.statusCode();
+            return statusCode == 200;
+        } catch (Exception e) {
+            throw new OllamaBaseException("Ping failed", e);
+        } finally {
+            MetricsRecorder.record(
+                    url, "", false, false, false, null, null, startTime, statusCode, out);
         }
-        int statusCode = response.statusCode();
-        return statusCode == 200;
     }
 
     /**
@@ -179,33 +186,43 @@ public class OllamaAPI {
      * @throws InterruptedException if the operation is interrupted
      * @throws OllamaBaseException if the response indicates an error status
      */
-    public ModelsProcessResponse ps()
-            throws IOException, InterruptedException, OllamaBaseException {
+    public ModelsProcessResponse ps() throws OllamaBaseException {
+        long startTime = System.currentTimeMillis();
         String url = this.host + "/api/ps";
-        HttpClient httpClient = HttpClient.newHttpClient();
-        HttpRequest httpRequest = null;
+        int statusCode = 0;
+        Object out = null;
         try {
-            httpRequest =
-                    getRequestBuilderDefault(new URI(url))
-                            .header(
-                                    Constants.HttpConstants.HEADER_KEY_ACCEPT,
-                                    Constants.HttpConstants.APPLICATION_JSON)
-                            .header(
-                                    Constants.HttpConstants.HEADER_KEY_CONTENT_TYPE,
-                                    Constants.HttpConstants.APPLICATION_JSON)
-                            .GET()
-                            .build();
-        } catch (URISyntaxException e) {
-            throw new OllamaBaseException(e.getMessage());
-        }
-        HttpResponse<String> response = null;
-        response = httpClient.send(httpRequest, HttpResponse.BodyHandlers.ofString());
-        int statusCode = response.statusCode();
-        String responseString = response.body();
-        if (statusCode == 200) {
-            return Utils.getObjectMapper().readValue(responseString, ModelsProcessResponse.class);
-        } else {
-            throw new OllamaBaseException(statusCode + " - " + responseString);
+            HttpClient httpClient = HttpClient.newHttpClient();
+            HttpRequest httpRequest = null;
+            try {
+                httpRequest =
+                        getRequestBuilderDefault(new URI(url))
+                                .header(
+                                        Constants.HttpConstants.HEADER_KEY_ACCEPT,
+                                        Constants.HttpConstants.APPLICATION_JSON)
+                                .header(
+                                        Constants.HttpConstants.HEADER_KEY_CONTENT_TYPE,
+                                        Constants.HttpConstants.APPLICATION_JSON)
+                                .GET()
+                                .build();
+            } catch (URISyntaxException e) {
+                throw new OllamaBaseException(e.getMessage(), e);
+            }
+            HttpResponse<String> response = null;
+            response = httpClient.send(httpRequest, HttpResponse.BodyHandlers.ofString());
+            statusCode = response.statusCode();
+            String responseString = response.body();
+            if (statusCode == 200) {
+                return Utils.getObjectMapper()
+                        .readValue(responseString, ModelsProcessResponse.class);
+            } else {
+                throw new OllamaBaseException(statusCode + " - " + responseString);
+            }
+        } catch (Exception e) {
+            throw new OllamaBaseException("ps failed", e);
+        } finally {
+            MetricsRecorder.record(
+                    url, "", false, false, false, null, null, startTime, statusCode, out);
         }
     }
 
@@ -218,30 +235,39 @@ public class OllamaAPI {
      * @throws InterruptedException if the operation is interrupted
      * @throws URISyntaxException if the URI for the request is malformed
      */
-    public List<Model> listModels()
-            throws OllamaBaseException, IOException, InterruptedException, URISyntaxException {
+    public List<Model> listModels() throws OllamaBaseException {
+        long startTime = System.currentTimeMillis();
         String url = this.host + "/api/tags";
-        HttpClient httpClient = HttpClient.newHttpClient();
-        HttpRequest httpRequest =
-                getRequestBuilderDefault(new URI(url))
-                        .header(
-                                Constants.HttpConstants.HEADER_KEY_ACCEPT,
-                                Constants.HttpConstants.APPLICATION_JSON)
-                        .header(
-                                Constants.HttpConstants.HEADER_KEY_CONTENT_TYPE,
-                                Constants.HttpConstants.APPLICATION_JSON)
-                        .GET()
-                        .build();
-        HttpResponse<String> response =
-                httpClient.send(httpRequest, HttpResponse.BodyHandlers.ofString());
-        int statusCode = response.statusCode();
-        String responseString = response.body();
-        if (statusCode == 200) {
-            return Utils.getObjectMapper()
-                    .readValue(responseString, ListModelsResponse.class)
-                    .getModels();
-        } else {
-            throw new OllamaBaseException(statusCode + " - " + responseString);
+        int statusCode = 0;
+        Object out = null;
+        try {
+            HttpClient httpClient = HttpClient.newHttpClient();
+            HttpRequest httpRequest =
+                    getRequestBuilderDefault(new URI(url))
+                            .header(
+                                    Constants.HttpConstants.HEADER_KEY_ACCEPT,
+                                    Constants.HttpConstants.APPLICATION_JSON)
+                            .header(
+                                    Constants.HttpConstants.HEADER_KEY_CONTENT_TYPE,
+                                    Constants.HttpConstants.APPLICATION_JSON)
+                            .GET()
+                            .build();
+            HttpResponse<String> response =
+                    httpClient.send(httpRequest, HttpResponse.BodyHandlers.ofString());
+            statusCode = response.statusCode();
+            String responseString = response.body();
+            if (statusCode == 200) {
+                return Utils.getObjectMapper()
+                        .readValue(responseString, ListModelsResponse.class)
+                        .getModels();
+            } else {
+                throw new OllamaBaseException(statusCode + " - " + responseString);
+            }
+        } catch (Exception e) {
+            throw new OllamaBaseException(e.getMessage(), e);
+        } finally {
+            MetricsRecorder.record(
+                    url, "", false, false, false, null, null, startTime, statusCode, out);
         }
     }
 
@@ -272,45 +298,53 @@ public class OllamaAPI {
         }
     }
 
-    private void doPullModel(String modelName)
-            throws OllamaBaseException, IOException, URISyntaxException, InterruptedException {
+    private void doPullModel(String modelName) throws OllamaBaseException {
+        long startTime = System.currentTimeMillis();
         String url = this.host + "/api/pull";
-        String jsonData = new ModelRequest(modelName).toString();
-        HttpRequest request =
-                getRequestBuilderDefault(new URI(url))
-                        .POST(HttpRequest.BodyPublishers.ofString(jsonData))
-                        .header(
-                                Constants.HttpConstants.HEADER_KEY_ACCEPT,
-                                Constants.HttpConstants.APPLICATION_JSON)
-                        .header(
-                                Constants.HttpConstants.HEADER_KEY_CONTENT_TYPE,
-                                Constants.HttpConstants.APPLICATION_JSON)
-                        .build();
-        HttpClient client = HttpClient.newHttpClient();
-        HttpResponse<InputStream> response =
-                client.send(request, HttpResponse.BodyHandlers.ofInputStream());
-        int statusCode = response.statusCode();
-        InputStream responseBodyStream = response.body();
-        String responseString = "";
-        boolean success = false; // Flag to check the pull success.
+        int statusCode = 0;
+        Object out = null;
+        try {
+            String jsonData = new ModelRequest(modelName).toString();
+            HttpRequest request =
+                    getRequestBuilderDefault(new URI(url))
+                            .POST(HttpRequest.BodyPublishers.ofString(jsonData))
+                            .header(
+                                    Constants.HttpConstants.HEADER_KEY_ACCEPT,
+                                    Constants.HttpConstants.APPLICATION_JSON)
+                            .header(
+                                    Constants.HttpConstants.HEADER_KEY_CONTENT_TYPE,
+                                    Constants.HttpConstants.APPLICATION_JSON)
+                            .build();
+            HttpClient client = HttpClient.newHttpClient();
+            HttpResponse<InputStream> response =
+                    client.send(request, HttpResponse.BodyHandlers.ofInputStream());
+            statusCode = response.statusCode();
+            InputStream responseBodyStream = response.body();
+            String responseString = "";
+            boolean success = false; // Flag to check the pull success.
 
-        try (BufferedReader reader =
-                new BufferedReader(
-                        new InputStreamReader(responseBodyStream, StandardCharsets.UTF_8))) {
-            String line;
-            while ((line = reader.readLine()) != null) {
-                ModelPullResponse modelPullResponse =
-                        Utils.getObjectMapper().readValue(line, ModelPullResponse.class);
-                success = processModelPullResponse(modelPullResponse, modelName) || success;
+            try (BufferedReader reader =
+                    new BufferedReader(
+                            new InputStreamReader(responseBodyStream, StandardCharsets.UTF_8))) {
+                String line;
+                while ((line = reader.readLine()) != null) {
+                    ModelPullResponse modelPullResponse =
+                            Utils.getObjectMapper().readValue(line, ModelPullResponse.class);
+                    success = processModelPullResponse(modelPullResponse, modelName) || success;
+                }
             }
-        }
-
-        if (!success) {
-            LOG.error("Model pull failed or returned invalid status.");
-            throw new OllamaBaseException("Model pull failed or returned invalid status.");
-        }
-        if (statusCode != 200) {
-            throw new OllamaBaseException(statusCode + " - " + responseString);
+            if (!success) {
+                LOG.error("Model pull failed or returned invalid status.");
+                throw new OllamaBaseException("Model pull failed or returned invalid status.");
+            }
+            if (statusCode != 200) {
+                throw new OllamaBaseException(statusCode + " - " + responseString);
+            }
+        } catch (Exception e) {
+            throw new OllamaBaseException(e.getMessage(), e);
+        } finally {
+            MetricsRecorder.record(
+                    url, "", false, false, false, null, null, startTime, statusCode, out);
         }
     }
 
@@ -339,30 +373,39 @@ public class OllamaAPI {
         return false;
     }
 
-    public String getVersion()
-            throws URISyntaxException, IOException, InterruptedException, OllamaBaseException {
+    public String getVersion() throws OllamaBaseException {
         String url = this.host + "/api/version";
-        HttpClient httpClient = HttpClient.newHttpClient();
-        HttpRequest httpRequest =
-                getRequestBuilderDefault(new URI(url))
-                        .header(
-                                Constants.HttpConstants.HEADER_KEY_ACCEPT,
-                                Constants.HttpConstants.APPLICATION_JSON)
-                        .header(
-                                Constants.HttpConstants.HEADER_KEY_CONTENT_TYPE,
-                                Constants.HttpConstants.APPLICATION_JSON)
-                        .GET()
-                        .build();
-        HttpResponse<String> response =
-                httpClient.send(httpRequest, HttpResponse.BodyHandlers.ofString());
-        int statusCode = response.statusCode();
-        String responseString = response.body();
-        if (statusCode == 200) {
-            return Utils.getObjectMapper()
-                    .readValue(responseString, OllamaVersion.class)
-                    .getVersion();
-        } else {
-            throw new OllamaBaseException(statusCode + " - " + responseString);
+        long startTime = System.currentTimeMillis();
+        int statusCode = 0;
+        Object out = null;
+        try {
+            HttpClient httpClient = HttpClient.newHttpClient();
+            HttpRequest httpRequest =
+                    getRequestBuilderDefault(new URI(url))
+                            .header(
+                                    Constants.HttpConstants.HEADER_KEY_ACCEPT,
+                                    Constants.HttpConstants.APPLICATION_JSON)
+                            .header(
+                                    Constants.HttpConstants.HEADER_KEY_CONTENT_TYPE,
+                                    Constants.HttpConstants.APPLICATION_JSON)
+                            .GET()
+                            .build();
+            HttpResponse<String> response =
+                    httpClient.send(httpRequest, HttpResponse.BodyHandlers.ofString());
+            statusCode = response.statusCode();
+            String responseString = response.body();
+            if (statusCode == 200) {
+                return Utils.getObjectMapper()
+                        .readValue(responseString, OllamaVersion.class)
+                        .getVersion();
+            } else {
+                throw new OllamaBaseException(statusCode + " - " + responseString);
+            }
+        } catch (Exception e) {
+            throw new OllamaBaseException(e.getMessage(), e);
+        } finally {
+            MetricsRecorder.record(
+                    url, "", false, false, false, null, null, startTime, statusCode, out);
         }
     }
 
@@ -377,30 +420,36 @@ public class OllamaAPI {
      * @throws InterruptedException if the operation is interrupted
      * @throws URISyntaxException if the URI for the request is malformed
      */
-    public void pullModel(String modelName)
-            throws OllamaBaseException, IOException, URISyntaxException, InterruptedException {
-        if (numberOfRetriesForModelPull == 0) {
-            this.doPullModel(modelName);
-            return;
-        }
-        int numberOfRetries = 0;
-        long baseDelayMillis = 3000L; // 1 second base delay
-        while (numberOfRetries < numberOfRetriesForModelPull) {
-            try {
+    public void pullModel(String modelName) throws OllamaBaseException {
+        try {
+            if (numberOfRetriesForModelPull == 0) {
                 this.doPullModel(modelName);
                 return;
-            } catch (OllamaBaseException e) {
-                handlePullRetry(
-                        modelName, numberOfRetries, numberOfRetriesForModelPull, baseDelayMillis);
-                numberOfRetries++;
             }
+            int numberOfRetries = 0;
+            long baseDelayMillis = 3000L; // 1 second base delay
+            while (numberOfRetries < numberOfRetriesForModelPull) {
+                try {
+                    this.doPullModel(modelName);
+                    return;
+                } catch (OllamaBaseException e) {
+                    handlePullRetry(
+                            modelName,
+                            numberOfRetries,
+                            numberOfRetriesForModelPull,
+                            baseDelayMillis);
+                    numberOfRetries++;
+                }
+            }
+            throw new OllamaBaseException(
+                    "Failed to pull model "
+                            + modelName
+                            + " after "
+                            + numberOfRetriesForModelPull
+                            + " retries");
+        } catch (Exception e) {
+            throw new OllamaBaseException(e.getMessage(), e);
         }
-        throw new OllamaBaseException(
-                "Failed to pull model "
-                        + modelName
-                        + " after "
-                        + numberOfRetriesForModelPull
-                        + " retries");
     }
 
     /**
@@ -413,28 +462,38 @@ public class OllamaAPI {
      * @throws InterruptedException if the operation is interrupted
      * @throws URISyntaxException if the URI for the request is malformed
      */
-    public ModelDetail getModelDetails(String modelName)
-            throws IOException, OllamaBaseException, InterruptedException, URISyntaxException {
+    public ModelDetail getModelDetails(String modelName) throws OllamaBaseException {
+        long startTime = System.currentTimeMillis();
         String url = this.host + "/api/show";
-        String jsonData = new ModelRequest(modelName).toString();
-        HttpRequest request =
-                getRequestBuilderDefault(new URI(url))
-                        .header(
-                                Constants.HttpConstants.HEADER_KEY_ACCEPT,
-                                Constants.HttpConstants.APPLICATION_JSON)
-                        .header(
-                                Constants.HttpConstants.HEADER_KEY_CONTENT_TYPE,
-                                Constants.HttpConstants.APPLICATION_JSON)
-                        .POST(HttpRequest.BodyPublishers.ofString(jsonData))
-                        .build();
-        HttpClient client = HttpClient.newHttpClient();
-        HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
-        int statusCode = response.statusCode();
-        String responseBody = response.body();
-        if (statusCode == 200) {
-            return Utils.getObjectMapper().readValue(responseBody, ModelDetail.class);
-        } else {
-            throw new OllamaBaseException(statusCode + " - " + responseBody);
+        int statusCode = 0;
+        Object out = null;
+        try {
+            String jsonData = new ModelRequest(modelName).toString();
+            HttpRequest request =
+                    getRequestBuilderDefault(new URI(url))
+                            .header(
+                                    Constants.HttpConstants.HEADER_KEY_ACCEPT,
+                                    Constants.HttpConstants.APPLICATION_JSON)
+                            .header(
+                                    Constants.HttpConstants.HEADER_KEY_CONTENT_TYPE,
+                                    Constants.HttpConstants.APPLICATION_JSON)
+                            .POST(HttpRequest.BodyPublishers.ofString(jsonData))
+                            .build();
+            HttpClient client = HttpClient.newHttpClient();
+            HttpResponse<String> response =
+                    client.send(request, HttpResponse.BodyHandlers.ofString());
+            statusCode = response.statusCode();
+            String responseBody = response.body();
+            if (statusCode == 200) {
+                return Utils.getObjectMapper().readValue(responseBody, ModelDetail.class);
+            } else {
+                throw new OllamaBaseException(statusCode + " - " + responseBody);
+            }
+        } catch (Exception e) {
+            throw new OllamaBaseException(e.getMessage(), e);
+        } finally {
+            MetricsRecorder.record(
+                    url, "", false, false, false, null, null, startTime, statusCode, out);
         }
     }
 
@@ -448,40 +507,57 @@ public class OllamaAPI {
      * @throws InterruptedException if the operation is interrupted
      * @throws URISyntaxException if the URI for the request is malformed
      */
-    public void createModel(CustomModelRequest customModelRequest)
-            throws IOException, InterruptedException, OllamaBaseException, URISyntaxException {
+    public void createModel(CustomModelRequest customModelRequest) throws OllamaBaseException {
+        long startTime = System.currentTimeMillis();
         String url = this.host + "/api/create";
-        String jsonData = customModelRequest.toString();
-        HttpRequest request =
-                getRequestBuilderDefault(new URI(url))
-                        .header(
-                                Constants.HttpConstants.HEADER_KEY_ACCEPT,
-                                Constants.HttpConstants.APPLICATION_JSON)
-                        .header(
-                                Constants.HttpConstants.HEADER_KEY_CONTENT_TYPE,
-                                Constants.HttpConstants.APPLICATION_JSON)
-                        .POST(HttpRequest.BodyPublishers.ofString(jsonData, StandardCharsets.UTF_8))
-                        .build();
-        HttpClient client = HttpClient.newHttpClient();
-        HttpResponse<InputStream> response =
-                client.send(request, HttpResponse.BodyHandlers.ofInputStream());
-        int statusCode = response.statusCode();
-        if (statusCode != 200) {
-            String errorBody = new String(response.body().readAllBytes(), StandardCharsets.UTF_8);
-            throw new OllamaBaseException(statusCode + " - " + errorBody);
-        }
-        try (BufferedReader reader =
-                new BufferedReader(
-                        new InputStreamReader(response.body(), StandardCharsets.UTF_8))) {
-            String line;
-            while ((line = reader.readLine()) != null) {
-                ModelPullResponse res =
-                        Utils.getObjectMapper().readValue(line, ModelPullResponse.class);
-                LOG.debug(res.getStatus());
-                if (res.getError() != null) {
-                    throw new OllamaBaseException(res.getError());
-                }
+        int statusCode = 0;
+        Object out = null;
+        try {
+            String jsonData = customModelRequest.toString();
+            HttpRequest request =
+                    getRequestBuilderDefault(new URI(url))
+                            .header(
+                                    Constants.HttpConstants.HEADER_KEY_ACCEPT,
+                                    Constants.HttpConstants.APPLICATION_JSON)
+                            .header(
+                                    Constants.HttpConstants.HEADER_KEY_CONTENT_TYPE,
+                                    Constants.HttpConstants.APPLICATION_JSON)
+                            .POST(
+                                    HttpRequest.BodyPublishers.ofString(
+                                            jsonData, StandardCharsets.UTF_8))
+                            .build();
+            HttpClient client = HttpClient.newHttpClient();
+            HttpResponse<InputStream> response =
+                    client.send(request, HttpResponse.BodyHandlers.ofInputStream());
+            statusCode = response.statusCode();
+            if (statusCode != 200) {
+                String errorBody =
+                        new String(response.body().readAllBytes(), StandardCharsets.UTF_8);
+                out = errorBody;
+                throw new OllamaBaseException(statusCode + " - " + errorBody);
             }
+            try (BufferedReader reader =
+                    new BufferedReader(
+                            new InputStreamReader(response.body(), StandardCharsets.UTF_8))) {
+                String line;
+                StringBuffer lines = new StringBuffer();
+                while ((line = reader.readLine()) != null) {
+                    ModelPullResponse res =
+                            Utils.getObjectMapper().readValue(line, ModelPullResponse.class);
+                    lines.append(line);
+                    LOG.debug(res.getStatus());
+                    if (res.getError() != null) {
+                        out = res.getError();
+                        throw new OllamaBaseException(res.getError());
+                    }
+                }
+                out = lines;
+            }
+        } catch (Exception e) {
+            throw new OllamaBaseException(e.getMessage(), e);
+        } finally {
+            MetricsRecorder.record(
+                    url, "", false, false, false, null, null, startTime, statusCode, out);
         }
     }
 
@@ -497,71 +573,93 @@ public class OllamaAPI {
      * @throws URISyntaxException if the URI for the request is malformed
      */
     public void deleteModel(String modelName, boolean ignoreIfNotPresent)
-            throws IOException, InterruptedException, OllamaBaseException, URISyntaxException {
+            throws OllamaBaseException {
+        long startTime = System.currentTimeMillis();
         String url = this.host + "/api/delete";
-        String jsonData = new ModelRequest(modelName).toString();
-        HttpRequest request =
-                getRequestBuilderDefault(new URI(url))
-                        .method(
-                                "DELETE",
-                                HttpRequest.BodyPublishers.ofString(
-                                        jsonData, StandardCharsets.UTF_8))
-                        .header(
-                                Constants.HttpConstants.HEADER_KEY_ACCEPT,
-                                Constants.HttpConstants.APPLICATION_JSON)
-                        .header(
-                                Constants.HttpConstants.HEADER_KEY_CONTENT_TYPE,
-                                Constants.HttpConstants.APPLICATION_JSON)
-                        .build();
-        HttpClient client = HttpClient.newHttpClient();
-        HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
-        int statusCode = response.statusCode();
-        String responseBody = response.body();
-        if (statusCode == 404
-                && responseBody.contains("model")
-                && responseBody.contains("not found")) {
-            return;
-        }
-        if (statusCode != 200) {
-            throw new OllamaBaseException(statusCode + " - " + responseBody);
+        int statusCode = 0;
+        Object out = null;
+        try {
+            String jsonData = new ModelRequest(modelName).toString();
+            HttpRequest request =
+                    getRequestBuilderDefault(new URI(url))
+                            .method(
+                                    "DELETE",
+                                    HttpRequest.BodyPublishers.ofString(
+                                            jsonData, StandardCharsets.UTF_8))
+                            .header(
+                                    Constants.HttpConstants.HEADER_KEY_ACCEPT,
+                                    Constants.HttpConstants.APPLICATION_JSON)
+                            .header(
+                                    Constants.HttpConstants.HEADER_KEY_CONTENT_TYPE,
+                                    Constants.HttpConstants.APPLICATION_JSON)
+                            .build();
+            HttpClient client = HttpClient.newHttpClient();
+            HttpResponse<String> response =
+                    client.send(request, HttpResponse.BodyHandlers.ofString());
+            statusCode = response.statusCode();
+            String responseBody = response.body();
+            out = responseBody;
+            if (statusCode == 404
+                    && responseBody.contains("model")
+                    && responseBody.contains("not found")) {
+                return;
+            }
+            if (statusCode != 200) {
+                throw new OllamaBaseException(statusCode + " - " + responseBody);
+            }
+        } catch (Exception e) {
+            throw new OllamaBaseException(statusCode + " - " + out, e);
+        } finally {
+            MetricsRecorder.record(
+                    url, "", false, false, false, null, null, startTime, statusCode, out);
         }
     }
 
     /*
     If an empty prompt is provided and the keep_alive parameter is set to 0, a model will be unloaded from memory.
      */
-    public void unloadModel(String modelName)
-            throws URISyntaxException, IOException, InterruptedException, OllamaBaseException {
+    public void unloadModel(String modelName) throws OllamaBaseException {
+        long startTime = System.currentTimeMillis();
         String url = this.host + "/api/generate";
-        ObjectMapper objectMapper = new ObjectMapper();
-        Map<String, Object> jsonMap = new java.util.HashMap<>();
-        jsonMap.put("model", modelName);
-        jsonMap.put("keep_alive", 0);
-        String jsonData = objectMapper.writeValueAsString(jsonMap);
-        HttpRequest request =
-                getRequestBuilderDefault(new URI(url))
-                        .method(
-                                "POST",
-                                HttpRequest.BodyPublishers.ofString(
-                                        jsonData, StandardCharsets.UTF_8))
-                        .header(
-                                Constants.HttpConstants.HEADER_KEY_ACCEPT,
-                                Constants.HttpConstants.APPLICATION_JSON)
-                        .header(
-                                Constants.HttpConstants.HEADER_KEY_CONTENT_TYPE,
-                                Constants.HttpConstants.APPLICATION_JSON)
-                        .build();
-        HttpClient client = HttpClient.newHttpClient();
-        HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
-        int statusCode = response.statusCode();
-        String responseBody = response.body();
-        if (statusCode == 404
-                && responseBody.contains("model")
-                && responseBody.contains("not found")) {
-            return;
-        }
-        if (statusCode != 200) {
-            throw new OllamaBaseException(statusCode + " - " + responseBody);
+        int statusCode = 0;
+        Object out = null;
+        try {
+            ObjectMapper objectMapper = new ObjectMapper();
+            Map<String, Object> jsonMap = new java.util.HashMap<>();
+            jsonMap.put("model", modelName);
+            jsonMap.put("keep_alive", 0);
+            String jsonData = objectMapper.writeValueAsString(jsonMap);
+            HttpRequest request =
+                    getRequestBuilderDefault(new URI(url))
+                            .method(
+                                    "POST",
+                                    HttpRequest.BodyPublishers.ofString(
+                                            jsonData, StandardCharsets.UTF_8))
+                            .header(
+                                    Constants.HttpConstants.HEADER_KEY_ACCEPT,
+                                    Constants.HttpConstants.APPLICATION_JSON)
+                            .header(
+                                    Constants.HttpConstants.HEADER_KEY_CONTENT_TYPE,
+                                    Constants.HttpConstants.APPLICATION_JSON)
+                            .build();
+            HttpClient client = HttpClient.newHttpClient();
+            HttpResponse<String> response =
+                    client.send(request, HttpResponse.BodyHandlers.ofString());
+            statusCode = response.statusCode();
+            String responseBody = response.body();
+            if (statusCode == 404
+                    && responseBody.contains("model")
+                    && responseBody.contains("not found")) {
+                return;
+            }
+            if (statusCode != 200) {
+                throw new OllamaBaseException(statusCode + " - " + responseBody);
+            }
+        } catch (Exception e) {
+            throw new OllamaBaseException(statusCode + " - " + out, e);
+        } finally {
+            MetricsRecorder.record(
+                    url, "", false, false, false, null, null, startTime, statusCode, out);
         }
     }
 
@@ -575,28 +673,36 @@ public class OllamaAPI {
      * @throws InterruptedException if the operation is interrupted
      */
     public OllamaEmbedResponseModel embed(OllamaEmbedRequestModel modelRequest)
-            throws IOException, InterruptedException, OllamaBaseException {
-        URI uri = URI.create(this.host + "/api/embed");
-        String jsonData = Utils.getObjectMapper().writeValueAsString(modelRequest);
-        HttpClient httpClient = HttpClient.newHttpClient();
-
-        HttpRequest request =
-                HttpRequest.newBuilder(uri)
-                        .header(
-                                Constants.HttpConstants.HEADER_KEY_ACCEPT,
-                                Constants.HttpConstants.APPLICATION_JSON)
-                        .POST(HttpRequest.BodyPublishers.ofString(jsonData))
-                        .build();
-
-        HttpResponse<String> response =
-                httpClient.send(request, HttpResponse.BodyHandlers.ofString());
-        int statusCode = response.statusCode();
-        String responseBody = response.body();
-
-        if (statusCode == 200) {
-            return Utils.getObjectMapper().readValue(responseBody, OllamaEmbedResponseModel.class);
-        } else {
-            throw new OllamaBaseException(statusCode + " - " + responseBody);
+            throws OllamaBaseException {
+        long startTime = System.currentTimeMillis();
+        String url = this.host + "/api/embed";
+        int statusCode = 0;
+        Object out = null;
+        try {
+            String jsonData = Utils.getObjectMapper().writeValueAsString(modelRequest);
+            HttpClient httpClient = HttpClient.newHttpClient();
+            HttpRequest request =
+                    HttpRequest.newBuilder(new URI(url))
+                            .header(
+                                    Constants.HttpConstants.HEADER_KEY_ACCEPT,
+                                    Constants.HttpConstants.APPLICATION_JSON)
+                            .POST(HttpRequest.BodyPublishers.ofString(jsonData))
+                            .build();
+            HttpResponse<String> response =
+                    httpClient.send(request, HttpResponse.BodyHandlers.ofString());
+            statusCode = response.statusCode();
+            String responseBody = response.body();
+            if (statusCode == 200) {
+                return Utils.getObjectMapper()
+                        .readValue(responseBody, OllamaEmbedResponseModel.class);
+            } else {
+                throw new OllamaBaseException(statusCode + " - " + responseBody);
+            }
+        } catch (Exception e) {
+            throw new OllamaBaseException(e.getMessage(), e);
+        } finally {
+            MetricsRecorder.record(
+                    url, "", false, false, false, null, null, startTime, statusCode, out);
         }
     }
 
@@ -607,26 +713,29 @@ public class OllamaAPI {
             boolean think,
             Options options,
             OllamaGenerateStreamObserver streamObserver)
-            throws OllamaBaseException, IOException, InterruptedException {
+            throws OllamaBaseException {
+        try {
+            // Create the OllamaGenerateRequest and configure common properties
+            OllamaGenerateRequest ollamaRequestModel = new OllamaGenerateRequest(model, prompt);
+            ollamaRequestModel.setRaw(raw);
+            ollamaRequestModel.setThink(think);
+            ollamaRequestModel.setOptions(options.getOptionsMap());
+            ollamaRequestModel.setKeepAlive("0m");
 
-        // Create the OllamaGenerateRequest and configure common properties
-        OllamaGenerateRequest ollamaRequestModel = new OllamaGenerateRequest(model, prompt);
-        ollamaRequestModel.setRaw(raw);
-        ollamaRequestModel.setThink(think);
-        ollamaRequestModel.setOptions(options.getOptionsMap());
-        ollamaRequestModel.setKeepAlive("0m");
-
-        // Based on 'think' flag, choose the appropriate stream handler(s)
-        if (think) {
-            // Call with thinking
-            return generateSyncForOllamaRequestModel(
-                    ollamaRequestModel,
-                    streamObserver.getThinkingStreamHandler(),
-                    streamObserver.getResponseStreamHandler());
-        } else {
-            // Call without thinking
-            return generateSyncForOllamaRequestModel(
-                    ollamaRequestModel, null, streamObserver.getResponseStreamHandler());
+            // Based on 'think' flag, choose the appropriate stream handler(s)
+            if (think) {
+                // Call with thinking
+                return generateSyncForOllamaRequestModel(
+                        ollamaRequestModel,
+                        streamObserver.getThinkingStreamHandler(),
+                        streamObserver.getResponseStreamHandler());
+            } else {
+                // Call without thinking
+                return generateSyncForOllamaRequestModel(
+                        ollamaRequestModel, null, streamObserver.getResponseStreamHandler());
+            }
+        } catch (Exception e) {
+            throw new OllamaBaseException(e.getMessage(), e);
         }
     }
 
@@ -645,67 +754,78 @@ public class OllamaAPI {
      */
     @SuppressWarnings("LoggingSimilarMessage")
     public OllamaResult generateWithFormat(String model, String prompt, Map<String, Object> format)
-            throws OllamaBaseException, IOException, InterruptedException {
-        URI uri = URI.create(this.host + "/api/generate");
-
-        Map<String, Object> requestBody = new HashMap<>();
-        requestBody.put("model", model);
-        requestBody.put("prompt", prompt);
-        requestBody.put("stream", false);
-        requestBody.put("format", format);
-
-        String jsonData = Utils.getObjectMapper().writeValueAsString(requestBody);
-        HttpClient httpClient = HttpClient.newHttpClient();
-
-        HttpRequest request =
-                getRequestBuilderDefault(uri)
-                        .header(
-                                Constants.HttpConstants.HEADER_KEY_ACCEPT,
-                                Constants.HttpConstants.APPLICATION_JSON)
-                        .header(
-                                Constants.HttpConstants.HEADER_KEY_CONTENT_TYPE,
-                                Constants.HttpConstants.APPLICATION_JSON)
-                        .POST(HttpRequest.BodyPublishers.ofString(jsonData))
-                        .build();
-
+            throws OllamaBaseException {
+        long startTime = System.currentTimeMillis();
+        String url = this.host + "/api/generate";
+        int statusCode = 0;
+        Object out = null;
         try {
-            String prettyJson =
-                    Utils.toJSON(Utils.getObjectMapper().readValue(jsonData, Object.class));
-            LOG.debug("Asking model:\n{}", prettyJson);
-        } catch (Exception e) {
-            LOG.debug("Asking model: {}", jsonData);
-        }
+            Map<String, Object> requestBody = new HashMap<>();
+            requestBody.put("model", model);
+            requestBody.put("prompt", prompt);
+            requestBody.put("stream", false);
+            requestBody.put("format", format);
 
-        HttpResponse<String> response =
-                httpClient.send(request, HttpResponse.BodyHandlers.ofString());
-        int statusCode = response.statusCode();
-        String responseBody = response.body();
-        if (statusCode == 200) {
-            OllamaStructuredResult structuredResult =
-                    Utils.getObjectMapper().readValue(responseBody, OllamaStructuredResult.class);
-            OllamaResult ollamaResult =
-                    new OllamaResult(
-                            structuredResult.getResponse(),
-                            structuredResult.getThinking(),
-                            structuredResult.getResponseTime(),
-                            statusCode);
-            ollamaResult.setModel(structuredResult.getModel());
-            ollamaResult.setCreatedAt(structuredResult.getCreatedAt());
-            ollamaResult.setDone(structuredResult.isDone());
-            ollamaResult.setDoneReason(structuredResult.getDoneReason());
-            ollamaResult.setContext(structuredResult.getContext());
-            ollamaResult.setTotalDuration(structuredResult.getTotalDuration());
-            ollamaResult.setLoadDuration(structuredResult.getLoadDuration());
-            ollamaResult.setPromptEvalCount(structuredResult.getPromptEvalCount());
-            ollamaResult.setPromptEvalDuration(structuredResult.getPromptEvalDuration());
-            ollamaResult.setEvalCount(structuredResult.getEvalCount());
-            ollamaResult.setEvalDuration(structuredResult.getEvalDuration());
-            LOG.debug("Model response:\n{}", ollamaResult);
-            return ollamaResult;
-        } else {
-            String errorResponse = Utils.toJSON(responseBody);
-            LOG.debug("Model response:\n{}", errorResponse);
-            throw new OllamaBaseException(statusCode + " - " + responseBody);
+            String jsonData = Utils.getObjectMapper().writeValueAsString(requestBody);
+            HttpClient httpClient = HttpClient.newHttpClient();
+
+            HttpRequest request =
+                    getRequestBuilderDefault(new URI(url))
+                            .header(
+                                    Constants.HttpConstants.HEADER_KEY_ACCEPT,
+                                    Constants.HttpConstants.APPLICATION_JSON)
+                            .header(
+                                    Constants.HttpConstants.HEADER_KEY_CONTENT_TYPE,
+                                    Constants.HttpConstants.APPLICATION_JSON)
+                            .POST(HttpRequest.BodyPublishers.ofString(jsonData))
+                            .build();
+
+            try {
+                String prettyJson =
+                        Utils.toJSON(Utils.getObjectMapper().readValue(jsonData, Object.class));
+                LOG.debug("Asking model:\n{}", prettyJson);
+            } catch (Exception e) {
+                LOG.debug("Asking model: {}", jsonData);
+            }
+
+            HttpResponse<String> response =
+                    httpClient.send(request, HttpResponse.BodyHandlers.ofString());
+            statusCode = response.statusCode();
+            String responseBody = response.body();
+            if (statusCode == 200) {
+                OllamaStructuredResult structuredResult =
+                        Utils.getObjectMapper()
+                                .readValue(responseBody, OllamaStructuredResult.class);
+                OllamaResult ollamaResult =
+                        new OllamaResult(
+                                structuredResult.getResponse(),
+                                structuredResult.getThinking(),
+                                structuredResult.getResponseTime(),
+                                statusCode);
+                ollamaResult.setModel(structuredResult.getModel());
+                ollamaResult.setCreatedAt(structuredResult.getCreatedAt());
+                ollamaResult.setDone(structuredResult.isDone());
+                ollamaResult.setDoneReason(structuredResult.getDoneReason());
+                ollamaResult.setContext(structuredResult.getContext());
+                ollamaResult.setTotalDuration(structuredResult.getTotalDuration());
+                ollamaResult.setLoadDuration(structuredResult.getLoadDuration());
+                ollamaResult.setPromptEvalCount(structuredResult.getPromptEvalCount());
+                ollamaResult.setPromptEvalDuration(structuredResult.getPromptEvalDuration());
+                ollamaResult.setEvalCount(structuredResult.getEvalCount());
+                ollamaResult.setEvalDuration(structuredResult.getEvalDuration());
+                LOG.debug("Model response:\n{}", ollamaResult);
+
+                return ollamaResult;
+            } else {
+                String errorResponse = Utils.toJSON(responseBody);
+                LOG.debug("Model response:\n{}", errorResponse);
+                throw new OllamaBaseException(statusCode + " - " + responseBody);
+            }
+        } catch (Exception e) {
+            throw new OllamaBaseException(e.getMessage(), e);
+        } finally {
+            MetricsRecorder.record(
+                    url, "", false, false, false, null, null, startTime, statusCode, out);
         }
     }
 
@@ -744,61 +864,65 @@ public class OllamaAPI {
      */
     public OllamaToolsResult generateWithTools(
             String model, String prompt, Options options, OllamaGenerateTokenHandler streamHandler)
-            throws OllamaBaseException, IOException, InterruptedException, ToolInvocationException {
-        boolean raw = true;
-        OllamaToolsResult toolResult = new OllamaToolsResult();
-        Map<ToolFunctionCallSpec, Object> toolResults = new HashMap<>();
+            throws OllamaBaseException {
+        try {
+            boolean raw = true;
+            OllamaToolsResult toolResult = new OllamaToolsResult();
+            Map<ToolFunctionCallSpec, Object> toolResults = new HashMap<>();
 
-        if (!prompt.startsWith("[AVAILABLE_TOOLS]")) {
-            final Tools.PromptBuilder promptBuilder = new Tools.PromptBuilder();
-            for (Tools.ToolSpecification spec : toolRegistry.getRegisteredSpecs()) {
-                promptBuilder.withToolSpecification(spec);
+            if (!prompt.startsWith("[AVAILABLE_TOOLS]")) {
+                final Tools.PromptBuilder promptBuilder = new Tools.PromptBuilder();
+                for (Tools.ToolSpecification spec : toolRegistry.getRegisteredSpecs()) {
+                    promptBuilder.withToolSpecification(spec);
+                }
+                promptBuilder.withPrompt(prompt);
+                prompt = promptBuilder.build();
             }
-            promptBuilder.withPrompt(prompt);
-            prompt = promptBuilder.build();
-        }
 
-        OllamaResult result =
-                generate(
-                        model,
-                        prompt,
-                        raw,
-                        false,
-                        options,
-                        new OllamaGenerateStreamObserver(null, streamHandler));
-        toolResult.setModelResult(result);
+            OllamaResult result =
+                    generate(
+                            model,
+                            prompt,
+                            raw,
+                            false,
+                            options,
+                            new OllamaGenerateStreamObserver(null, streamHandler));
+            toolResult.setModelResult(result);
 
-        String toolsResponse = result.getResponse();
-        if (toolsResponse.contains("[TOOL_CALLS]")) {
-            toolsResponse = toolsResponse.replace("[TOOL_CALLS]", "");
-        }
-
-        List<ToolFunctionCallSpec> toolFunctionCallSpecs = new ArrayList<>();
-        ObjectMapper objectMapper = Utils.getObjectMapper();
-
-        if (!toolsResponse.isEmpty()) {
-            try {
-                // Try to parse the string to see if it's a valid JSON
-                objectMapper.readTree(toolsResponse);
-            } catch (JsonParseException e) {
-                LOG.warn(
-                        "Response from model does not contain any tool calls. Returning the"
-                                + " response as is.");
-                return toolResult;
+            String toolsResponse = result.getResponse();
+            if (toolsResponse.contains("[TOOL_CALLS]")) {
+                toolsResponse = toolsResponse.replace("[TOOL_CALLS]", "");
             }
-            toolFunctionCallSpecs =
-                    objectMapper.readValue(
-                            toolsResponse,
-                            objectMapper
-                                    .getTypeFactory()
-                                    .constructCollectionType(
-                                            List.class, ToolFunctionCallSpec.class));
+
+            List<ToolFunctionCallSpec> toolFunctionCallSpecs = new ArrayList<>();
+            ObjectMapper objectMapper = Utils.getObjectMapper();
+
+            if (!toolsResponse.isEmpty()) {
+                try {
+                    // Try to parse the string to see if it's a valid JSON
+                    objectMapper.readTree(toolsResponse);
+                } catch (JsonParseException e) {
+                    LOG.warn(
+                            "Response from model does not contain any tool calls. Returning the"
+                                    + " response as is.");
+                    return toolResult;
+                }
+                toolFunctionCallSpecs =
+                        objectMapper.readValue(
+                                toolsResponse,
+                                objectMapper
+                                        .getTypeFactory()
+                                        .constructCollectionType(
+                                                List.class, ToolFunctionCallSpec.class));
+            }
+            for (ToolFunctionCallSpec toolFunctionCallSpec : toolFunctionCallSpecs) {
+                toolResults.put(toolFunctionCallSpec, invokeTool(toolFunctionCallSpec));
+            }
+            toolResult.setToolResults(toolResults);
+            return toolResult;
+        } catch (Exception e) {
+            throw new OllamaBaseException(e.getMessage(), e);
         }
-        for (ToolFunctionCallSpec toolFunctionCallSpec : toolFunctionCallSpecs) {
-            toolResults.put(toolFunctionCallSpec, invokeTool(toolFunctionCallSpec));
-        }
-        toolResult.setToolResults(toolResults);
-        return toolResult;
     }
 
     /**
@@ -834,16 +958,25 @@ public class OllamaAPI {
      *     results
      */
     public OllamaAsyncResultStreamer generate(
-            String model, String prompt, boolean raw, boolean think) {
-        OllamaGenerateRequest ollamaRequestModel = new OllamaGenerateRequest(model, prompt);
-        ollamaRequestModel.setRaw(raw);
-        ollamaRequestModel.setThink(think);
-        URI uri = URI.create(this.host + "/api/generate");
-        OllamaAsyncResultStreamer ollamaAsyncResultStreamer =
-                new OllamaAsyncResultStreamer(
-                        getRequestBuilderDefault(uri), ollamaRequestModel, requestTimeoutSeconds);
-        ollamaAsyncResultStreamer.start();
-        return ollamaAsyncResultStreamer;
+            String model, String prompt, boolean raw, boolean think) throws OllamaBaseException {
+        long startTime = System.currentTimeMillis();
+        String url = this.host + "/api/generate";
+        try {
+            OllamaGenerateRequest ollamaRequestModel = new OllamaGenerateRequest(model, prompt);
+            ollamaRequestModel.setRaw(raw);
+            ollamaRequestModel.setThink(think);
+            OllamaAsyncResultStreamer ollamaAsyncResultStreamer =
+                    new OllamaAsyncResultStreamer(
+                            getRequestBuilderDefault(new URI(url)),
+                            ollamaRequestModel,
+                            requestTimeoutSeconds);
+            ollamaAsyncResultStreamer.start();
+            return ollamaAsyncResultStreamer;
+        } catch (Exception e) {
+            throw new OllamaBaseException(e.getMessage(), e);
+        } finally {
+            MetricsRecorder.record(url, model, raw, think, true, null, null, startTime, 0, null);
+        }
     }
 
     /**
@@ -882,35 +1015,42 @@ public class OllamaAPI {
             Options options,
             Map<String, Object> format,
             OllamaGenerateTokenHandler streamHandler)
-            throws OllamaBaseException, IOException, InterruptedException, URISyntaxException {
-        List<String> encodedImages = new ArrayList<>();
-        for (Object image : images) {
-            if (image instanceof File) {
-                LOG.debug("Using image file: {}", ((File) image).getAbsolutePath());
-                encodedImages.add(encodeFileToBase64((File) image));
-            } else if (image instanceof byte[]) {
-                LOG.debug("Using image bytes: {} bytes", ((byte[]) image).length);
-                encodedImages.add(encodeByteArrayToBase64((byte[]) image));
-            } else if (image instanceof String) {
-                LOG.debug("Using image URL: {}", image);
-                encodedImages.add(
-                        encodeByteArrayToBase64(
-                                Utils.loadImageBytesFromUrl(
-                                        (String) image,
-                                        imageURLConnectTimeoutSeconds,
-                                        imageURLReadTimeoutSeconds)));
-            } else {
-                throw new OllamaBaseException(
-                        "Unsupported image type. Please provide a File, byte[], or a URL String.");
+            throws OllamaBaseException {
+        try {
+            List<String> encodedImages = new ArrayList<>();
+            for (Object image : images) {
+                if (image instanceof File) {
+                    LOG.debug("Using image file: {}", ((File) image).getAbsolutePath());
+                    encodedImages.add(encodeFileToBase64((File) image));
+                } else if (image instanceof byte[]) {
+                    LOG.debug("Using image bytes: {} bytes", ((byte[]) image).length);
+                    encodedImages.add(encodeByteArrayToBase64((byte[]) image));
+                } else if (image instanceof String) {
+                    LOG.debug("Using image URL: {}", image);
+                    encodedImages.add(
+                            encodeByteArrayToBase64(
+                                    Utils.loadImageBytesFromUrl(
+                                            (String) image,
+                                            imageURLConnectTimeoutSeconds,
+                                            imageURLReadTimeoutSeconds)));
+                } else {
+                    throw new OllamaBaseException(
+                            "Unsupported image type. Please provide a File, byte[], or a URL"
+                                    + " String.");
+                }
             }
+            OllamaGenerateRequest ollamaRequestModel =
+                    new OllamaGenerateRequest(model, prompt, encodedImages);
+            if (format != null) {
+                ollamaRequestModel.setFormat(format);
+            }
+            ollamaRequestModel.setOptions(options.getOptionsMap());
+            OllamaResult result =
+                    generateSyncForOllamaRequestModel(ollamaRequestModel, null, streamHandler);
+            return result;
+        } catch (Exception e) {
+            throw new OllamaBaseException(e.getMessage(), e);
         }
-        OllamaGenerateRequest ollamaRequestModel =
-                new OllamaGenerateRequest(model, prompt, encodedImages);
-        if (format != null) {
-            ollamaRequestModel.setFormat(format);
-        }
-        ollamaRequestModel.setOptions(options.getOptionsMap());
-        return generateSyncForOllamaRequestModel(ollamaRequestModel, null, streamHandler);
     }
 
     /**
@@ -931,68 +1071,72 @@ public class OllamaAPI {
      * @throws InterruptedException if the operation is interrupted
      */
     public OllamaChatResult chat(OllamaChatRequest request, OllamaChatTokenHandler tokenHandler)
-            throws OllamaBaseException, IOException, InterruptedException, ToolInvocationException {
-        OllamaChatEndpointCaller requestCaller =
-                new OllamaChatEndpointCaller(host, auth, requestTimeoutSeconds);
-        OllamaChatResult result;
+            throws OllamaBaseException {
+        try {
+            OllamaChatEndpointCaller requestCaller =
+                    new OllamaChatEndpointCaller(host, auth, requestTimeoutSeconds);
+            OllamaChatResult result;
 
-        // only add tools if tools flag is set
-        if (request.isUseTools()) {
-            // add all registered tools to request
-            request.setTools(
-                    toolRegistry.getRegisteredSpecs().stream()
-                            .map(Tools.ToolSpecification::getToolPrompt)
-                            .collect(Collectors.toList()));
-        }
-
-        if (tokenHandler != null) {
-            request.setStream(true);
-            result = requestCaller.call(request, tokenHandler);
-        } else {
-            result = requestCaller.callSync(request);
-        }
-
-        // check if toolCallIsWanted
-        List<OllamaChatToolCalls> toolCalls = result.getResponseModel().getMessage().getToolCalls();
-        int toolCallTries = 0;
-        while (toolCalls != null
-                && !toolCalls.isEmpty()
-                && toolCallTries < maxChatToolCallRetries) {
-            for (OllamaChatToolCalls toolCall : toolCalls) {
-                String toolName = toolCall.getFunction().getName();
-                ToolFunction toolFunction = toolRegistry.getToolFunction(toolName);
-                if (toolFunction == null) {
-                    throw new ToolInvocationException("Tool function not found: " + toolName);
-                }
-                Map<String, Object> arguments = toolCall.getFunction().getArguments();
-                Object res = toolFunction.apply(arguments);
-                String argumentKeys =
-                        arguments.keySet().stream()
-                                .map(Object::toString)
-                                .collect(Collectors.joining(", "));
-                request.getMessages()
-                        .add(
-                                new OllamaChatMessage(
-                                        OllamaChatMessageRole.TOOL,
-                                        "[TOOL_RESULTS] "
-                                                + toolName
-                                                + "("
-                                                + argumentKeys
-                                                + "): "
-                                                + res
-                                                + " [/TOOL_RESULTS]"));
+            // only add tools if tools flag is set
+            if (request.isUseTools()) {
+                // add all registered tools to request
+                request.setTools(
+                        toolRegistry.getRegisteredSpecs().stream()
+                                .map(Tools.ToolSpecification::getToolPrompt)
+                                .collect(Collectors.toList()));
             }
 
             if (tokenHandler != null) {
+                request.setStream(true);
                 result = requestCaller.call(request, tokenHandler);
             } else {
                 result = requestCaller.callSync(request);
             }
-            toolCalls = result.getResponseModel().getMessage().getToolCalls();
-            toolCallTries++;
-        }
 
-        return result;
+            // check if toolCallIsWanted
+            List<OllamaChatToolCalls> toolCalls =
+                    result.getResponseModel().getMessage().getToolCalls();
+            int toolCallTries = 0;
+            while (toolCalls != null
+                    && !toolCalls.isEmpty()
+                    && toolCallTries < maxChatToolCallRetries) {
+                for (OllamaChatToolCalls toolCall : toolCalls) {
+                    String toolName = toolCall.getFunction().getName();
+                    ToolFunction toolFunction = toolRegistry.getToolFunction(toolName);
+                    if (toolFunction == null) {
+                        throw new ToolInvocationException("Tool function not found: " + toolName);
+                    }
+                    Map<String, Object> arguments = toolCall.getFunction().getArguments();
+                    Object res = toolFunction.apply(arguments);
+                    String argumentKeys =
+                            arguments.keySet().stream()
+                                    .map(Object::toString)
+                                    .collect(Collectors.joining(", "));
+                    request.getMessages()
+                            .add(
+                                    new OllamaChatMessage(
+                                            OllamaChatMessageRole.TOOL,
+                                            "[TOOL_RESULTS] "
+                                                    + toolName
+                                                    + "("
+                                                    + argumentKeys
+                                                    + "): "
+                                                    + res
+                                                    + " [/TOOL_RESULTS]"));
+                }
+
+                if (tokenHandler != null) {
+                    result = requestCaller.call(request, tokenHandler);
+                } else {
+                    result = requestCaller.callSync(request);
+                }
+                toolCalls = result.getResponseModel().getMessage().getToolCalls();
+                toolCallTries++;
+            }
+            return result;
+        } catch (Exception e) {
+            throw new OllamaBaseException(e.getMessage(), e);
+        }
     }
 
     /**
@@ -1044,7 +1188,7 @@ public class OllamaAPI {
                 callerClass =
                         Class.forName(Thread.currentThread().getStackTrace()[2].getClassName());
             } catch (ClassNotFoundException e) {
-                throw new OllamaBaseException(e.getMessage());
+                throw new OllamaBaseException(e.getMessage(), e);
             }
 
             OllamaToolService ollamaToolServiceAnnotation =
@@ -1279,4 +1423,130 @@ public class OllamaAPI {
                     "Failed to invoke tool: " + toolFunctionCallSpec.getName(), e);
         }
     }
+
+    //    /**
+    //     * Initialize metrics collection if enabled.
+    //     */
+    //    private void initializeMetrics() {
+    //        if (metricsEnabled) {
+    //            OllamaMetricsService.initialize();
+    //            LOG.info("Prometheus metrics collection enabled for Ollama4j client");
+    //        }
+    //    }
+    //
+    //    /**
+    //     * Record metrics for an API request.
+    //     *
+    //     * @param endpoint the API endpoint
+    //     * @param method the HTTP method
+    //     * @param durationSeconds the request duration
+    //     * @param success whether the request was successful
+    //     * @param errorType the error type if the request failed
+    //     */
+    //    private void recordMetrics(
+    //            String endpoint,
+    //            String method,
+    //            double durationSeconds,
+    //            boolean success,
+    //            String errorType) {
+    //        if (!metricsEnabled) {
+    //            return;
+    //        }
+    //
+    //        if (success) {
+    //            OllamaMetricsService.recordRequest(endpoint, method, durationSeconds);
+    //        } else {
+    //            OllamaMetricsService.recordRequestError(endpoint, method, durationSeconds,
+    // errorType);
+    //        }
+    //    }
+
+    //    /**
+    //     * Record metrics for model usage.
+    //     *
+    //     * @param modelName the model name
+    //     * @param operation the operation performed
+    //     * @param durationSeconds the operation duration
+    //     */
+    //    private void recordModelMetrics(String modelName, String operation, double
+    // durationSeconds) {
+    //        if (!metricsEnabled) {
+    //            return;
+    //        }
+    //
+    //        OllamaMetricsService.recordModelUsage(modelName, operation, durationSeconds);
+    //    }
+
+    //    /**
+    //     * Record token generation metrics.
+    //     *
+    //     * @param modelName the model name
+    //     * @param tokenCount the number of tokens generated
+    //     */
+    //    private void recordTokenMetrics(String modelName, int tokenCount) {
+    //        if (!metricsEnabled) {
+    //            return;
+    //        }
+    //
+    //        OllamaMetricsService.recordTokensGenerated(modelName, tokenCount);
+    //    }
+
+    //    /**
+    //     * Execute a method with metrics collection.
+    //     *
+    //     * @param endpoint the API endpoint
+    //     * @param method the HTTP method
+    //     * @param operation the operation name for model metrics
+    //     * @param modelName the model name (can be null)
+    //     * @param runnable the operation to execute
+    //     * @return the result of the operation
+    //     * @throws Exception if the operation fails
+    //     */
+    //    private <T> T executeWithMetrics(
+    //            String endpoint,
+    //            String method,
+    //            String operation,
+    //            String modelName,
+    //            MetricsOperation<T> runnable)
+    //            throws Exception {
+    //        long startTime = System.nanoTime();
+    //        boolean success = false;
+    //        String errorType = null;
+    //
+    //        try {
+    //            OllamaMetricsService.incrementActiveConnections();
+    //            T result = runnable.execute();
+    //            success = true;
+    //            return result;
+    //        } catch (OllamaBaseException e) {
+    //            errorType = "ollama_error";
+    //            throw e;
+    //        } catch (IOException e) {
+    //            errorType = "io_error";
+    //            throw e;
+    //        } catch (InterruptedException e) {
+    //            errorType = "interrupted";
+    //            throw e;
+    //        } catch (Exception e) {
+    //            errorType = "unknown_error";
+    //            throw e;
+    //        } finally {
+    //            OllamaMetricsService.decrementActiveConnections();
+    //            double durationSeconds = (System.nanoTime() - startTime) / 1_000_000_000.0;
+    //
+    //            recordMetrics(endpoint, method, durationSeconds, success, errorType);
+    //
+    //            if (modelName != null) {
+    //                recordModelMetrics(modelName, operation, durationSeconds);
+    //            }
+    //        }
+    //    }
+
+    //    /**
+    //     * Functional interface for operations that need metrics collection.
+    //     */
+    //    @FunctionalInterface
+    //    private interface MetricsOperation<T> {
+    //        T execute() throws Exception;
+    //    }
 }

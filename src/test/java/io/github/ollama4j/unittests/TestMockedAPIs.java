@@ -26,8 +26,6 @@ import io.github.ollama4j.models.response.OllamaResult;
 import io.github.ollama4j.tools.Tools;
 import io.github.ollama4j.tools.sampletools.WeatherTool;
 import io.github.ollama4j.utils.OptionsBuilder;
-import java.io.IOException;
-import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -43,7 +41,7 @@ class TestMockedAPIs {
             doNothing().when(ollamaAPI).pullModel(model);
             ollamaAPI.pullModel(model);
             verify(ollamaAPI, times(1)).pullModel(model);
-        } catch (IOException | OllamaBaseException | InterruptedException | URISyntaxException e) {
+        } catch (OllamaBaseException e) {
             throw new RuntimeException(e);
         }
     }
@@ -55,7 +53,7 @@ class TestMockedAPIs {
             when(ollamaAPI.listModels()).thenReturn(new ArrayList<>());
             ollamaAPI.listModels();
             verify(ollamaAPI, times(1)).listModels();
-        } catch (IOException | OllamaBaseException | InterruptedException | URISyntaxException e) {
+        } catch (OllamaBaseException e) {
             throw new RuntimeException(e);
         }
     }
@@ -73,7 +71,7 @@ class TestMockedAPIs {
             doNothing().when(ollamaAPI).createModel(customModelRequest);
             ollamaAPI.createModel(customModelRequest);
             verify(ollamaAPI, times(1)).createModel(customModelRequest);
-        } catch (IOException | OllamaBaseException | InterruptedException | URISyntaxException e) {
+        } catch (OllamaBaseException e) {
             throw new RuntimeException(e);
         }
     }
@@ -86,7 +84,7 @@ class TestMockedAPIs {
             doNothing().when(ollamaAPI).deleteModel(model, true);
             ollamaAPI.deleteModel(model, true);
             verify(ollamaAPI, times(1)).deleteModel(model, true);
-        } catch (IOException | OllamaBaseException | InterruptedException | URISyntaxException e) {
+        } catch (OllamaBaseException e) {
             throw new RuntimeException(e);
         }
     }
@@ -113,7 +111,7 @@ class TestMockedAPIs {
             when(ollamaAPI.getModelDetails(model)).thenReturn(new ModelDetail());
             ollamaAPI.getModelDetails(model);
             verify(ollamaAPI, times(1)).getModelDetails(model);
-        } catch (IOException | OllamaBaseException | InterruptedException | URISyntaxException e) {
+        } catch (OllamaBaseException e) {
             throw new RuntimeException(e);
         }
     }
@@ -130,7 +128,7 @@ class TestMockedAPIs {
             when(ollamaAPI.embed(m)).thenReturn(new OllamaEmbedResponseModel());
             ollamaAPI.embed(m);
             verify(ollamaAPI, times(1)).embed(m);
-        } catch (IOException | OllamaBaseException | InterruptedException e) {
+        } catch (OllamaBaseException e) {
             throw new RuntimeException(e);
         }
     }
@@ -145,7 +143,7 @@ class TestMockedAPIs {
             when(ollamaAPI.embed(m)).thenReturn(new OllamaEmbedResponseModel());
             ollamaAPI.embed(m);
             verify(ollamaAPI, times(1)).embed(m);
-        } catch (IOException | OllamaBaseException | InterruptedException e) {
+        } catch (OllamaBaseException e) {
             throw new RuntimeException(e);
         }
     }
@@ -160,7 +158,7 @@ class TestMockedAPIs {
                     .thenReturn(new OllamaEmbedResponseModel());
             ollamaAPI.embed(new OllamaEmbedRequestModel(model, inputs));
             verify(ollamaAPI, times(1)).embed(new OllamaEmbedRequestModel(model, inputs));
-        } catch (IOException | OllamaBaseException | InterruptedException e) {
+        } catch (OllamaBaseException e) {
             throw new RuntimeException(e);
         }
     }
@@ -178,7 +176,7 @@ class TestMockedAPIs {
             ollamaAPI.generate(model, prompt, false, false, optionsBuilder.build(), observer);
             verify(ollamaAPI, times(1))
                     .generate(model, prompt, false, false, optionsBuilder.build(), observer);
-        } catch (IOException | OllamaBaseException | InterruptedException e) {
+        } catch (OllamaBaseException e) {
             throw new RuntimeException(e);
         }
     }
@@ -246,13 +244,13 @@ class TestMockedAPIs {
                             new OptionsBuilder().build(),
                             null,
                             null);
-        } catch (IOException | OllamaBaseException | InterruptedException | URISyntaxException e) {
+        } catch (OllamaBaseException e) {
             throw new RuntimeException(e);
         }
     }
 
     @Test
-    void testAskAsync() {
+    void testAskAsync() throws OllamaBaseException {
         OllamaAPI ollamaAPI = Mockito.mock(OllamaAPI.class);
         String model = "llama2";
         String prompt = "some prompt text";

@@ -916,7 +916,7 @@ class OllamaAPIIntegrationTest {
             assertNotNull(result);
             assertNotNull(result.getResponse());
             assertFalse(result.getResponse().isEmpty());
-        } catch (IOException | OllamaBaseException | InterruptedException e) {
+        } catch (OllamaBaseException e) {
             fail(e);
         }
     }
