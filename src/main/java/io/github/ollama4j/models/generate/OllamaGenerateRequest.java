@@ -24,6 +24,7 @@ public class OllamaGenerateRequest extends OllamaCommonRequest implements Ollama
     private String context;
     private boolean raw;
     private boolean think;
+    private boolean useTools;
 
     public OllamaGenerateRequest() {}
 

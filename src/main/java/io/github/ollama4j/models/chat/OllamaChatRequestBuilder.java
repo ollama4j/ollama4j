@@ -28,8 +28,24 @@ public class OllamaChatRequestBuilder {
 
     private int imageURLConnectTimeoutSeconds = 10;
     private int imageURLReadTimeoutSeconds = 10;
-
+    private OllamaChatRequest request;
     @Setter private boolean useTools = true;
+
+    private OllamaChatRequestBuilder() {
+        request = new OllamaChatRequest();
+        request.setMessages(new ArrayList<>());
+    }
+
+    //    private OllamaChatRequestBuilder(String model, List<OllamaChatMessage> messages) {
+    //        request = new OllamaChatRequest(model, false, messages);
+    //    }
+    //    public static OllamaChatRequestBuilder builder(String model) {
+    //        return new OllamaChatRequestBuilder(model, new ArrayList<>());
+    //    }
+
+    public static OllamaChatRequestBuilder builder() {
+        return new OllamaChatRequestBuilder();
+    }
 
     public OllamaChatRequestBuilder withImageURLConnectTimeoutSeconds(
             int imageURLConnectTimeoutSeconds) {
@@ -42,19 +58,9 @@ public class OllamaChatRequestBuilder {
         return this;
     }
 
-    private OllamaChatRequestBuilder(String model, List<OllamaChatMessage> messages) {
-        request = new OllamaChatRequest(model, false, messages);
-    }
-
-    private OllamaChatRequest request;
-
-    public static OllamaChatRequestBuilder getInstance(String model) {
-        return new OllamaChatRequestBuilder(model, new ArrayList<>());
-    }
-
-    public OllamaChatRequest build() {
-        request.setUseTools(useTools);
-        return request;
+    public OllamaChatRequestBuilder withModel(String model) {
+        request.setModel(model);
+        return this;
     }
 
     public void reset() {
@@ -78,7 +84,6 @@ public class OllamaChatRequestBuilder {
             List<OllamaChatToolCalls> toolCalls,
             List<File> images) {
         List<OllamaChatMessage> messages = this.request.getMessages();
-
         List<byte[]> binaryImages =
                 images.stream()
                         .map(
@@ -95,7 +100,6 @@ public class OllamaChatRequestBuilder {
                                     }
                                 })
                         .collect(Collectors.toList());
-
         messages.add(new OllamaChatMessage(role, content, null, toolCalls, binaryImages));
         return this;
     }
@@ -133,13 +137,13 @@ public class OllamaChatRequestBuilder {
                 }
             }
         }
-
         messages.add(new OllamaChatMessage(role, content, null, toolCalls, binaryImages));
         return this;
     }
 
     public OllamaChatRequestBuilder withMessages(List<OllamaChatMessage> messages) {
-        return new OllamaChatRequestBuilder(request.getModel(), messages);
+        request.setMessages(messages);
+        return this;
     }
 
     public OllamaChatRequestBuilder withOptions(Options options) {
@@ -170,5 +174,10 @@ public class OllamaChatRequestBuilder {
     public OllamaChatRequestBuilder withThinking(boolean think) {
         this.request.setThink(think);
         return this;
+    }
+
+    public OllamaChatRequest build() {
+        request.setUseTools(useTools);
+        return request;
     }
 }

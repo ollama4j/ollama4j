@@ -18,6 +18,8 @@ import io.github.ollama4j.exceptions.RoleNotFoundException;
 import io.github.ollama4j.models.chat.OllamaChatMessageRole;
 import io.github.ollama4j.models.embeddings.OllamaEmbedRequestModel;
 import io.github.ollama4j.models.embeddings.OllamaEmbedResponseModel;
+import io.github.ollama4j.models.generate.OllamaGenerateRequest;
+import io.github.ollama4j.models.generate.OllamaGenerateRequestBuilder;
 import io.github.ollama4j.models.generate.OllamaGenerateStreamObserver;
 import io.github.ollama4j.models.request.CustomModelRequest;
 import io.github.ollama4j.models.response.ModelDetail;
@@ -26,6 +28,7 @@ import io.github.ollama4j.models.response.OllamaResult;
 import io.github.ollama4j.tools.Tools;
 import io.github.ollama4j.tools.sampletools.WeatherTool;
 import io.github.ollama4j.utils.OptionsBuilder;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -171,11 +174,18 @@ class TestMockedAPIs {
         OptionsBuilder optionsBuilder = new OptionsBuilder();
         OllamaGenerateStreamObserver observer = new OllamaGenerateStreamObserver(null, null);
         try {
-            when(ollamaAPI.generate(model, prompt, false, false, optionsBuilder.build(), observer))
+            OllamaGenerateRequest request =
+                    OllamaGenerateRequestBuilder.builder()
+                            .withModel(model)
+                            .withPrompt(prompt)
+                            .withRaw(false)
+                            .withThink(false)
+                            .withStreaming(false)
+                            .build();
+            when(ollamaAPI.generate(request, observer))
                     .thenReturn(new OllamaResult("", "", 0, 200));
-            ollamaAPI.generate(model, prompt, false, false, optionsBuilder.build(), observer);
-            verify(ollamaAPI, times(1))
-                    .generate(model, prompt, false, false, optionsBuilder.build(), observer);
+            ollamaAPI.generate(request, observer);
+            verify(ollamaAPI, times(1)).generate(request, observer);
         } catch (OllamaBaseException e) {
             throw new RuntimeException(e);
         }
@@ -187,29 +197,21 @@ class TestMockedAPIs {
         String model = "llama2";
         String prompt = "some prompt text";
         try {
-            when(ollamaAPI.generateWithImages(
-                            model,
-                            prompt,
-                            Collections.emptyList(),
-                            new OptionsBuilder().build(),
-                            null,
-                            null))
-                    .thenReturn(new OllamaResult("", "", 0, 200));
-            ollamaAPI.generateWithImages(
-                    model,
-                    prompt,
-                    Collections.emptyList(),
-                    new OptionsBuilder().build(),
-                    null,
-                    null);
-            verify(ollamaAPI, times(1))
-                    .generateWithImages(
-                            model,
-                            prompt,
-                            Collections.emptyList(),
-                            new OptionsBuilder().build(),
-                            null,
-                            null);
+            OllamaGenerateRequest request =
+                    OllamaGenerateRequestBuilder.builder()
+                            .withModel(model)
+                            .withPrompt(prompt)
+                            .withRaw(false)
+                            .withThink(false)
+                            .withStreaming(false)
+                            .withImages(Collections.emptyList())
+                            .withOptions(new OptionsBuilder().build())
+                            .withFormat(null)
+                            .build();
+            OllamaGenerateStreamObserver handler = null;
+            when(ollamaAPI.generate(request, handler)).thenReturn(new OllamaResult("", "", 0, 200));
+            ollamaAPI.generate(request, handler);
+            verify(ollamaAPI, times(1)).generate(request, handler);
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
@@ -221,30 +223,24 @@ class TestMockedAPIs {
         String model = "llama2";
         String prompt = "some prompt text";
         try {
-            when(ollamaAPI.generateWithImages(
-                            model,
-                            prompt,
-                            Collections.emptyList(),
-                            new OptionsBuilder().build(),
-                            null,
-                            null))
-                    .thenReturn(new OllamaResult("", "", 0, 200));
-            ollamaAPI.generateWithImages(
-                    model,
-                    prompt,
-                    Collections.emptyList(),
-                    new OptionsBuilder().build(),
-                    null,
-                    null);
-            verify(ollamaAPI, times(1))
-                    .generateWithImages(
-                            model,
-                            prompt,
-                            Collections.emptyList(),
-                            new OptionsBuilder().build(),
-                            null,
-                            null);
+            OllamaGenerateRequest request =
+                    OllamaGenerateRequestBuilder.builder()
+                            .withModel(model)
+                            .withPrompt(prompt)
+                            .withRaw(false)
+                            .withThink(false)
+                            .withStreaming(false)
+                            .withImages(Collections.emptyList())
+                            .withOptions(new OptionsBuilder().build())
+                            .withFormat(null)
+                            .build();
+            OllamaGenerateStreamObserver handler = null;
+            when(ollamaAPI.generate(request, handler)).thenReturn(new OllamaResult("", "", 0, 200));
+            ollamaAPI.generate(request, handler);
+            verify(ollamaAPI, times(1)).generate(request, handler);
         } catch (OllamaBaseException e) {
+            throw new RuntimeException(e);
+        } catch (IOException e) {
             throw new RuntimeException(e);
         }
     }
@@ -254,10 +250,10 @@ class TestMockedAPIs {
         OllamaAPI ollamaAPI = Mockito.mock(OllamaAPI.class);
         String model = "llama2";
         String prompt = "some prompt text";
-        when(ollamaAPI.generate(model, prompt, false, false))
+        when(ollamaAPI.generateAsync(model, prompt, false, false))
                 .thenReturn(new OllamaAsyncResultStreamer(null, null, 3));
-        ollamaAPI.generate(model, prompt, false, false);
-        verify(ollamaAPI, times(1)).generate(model, prompt, false, false);
+        ollamaAPI.generateAsync(model, prompt, false, false);
+        verify(ollamaAPI, times(1)).generateAsync(model, prompt, false, false);
     }
 
     @Test

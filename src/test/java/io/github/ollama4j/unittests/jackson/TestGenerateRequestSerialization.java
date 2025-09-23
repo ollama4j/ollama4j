@@ -23,7 +23,7 @@ class TestGenerateRequestSerialization extends AbstractSerializationTest<OllamaG
 
     @BeforeEach
     public void init() {
-        builder = OllamaGenerateRequestBuilder.getInstance("DummyModel");
+        builder = OllamaGenerateRequestBuilder.builder().withModel("Dummy Model");
     }
 
     @Test

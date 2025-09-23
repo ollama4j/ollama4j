@@ -12,14 +12,19 @@ import static org.junit.jupiter.api.Assertions.*;
 
 import io.github.ollama4j.OllamaAPI;
 import io.github.ollama4j.exceptions.OllamaBaseException;
+import io.github.ollama4j.models.generate.OllamaGenerateRequest;
+import io.github.ollama4j.models.generate.OllamaGenerateRequestBuilder;
+import io.github.ollama4j.models.generate.OllamaGenerateStreamObserver;
 import io.github.ollama4j.models.response.OllamaResult;
 import io.github.ollama4j.samples.AnnotatedTool;
 import io.github.ollama4j.tools.annotations.OllamaToolService;
+import io.github.ollama4j.utils.OptionsBuilder;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.time.Duration;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -202,7 +207,19 @@ public class WithAuth {
                 });
         format.put("required", List.of("isNoon"));
 
-        OllamaResult result = api.generateWithFormat(model, prompt, format);
+        OllamaGenerateRequest request =
+                OllamaGenerateRequestBuilder.builder()
+                        .withModel(model)
+                        .withPrompt(prompt)
+                        .withRaw(false)
+                        .withThink(false)
+                        .withStreaming(false)
+                        .withImages(Collections.emptyList())
+                        .withOptions(new OptionsBuilder().build())
+                        .withFormat(format)
+                        .build();
+        OllamaGenerateStreamObserver handler = null;
+        OllamaResult result = api.generate(request, handler);
 
         assertNotNull(result);
         assertNotNull(result.getResponse());

@@ -11,6 +11,7 @@ package io.github.ollama4j.models.chat;
 import io.github.ollama4j.models.request.OllamaCommonRequest;
 import io.github.ollama4j.tools.Tools;
 import io.github.ollama4j.utils.OllamaRequestBody;
+import java.util.Collections;
 import java.util.List;
 import lombok.Getter;
 import lombok.Setter;
@@ -26,7 +27,7 @@ import lombok.Setter;
 @Setter
 public class OllamaChatRequest extends OllamaCommonRequest implements OllamaRequestBody {
 
-    private List<OllamaChatMessage> messages;
+    private List<OllamaChatMessage> messages = Collections.emptyList();
 
     private List<Tools.PromptFuncDefinition> tools;
 
@@ -34,11 +35,12 @@ public class OllamaChatRequest extends OllamaCommonRequest implements OllamaRequ
 
     /**
      * Controls whether tools are automatically executed.
-     * <p>
-     * If set to {@code true} (the default), tools will be automatically used/applied by the library.
-     * If set to {@code false}, tool calls will be returned to the client for manual handling.
-     * <p>
-     * Disabling this should be an explicit operation.
+     *
+     * <p>If set to {@code true} (the default), tools will be automatically used/applied by the
+     * library. If set to {@code false}, tool calls will be returned to the client for manual
+     * handling.
+     *
+     * <p>Disabling this should be an explicit operation.
      */
     private boolean useTools = true;
 

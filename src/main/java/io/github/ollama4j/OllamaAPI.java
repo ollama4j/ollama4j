@@ -20,6 +20,7 @@ import io.github.ollama4j.models.chat.OllamaChatTokenHandler;
 import io.github.ollama4j.models.embeddings.OllamaEmbedRequestModel;
 import io.github.ollama4j.models.embeddings.OllamaEmbedResponseModel;
 import io.github.ollama4j.models.generate.OllamaGenerateRequest;
+import io.github.ollama4j.models.generate.OllamaGenerateRequestBuilder;
 import io.github.ollama4j.models.generate.OllamaGenerateStreamObserver;
 import io.github.ollama4j.models.generate.OllamaGenerateTokenHandler;
 import io.github.ollama4j.models.ps.ModelsProcessResponse;
@@ -663,6 +664,7 @@ public class OllamaAPI {
                                     Constants.HttpConstants.HEADER_KEY_CONTENT_TYPE,
                                     Constants.HttpConstants.APPLICATION_JSON)
                             .build();
+            LOG.debug("Unloading model with request: {}", jsonData);
             HttpClient client = HttpClient.newHttpClient();
             HttpResponse<String> response =
                     client.send(request, HttpResponse.BodyHandlers.ofString());
@@ -671,12 +673,15 @@ public class OllamaAPI {
             if (statusCode == 404
                     && responseBody.contains("model")
                     && responseBody.contains("not found")) {
+                LOG.debug("Unload response: {} - {}", statusCode, responseBody);
                 return;
             }
             if (statusCode != 200) {
+                LOG.debug("Unload response: {} - {}", statusCode, responseBody);
                 throw new OllamaBaseException(statusCode + " - " + responseBody);
             }
         } catch (Exception e) {
+            LOG.debug("Unload failed: {} - {}", statusCode, out);
             throw new OllamaBaseException(statusCode + " - " + out, e);
         } finally {
             MetricsRecorder.record(
@@ -737,7 +742,8 @@ public class OllamaAPI {
      * @return the OllamaResult containing the response
      * @throws OllamaBaseException if the request fails
      */
-    public OllamaResult generate(
+    @Deprecated
+    private OllamaResult generate(
             String model,
             String prompt,
             boolean raw,
@@ -745,26 +751,107 @@ public class OllamaAPI {
             Options options,
             OllamaGenerateStreamObserver streamObserver)
             throws OllamaBaseException {
-        try {
-            // Create the OllamaGenerateRequest and configure common properties
-            OllamaGenerateRequest ollamaRequestModel = new OllamaGenerateRequest(model, prompt);
-            ollamaRequestModel.setRaw(raw);
-            ollamaRequestModel.setThink(think);
-            ollamaRequestModel.setOptions(options.getOptionsMap());
-            ollamaRequestModel.setKeepAlive("0m");
+        OllamaGenerateRequest request =
+                OllamaGenerateRequestBuilder.builder()
+                        .withModel(model)
+                        .withPrompt(prompt)
+                        .withRaw(raw)
+                        .withThink(think)
+                        .withOptions(options)
+                        .withKeepAlive("0m")
+                        .build();
+        return generate(request, streamObserver);
+    }
 
-            // Based on 'think' flag, choose the appropriate stream handler(s)
-            if (think) {
-                // Call with thinking
-                return generateSyncForOllamaRequestModel(
-                        ollamaRequestModel,
-                        streamObserver.getThinkingStreamHandler(),
-                        streamObserver.getResponseStreamHandler());
-            } else {
-                // Call without thinking
-                return generateSyncForOllamaRequestModel(
-                        ollamaRequestModel, null, streamObserver.getResponseStreamHandler());
+    /**
+     * Generates a response from a model using the specified parameters and stream observer. If
+     * {@code streamObserver} is provided, streaming is enabled; otherwise, a synchronous call is
+     * made.
+     */
+    public OllamaResult generate(
+            OllamaGenerateRequest request, OllamaGenerateStreamObserver streamObserver)
+            throws OllamaBaseException {
+        try {
+            if (request.isUseTools()) {
+                return generateWithToolsInternal(request, streamObserver);
             }
+
+            if (streamObserver != null) {
+                if (request.isThink()) {
+                    return generateSyncForOllamaRequestModel(
+                            request,
+                            streamObserver.getThinkingStreamHandler(),
+                            streamObserver.getResponseStreamHandler());
+                } else {
+                    return generateSyncForOllamaRequestModel(
+                            request, null, streamObserver.getResponseStreamHandler());
+                }
+            }
+            return generateSyncForOllamaRequestModel(request, null, null);
+        } catch (Exception e) {
+            throw new OllamaBaseException(e.getMessage(), e);
+        }
+    }
+
+    private OllamaResult generateWithToolsInternal(
+            OllamaGenerateRequest request, OllamaGenerateStreamObserver streamObserver)
+            throws OllamaBaseException {
+        try {
+            boolean raw = true;
+            OllamaToolsResult toolResult = new OllamaToolsResult();
+            Map<ToolFunctionCallSpec, Object> toolResults = new HashMap<>();
+
+            String prompt = request.getPrompt();
+            if (!prompt.startsWith("[AVAILABLE_TOOLS]")) {
+                final Tools.PromptBuilder promptBuilder = new Tools.PromptBuilder();
+                for (Tools.ToolSpecification spec : toolRegistry.getRegisteredSpecs()) {
+                    promptBuilder.withToolSpecification(spec);
+                }
+                promptBuilder.withPrompt(prompt);
+                prompt = promptBuilder.build();
+            }
+
+            request.setPrompt(prompt);
+            request.setRaw(raw);
+            request.setThink(false);
+
+            OllamaResult result =
+                    generate(
+                            request,
+                            new OllamaGenerateStreamObserver(
+                                    null,
+                                    streamObserver != null
+                                            ? streamObserver.getResponseStreamHandler()
+                                            : null));
+            toolResult.setModelResult(result);
+
+            String toolsResponse = result.getResponse();
+            if (toolsResponse.contains("[TOOL_CALLS]")) {
+                toolsResponse = toolsResponse.replace("[TOOL_CALLS]", "");
+            }
+
+            List<ToolFunctionCallSpec> toolFunctionCallSpecs = new ArrayList<>();
+            ObjectMapper objectMapper = Utils.getObjectMapper();
+
+            if (!toolsResponse.isEmpty()) {
+                try {
+                    objectMapper.readTree(toolsResponse);
+                } catch (JsonParseException e) {
+                    return result;
+                }
+                toolFunctionCallSpecs =
+                        objectMapper.readValue(
+                                toolsResponse,
+                                objectMapper
+                                        .getTypeFactory()
+                                        .constructCollectionType(
+                                                List.class, ToolFunctionCallSpec.class));
+            }
+            for (ToolFunctionCallSpec toolFunctionCallSpec : toolFunctionCallSpecs) {
+                toolResults.put(toolFunctionCallSpec, invokeTool(toolFunctionCallSpec));
+            }
+            toolResult.setToolResults(toolResults);
+            return result;
         } catch (Exception e) {
             throw new OllamaBaseException(e.getMessage(), e);
         }
@@ -781,81 +868,18 @@ public class OllamaAPI {
      * @return An instance of {@link OllamaResult} containing the structured response.
      * @throws OllamaBaseException if the response indicates an error status.
      */
+    @Deprecated
     @SuppressWarnings("LoggingSimilarMessage")
-    public OllamaResult generateWithFormat(String model, String prompt, Map<String, Object> format)
+    private OllamaResult generateWithFormat(String model, String prompt, Map<String, Object> format)
             throws OllamaBaseException {
-        long startTime = System.currentTimeMillis();
-        String url = "/api/generate";
-        int statusCode = -1;
-        Object out = null;
-        try {
-            Map<String, Object> requestBody = new HashMap<>();
-            requestBody.put("model", model);
-            requestBody.put("prompt", prompt);
-            requestBody.put("stream", false);
-            requestBody.put("format", format);
-
-            String jsonData = Utils.getObjectMapper().writeValueAsString(requestBody);
-            HttpClient httpClient = HttpClient.newHttpClient();
-
-            HttpRequest request =
-                    getRequestBuilderDefault(new URI(this.host + url))
-                            .header(
-                                    Constants.HttpConstants.HEADER_KEY_ACCEPT,
-                                    Constants.HttpConstants.APPLICATION_JSON)
-                            .header(
-                                    Constants.HttpConstants.HEADER_KEY_CONTENT_TYPE,
-                                    Constants.HttpConstants.APPLICATION_JSON)
-                            .POST(HttpRequest.BodyPublishers.ofString(jsonData))
-                            .build();
-
-            try {
-                String prettyJson =
-                        Utils.toJSON(Utils.getObjectMapper().readValue(jsonData, Object.class));
-                LOG.debug("Asking model:\n{}", prettyJson);
-            } catch (Exception e) {
-                LOG.debug("Asking model: {}", jsonData);
-            }
-
-            HttpResponse<String> response =
-                    httpClient.send(request, HttpResponse.BodyHandlers.ofString());
-            statusCode = response.statusCode();
-            String responseBody = response.body();
-            if (statusCode == 200) {
-                OllamaStructuredResult structuredResult =
-                        Utils.getObjectMapper()
-                                .readValue(responseBody, OllamaStructuredResult.class);
-                OllamaResult ollamaResult =
-                        new OllamaResult(
-                                structuredResult.getResponse(),
-                                structuredResult.getThinking(),
-                                structuredResult.getResponseTime(),
-                                statusCode);
-                ollamaResult.setModel(structuredResult.getModel());
-                ollamaResult.setCreatedAt(structuredResult.getCreatedAt());
-                ollamaResult.setDone(structuredResult.isDone());
-                ollamaResult.setDoneReason(structuredResult.getDoneReason());
-                ollamaResult.setContext(structuredResult.getContext());
-                ollamaResult.setTotalDuration(structuredResult.getTotalDuration());
-                ollamaResult.setLoadDuration(structuredResult.getLoadDuration());
-                ollamaResult.setPromptEvalCount(structuredResult.getPromptEvalCount());
-                ollamaResult.setPromptEvalDuration(structuredResult.getPromptEvalDuration());
-                ollamaResult.setEvalCount(structuredResult.getEvalCount());
-                ollamaResult.setEvalDuration(structuredResult.getEvalDuration());
-                LOG.debug("Model response:\n{}", ollamaResult);
-
-                return ollamaResult;
-            } else {
-                String errorResponse = Utils.toJSON(responseBody);
-                LOG.debug("Model response:\n{}", errorResponse);
-                throw new OllamaBaseException(statusCode + " - " + responseBody);
-            }
-        } catch (Exception e) {
-            throw new OllamaBaseException(e.getMessage(), e);
-        } finally {
-            MetricsRecorder.record(
-                    url, "", false, false, false, null, null, startTime, statusCode, out);
-        }
+        OllamaGenerateRequest request =
+                OllamaGenerateRequestBuilder.builder()
+                        .withModel(model)
+                        .withPrompt(prompt)
+                        .withFormat(format)
+                        .withThink(false)
+                        .build();
+        return generate(request, null);
     }
 
     /**
@@ -890,67 +914,22 @@ public class OllamaAPI {
      *     empty.
      * @throws OllamaBaseException if the Ollama API returns an error status
      */
-    public OllamaToolsResult generateWithTools(
+    @Deprecated
+    private OllamaToolsResult generateWithTools(
             String model, String prompt, Options options, OllamaGenerateTokenHandler streamHandler)
             throws OllamaBaseException {
-        try {
-            boolean raw = true;
-            OllamaToolsResult toolResult = new OllamaToolsResult();
-            Map<ToolFunctionCallSpec, Object> toolResults = new HashMap<>();
-
-            if (!prompt.startsWith("[AVAILABLE_TOOLS]")) {
-                final Tools.PromptBuilder promptBuilder = new Tools.PromptBuilder();
-                for (Tools.ToolSpecification spec : toolRegistry.getRegisteredSpecs()) {
-                    promptBuilder.withToolSpecification(spec);
-                }
-                promptBuilder.withPrompt(prompt);
-                prompt = promptBuilder.build();
-            }
-
-            OllamaResult result =
-                    generate(
-                            model,
-                            prompt,
-                            raw,
-                            false,
-                            options,
-                            new OllamaGenerateStreamObserver(null, streamHandler));
-            toolResult.setModelResult(result);
-
-            String toolsResponse = result.getResponse();
-            if (toolsResponse.contains("[TOOL_CALLS]")) {
-                toolsResponse = toolsResponse.replace("[TOOL_CALLS]", "");
-            }
-
-            List<ToolFunctionCallSpec> toolFunctionCallSpecs = new ArrayList<>();
-            ObjectMapper objectMapper = Utils.getObjectMapper();
-
-            if (!toolsResponse.isEmpty()) {
-                try {
-                    // Try to parse the string to see if it's a valid JSON
-                    objectMapper.readTree(toolsResponse);
-                } catch (JsonParseException e) {
-                    LOG.warn(
-                            "Response from model does not contain any tool calls. Returning the"
-                                    + " response as is.");
-                    return toolResult;
-                }
-                toolFunctionCallSpecs =
-                        objectMapper.readValue(
-                                toolsResponse,
-                                objectMapper
-                                        .getTypeFactory()
-                                        .constructCollectionType(
-                                                List.class, ToolFunctionCallSpec.class));
-            }
-            for (ToolFunctionCallSpec toolFunctionCallSpec : toolFunctionCallSpecs) {
-                toolResults.put(toolFunctionCallSpec, invokeTool(toolFunctionCallSpec));
-            }
-            toolResult.setToolResults(toolResults);
-            return toolResult;
-        } catch (Exception e) {
-            throw new OllamaBaseException(e.getMessage(), e);
-        }
+        OllamaGenerateRequest request =
+                OllamaGenerateRequestBuilder.builder()
+                        .withModel(model)
+                        .withPrompt(prompt)
+                        .withOptions(options)
+                        .withUseTools(true)
+                        .build();
+        // Execute unified path, but also return tools result by re-parsing
+        OllamaResult res = generate(request, new OllamaGenerateStreamObserver(null, streamHandler));
+        OllamaToolsResult tr = new OllamaToolsResult();
+        tr.setModelResult(res);
+        return tr;
     }
 
     /**
@@ -986,7 +965,13 @@ public class OllamaAPI {
      *     results
      * @throws OllamaBaseException if the request fails
      */
-    public OllamaAsyncResultStreamer generate(
+    @Deprecated
+    private OllamaAsyncResultStreamer generate(
+            String model, String prompt, boolean raw, boolean think) throws OllamaBaseException {
+        return generateAsync(model, prompt, raw, think);
+    }
+
+    public OllamaAsyncResultStreamer generateAsync(
             String model, String prompt, boolean raw, boolean think) throws OllamaBaseException {
         long startTime = System.currentTimeMillis();
         String url = "/api/generate";
@@ -1038,7 +1023,8 @@ public class OllamaAPI {
      * @throws OllamaBaseException if the response indicates an error status or an invalid image
      *     type is provided
      */
-    public OllamaResult generateWithImages(
+    @Deprecated
+    private OllamaResult generateWithImages(
             String model,
             String prompt,
             List<Object> images,
@@ -1070,13 +1056,17 @@ public class OllamaAPI {
                 }
             }
             OllamaGenerateRequest ollamaRequestModel =
-                    new OllamaGenerateRequest(model, prompt, encodedImages);
-            if (format != null) {
-                ollamaRequestModel.setFormat(format);
-            }
-            ollamaRequestModel.setOptions(options.getOptionsMap());
+                    OllamaGenerateRequestBuilder.builder()
+                            .withModel(model)
+                            .withPrompt(prompt)
+                            .withImagesBase64(encodedImages)
+                            .withOptions(options)
+                            .withFormat(format)
+                            .build();
             OllamaResult result =
-                    generateSyncForOllamaRequestModel(ollamaRequestModel, null, streamHandler);
+                    generate(
+                            ollamaRequestModel,
+                            new OllamaGenerateStreamObserver(null, streamHandler));
             return result;
         } catch (Exception e) {
             throw new OllamaBaseException(e.getMessage(), e);

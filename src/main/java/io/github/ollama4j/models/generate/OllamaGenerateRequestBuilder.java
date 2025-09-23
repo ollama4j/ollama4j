@@ -9,21 +9,23 @@
 package io.github.ollama4j.models.generate;
 
 import io.github.ollama4j.utils.Options;
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.util.ArrayList;
+import java.util.Base64;
 
-/**
- * Helper class for creating {@link OllamaGenerateRequest}
- * objects using the builder-pattern.
- */
+/** Helper class for creating {@link OllamaGenerateRequest} objects using the builder-pattern. */
 public class OllamaGenerateRequestBuilder {
 
-    private OllamaGenerateRequestBuilder(String model, String prompt) {
-        request = new OllamaGenerateRequest(model, prompt);
+    private OllamaGenerateRequestBuilder() {
+        request = new OllamaGenerateRequest();
     }
 
     private OllamaGenerateRequest request;
 
-    public static OllamaGenerateRequestBuilder getInstance(String model) {
-        return new OllamaGenerateRequestBuilder(model, "");
+    public static OllamaGenerateRequestBuilder builder() {
+        return new OllamaGenerateRequestBuilder();
     }
 
     public OllamaGenerateRequest build() {
@@ -32,6 +34,11 @@ public class OllamaGenerateRequestBuilder {
 
     public OllamaGenerateRequestBuilder withPrompt(String prompt) {
         request.setPrompt(prompt);
+        return this;
+    }
+
+    public OllamaGenerateRequestBuilder withModel(String model) {
+        request.setModel(model);
         return this;
     }
 
@@ -50,13 +57,58 @@ public class OllamaGenerateRequestBuilder {
         return this;
     }
 
-    public OllamaGenerateRequestBuilder withStreaming() {
-        this.request.setStream(true);
+    public OllamaGenerateRequestBuilder withStreaming(boolean streaming) {
+        this.request.setStream(streaming);
         return this;
     }
 
     public OllamaGenerateRequestBuilder withKeepAlive(String keepAlive) {
         this.request.setKeepAlive(keepAlive);
+        return this;
+    }
+
+    public OllamaGenerateRequestBuilder withRaw(boolean raw) {
+        this.request.setRaw(raw);
+        return this;
+    }
+
+    public OllamaGenerateRequestBuilder withThink(boolean think) {
+        this.request.setThink(think);
+        return this;
+    }
+
+    public OllamaGenerateRequestBuilder withUseTools(boolean useTools) {
+        this.request.setUseTools(useTools);
+        return this;
+    }
+
+    public OllamaGenerateRequestBuilder withFormat(java.util.Map<String, Object> format) {
+        this.request.setFormat(format);
+        return this;
+    }
+
+    public OllamaGenerateRequestBuilder withSystem(String system) {
+        this.request.setSystem(system);
+        return this;
+    }
+
+    public OllamaGenerateRequestBuilder withContext(String context) {
+        this.request.setContext(context);
+        return this;
+    }
+
+    public OllamaGenerateRequestBuilder withImagesBase64(java.util.List<String> images) {
+        this.request.setImages(images);
+        return this;
+    }
+
+    public OllamaGenerateRequestBuilder withImages(java.util.List<File> imageFiles)
+            throws IOException {
+        java.util.List<String> images = new ArrayList<>();
+        for (File imageFile : imageFiles) {
+            images.add(Base64.getEncoder().encodeToString(Files.readAllBytes(imageFile.toPath())));
+        }
+        this.request.setImages(images);
         return this;
     }
 }

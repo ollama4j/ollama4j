@@ -28,7 +28,7 @@ public class TestChatRequestSerialization extends AbstractSerializationTest<Olla
 
     @BeforeEach
     public void init() {
-        builder = OllamaChatRequestBuilder.getInstance("DummyModel");
+        builder = OllamaChatRequestBuilder.builder().withModel("DummyModel");
     }
 
     @Test
