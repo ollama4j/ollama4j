@@ -15,20 +15,20 @@ import java.util.Map;
 
 public class MetricsRecorder {
 
+    // Corrected: Removed duplicate "format" label and ensured label count matches usage
     private static final Counter requests =
             Counter.build()
                     .name("ollama_api_requests_total")
                     .help("Total requests to Ollama API")
                     .labelNames(
                             "endpoint",
-                            "status",
                             "model",
                             "raw",
                             "streaming",
-                            "format",
                             "thinking",
                             "http_status",
-                            "options")
+                            "options",
+                            "format")
                     .register();
 
     private static final Histogram requestLatency =
@@ -40,17 +40,17 @@ public class MetricsRecorder {
                             "model",
                             "raw",
                             "streaming",
-                            "format",
                             "thinking",
                             "http_status",
-                            "options")
+                            "options",
+                            "format")
                     .register();
 
     private static final Histogram responseSize =
             Histogram.build()
                     .name("ollama_api_response_size_bytes")
                     .help("Response size in bytes")
-                    .labelNames("endpoint", "model", "options") // Added "options"
+                    .labelNames("endpoint", "model", "options")
                     .register();
 
     public static void record(
@@ -77,9 +77,9 @@ public class MetricsRecorder {
             formatString = format.toString();
         }
 
+        // Ensure the number of labels matches the labelNames above (8 labels)
         requests.labels(
                         endpoint,
-                        "success",
                         safe(model),
                         String.valueOf(raw),
                         String.valueOf(streaming),
@@ -89,6 +89,8 @@ public class MetricsRecorder {
                         safe(formatString))
                 .inc();
         double durationSeconds = (endTime - startTime) / 1000.0;
+
+        // Ensure the number of labels matches the labelNames above (8 labels)
         requestLatency
                 .labels(
                         endpoint,
