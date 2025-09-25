@@ -25,13 +25,14 @@ import io.github.ollama4j.models.request.CustomModelRequest;
 import io.github.ollama4j.models.response.ModelDetail;
 import io.github.ollama4j.models.response.OllamaAsyncResultStreamer;
 import io.github.ollama4j.models.response.OllamaResult;
+import io.github.ollama4j.tools.ToolFunction;
 import io.github.ollama4j.tools.Tools;
-import io.github.ollama4j.tools.sampletools.WeatherTool;
 import io.github.ollama4j.utils.OptionsBuilder;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
@@ -100,7 +101,7 @@ class TestMockedAPIs {
         verify(ollamaAPI, times(1)).registerTools(Collections.emptyList());
 
         List<Tools.ToolSpecification> toolSpecifications = new ArrayList<>();
-        toolSpecifications.add(new WeatherTool().getSpecification());
+        toolSpecifications.add(getSampleToolSpecification());
         doNothing().when(ollamaAPI).registerTools(toolSpecifications);
         ollamaAPI.registerTools(toolSpecifications);
         verify(ollamaAPI, times(1)).registerTools(toolSpecifications);
@@ -319,5 +320,52 @@ class TestMockedAPIs {
         } catch (RoleNotFoundException exception) {
             throw new RuntimeException("Failed to run test: testGetRoleFound");
         }
+    }
+
+    private static Tools.ToolSpecification getSampleToolSpecification() {
+        return Tools.ToolSpecification.builder()
+                .functionName("current-weather")
+                .functionDescription("Get current weather")
+                .toolFunction(
+                        new ToolFunction() {
+                            @Override
+                            public Object apply(Map<String, Object> arguments) {
+                                String location = arguments.get("city").toString();
+                                return "Currently " + location + "'s weather is beautiful.";
+                            }
+                        })
+                .toolPrompt(
+                        Tools.PromptFuncDefinition.builder()
+                                .type("prompt")
+                                .function(
+                                        Tools.PromptFuncDefinition.PromptFuncSpec.builder()
+                                                .name("get-location-weather-info")
+                                                .description("Get location details")
+                                                .parameters(
+                                                        Tools.PromptFuncDefinition.Parameters
+                                                                .builder()
+                                                                .type("object")
+                                                                .properties(
+                                                                        Map.of(
+                                                                                "city",
+                                                                                Tools
+                                                                                        .PromptFuncDefinition
+                                                                                        .Property
+                                                                                        .builder()
+                                                                                        .type(
+                                                                                                "string")
+                                                                                        .description(
+                                                                                                "The city,"
+                                                                                                    + " e.g."
+                                                                                                    + " New Delhi,"
+                                                                                                    + " India")
+                                                                                        .required(
+                                                                                                true)
+                                                                                        .build()))
+                                                                .required(java.util.List.of("city"))
+                                                                .build())
+                                                .build())
+                                .build())
+                .build();
     }
 }

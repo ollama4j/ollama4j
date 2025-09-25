@@ -8,7 +8,6 @@
 */
 package io.github.ollama4j;
 
-import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.github.ollama4j.exceptions.OllamaBaseException;
 import io.github.ollama4j.exceptions.RoleNotFoundException;
@@ -20,7 +19,6 @@ import io.github.ollama4j.models.chat.OllamaChatTokenHandler;
 import io.github.ollama4j.models.embeddings.OllamaEmbedRequestModel;
 import io.github.ollama4j.models.embeddings.OllamaEmbedResponseModel;
 import io.github.ollama4j.models.generate.OllamaGenerateRequest;
-import io.github.ollama4j.models.generate.OllamaGenerateRequestBuilder;
 import io.github.ollama4j.models.generate.OllamaGenerateStreamObserver;
 import io.github.ollama4j.models.generate.OllamaGenerateTokenHandler;
 import io.github.ollama4j.models.ps.ModelsProcessResponse;
@@ -31,7 +29,6 @@ import io.github.ollama4j.tools.annotations.OllamaToolService;
 import io.github.ollama4j.tools.annotations.ToolProperty;
 import io.github.ollama4j.tools.annotations.ToolSpec;
 import io.github.ollama4j.utils.Constants;
-import io.github.ollama4j.utils.Options;
 import io.github.ollama4j.utils.Utils;
 import java.io.*;
 import java.lang.reflect.InvocationTargetException;
@@ -731,39 +728,6 @@ public class OllamaAPI {
     }
 
     /**
-     * Generates a response from a model using the specified parameters and stream observer.
-     *
-     * @param model the model name
-     * @param prompt the prompt to send
-     * @param raw whether to return the raw response
-     * @param think whether to stream "thinking" tokens
-     * @param options additional options
-     * @param streamObserver the stream observer for handling streamed responses
-     * @return the OllamaResult containing the response
-     * @throws OllamaBaseException if the request fails
-     */
-    @Deprecated
-    private OllamaResult generate(
-            String model,
-            String prompt,
-            boolean raw,
-            boolean think,
-            Options options,
-            OllamaGenerateStreamObserver streamObserver)
-            throws OllamaBaseException {
-        OllamaGenerateRequest request =
-                OllamaGenerateRequestBuilder.builder()
-                        .withModel(model)
-                        .withPrompt(prompt)
-                        .withRaw(raw)
-                        .withThink(think)
-                        .withOptions(options)
-                        .withKeepAlive("0m")
-                        .build();
-        return generate(request, streamObserver);
-    }
-
-    /**
      * Generates a response from a model using the specified parameters and stream observer. If
      * {@code streamObserver} is provided, streaming is enabled; otherwise, a synchronous call is
      * made.
@@ -796,179 +760,34 @@ public class OllamaAPI {
     private OllamaResult generateWithToolsInternal(
             OllamaGenerateRequest request, OllamaGenerateStreamObserver streamObserver)
             throws OllamaBaseException {
-        try {
-            boolean raw = true;
-            OllamaToolsResult toolResult = new OllamaToolsResult();
-            Map<ToolFunctionCallSpec, Object> toolResults = new HashMap<>();
-
-            String prompt = request.getPrompt();
-            if (!prompt.startsWith("[AVAILABLE_TOOLS]")) {
-                final Tools.PromptBuilder promptBuilder = new Tools.PromptBuilder();
-                for (Tools.ToolSpecification spec : toolRegistry.getRegisteredSpecs()) {
-                    promptBuilder.withToolSpecification(spec);
-                }
-                promptBuilder.withPrompt(prompt);
-                prompt = promptBuilder.build();
-            }
-
-            request.setPrompt(prompt);
-            request.setRaw(raw);
-            request.setThink(false);
-
-            OllamaResult result =
-                    generate(
-                            request,
-                            new OllamaGenerateStreamObserver(
-                                    null,
-                                    streamObserver != null
-                                            ? streamObserver.getResponseStreamHandler()
-                                            : null));
-            toolResult.setModelResult(result);
-
-            String toolsResponse = result.getResponse();
-            if (toolsResponse.contains("[TOOL_CALLS]")) {
-                toolsResponse = toolsResponse.replace("[TOOL_CALLS]", "");
-            }
-
-            List<ToolFunctionCallSpec> toolFunctionCallSpecs = new ArrayList<>();
-            ObjectMapper objectMapper = Utils.getObjectMapper();
-
-            if (!toolsResponse.isEmpty()) {
-                try {
-                    objectMapper.readTree(toolsResponse);
-                } catch (JsonParseException e) {
-                    return result;
-                }
-                toolFunctionCallSpecs =
-                        objectMapper.readValue(
-                                toolsResponse,
-                                objectMapper
-                                        .getTypeFactory()
-                                        .constructCollectionType(
-                                                List.class, ToolFunctionCallSpec.class));
-            }
-            for (ToolFunctionCallSpec toolFunctionCallSpec : toolFunctionCallSpecs) {
-                toolResults.put(toolFunctionCallSpec, invokeTool(toolFunctionCallSpec));
-            }
-            toolResult.setToolResults(toolResults);
-            return result;
-        } catch (Exception e) {
-            throw new OllamaBaseException(e.getMessage(), e);
+        List<Tools.PromptFuncDefinition> tools = new ArrayList<>();
+        for (Tools.ToolSpecification spec : toolRegistry.getRegisteredSpecs()) {
+            tools.add(spec.getToolPrompt());
         }
-    }
-
-    /**
-     * Generates structured output from the specified AI model and prompt.
-     *
-     * <p>Note: When formatting is specified, the 'think' parameter is not allowed.
-     *
-     * @param model The name or identifier of the AI model to use for generating the response.
-     * @param prompt The input text or prompt to provide to the AI model.
-     * @param format A map containing the format specification for the structured output.
-     * @return An instance of {@link OllamaResult} containing the structured response.
-     * @throws OllamaBaseException if the response indicates an error status.
-     */
-    @Deprecated
-    @SuppressWarnings("LoggingSimilarMessage")
-    private OllamaResult generateWithFormat(String model, String prompt, Map<String, Object> format)
-            throws OllamaBaseException {
-        OllamaGenerateRequest request =
-                OllamaGenerateRequestBuilder.builder()
-                        .withModel(model)
-                        .withPrompt(prompt)
-                        .withFormat(format)
-                        .withThink(false)
-                        .build();
-        return generate(request, null);
-    }
-
-    /**
-     * Generates a response using the specified AI model and prompt, then automatically detects and
-     * invokes any tool calls present in the model's output.
-     *
-     * <p>This method operates in blocking mode. It first augments the prompt with all registered
-     * tool specifications (unless the prompt already begins with {@code [AVAILABLE_TOOLS]}), sends
-     * the prompt to the model, and parses the model's response for tool call instructions. If tool
-     * calls are found, each is invoked using the registered tool implementations, and their results
-     * are collected.
-     *
-     * <p>Typical usage:
-     *
-     * <pre>{@code
-     * OllamaToolsResult result = ollamaAPI.generateWithTools(
-     *     "my-model",
-     *     "What is the weather in Bengaluru?",
-     *     Options.defaultOptions(),
-     *     null // or a custom OllamaStreamHandler for streaming
-     * );
-     * String modelResponse = result.getModelResult().getResponse();
-     * Map<ToolFunctionCallSpec, Object> toolResults = result.getToolResults();
-     * }</pre>
-     *
-     * @param model the name or identifier of the AI model to use for generating the response
-     * @param prompt the input text or prompt to provide to the AI model
-     * @param options additional options or configurations to use when generating the response
-     * @param streamHandler handler for streaming responses; if {@code null}, streaming is disabled
-     * @return an {@link OllamaToolsResult} containing the model's response and the results of any
-     *     invoked tools. If the model does not request any tool calls, the tool results map will be
-     *     empty.
-     * @throws OllamaBaseException if the Ollama API returns an error status
-     */
-    @Deprecated
-    private OllamaToolsResult generateWithTools(
-            String model, String prompt, Options options, OllamaGenerateTokenHandler streamHandler)
-            throws OllamaBaseException {
-        OllamaGenerateRequest request =
-                OllamaGenerateRequestBuilder.builder()
-                        .withModel(model)
-                        .withPrompt(prompt)
-                        .withOptions(options)
-                        .withUseTools(true)
-                        .build();
-        // Execute unified path, but also return tools result by re-parsing
-        OllamaResult res = generate(request, new OllamaGenerateStreamObserver(null, streamHandler));
-        OllamaToolsResult tr = new OllamaToolsResult();
-        tr.setModelResult(res);
-        return tr;
-    }
-
-    /**
-     * Asynchronously generates a response for a prompt using a model running on the Ollama server.
-     *
-     * <p>This method returns an {@link OllamaAsyncResultStreamer} handle that can be used to poll
-     * for status and retrieve streamed "thinking" and response tokens from the model. The call is
-     * non-blocking.
-     *
-     * <p>Example usage:
-     *
-     * <pre>{@code
-     * OllamaAsyncResultStreamer resultStreamer = ollamaAPI.generate("gpt-oss:20b", "Who are you", false, true);
-     * int pollIntervalMilliseconds = 1000;
-     * while (true) {
-     *     String thinkingTokens = resultStreamer.getThinkingResponseStream().poll();
-     *     String responseTokens = resultStreamer.getResponseStream().poll();
-     *     System.out.print(thinkingTokens != null ? thinkingTokens.toUpperCase() : "");
-     *     System.out.print(responseTokens != null ? responseTokens.toLowerCase() : "");
-     *     Thread.sleep(pollIntervalMilliseconds);
-     *     if (!resultStreamer.isAlive())
-     *         break;
-     * }
-     * System.out.println("Complete thinking response: " + resultStreamer.getCompleteThinkingResponse());
-     * System.out.println("Complete response: " + resultStreamer.getCompleteResponse());
-     * }</pre>
-     *
-     * @param model the Ollama model to use for generating the response
-     * @param prompt the prompt or question text to send to the model
-     * @param raw if {@code true}, returns the raw response from the model
-     * @param think if {@code true}, streams "thinking" tokens as well as response tokens
-     * @return an {@link OllamaAsyncResultStreamer} handle for polling and retrieving streamed
-     *     results
-     * @throws OllamaBaseException if the request fails
-     */
-    @Deprecated
-    private OllamaAsyncResultStreamer generate(
-            String model, String prompt, boolean raw, boolean think) throws OllamaBaseException {
-        return generateAsync(model, prompt, raw, think);
+        ArrayList<OllamaChatMessage> msgs = new ArrayList<>();
+        OllamaChatRequest chatRequest = new OllamaChatRequest();
+        chatRequest.setModel(request.getModel());
+        OllamaChatMessage ocm = new OllamaChatMessage();
+        ocm.setRole(OllamaChatMessageRole.USER);
+        ocm.setResponse(request.getPrompt());
+        chatRequest.setMessages(msgs);
+        msgs.add(ocm);
+        OllamaChatTokenHandler hdlr = null;
+        chatRequest.setTools(tools);
+        if (streamObserver != null) {
+            chatRequest.setStream(true);
+            hdlr =
+                    chatResponseModel ->
+                            streamObserver
+                                    .getResponseStreamHandler()
+                                    .accept(chatResponseModel.getMessage().getResponse());
+        }
+        OllamaChatResult res = chat(chatRequest, hdlr);
+        return new OllamaResult(
+                res.getResponseModel().getMessage().getResponse(),
+                res.getResponseModel().getMessage().getThinking(),
+                res.getResponseModel().getTotalDuration(),
+                -1);
     }
 
     public OllamaAsyncResultStreamer generateAsync(
@@ -993,83 +812,6 @@ public class OllamaAPI {
         } finally {
             MetricsRecorder.record(
                     url, model, raw, think, true, null, null, startTime, statusCode, null);
-        }
-    }
-
-    /**
-     * Generates a response from a model running on the Ollama server using one or more images as
-     * input.
-     *
-     * <p>This method allows you to provide images (as {@link File}, {@code byte[]}, or image URL
-     * {@link String}) along with a prompt to the specified model. The images are automatically
-     * encoded as base64 before being sent. Additional model options can be specified via the {@link
-     * Options} parameter.
-     *
-     * <p>If a {@code streamHandler} is provided, the response will be streamed and the handler will
-     * be called for each streamed response chunk. If {@code streamHandler} is {@code null},
-     * streaming is disabled and the full response is returned synchronously.
-     *
-     * @param model the name of the Ollama model to use for generating the response
-     * @param prompt the prompt or question text to send to the model
-     * @param images a list of images to use for the question; each element must be a {@link File},
-     *     {@code byte[]}, or a URL {@link String}
-     * @param options the {@link Options} object containing model parameters; see <a
-     *     href="https://github.com/jmorganca/ollama/blob/main/docs/modelfile.md#valid-parameters-and-values">Ollama
-     *     model options documentation</a>
-     * @param format a map specifying the output format, or null for default
-     * @param streamHandler an optional callback that is invoked for each streamed response chunk;
-     *     if {@code null}, disables streaming and returns the full response synchronously
-     * @return an {@link OllamaResult} containing the response text and time taken for the response
-     * @throws OllamaBaseException if the response indicates an error status or an invalid image
-     *     type is provided
-     */
-    @Deprecated
-    private OllamaResult generateWithImages(
-            String model,
-            String prompt,
-            List<Object> images,
-            Options options,
-            Map<String, Object> format,
-            OllamaGenerateTokenHandler streamHandler)
-            throws OllamaBaseException {
-        try {
-            List<String> encodedImages = new ArrayList<>();
-            for (Object image : images) {
-                if (image instanceof File) {
-                    LOG.debug("Using image file: {}", ((File) image).getAbsolutePath());
-                    encodedImages.add(encodeFileToBase64((File) image));
-                } else if (image instanceof byte[]) {
-                    LOG.debug("Using image bytes: {} bytes", ((byte[]) image).length);
-                    encodedImages.add(encodeByteArrayToBase64((byte[]) image));
-                } else if (image instanceof String) {
-                    LOG.debug("Using image URL: {}", image);
-                    encodedImages.add(
-                            encodeByteArrayToBase64(
-                                    Utils.loadImageBytesFromUrl(
-                                            (String) image,
-                                            imageURLConnectTimeoutSeconds,
-                                            imageURLReadTimeoutSeconds)));
-                } else {
-                    throw new OllamaBaseException(
-                            "Unsupported image type. Please provide a File, byte[], or a URL"
-                                    + " String.");
-                }
-            }
-            OllamaGenerateRequest ollamaRequestModel =
-                    OllamaGenerateRequestBuilder.builder()
-                            .withModel(model)
-                            .withPrompt(prompt)
-                            .withImagesBase64(encodedImages)
-                            .withOptions(options)
-                            .withFormat(format)
-                            .build();
-            OllamaResult result =
-                    generate(
-                            ollamaRequestModel,
-                            new OllamaGenerateStreamObserver(null, streamHandler));
-            return result;
-        } catch (Exception e) {
-            throw new OllamaBaseException(e.getMessage(), e);
         }
     }
 
@@ -1121,6 +863,10 @@ public class OllamaAPI {
                     if (toolFunction == null) {
                         throw new ToolInvocationException("Tool function not found: " + toolName);
                     }
+                    LOG.debug(
+                            "Invoking tool {} with arguments: {}",
+                            toolCall.getFunction().getName(),
+                            toolCall.getFunction().getArguments());
                     Map<String, Object> arguments = toolCall.getFunction().getArguments();
                     Object res = toolFunction.apply(arguments);
                     String argumentKeys =
@@ -1139,7 +885,6 @@ public class OllamaAPI {
                                                     + res
                                                     + " [/TOOL_RESULTS]"));
                 }
-
                 if (tokenHandler != null) {
                     result = requestCaller.call(request, tokenHandler);
                 } else {
@@ -1396,7 +1141,7 @@ public class OllamaAPI {
             out = result;
             return result;
         } catch (Exception e) {
-            throw new OllamaBaseException("Ping failed", e);
+            throw new OllamaBaseException(e.getMessage(), e);
         } finally {
             MetricsRecorder.record(
                     OllamaGenerateEndpointCaller.endpoint,

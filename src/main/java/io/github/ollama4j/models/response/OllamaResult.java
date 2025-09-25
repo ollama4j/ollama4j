@@ -18,11 +18,13 @@ import java.util.List;
 import java.util.Map;
 import lombok.Data;
 import lombok.Getter;
+import lombok.Setter;
 
 /**
  * The type Ollama result.
  */
 @Getter
+@Setter
 @SuppressWarnings("unused")
 @Data
 @JsonIgnoreProperties(ignoreUnknown = true)

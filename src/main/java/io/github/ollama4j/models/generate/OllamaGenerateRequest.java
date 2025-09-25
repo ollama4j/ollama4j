@@ -9,6 +9,7 @@
 package io.github.ollama4j.models.generate;
 
 import io.github.ollama4j.models.request.OllamaCommonRequest;
+import io.github.ollama4j.tools.Tools;
 import io.github.ollama4j.utils.OllamaRequestBody;
 import java.util.List;
 import lombok.Getter;
@@ -25,6 +26,7 @@ public class OllamaGenerateRequest extends OllamaCommonRequest implements Ollama
     private boolean raw;
     private boolean think;
     private boolean useTools;
+    private List<Tools.PromptFuncDefinition> tools;
 
     public OllamaGenerateRequest() {}
 

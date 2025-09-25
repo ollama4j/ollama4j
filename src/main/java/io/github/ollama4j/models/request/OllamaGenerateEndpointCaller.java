@@ -107,21 +107,8 @@ public class OllamaGenerateEndpointCaller extends OllamaEndpointCaller {
                         new InputStreamReader(responseBodyStream, StandardCharsets.UTF_8))) {
             String line;
             while ((line = reader.readLine()) != null) {
-                if (statusCode == 404) {
-                    LOG.warn("Status code: 404 (Not Found)");
-                    OllamaErrorResponse ollamaResponseModel =
-                            Utils.getObjectMapper().readValue(line, OllamaErrorResponse.class);
-                    responseBuffer.append(ollamaResponseModel.getError());
-                } else if (statusCode == 401) {
-                    LOG.warn("Status code: 401 (Unauthorized)");
-                    OllamaErrorResponse ollamaResponseModel =
-                            Utils.getObjectMapper()
-                                    .readValue(
-                                            "{\"error\":\"Unauthorized\"}",
-                                            OllamaErrorResponse.class);
-                    responseBuffer.append(ollamaResponseModel.getError());
-                } else if (statusCode == 400) {
-                    LOG.warn("Status code: 400 (Bad Request)");
+                if (statusCode >= 400) {
+                    LOG.warn("Error code: {}", statusCode);
                     OllamaErrorResponse ollamaResponseModel =
                             Utils.getObjectMapper().readValue(line, OllamaErrorResponse.class);
                     responseBuffer.append(ollamaResponseModel.getError());
@@ -140,6 +127,7 @@ public class OllamaGenerateEndpointCaller extends OllamaEndpointCaller {
 
         if (statusCode != 200) {
             LOG.error("Status code: {}", statusCode);
+            LOG.error("Response: {}", responseBuffer);
             throw new OllamaBaseException(responseBuffer.toString());
         } else {
             long endTime = System.currentTimeMillis();
@@ -149,7 +137,6 @@ public class OllamaGenerateEndpointCaller extends OllamaEndpointCaller {
                             thinkingBuffer.toString(),
                             endTime - startTime,
                             statusCode);
-
             ollamaResult.setModel(ollamaGenerateResponseModel.getModel());
             ollamaResult.setCreatedAt(ollamaGenerateResponseModel.getCreatedAt());
             ollamaResult.setDone(ollamaGenerateResponseModel.isDone());

@@ -109,7 +109,6 @@ public class OllamaChatEndpointCaller extends OllamaEndpointCaller {
         try (BufferedReader reader =
                 new BufferedReader(
                         new InputStreamReader(responseBodyStream, StandardCharsets.UTF_8))) {
-
             String line;
             while ((line = reader.readLine()) != null) {
                 if (handleErrorStatus(statusCode, line, responseBuffer)) {
@@ -141,7 +140,7 @@ public class OllamaChatEndpointCaller extends OllamaEndpointCaller {
                 statusCode,
                 responseBuffer);
         if (statusCode != 200) {
-            LOG.error("Status code " + statusCode);
+            LOG.error("Status code: " + statusCode);
             throw new OllamaBaseException(responseBuffer.toString());
         }
         if (wantedToolsForStream != null && ollamaChatResponseModel != null) {
