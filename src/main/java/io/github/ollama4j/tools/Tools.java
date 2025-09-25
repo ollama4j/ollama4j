@@ -9,13 +9,10 @@
 package io.github.ollama4j.tools;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import io.github.ollama4j.utils.Utils;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import lombok.AllArgsConstructor;
@@ -26,115 +23,95 @@ import lombok.NoArgsConstructor;
 public class Tools {
     @Data
     @Builder
-    public static class ToolSpecification {
-        private String functionName;
-        private String functionDescription;
-        private PromptFuncDefinition toolPrompt;
-        private ToolFunction toolFunction;
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class Tool {
+        @JsonProperty("function")
+        private ToolSpec toolSpec;
+
+        private String type = "function";
+        @JsonIgnore private ToolFunction toolFunction;
     }
 
     @Data
-    @JsonIgnoreProperties(ignoreUnknown = true)
     @Builder
     @NoArgsConstructor
     @AllArgsConstructor
-    public static class PromptFuncDefinition {
-        private String type;
-        private PromptFuncSpec function;
-
-        @Data
-        @Builder
-        @NoArgsConstructor
-        @AllArgsConstructor
-        public static class PromptFuncSpec {
-            private String name;
-            private String description;
-            private Parameters parameters;
-        }
-
-        @Data
-        @Builder
-        @NoArgsConstructor
-        @AllArgsConstructor
-        public static class Parameters {
-            private String type;
-            private Map<String, Property> properties;
-            private List<String> required;
-        }
-
-        @Data
-        @Builder
-        @NoArgsConstructor
-        @AllArgsConstructor
-        public static class Property {
-            private String type;
-            private String description;
-
-            @JsonProperty("enum")
-            @JsonInclude(JsonInclude.Include.NON_NULL)
-            private List<String> enumValues;
-
-            @JsonIgnore private boolean required;
-        }
+    public static class ToolSpec {
+        private String name;
+        private String description;
+        private Parameters parameters;
     }
 
-    public static class PropsBuilder {
-        private final Map<String, PromptFuncDefinition.Property> props = new HashMap<>();
+    @Data
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class Parameters {
+        private Map<String, Property> properties;
+        private List<String> required = new ArrayList<>();
 
-        public PropsBuilder withProperty(String key, PromptFuncDefinition.Property property) {
-            props.put(key, property);
-            return this;
-        }
-
-        public Map<String, PromptFuncDefinition.Property> build() {
-            return props;
-        }
-    }
-
-    public static class PromptBuilder {
-        private final List<PromptFuncDefinition> tools = new ArrayList<>();
-
-        private String promptText;
-
-        public String build() throws JsonProcessingException {
-            return "[AVAILABLE_TOOLS] "
-                    + Utils.getObjectMapper().writeValueAsString(tools)
-                    + "[/AVAILABLE_TOOLS][INST] "
-                    + promptText
-                    + " [/INST]";
-        }
-
-        public PromptBuilder withPrompt(String prompt) throws JsonProcessingException {
-            promptText = prompt;
-            return this;
-        }
-
-        public PromptBuilder withToolSpecification(ToolSpecification spec) {
-            PromptFuncDefinition def = new PromptFuncDefinition();
-            def.setType("function");
-
-            PromptFuncDefinition.PromptFuncSpec functionDetail =
-                    new PromptFuncDefinition.PromptFuncSpec();
-            functionDetail.setName(spec.getFunctionName());
-            functionDetail.setDescription(spec.getFunctionDescription());
-
-            PromptFuncDefinition.Parameters parameters = new PromptFuncDefinition.Parameters();
-            parameters.setType("object");
-            parameters.setProperties(spec.getToolPrompt().getFunction().parameters.getProperties());
-
-            List<String> requiredValues = new ArrayList<>();
-            for (Map.Entry<String, PromptFuncDefinition.Property> p :
-                    spec.getToolPrompt().getFunction().getParameters().getProperties().entrySet()) {
-                if (p.getValue().isRequired()) {
-                    requiredValues.add(p.getKey());
+        public static Parameters of(Map<String, Property> properties) {
+            Parameters params = new Parameters();
+            params.setProperties(properties);
+            // Optionally, populate required from properties' required flags
+            if (properties != null) {
+                for (Map.Entry<String, Property> entry : properties.entrySet()) {
+                    if (entry.getValue() != null && entry.getValue().isRequired()) {
+                        params.getRequired().add(entry.getKey());
+                    }
                 }
             }
-            parameters.setRequired(requiredValues);
-            functionDetail.setParameters(parameters);
-            def.setFunction(functionDetail);
-
-            tools.add(def);
-            return this;
+            return params;
         }
+
+        @Override
+        public String toString() {
+            ObjectNode node =
+                    com.fasterxml.jackson.databind.json.JsonMapper.builder()
+                            .build()
+                            .createObjectNode();
+            node.put("type", "object");
+            if (properties != null) {
+                ObjectNode propsNode = node.putObject("properties");
+                for (Map.Entry<String, Property> entry : properties.entrySet()) {
+                    ObjectNode propNode = propsNode.putObject(entry.getKey());
+                    Property prop = entry.getValue();
+                    propNode.put("type", prop.getType());
+                    propNode.put("description", prop.getDescription());
+                    if (prop.getEnumValues() != null) {
+                        propNode.putArray("enum")
+                                .addAll(
+                                        prop.getEnumValues().stream()
+                                                .map(
+                                                        com.fasterxml.jackson.databind.node.TextNode
+                                                                ::new)
+                                                .collect(java.util.stream.Collectors.toList()));
+                    }
+                }
+            }
+            if (required != null && !required.isEmpty()) {
+                node.putArray("required")
+                        .addAll(
+                                required.stream()
+                                        .map(com.fasterxml.jackson.databind.node.TextNode::new)
+                                        .collect(java.util.stream.Collectors.toList()));
+            }
+            return node.toPrettyString();
+        }
+    }
+
+    @Data
+    @Builder
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class Property {
+        private String type;
+        private String description;
+
+        @JsonProperty("enum")
+        @JsonInclude(JsonInclude.Include.NON_NULL)
+        private List<String> enumValues;
+
+        @JsonIgnore private boolean required;
     }
 }

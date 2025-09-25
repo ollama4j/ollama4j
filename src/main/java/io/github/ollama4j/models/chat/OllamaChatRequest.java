@@ -29,7 +29,7 @@ public class OllamaChatRequest extends OllamaCommonRequest implements OllamaRequ
 
     private List<OllamaChatMessage> messages = Collections.emptyList();
 
-    private List<Tools.PromptFuncDefinition> tools;
+    private List<Tools.Tool> tools;
 
     private boolean think;
 

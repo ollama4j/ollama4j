@@ -12,7 +12,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import io.github.ollama4j.exceptions.OllamaBaseException;
 import io.github.ollama4j.exceptions.RoleNotFoundException;
 import io.github.ollama4j.exceptions.ToolInvocationException;
-import io.github.ollama4j.exceptions.ToolNotFoundException;
 import io.github.ollama4j.metrics.MetricsRecorder;
 import io.github.ollama4j.models.chat.*;
 import io.github.ollama4j.models.chat.OllamaChatTokenHandler;
@@ -25,15 +24,9 @@ import io.github.ollama4j.models.ps.ModelsProcessResponse;
 import io.github.ollama4j.models.request.*;
 import io.github.ollama4j.models.response.*;
 import io.github.ollama4j.tools.*;
-import io.github.ollama4j.tools.annotations.OllamaToolService;
-import io.github.ollama4j.tools.annotations.ToolProperty;
-import io.github.ollama4j.tools.annotations.ToolSpec;
 import io.github.ollama4j.utils.Constants;
 import io.github.ollama4j.utils.Utils;
 import java.io.*;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
-import java.lang.reflect.Parameter;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.http.HttpClient;
@@ -61,6 +54,7 @@ public class OllamaAPI {
 
     private final String host;
     private Auth auth;
+
     private final ToolRegistry toolRegistry = new ToolRegistry();
 
     /**
@@ -760,10 +754,10 @@ public class OllamaAPI {
     private OllamaResult generateWithToolsInternal(
             OllamaGenerateRequest request, OllamaGenerateStreamObserver streamObserver)
             throws OllamaBaseException {
-        List<Tools.PromptFuncDefinition> tools = new ArrayList<>();
-        for (Tools.ToolSpecification spec : toolRegistry.getRegisteredSpecs()) {
-            tools.add(spec.getToolPrompt());
-        }
+        //        List<Tools.PromptFuncDefinition> tools = new ArrayList<>();
+        //        for (Tools.ToolSpecification spec : toolRegistry.getRegisteredSpecs()) {
+        //            tools.add(spec.getToolPrompt());
+        //        }
         ArrayList<OllamaChatMessage> msgs = new ArrayList<>();
         OllamaChatRequest chatRequest = new OllamaChatRequest();
         chatRequest.setModel(request.getModel());
@@ -773,14 +767,16 @@ public class OllamaAPI {
         chatRequest.setMessages(msgs);
         msgs.add(ocm);
         OllamaChatTokenHandler hdlr = null;
-        chatRequest.setTools(tools);
+        chatRequest.setTools(request.getTools());
         if (streamObserver != null) {
             chatRequest.setStream(true);
-            hdlr =
-                    chatResponseModel ->
-                            streamObserver
-                                    .getResponseStreamHandler()
-                                    .accept(chatResponseModel.getMessage().getResponse());
+            if (streamObserver.getResponseStreamHandler() != null) {
+                hdlr =
+                        chatResponseModel ->
+                                streamObserver
+                                        .getResponseStreamHandler()
+                                        .accept(chatResponseModel.getMessage().getResponse());
+            }
         }
         OllamaChatResult res = chat(chatRequest, hdlr);
         return new OllamaResult(
@@ -837,10 +833,8 @@ public class OllamaAPI {
             // only add tools if tools flag is set
             if (request.isUseTools()) {
                 // add all registered tools to request
-                request.setTools(
-                        toolRegistry.getRegisteredSpecs().stream()
-                                .map(Tools.ToolSpecification::getToolPrompt)
-                                .collect(Collectors.toList()));
+                request.setTools(toolRegistry.getRegisteredTools());
+                System.out.println("Use tools is set.");
             }
 
             if (tokenHandler != null) {
@@ -859,31 +853,36 @@ public class OllamaAPI {
                     && toolCallTries < maxChatToolCallRetries) {
                 for (OllamaChatToolCalls toolCall : toolCalls) {
                     String toolName = toolCall.getFunction().getName();
-                    ToolFunction toolFunction = toolRegistry.getToolFunction(toolName);
-                    if (toolFunction == null) {
-                        throw new ToolInvocationException("Tool function not found: " + toolName);
+                    for (Tools.Tool t : request.getTools()) {
+                        if (t.getToolSpec().getName().equals(toolName)) {
+                            ToolFunction toolFunction = t.getToolFunction();
+                            if (toolFunction == null) {
+                                throw new ToolInvocationException(
+                                        "Tool function not found: " + toolName);
+                            }
+                            LOG.debug(
+                                    "Invoking tool {} with arguments: {}",
+                                    toolCall.getFunction().getName(),
+                                    toolCall.getFunction().getArguments());
+                            Map<String, Object> arguments = toolCall.getFunction().getArguments();
+                            Object res = toolFunction.apply(arguments);
+                            String argumentKeys =
+                                    arguments.keySet().stream()
+                                            .map(Object::toString)
+                                            .collect(Collectors.joining(", "));
+                            request.getMessages()
+                                    .add(
+                                            new OllamaChatMessage(
+                                                    OllamaChatMessageRole.TOOL,
+                                                    "[TOOL_RESULTS] "
+                                                            + toolName
+                                                            + "("
+                                                            + argumentKeys
+                                                            + "): "
+                                                            + res
+                                                            + " [/TOOL_RESULTS]"));
+                        }
                     }
-                    LOG.debug(
-                            "Invoking tool {} with arguments: {}",
-                            toolCall.getFunction().getName(),
-                            toolCall.getFunction().getArguments());
-                    Map<String, Object> arguments = toolCall.getFunction().getArguments();
-                    Object res = toolFunction.apply(arguments);
-                    String argumentKeys =
-                            arguments.keySet().stream()
-                                    .map(Object::toString)
-                                    .collect(Collectors.joining(", "));
-                    request.getMessages()
-                            .add(
-                                    new OllamaChatMessage(
-                                            OllamaChatMessageRole.TOOL,
-                                            "[TOOL_RESULTS] "
-                                                    + toolName
-                                                    + "("
-                                                    + argumentKeys
-                                                    + "): "
-                                                    + res
-                                                    + " [/TOOL_RESULTS]"));
                 }
                 if (tokenHandler != null) {
                     result = requestCaller.call(request, tokenHandler);
@@ -900,27 +899,23 @@ public class OllamaAPI {
     }
 
     /**
-     * Registers a single tool in the tool registry using the provided tool specification.
+     * Registers a single tool in the tool registry.
      *
-     * @param toolSpecification the specification of the tool to register. It contains the tool's
-     *     function name and other relevant information.
+     * @param tool the tool to register. Contains the tool's specification and function.
      */
-    public void registerTool(Tools.ToolSpecification toolSpecification) {
-        toolRegistry.addTool(toolSpecification.getFunctionName(), toolSpecification);
-        LOG.debug("Registered tool: {}", toolSpecification.getFunctionName());
+    public void registerTool(Tools.Tool tool) {
+        toolRegistry.addTool(tool);
+        LOG.debug("Registered tool: {}", tool.getToolSpec().getName());
     }
 
     /**
-     * Registers multiple tools in the tool registry using a list of tool specifications. Iterates
-     * over the list and adds each tool specification to the registry.
+     * Registers multiple tools in the tool registry.
      *
-     * @param toolSpecifications a list of tool specifications to register. Each specification
-     *     contains information about a tool, such as its function name.
+     * @param tools a list of {@link Tools.Tool} objects to register. Each tool contains
+     *              its specification and function.
      */
-    public void registerTools(List<Tools.ToolSpecification> toolSpecifications) {
-        for (Tools.ToolSpecification toolSpecification : toolSpecifications) {
-            toolRegistry.addTool(toolSpecification.getFunctionName(), toolSpecification);
-        }
+    public void registerTools(List<Tools.Tool> tools) {
+        toolRegistry.addTools(tools);
     }
 
     /**
@@ -932,122 +927,135 @@ public class OllamaAPI {
         LOG.debug("All tools have been deregistered.");
     }
 
-    /**
-     * Registers tools based on the annotations found on the methods of the caller's class and its
-     * providers. This method scans the caller's class for the {@link OllamaToolService} annotation
-     * and recursively registers annotated tools from all the providers specified in the annotation.
-     *
-     * @throws OllamaBaseException if the caller's class is not annotated with {@link
-     *     OllamaToolService} or if reflection-based instantiation or invocation fails
-     */
-    public void registerAnnotatedTools() throws OllamaBaseException {
-        try {
-            Class<?> callerClass = null;
-            try {
-                callerClass =
-                        Class.forName(Thread.currentThread().getStackTrace()[2].getClassName());
-            } catch (ClassNotFoundException e) {
-                throw new OllamaBaseException(e.getMessage(), e);
-            }
-
-            OllamaToolService ollamaToolServiceAnnotation =
-                    callerClass.getDeclaredAnnotation(OllamaToolService.class);
-            if (ollamaToolServiceAnnotation == null) {
-                throw new IllegalStateException(
-                        callerClass + " is not annotated as " + OllamaToolService.class);
-            }
-
-            Class<?>[] providers = ollamaToolServiceAnnotation.providers();
-            for (Class<?> provider : providers) {
-                registerAnnotatedTools(provider.getDeclaredConstructor().newInstance());
-            }
-        } catch (InstantiationException
-                | NoSuchMethodException
-                | IllegalAccessException
-                | InvocationTargetException e) {
-            throw new OllamaBaseException(e.getMessage());
-        }
-    }
-
-    /**
-     * Registers tools based on the annotations found on the methods of the provided object. This
-     * method scans the methods of the given object and registers tools using the {@link ToolSpec}
-     * annotation and associated {@link ToolProperty} annotations. It constructs tool specifications
-     * and stores them in a tool registry.
-     *
-     * @param object the object whose methods are to be inspected for annotated tools
-     * @throws RuntimeException if any reflection-based instantiation or invocation fails
-     */
-    public void registerAnnotatedTools(Object object) {
-        Class<?> objectClass = object.getClass();
-        Method[] methods = objectClass.getMethods();
-        for (Method m : methods) {
-            ToolSpec toolSpec = m.getDeclaredAnnotation(ToolSpec.class);
-            if (toolSpec == null) {
-                continue;
-            }
-            String operationName = !toolSpec.name().isBlank() ? toolSpec.name() : m.getName();
-            String operationDesc = !toolSpec.desc().isBlank() ? toolSpec.desc() : operationName;
-
-            final Tools.PropsBuilder propsBuilder = new Tools.PropsBuilder();
-            LinkedHashMap<String, String> methodParams = new LinkedHashMap<>();
-            for (Parameter parameter : m.getParameters()) {
-                final ToolProperty toolPropertyAnn =
-                        parameter.getDeclaredAnnotation(ToolProperty.class);
-                String propType = parameter.getType().getTypeName();
-                if (toolPropertyAnn == null) {
-                    methodParams.put(parameter.getName(), null);
-                    continue;
-                }
-                String propName =
-                        !toolPropertyAnn.name().isBlank()
-                                ? toolPropertyAnn.name()
-                                : parameter.getName();
-                methodParams.put(propName, propType);
-                propsBuilder.withProperty(
-                        propName,
-                        Tools.PromptFuncDefinition.Property.builder()
-                                .type(propType)
-                                .description(toolPropertyAnn.desc())
-                                .required(toolPropertyAnn.required())
-                                .build());
-            }
-            final Map<String, Tools.PromptFuncDefinition.Property> params = propsBuilder.build();
-            List<String> reqProps =
-                    params.entrySet().stream()
-                            .filter(e -> e.getValue().isRequired())
-                            .map(Map.Entry::getKey)
-                            .collect(Collectors.toList());
-
-            Tools.ToolSpecification toolSpecification =
-                    Tools.ToolSpecification.builder()
-                            .functionName(operationName)
-                            .functionDescription(operationDesc)
-                            .toolPrompt(
-                                    Tools.PromptFuncDefinition.builder()
-                                            .type("function")
-                                            .function(
-                                                    Tools.PromptFuncDefinition.PromptFuncSpec
-                                                            .builder()
-                                                            .name(operationName)
-                                                            .description(operationDesc)
-                                                            .parameters(
-                                                                    Tools.PromptFuncDefinition
-                                                                            .Parameters.builder()
-                                                                            .type("object")
-                                                                            .properties(params)
-                                                                            .required(reqProps)
-                                                                            .build())
-                                                            .build())
-                                            .build())
-                            .build();
-
-            ReflectionalToolFunction reflectionalToolFunction =
-                    new ReflectionalToolFunction(object, m, methodParams);
-            toolSpecification.setToolFunction(reflectionalToolFunction);
-            toolRegistry.addTool(toolSpecification.getFunctionName(), toolSpecification);
-        }
-    }
+    //
+    //    /**
+    //     * Registers tools based on the annotations found on the methods of the caller's class and
+    // its
+    //     * providers. This method scans the caller's class for the {@link OllamaToolService}
+    // annotation
+    //     * and recursively registers annotated tools from all the providers specified in the
+    // annotation.
+    //     *
+    //     * @throws OllamaBaseException if the caller's class is not annotated with {@link
+    //     *     OllamaToolService} or if reflection-based instantiation or invocation fails
+    //     */
+    //    public void registerAnnotatedTools() throws OllamaBaseException {
+    //        try {
+    //            Class<?> callerClass = null;
+    //            try {
+    //                callerClass =
+    //
+    // Class.forName(Thread.currentThread().getStackTrace()[2].getClassName());
+    //            } catch (ClassNotFoundException e) {
+    //                throw new OllamaBaseException(e.getMessage(), e);
+    //            }
+    //
+    //            OllamaToolService ollamaToolServiceAnnotation =
+    //                    callerClass.getDeclaredAnnotation(OllamaToolService.class);
+    //            if (ollamaToolServiceAnnotation == null) {
+    //                throw new IllegalStateException(
+    //                        callerClass + " is not annotated as " + OllamaToolService.class);
+    //            }
+    //
+    //            Class<?>[] providers = ollamaToolServiceAnnotation.providers();
+    //            for (Class<?> provider : providers) {
+    //                registerAnnotatedTools(provider.getDeclaredConstructor().newInstance());
+    //            }
+    //        } catch (InstantiationException
+    //                | NoSuchMethodException
+    //                | IllegalAccessException
+    //                | InvocationTargetException e) {
+    //            throw new OllamaBaseException(e.getMessage());
+    //        }
+    //    }
+    //
+    //    /**
+    //     * Registers tools based on the annotations found on the methods of the provided object.
+    // This
+    //     * method scans the methods of the given object and registers tools using the {@link
+    // ToolSpec}
+    //     * annotation and associated {@link ToolProperty} annotations. It constructs tool
+    // specifications
+    //     * and stores them in a tool registry.
+    //     *
+    //     * @param object the object whose methods are to be inspected for annotated tools
+    //     * @throws RuntimeException if any reflection-based instantiation or invocation fails
+    //     */
+    //    public void registerAnnotatedTools(Object object) {
+    //        Class<?> objectClass = object.getClass();
+    //        Method[] methods = objectClass.getMethods();
+    //        for (Method m : methods) {
+    //            ToolSpec toolSpec = m.getDeclaredAnnotation(ToolSpec.class);
+    //            if (toolSpec == null) {
+    //                continue;
+    //            }
+    //            String operationName = !toolSpec.name().isBlank() ? toolSpec.name() : m.getName();
+    //            String operationDesc = !toolSpec.desc().isBlank() ? toolSpec.desc() :
+    // operationName;
+    //
+    //            final Tools.PropsBuilder propsBuilder = new Tools.PropsBuilder();
+    //            LinkedHashMap<String, String> methodParams = new LinkedHashMap<>();
+    //            for (Parameter parameter : m.getParameters()) {
+    //                final ToolProperty toolPropertyAnn =
+    //                        parameter.getDeclaredAnnotation(ToolProperty.class);
+    //                String propType = parameter.getType().getTypeName();
+    //                if (toolPropertyAnn == null) {
+    //                    methodParams.put(parameter.getName(), null);
+    //                    continue;
+    //                }
+    //                String propName =
+    //                        !toolPropertyAnn.name().isBlank()
+    //                                ? toolPropertyAnn.name()
+    //                                : parameter.getName();
+    //                methodParams.put(propName, propType);
+    //                propsBuilder.withProperty(
+    //                        propName,
+    //                        Tools.PromptFuncDefinition.Property.builder()
+    //                                .type(propType)
+    //                                .description(toolPropertyAnn.desc())
+    //                                .required(toolPropertyAnn.required())
+    //                                .build());
+    //            }
+    //            final Map<String, Tools.PromptFuncDefinition.Property> params =
+    // propsBuilder.build();
+    //            List<String> reqProps =
+    //                    params.entrySet().stream()
+    //                            .filter(e -> e.getValue().isRequired())
+    //                            .map(Map.Entry::getKey)
+    //                            .collect(Collectors.toList());
+    //
+    //            Tools.ToolSpecification toolSpecification =
+    //                    Tools.ToolSpecification.builder()
+    //                            .functionName(operationName)
+    //                            .functionDescription(operationDesc)
+    //                            .toolPrompt(
+    //                                    Tools.PromptFuncDefinition.builder()
+    //                                            .type("function")
+    //                                            .function(
+    //                                                    Tools.PromptFuncDefinition.PromptFuncSpec
+    //                                                            .builder()
+    //                                                            .name(operationName)
+    //                                                            .description(operationDesc)
+    //                                                            .parameters(
+    //                                                                    Tools.PromptFuncDefinition
+    //
+    // .Parameters.builder()
+    //                                                                            .type("object")
+    //
+    // .properties(params)
+    //
+    // .required(reqProps)
+    //                                                                            .build())
+    //                                                            .build())
+    //                                            .build())
+    //                            .build();
+    //
+    //            ReflectionalToolFunction reflectionalToolFunction =
+    //                    new ReflectionalToolFunction(object, m, methodParams);
+    //            toolSpecification.setToolFunction(reflectionalToolFunction);
+    //            toolRegistry.addTool(toolSpecification.getFunctionName(), toolSpecification);
+    //        }
+    //    }
 
     /**
      * Adds a custom role.
@@ -1185,32 +1193,32 @@ public class OllamaAPI {
         return auth != null;
     }
 
-    /**
-     * Invokes a registered tool function by name and arguments.
-     *
-     * @param toolFunctionCallSpec the tool function call specification
-     * @return the result of the tool function
-     * @throws ToolInvocationException if the tool is not found or invocation fails
-     */
-    private Object invokeTool(ToolFunctionCallSpec toolFunctionCallSpec)
-            throws ToolInvocationException {
-        try {
-            String methodName = toolFunctionCallSpec.getName();
-            Map<String, Object> arguments = toolFunctionCallSpec.getArguments();
-            ToolFunction function = toolRegistry.getToolFunction(methodName);
-            LOG.debug("Invoking function {} with arguments {}", methodName, arguments);
-            if (function == null) {
-                throw new ToolNotFoundException(
-                        "No such tool: "
-                                + methodName
-                                + ". Please register the tool before invoking it.");
-            }
-            return function.apply(arguments);
-        } catch (Exception e) {
-            throw new ToolInvocationException(
-                    "Failed to invoke tool: " + toolFunctionCallSpec.getName(), e);
-        }
-    }
+    //    /**
+    //     * Invokes a registered tool function by name and arguments.
+    //     *
+    //     * @param toolFunctionCallSpec the tool function call specification
+    //     * @return the result of the tool function
+    //     * @throws ToolInvocationException if the tool is not found or invocation fails
+    //     */
+    //    private Object invokeTool(ToolFunctionCallSpec toolFunctionCallSpec)
+    //            throws ToolInvocationException {
+    //        try {
+    //            String methodName = toolFunctionCallSpec.getName();
+    //            Map<String, Object> arguments = toolFunctionCallSpec.getArguments();
+    //            ToolFunction function = toolRegistry.getToolFunction(methodName);
+    //            LOG.debug("Invoking function {} with arguments {}", methodName, arguments);
+    //            if (function == null) {
+    //                throw new ToolNotFoundException(
+    //                        "No such tool: "
+    //                                + methodName
+    //                                + ". Please register the tool before invoking it.");
+    //            }
+    //            return function.apply(arguments);
+    //        } catch (Exception e) {
+    //            throw new ToolInvocationException(
+    //                    "Failed to invoke tool: " + toolFunctionCallSpec.getName(), e);
+    //        }
+    //    }
 
     //    /**
     //     * Initialize metrics collection if enabled.

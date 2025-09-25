@@ -26,7 +26,7 @@ public class OllamaGenerateRequest extends OllamaCommonRequest implements Ollama
     private boolean raw;
     private boolean think;
     private boolean useTools;
-    private List<Tools.PromptFuncDefinition> tools;
+    private List<Tools.Tool> tools;
 
     public OllamaGenerateRequest() {}
 

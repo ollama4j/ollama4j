@@ -8,12 +8,14 @@
 */
 package io.github.ollama4j.models.generate;
 
+import io.github.ollama4j.tools.Tools;
 import io.github.ollama4j.utils.Options;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.Base64;
+import java.util.List;
 
 /** Helper class for creating {@link OllamaGenerateRequest} objects using the builder-pattern. */
 public class OllamaGenerateRequestBuilder {
@@ -34,6 +36,11 @@ public class OllamaGenerateRequestBuilder {
 
     public OllamaGenerateRequestBuilder withPrompt(String prompt) {
         request.setPrompt(prompt);
+        return this;
+    }
+
+    public OllamaGenerateRequestBuilder withTools(List<Tools.Tool> tools) {
+        request.setTools(tools);
         return this;
     }
 

@@ -96,6 +96,7 @@ public class OllamaChatEndpointCaller extends OllamaEndpointCaller {
                 getRequestBuilderDefault(uri).POST(body.getBodyPublisher());
         HttpRequest request = requestBuilder.build();
         LOG.debug("Asking model: {}", body);
+        System.out.println("Asking model: " + Utils.toJSON(body));
         HttpResponse<InputStream> response =
                 httpClient.send(request, HttpResponse.BodyHandlers.ofInputStream());
 
@@ -140,7 +141,8 @@ public class OllamaChatEndpointCaller extends OllamaEndpointCaller {
                 statusCode,
                 responseBuffer);
         if (statusCode != 200) {
-            LOG.error("Status code: " + statusCode);
+            LOG.error("Status code: {}", statusCode);
+            System.out.println(responseBuffer);
             throw new OllamaBaseException(responseBuffer.toString());
         }
         if (wantedToolsForStream != null && ollamaChatResponseModel != null) {
