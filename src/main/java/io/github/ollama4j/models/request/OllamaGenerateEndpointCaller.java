@@ -86,7 +86,6 @@ public class OllamaGenerateEndpointCaller extends OllamaEndpointCaller {
     @SuppressWarnings("DuplicatedCode")
     public OllamaResult callSync(OllamaRequestBody body)
             throws OllamaBaseException, IOException, InterruptedException {
-        // Create Request
         long startTime = System.currentTimeMillis();
         HttpClient httpClient = HttpClient.newHttpClient();
         URI uri = URI.create(getHost() + endpoint);

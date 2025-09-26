@@ -136,14 +136,12 @@ public class OllamaAsyncResultStreamer extends Thread {
                     try {
                         reader.close();
                     } catch (IOException e) {
-                        // Optionally log or handle
                     }
                 }
                 if (responseBodyStream != null) {
                     try {
                         responseBodyStream.close();
                     } catch (IOException e) {
-                        // Optionally log or handle
                     }
                 }
             }

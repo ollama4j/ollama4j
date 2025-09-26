@@ -26,7 +26,7 @@ public class CustomModelRequest {
     private Map<String, String> files;
     private Map<String, String> adapters;
     private String template;
-    private Object license; // Using Object to handle both String and List<String>
+    private Object license;
     private String system;
     private Map<String, Object> parameters;
     private List<Object> messages;

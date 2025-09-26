@@ -33,12 +33,8 @@ public class OllamaChatStreamObserver implements OllamaChatTokenHandler {
         boolean hasResponse = response != null && !response.isEmpty();
 
         if (!hasResponse && hasThinking && thinkingStreamHandler != null) {
-            // use only new tokens received, instead of appending the tokens to the previous
-            // ones and sending the full string again
             thinkingStreamHandler.accept(thinking);
         } else if (hasResponse) {
-            // use only new tokens received, instead of appending the tokens to the previous
-            // ones and sending the full string again
             responseStreamHandler.accept(response);
         }
     }

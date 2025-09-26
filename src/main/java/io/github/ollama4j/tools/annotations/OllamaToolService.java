@@ -15,16 +15,23 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * Annotates a class that calls {@link io.github.ollama4j.OllamaAPI} such that the Method
- * {@link OllamaAPI#registerAnnotatedTools()} can be used to auto-register all provided classes (resp. all
- * contained Methods of the provider classes annotated with {@link ToolSpec}).
+ * Annotation to mark a class as an Ollama tool service.
+ * <p>
+ * When a class is annotated with {@code @OllamaToolService}, the method
+ * {@link OllamaAPI#registerAnnotatedTools()} can be used to automatically register all tool provider
+ * classes specified in the {@link #providers()} array. All methods in those provider classes that are
+ * annotated with {@link ToolSpec} will be registered as tools.
+ * </p>
  */
 @Target(ElementType.TYPE)
 @Retention(RetentionPolicy.RUNTIME)
 public @interface OllamaToolService {
 
     /**
-     * @return Classes with no-arg constructor that will be used for tool-registration.
+     * Specifies the provider classes whose methods annotated with {@link ToolSpec} should be registered as tools.
+     * Each provider class must have a public no-argument constructor.
+     *
+     * @return an array of provider classes to be used for tool registration
      */
     Class<?>[] providers();
 }

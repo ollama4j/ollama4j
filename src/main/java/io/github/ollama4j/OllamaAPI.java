@@ -15,8 +15,8 @@ import io.github.ollama4j.exceptions.ToolInvocationException;
 import io.github.ollama4j.metrics.MetricsRecorder;
 import io.github.ollama4j.models.chat.*;
 import io.github.ollama4j.models.chat.OllamaChatTokenHandler;
-import io.github.ollama4j.models.embeddings.OllamaEmbedRequestModel;
-import io.github.ollama4j.models.embeddings.OllamaEmbedResponseModel;
+import io.github.ollama4j.models.embed.OllamaEmbedRequestModel;
+import io.github.ollama4j.models.embed.OllamaEmbedResponseModel;
 import io.github.ollama4j.models.generate.OllamaGenerateRequest;
 import io.github.ollama4j.models.generate.OllamaGenerateStreamObserver;
 import io.github.ollama4j.models.generate.OllamaGenerateTokenHandler;
@@ -24,9 +24,15 @@ import io.github.ollama4j.models.ps.ModelsProcessResponse;
 import io.github.ollama4j.models.request.*;
 import io.github.ollama4j.models.response.*;
 import io.github.ollama4j.tools.*;
+import io.github.ollama4j.tools.annotations.OllamaToolService;
+import io.github.ollama4j.tools.annotations.ToolProperty;
+import io.github.ollama4j.tools.annotations.ToolSpec;
 import io.github.ollama4j.utils.Constants;
 import io.github.ollama4j.utils.Utils;
 import java.io.*;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+import java.lang.reflect.Parameter;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.http.HttpClient;
@@ -42,10 +48,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * The base Ollama API class for interacting with the Ollama server.
+ * The main API class for interacting with the Ollama server.
  *
- * <p>This class provides methods for model management, chat, embeddings, tool registration, and
- * more.
+ * <p>This class provides methods for model management, chat, embeddings, tool registration, and more.
  */
 @SuppressWarnings({"DuplicatedCode", "resource", "SpellCheckingInspection"})
 public class OllamaAPI {
@@ -59,8 +64,8 @@ public class OllamaAPI {
 
     /**
      * The request timeout in seconds for API calls.
-     *
-     * <p>Default is 10 seconds. This value determines how long the client will wait for a response
+     * <p>
+     * Default is 10 seconds. This value determines how long the client will wait for a response
      * from the Ollama server before timing out.
      */
     @Setter private long requestTimeoutSeconds = 10;
@@ -73,19 +78,19 @@ public class OllamaAPI {
 
     /**
      * The maximum number of retries for tool calls during chat interactions.
-     *
-     * <p>This value controls how many times the API will attempt to call a tool in the event of a
+     * <p>
+     * This value controls how many times the API will attempt to call a tool in the event of a
      * failure. Default is 3.
      */
     @Setter private int maxChatToolCallRetries = 3;
 
     /**
      * The number of retries to attempt when pulling a model from the Ollama server.
-     *
-     * <p>If set to 0, no retries will be performed. If greater than 0, the API will retry pulling
+     * <p>
+     * If set to 0, no retries will be performed. If greater than 0, the API will retry pulling
      * the model up to the specified number of times in case of failure.
-     *
-     * <p>Default is 0 (no retries).
+     * <p>
+     * Default is 0 (no retries).
      */
     @Setter
     @SuppressWarnings({"FieldMayBeFinal", "FieldCanBeLocal"})
@@ -93,13 +98,15 @@ public class OllamaAPI {
 
     /**
      * Enable or disable Prometheus metrics collection.
-     *
-     * <p>When enabled, the API will collect and expose metrics for request counts, durations, model
+     * <p>
+     * When enabled, the API will collect and expose metrics for request counts, durations, model
      * usage, and other operational statistics. Default is false.
      */
     @Setter private boolean metricsEnabled = false;
 
-    /** Instantiates the Ollama API with the default Ollama host: {@code http://localhost:11434} */
+    /**
+     * Instantiates the Ollama API with the default Ollama host: {@code http://localhost:11434}
+     */
     public OllamaAPI() {
         this.host = "http://localhost:11434";
         //        initializeMetrics();
@@ -121,8 +128,7 @@ public class OllamaAPI {
     }
 
     /**
-     * Set basic authentication for accessing an Ollama server that's behind a
-     * reverse-proxy/gateway.
+     * Set basic authentication for accessing an Ollama server that's behind a reverse-proxy/gateway.
      *
      * @param username the username
      * @param password the password
@@ -132,8 +138,7 @@ public class OllamaAPI {
     }
 
     /**
-     * Set Bearer authentication for accessing an Ollama server that's behind a
-     * reverse-proxy/gateway.
+     * Set Bearer authentication for accessing an Ollama server that's behind a reverse-proxy/gateway.
      *
      * @param bearerToken the Bearer authentication token to provide
      */
@@ -357,8 +362,8 @@ public class OllamaAPI {
     }
 
     /**
-     * Processes a single ModelPullResponse, handling errors and logging status. Returns true if the
-     * response indicates a successful pull.
+     * Processes a single ModelPullResponse, handling errors and logging status.
+     * Returns true if the response indicates a successful pull.
      *
      * @param modelPullResponse the response from the model pull
      * @param modelName the name of the model
@@ -429,9 +434,9 @@ public class OllamaAPI {
     }
 
     /**
-     * Pulls a model using the specified Ollama library model tag. The model is identified by a name
-     * and a tag, which are combined into a single identifier in the format "name:tag" to pull the
-     * corresponding model.
+     * Pulls a model using the specified Ollama library model tag.
+     * The model is identified by a name and a tag, which are combined into a single identifier
+     * in the format "name:tag" to pull the corresponding model.
      *
      * @param modelName the name/tag of the model to be pulled. Ex: llama3:latest
      * @throws OllamaBaseException if the response indicates an error status
@@ -511,8 +516,8 @@ public class OllamaAPI {
     }
 
     /**
-     * Creates a custom model. Read more about custom model creation <a
-     * href="https://github.com/ollama/ollama/blob/main/docs/api.md#create-a-model">here</a>.
+     * Creates a custom model. Read more about custom model creation
+     * <a href="https://github.com/ollama/ollama/blob/main/docs/api.md#create-a-model">here</a>.
      *
      * @param customModelRequest custom model spec
      * @throws OllamaBaseException if the response indicates an error status
@@ -575,8 +580,7 @@ public class OllamaAPI {
      * Deletes a model from the Ollama server.
      *
      * @param modelName the name of the model to be deleted
-     * @param ignoreIfNotPresent ignore errors if the specified model is not present on the Ollama
-     *     server
+     * @param ignoreIfNotPresent ignore errors if the specified model is not present on the Ollama server
      * @throws OllamaBaseException if the response indicates an error status
      */
     public void deleteModel(String modelName, boolean ignoreIfNotPresent)
@@ -624,8 +628,8 @@ public class OllamaAPI {
 
     /**
      * Unloads a model from memory.
-     *
-     * <p>If an empty prompt is provided and the keep_alive parameter is set to 0, a model will be
+     * <p>
+     * If an empty prompt is provided and the keep_alive parameter is set to 0, a model will be
      * unloaded from memory.
      *
      * @param modelName the name of the model to unload
@@ -722,9 +726,13 @@ public class OllamaAPI {
     }
 
     /**
-     * Generates a response from a model using the specified parameters and stream observer. If
-     * {@code streamObserver} is provided, streaming is enabled; otherwise, a synchronous call is
-     * made.
+     * Generates a response from a model using the specified parameters and stream observer.
+     * If {@code streamObserver} is provided, streaming is enabled; otherwise, a synchronous call is made.
+     *
+     * @param request the generation request
+     * @param streamObserver the stream observer for streaming responses, or null for synchronous
+     * @return the result of the generation
+     * @throws OllamaBaseException if the request fails
      */
     public OllamaResult generate(
             OllamaGenerateRequest request, OllamaGenerateStreamObserver streamObserver)
@@ -751,13 +759,10 @@ public class OllamaAPI {
         }
     }
 
+    // (No javadoc for private helper, as is standard)
     private OllamaResult generateWithToolsInternal(
             OllamaGenerateRequest request, OllamaGenerateStreamObserver streamObserver)
             throws OllamaBaseException {
-        //        List<Tools.PromptFuncDefinition> tools = new ArrayList<>();
-        //        for (Tools.ToolSpecification spec : toolRegistry.getRegisteredSpecs()) {
-        //            tools.add(spec.getToolPrompt());
-        //        }
         ArrayList<OllamaChatMessage> msgs = new ArrayList<>();
         OllamaChatRequest chatRequest = new OllamaChatRequest();
         chatRequest.setModel(request.getModel());
@@ -786,6 +791,16 @@ public class OllamaAPI {
                 -1);
     }
 
+    /**
+     * Generates a response from a model asynchronously, returning a streamer for results.
+     *
+     * @param model the model name
+     * @param prompt the prompt to send
+     * @param raw whether to use raw mode
+     * @param think whether to use "think" mode
+     * @return an OllamaAsyncResultStreamer for streaming results
+     * @throws OllamaBaseException if the request fails
+     */
     public OllamaAsyncResultStreamer generateAsync(
             String model, String prompt, boolean raw, boolean think) throws OllamaBaseException {
         long startTime = System.currentTimeMillis();
@@ -812,10 +827,10 @@ public class OllamaAPI {
     }
 
     /**
-     * Ask a question to a model using an {@link OllamaChatRequest} and set up streaming response.
+     * Sends a chat request to a model using an {@link OllamaChatRequest} and sets up streaming response.
      * This can be constructed using an {@link OllamaChatRequestBuilder}.
      *
-     * <p>Hint: the OllamaChatRequestModel#getStream() property is not implemented.
+     * <p>Note: the OllamaChatRequestModel#getStream() property is not implemented.
      *
      * @param request request object to be sent to the server
      * @param tokenHandler callback handler to handle the last token from stream (caution: the
@@ -911,8 +926,8 @@ public class OllamaAPI {
     /**
      * Registers multiple tools in the tool registry.
      *
-     * @param tools a list of {@link Tools.Tool} objects to register. Each tool contains
-     *              its specification and function.
+     * @param tools a list of {@link Tools.Tool} objects to register. Each tool contains its
+     *     specification and function.
      */
     public void registerTools(List<Tools.Tool> tools) {
         toolRegistry.addTools(tools);
@@ -927,135 +942,101 @@ public class OllamaAPI {
         LOG.debug("All tools have been deregistered.");
     }
 
-    //
-    //    /**
-    //     * Registers tools based on the annotations found on the methods of the caller's class and
-    // its
-    //     * providers. This method scans the caller's class for the {@link OllamaToolService}
-    // annotation
-    //     * and recursively registers annotated tools from all the providers specified in the
-    // annotation.
-    //     *
-    //     * @throws OllamaBaseException if the caller's class is not annotated with {@link
-    //     *     OllamaToolService} or if reflection-based instantiation or invocation fails
-    //     */
-    //    public void registerAnnotatedTools() throws OllamaBaseException {
-    //        try {
-    //            Class<?> callerClass = null;
-    //            try {
-    //                callerClass =
-    //
-    // Class.forName(Thread.currentThread().getStackTrace()[2].getClassName());
-    //            } catch (ClassNotFoundException e) {
-    //                throw new OllamaBaseException(e.getMessage(), e);
-    //            }
-    //
-    //            OllamaToolService ollamaToolServiceAnnotation =
-    //                    callerClass.getDeclaredAnnotation(OllamaToolService.class);
-    //            if (ollamaToolServiceAnnotation == null) {
-    //                throw new IllegalStateException(
-    //                        callerClass + " is not annotated as " + OllamaToolService.class);
-    //            }
-    //
-    //            Class<?>[] providers = ollamaToolServiceAnnotation.providers();
-    //            for (Class<?> provider : providers) {
-    //                registerAnnotatedTools(provider.getDeclaredConstructor().newInstance());
-    //            }
-    //        } catch (InstantiationException
-    //                | NoSuchMethodException
-    //                | IllegalAccessException
-    //                | InvocationTargetException e) {
-    //            throw new OllamaBaseException(e.getMessage());
-    //        }
-    //    }
-    //
-    //    /**
-    //     * Registers tools based on the annotations found on the methods of the provided object.
-    // This
-    //     * method scans the methods of the given object and registers tools using the {@link
-    // ToolSpec}
-    //     * annotation and associated {@link ToolProperty} annotations. It constructs tool
-    // specifications
-    //     * and stores them in a tool registry.
-    //     *
-    //     * @param object the object whose methods are to be inspected for annotated tools
-    //     * @throws RuntimeException if any reflection-based instantiation or invocation fails
-    //     */
-    //    public void registerAnnotatedTools(Object object) {
-    //        Class<?> objectClass = object.getClass();
-    //        Method[] methods = objectClass.getMethods();
-    //        for (Method m : methods) {
-    //            ToolSpec toolSpec = m.getDeclaredAnnotation(ToolSpec.class);
-    //            if (toolSpec == null) {
-    //                continue;
-    //            }
-    //            String operationName = !toolSpec.name().isBlank() ? toolSpec.name() : m.getName();
-    //            String operationDesc = !toolSpec.desc().isBlank() ? toolSpec.desc() :
-    // operationName;
-    //
-    //            final Tools.PropsBuilder propsBuilder = new Tools.PropsBuilder();
-    //            LinkedHashMap<String, String> methodParams = new LinkedHashMap<>();
-    //            for (Parameter parameter : m.getParameters()) {
-    //                final ToolProperty toolPropertyAnn =
-    //                        parameter.getDeclaredAnnotation(ToolProperty.class);
-    //                String propType = parameter.getType().getTypeName();
-    //                if (toolPropertyAnn == null) {
-    //                    methodParams.put(parameter.getName(), null);
-    //                    continue;
-    //                }
-    //                String propName =
-    //                        !toolPropertyAnn.name().isBlank()
-    //                                ? toolPropertyAnn.name()
-    //                                : parameter.getName();
-    //                methodParams.put(propName, propType);
-    //                propsBuilder.withProperty(
-    //                        propName,
-    //                        Tools.PromptFuncDefinition.Property.builder()
-    //                                .type(propType)
-    //                                .description(toolPropertyAnn.desc())
-    //                                .required(toolPropertyAnn.required())
-    //                                .build());
-    //            }
-    //            final Map<String, Tools.PromptFuncDefinition.Property> params =
-    // propsBuilder.build();
-    //            List<String> reqProps =
-    //                    params.entrySet().stream()
-    //                            .filter(e -> e.getValue().isRequired())
-    //                            .map(Map.Entry::getKey)
-    //                            .collect(Collectors.toList());
-    //
-    //            Tools.ToolSpecification toolSpecification =
-    //                    Tools.ToolSpecification.builder()
-    //                            .functionName(operationName)
-    //                            .functionDescription(operationDesc)
-    //                            .toolPrompt(
-    //                                    Tools.PromptFuncDefinition.builder()
-    //                                            .type("function")
-    //                                            .function(
-    //                                                    Tools.PromptFuncDefinition.PromptFuncSpec
-    //                                                            .builder()
-    //                                                            .name(operationName)
-    //                                                            .description(operationDesc)
-    //                                                            .parameters(
-    //                                                                    Tools.PromptFuncDefinition
-    //
-    // .Parameters.builder()
-    //                                                                            .type("object")
-    //
-    // .properties(params)
-    //
-    // .required(reqProps)
-    //                                                                            .build())
-    //                                                            .build())
-    //                                            .build())
-    //                            .build();
-    //
-    //            ReflectionalToolFunction reflectionalToolFunction =
-    //                    new ReflectionalToolFunction(object, m, methodParams);
-    //            toolSpecification.setToolFunction(reflectionalToolFunction);
-    //            toolRegistry.addTool(toolSpecification.getFunctionName(), toolSpecification);
-    //        }
-    //    }
+    /**
+     * Registers tools based on the annotations found on the methods of the caller's class and its
+     * providers. This method scans the caller's class for the {@link OllamaToolService} annotation
+     * and recursively registers annotated tools from all the providers specified in the annotation.
+     *
+     * @throws OllamaBaseException if the caller's class is not annotated with {@link
+     *     OllamaToolService} or if reflection-based instantiation or invocation fails
+     */
+    public void registerAnnotatedTools() throws OllamaBaseException {
+        try {
+            Class<?> callerClass = null;
+            try {
+                callerClass =
+                        Class.forName(Thread.currentThread().getStackTrace()[2].getClassName());
+            } catch (ClassNotFoundException e) {
+                throw new OllamaBaseException(e.getMessage(), e);
+            }
+
+            OllamaToolService ollamaToolServiceAnnotation =
+                    callerClass.getDeclaredAnnotation(OllamaToolService.class);
+            if (ollamaToolServiceAnnotation == null) {
+                throw new IllegalStateException(
+                        callerClass + " is not annotated as " + OllamaToolService.class);
+            }
+
+            Class<?>[] providers = ollamaToolServiceAnnotation.providers();
+            for (Class<?> provider : providers) {
+                registerAnnotatedTools(provider.getDeclaredConstructor().newInstance());
+            }
+        } catch (InstantiationException
+                | NoSuchMethodException
+                | IllegalAccessException
+                | InvocationTargetException e) {
+            throw new OllamaBaseException(e.getMessage());
+        }
+    }
+
+    /**
+     * Registers tools based on the annotations found on the methods of the provided object.
+     * This method scans the methods of the given object and registers tools using the {@link ToolSpec}
+     * annotation and associated {@link ToolProperty} annotations. It constructs tool specifications
+     * and stores them in a tool registry.
+     *
+     * @param object the object whose methods are to be inspected for annotated tools
+     * @throws RuntimeException if any reflection-based instantiation or invocation fails
+     */
+    public void registerAnnotatedTools(Object object) {
+        Class<?> objectClass = object.getClass();
+        Method[] methods = objectClass.getMethods();
+        for (Method m : methods) {
+            ToolSpec toolSpec = m.getDeclaredAnnotation(ToolSpec.class);
+            if (toolSpec == null) {
+                continue;
+            }
+            String operationName = !toolSpec.name().isBlank() ? toolSpec.name() : m.getName();
+            String operationDesc = !toolSpec.desc().isBlank() ? toolSpec.desc() : operationName;
+
+            final Map<String, Tools.Property> params = new HashMap<String, Tools.Property>() {};
+            LinkedHashMap<String, String> methodParams = new LinkedHashMap<>();
+            for (Parameter parameter : m.getParameters()) {
+                final ToolProperty toolPropertyAnn =
+                        parameter.getDeclaredAnnotation(ToolProperty.class);
+                String propType = parameter.getType().getTypeName();
+                if (toolPropertyAnn == null) {
+                    methodParams.put(parameter.getName(), null);
+                    continue;
+                }
+                String propName =
+                        !toolPropertyAnn.name().isBlank()
+                                ? toolPropertyAnn.name()
+                                : parameter.getName();
+                methodParams.put(propName, propType);
+                params.put(
+                        propName,
+                        Tools.Property.builder()
+                                .type(propType)
+                                .description(toolPropertyAnn.desc())
+                                .required(toolPropertyAnn.required())
+                                .build());
+            }
+            Tools.ToolSpec toolSpecification =
+                    Tools.ToolSpec.builder()
+                            .name(operationName)
+                            .description(operationDesc)
+                            .parameters(Tools.Parameters.of(params))
+                            .build();
+            ReflectionalToolFunction reflectionalToolFunction =
+                    new ReflectionalToolFunction(object, m, methodParams);
+            toolRegistry.addTool(
+                    Tools.Tool.builder()
+                            .toolFunction(reflectionalToolFunction)
+                            .toolSpec(toolSpecification)
+                            .build());
+        }
+    }
 
     /**
      * Adds a custom role.
@@ -1111,19 +1092,15 @@ public class OllamaAPI {
     }
 
     /**
-     * Generates a request for the Ollama API and returns the result. This method synchronously
-     * calls the Ollama API. If a stream handler is provided, the request will be streamed;
-     * otherwise, a regular synchronous request will be made.
+     * Generates a request for the Ollama API and returns the result.
+     * This method synchronously calls the Ollama API. If a stream handler is provided,
+     * the request will be streamed; otherwise, a regular synchronous request will be made.
      *
-     * @param ollamaRequestModel the request model containing necessary parameters for the Ollama
-     *     API request
+     * @param ollamaRequestModel the request model containing necessary parameters for the Ollama API request
      * @param thinkingStreamHandler the stream handler for "thinking" tokens, or null if not used
-     * @param responseStreamHandler the stream handler to process streaming responses, or null for
-     *     non-streaming requests
+     * @param responseStreamHandler the stream handler to process streaming responses, or null for non-streaming requests
      * @return the result of the Ollama API request
      * @throws OllamaBaseException if the request fails due to an issue with the Ollama API
-     * @throws IOException if an I/O error occurs during the request process
-     * @throws InterruptedException if the thread is interrupted during the request
      */
     private OllamaResult generateSyncForOllamaRequestModel(
             OllamaGenerateRequest ollamaRequestModel,
@@ -1192,157 +1169,4 @@ public class OllamaAPI {
     private boolean isAuthSet() {
         return auth != null;
     }
-
-    //    /**
-    //     * Invokes a registered tool function by name and arguments.
-    //     *
-    //     * @param toolFunctionCallSpec the tool function call specification
-    //     * @return the result of the tool function
-    //     * @throws ToolInvocationException if the tool is not found or invocation fails
-    //     */
-    //    private Object invokeTool(ToolFunctionCallSpec toolFunctionCallSpec)
-    //            throws ToolInvocationException {
-    //        try {
-    //            String methodName = toolFunctionCallSpec.getName();
-    //            Map<String, Object> arguments = toolFunctionCallSpec.getArguments();
-    //            ToolFunction function = toolRegistry.getToolFunction(methodName);
-    //            LOG.debug("Invoking function {} with arguments {}", methodName, arguments);
-    //            if (function == null) {
-    //                throw new ToolNotFoundException(
-    //                        "No such tool: "
-    //                                + methodName
-    //                                + ". Please register the tool before invoking it.");
-    //            }
-    //            return function.apply(arguments);
-    //        } catch (Exception e) {
-    //            throw new ToolInvocationException(
-    //                    "Failed to invoke tool: " + toolFunctionCallSpec.getName(), e);
-    //        }
-    //    }
-
-    //    /**
-    //     * Initialize metrics collection if enabled.
-    //     */
-    //    private void initializeMetrics() {
-    //        if (metricsEnabled) {
-    //            OllamaMetricsService.initialize();
-    //            LOG.info("Prometheus metrics collection enabled for Ollama4j client");
-    //        }
-    //    }
-    //
-    //    /**
-    //     * Record metrics for an API request.
-    //     *
-    //     * @param endpoint the API endpoint
-    //     * @param method the HTTP method
-    //     * @param durationSeconds the request duration
-    //     * @param success whether the request was successful
-    //     * @param errorType the error type if the request failed
-    //     */
-    //    private void recordMetrics(
-    //            String endpoint,
-    //            String method,
-    //            double durationSeconds,
-    //            boolean success,
-    //            String errorType) {
-    //        if (!metricsEnabled) {
-    //            return;
-    //        }
-    //
-    //        if (success) {
-    //            OllamaMetricsService.recordRequest(endpoint, method, durationSeconds);
-    //        } else {
-    //            OllamaMetricsService.recordRequestError(endpoint, method, durationSeconds,
-    // errorType);
-    //        }
-    //    }
-
-    //    /**
-    //     * Record metrics for model usage.
-    //     *
-    //     * @param modelName the model name
-    //     * @param operation the operation performed
-    //     * @param durationSeconds the operation duration
-    //     */
-    //    private void recordModelMetrics(String modelName, String operation, double
-    // durationSeconds) {
-    //        if (!metricsEnabled) {
-    //            return;
-    //        }
-    //
-    //        OllamaMetricsService.recordModelUsage(modelName, operation, durationSeconds);
-    //    }
-
-    //    /**
-    //     * Record token generation metrics.
-    //     *
-    //     * @param modelName the model name
-    //     * @param tokenCount the number of tokens generated
-    //     */
-    //    private void recordTokenMetrics(String modelName, int tokenCount) {
-    //        if (!metricsEnabled) {
-    //            return;
-    //        }
-    //
-    //        OllamaMetricsService.recordTokensGenerated(modelName, tokenCount);
-    //    }
-
-    //    /**
-    //     * Execute a method with metrics collection.
-    //     *
-    //     * @param endpoint the API endpoint
-    //     * @param method the HTTP method
-    //     * @param operation the operation name for model metrics
-    //     * @param modelName the model name (can be null)
-    //     * @param runnable the operation to execute
-    //     * @return the result of the operation
-    //     * @throws Exception if the operation fails
-    //     */
-    //    private <T> T executeWithMetrics(
-    //            String endpoint,
-    //            String method,
-    //            String operation,
-    //            String modelName,
-    //            MetricsOperation<T> runnable)
-    //            throws Exception {
-    //        long startTime = System.nanoTime();
-    //        boolean success = false;
-    //        String errorType = null;
-    //
-    //        try {
-    //            OllamaMetricsService.incrementActiveConnections();
-    //            T result = runnable.execute();
-    //            success = true;
-    //            return result;
-    //        } catch (OllamaBaseException e) {
-    //            errorType = "ollama_error";
-    //            throw e;
-    //        } catch (IOException e) {
-    //            errorType = "io_error";
-    //            throw e;
-    //        } catch (InterruptedException e) {
-    //            errorType = "interrupted";
-    //            throw e;
-    //        } catch (Exception e) {
-    //            errorType = "unknown_error";
-    //            throw e;
-    //        } finally {
-    //            OllamaMetricsService.decrementActiveConnections();
-    //            double durationSeconds = (System.nanoTime() - startTime) / 1_000_000_000.0;
-    //
-    //            recordMetrics(endpoint, method, durationSeconds, success, errorType);
-    //
-    //            if (modelName != null) {
-    //                recordModelMetrics(modelName, operation, durationSeconds);
-    //            }
-    //        }
-    //    }
-
-    //    /**
-    //     * Functional interface for operations that need metrics collection.
-    //     */
-    //    @FunctionalInterface
-    //    private interface MetricsOperation<T> {
-    //        T execute() throws Exception;
-    //    }
 }

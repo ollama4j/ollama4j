@@ -39,12 +39,8 @@ public class OllamaGenerateStreamObserver {
         boolean hasThinking = thinking != null && !thinking.isEmpty();
 
         if (!hasResponse && hasThinking && thinkingStreamHandler != null) {
-            // use only new tokens received, instead of appending the tokens to the previous
-            // ones and sending the full string again
             thinkingStreamHandler.accept(thinking);
         } else if (hasResponse && responseStreamHandler != null) {
-            // use only new tokens received, instead of appending the tokens to the previous
-            // ones and sending the full string again
             responseStreamHandler.accept(response);
         }
     }

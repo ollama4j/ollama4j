@@ -10,8 +10,8 @@ package io.github.ollama4j.unittests.jackson;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-import io.github.ollama4j.models.embeddings.OllamaEmbedRequestBuilder;
-import io.github.ollama4j.models.embeddings.OllamaEmbedRequestModel;
+import io.github.ollama4j.models.embed.OllamaEmbedRequestBuilder;
+import io.github.ollama4j.models.embed.OllamaEmbedRequestModel;
 import io.github.ollama4j.utils.OptionsBuilder;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;

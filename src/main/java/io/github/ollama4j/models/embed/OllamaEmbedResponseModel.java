@@ -6,7 +6,7 @@
  * you may not use this file except in compliance with the License.
  *
 */
-package io.github.ollama4j.models.embeddings;
+package io.github.ollama4j.models.embed;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import java.util.List;

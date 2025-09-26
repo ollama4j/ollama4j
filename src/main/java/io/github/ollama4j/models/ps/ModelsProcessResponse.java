@@ -41,7 +41,7 @@ public class ModelsProcessResponse {
         private ModelDetails details;
 
         @JsonProperty("expires_at")
-        private String expiresAt; // Consider using LocalDateTime if you need to process date/time
+        private String expiresAt;
 
         @JsonProperty("size_vram")
         private long sizeVram;

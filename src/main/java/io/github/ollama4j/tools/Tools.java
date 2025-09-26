@@ -21,6 +21,8 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 public class Tools {
+    private Tools() {}
+
     @Data
     @Builder
     @NoArgsConstructor

@@ -25,6 +25,7 @@ import lombok.*;
  *     href="https://github.com/ollama/ollama/blob/main/docs/api.md#generate-a-chat-completion">Generate
  *     chat completion</a>
  */
+@SuppressWarnings("NullableProblems")
 @Data
 @AllArgsConstructor
 @RequiredArgsConstructor

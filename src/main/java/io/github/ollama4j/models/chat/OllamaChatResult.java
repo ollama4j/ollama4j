@@ -44,19 +44,4 @@ public class OllamaChatResult {
             throw new RuntimeException(e);
         }
     }
-
-    @Deprecated
-    public String getResponse() {
-        return responseModel != null ? responseModel.getMessage().getResponse() : "";
-    }
-
-    @Deprecated
-    public int getHttpStatusCode() {
-        return 200;
-    }
-
-    @Deprecated
-    public long getResponseTime() {
-        return responseModel != null ? responseModel.getTotalDuration() : 0L;
-    }
 }

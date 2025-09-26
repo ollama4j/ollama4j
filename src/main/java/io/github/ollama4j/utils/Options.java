@@ -9,12 +9,14 @@
 package io.github.ollama4j.utils;
 
 import java.util.Map;
+import lombok.Builder;
 import lombok.Data;
 
 /**
  * Class for options for Ollama model.
  */
 @Data
+@Builder
 public class Options {
 
     private final Map<String, Object> optionsMap;

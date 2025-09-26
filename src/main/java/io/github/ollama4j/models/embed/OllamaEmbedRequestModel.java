@@ -6,7 +6,7 @@
  * you may not use this file except in compliance with the License.
  *
 */
-package io.github.ollama4j.models.embeddings;
+package io.github.ollama4j.models.embed;
 
 import static io.github.ollama4j.utils.Utils.getObjectMapper;
 
@@ -16,6 +16,7 @@ import java.util.List;
 import java.util.Map;
 import lombok.*;
 
+@SuppressWarnings("NullableProblems")
 @Data
 @RequiredArgsConstructor
 @NoArgsConstructor

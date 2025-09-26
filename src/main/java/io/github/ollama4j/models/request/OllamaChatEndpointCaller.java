@@ -59,10 +59,10 @@ public class OllamaChatEndpointCaller extends OllamaEndpointCaller {
         try {
             OllamaChatResponseModel ollamaResponseModel =
                     Utils.getObjectMapper().readValue(line, OllamaChatResponseModel.class);
-            // it seems that under heavy load ollama responds with an empty chat message part in the
-            // streamed response
-            // thus, we null check the message and hope that the next streamed response has some
-            // message content again
+            // It seems that under heavy load Ollama responds with an empty chat message part in the
+            // streamed response.
+            // Thus, we null check the message and hope that the next streamed response has some
+            // message content again.
             OllamaChatMessage message = ollamaResponseModel.getMessage();
             if (message != null) {
                 if (message.getThinking() != null) {

@@ -36,13 +36,6 @@ public class OllamaChatRequestBuilder {
         request.setMessages(new ArrayList<>());
     }
 
-    //    private OllamaChatRequestBuilder(String model, List<OllamaChatMessage> messages) {
-    //        request = new OllamaChatRequest(model, false, messages);
-    //    }
-    //    public static OllamaChatRequestBuilder builder(String model) {
-    //        return new OllamaChatRequestBuilder(model, new ArrayList<>());
-    //    }
-
     public static OllamaChatRequestBuilder builder() {
         return new OllamaChatRequestBuilder();
     }

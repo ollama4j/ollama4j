@@ -24,7 +24,7 @@ public abstract class OllamaEndpointCaller {
     private final Auth auth;
     private final long requestTimeoutSeconds;
 
-    public OllamaEndpointCaller(String host, Auth auth, long requestTimeoutSeconds) {
+    protected OllamaEndpointCaller(String host, Auth auth, long requestTimeoutSeconds) {
         this.host = host;
         this.auth = auth;
         this.requestTimeoutSeconds = requestTimeoutSeconds;

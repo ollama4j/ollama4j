@@ -15,21 +15,30 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * Annotates Methods of classes that should be registered as tools by {@link OllamaAPI#registerAnnotatedTools()}
- * automatically.
+ * Annotation to mark a method as a tool that can be registered automatically by
+ * {@link OllamaAPI#registerAnnotatedTools()}.
+ * <p>
+ * Methods annotated with {@code @ToolSpec} will be discovered and registered as tools
+ * when the containing class is specified as a provider in {@link OllamaToolService}.
+ * </p>
  */
 @Target(ElementType.METHOD)
 @Retention(RetentionPolicy.RUNTIME)
 public @interface ToolSpec {
 
     /**
-     * @return tool-name that the method should be used as. Defaults to the methods name.
+     * Specifies the name of the tool as exposed to the LLM.
+     * If left empty, the method's name will be used as the tool name.
+     *
+     * @return the tool name
      */
     String name() default "";
 
     /**
-     * @return a detailed description of the method that can be interpreted by the llm, whether it should call the tool
-     * or not.
+     * Provides a detailed description of the tool's functionality.
+     * This description is used by the LLM to determine when to call the tool.
+     *
+     * @return the tool description
      */
     String desc();
 }
