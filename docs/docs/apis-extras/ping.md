@@ -7,6 +7,7 @@ sidebar_position: 5
 This API lets you check the reachability of Ollama server.
 
 ```java
+import io.github.ollama4j.Ollama;
 import io.github.ollama4j.OllamaAPI;
 
 public class Main {
@@ -14,9 +15,9 @@ public class Main {
     public static void main(String[] args) {
         String host = "http://localhost:11434/";
 
-        OllamaAPI ollamaAPI = new OllamaAPI(host);
+        Ollama ollama = new Ollama(host);
 
-        ollamaAPI.ping();
+        ollama.ping();
     }
 }
 ```

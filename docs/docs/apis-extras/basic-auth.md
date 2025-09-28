@@ -10,7 +10,7 @@ Ollama server would be setup behind a gateway/reverse proxy with basic auth.
 After configuring basic authentication, all subsequent requests will include the Basic Auth header.
 
 ```java
-import io.github.ollama4j.OllamaAPI;
+import io.github.ollama4j.Ollama;
 
 public class Main {
 
@@ -18,9 +18,9 @@ public class Main {
 
         String host = "http://localhost:11434/";
 
-        OllamaAPI ollamaAPI = new OllamaAPI(host);
+        Ollama ollama = new Ollama(host);
 
-        ollamaAPI.setBasicAuth("username", "password");
+        ollama.setBasicAuth("username", "password");
     }
 }
 ```

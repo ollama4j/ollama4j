@@ -8,7 +8,7 @@
 */
 package io.github.ollama4j.tools.annotations;
 
-import io.github.ollama4j.OllamaAPI;
+import io.github.ollama4j.Ollama;
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -16,7 +16,7 @@ import java.lang.annotation.Target;
 
 /**
  * Annotation to mark a method as a tool that can be registered automatically by
- * {@link OllamaAPI#registerAnnotatedTools()}.
+ * {@link Ollama#registerAnnotatedTools()}.
  * <p>
  * Methods annotated with {@code @ToolSpec} will be discovered and registered as tools
  * when the containing class is specified as a provider in {@link OllamaToolService}.

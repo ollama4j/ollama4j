@@ -53,9 +53,9 @@ import org.slf4j.LoggerFactory;
  * <p>This class provides methods for model management, chat, embeddings, tool registration, and more.
  */
 @SuppressWarnings({"DuplicatedCode", "resource", "SpellCheckingInspection"})
-public class OllamaAPI {
+public class Ollama {
 
-    private static final Logger LOG = LoggerFactory.getLogger(OllamaAPI.class);
+    private static final Logger LOG = LoggerFactory.getLogger(Ollama.class);
 
     private final String host;
     private Auth auth;
@@ -107,7 +107,7 @@ public class OllamaAPI {
     /**
      * Instantiates the Ollama API with the default Ollama host: {@code http://localhost:11434}
      */
-    public OllamaAPI() {
+    public Ollama() {
         this.host = "http://localhost:11434";
     }
 
@@ -116,7 +116,7 @@ public class OllamaAPI {
      *
      * @param host the host address of the Ollama server
      */
-    public OllamaAPI(String host) {
+    public Ollama(String host) {
         if (host.endsWith("/")) {
             this.host = host.substring(0, host.length() - 1);
         } else {

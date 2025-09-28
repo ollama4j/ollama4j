@@ -12,7 +12,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.fail;
 import static org.mockito.Mockito.*;
 
-import io.github.ollama4j.OllamaAPI;
+import io.github.ollama4j.Ollama;
 import io.github.ollama4j.exceptions.OllamaException;
 import io.github.ollama4j.exceptions.RoleNotFoundException;
 import io.github.ollama4j.models.chat.OllamaChatMessageRole;
@@ -36,12 +36,12 @@ import org.mockito.Mockito;
 class TestMockedAPIs {
     @Test
     void testPullModel() {
-        OllamaAPI ollamaAPI = Mockito.mock(OllamaAPI.class);
+        Ollama ollama = Mockito.mock(Ollama.class);
         String model = "llama2";
         try {
-            doNothing().when(ollamaAPI).pullModel(model);
-            ollamaAPI.pullModel(model);
-            verify(ollamaAPI, times(1)).pullModel(model);
+            doNothing().when(ollama).pullModel(model);
+            ollama.pullModel(model);
+            verify(ollama, times(1)).pullModel(model);
         } catch (OllamaException e) {
             throw new RuntimeException(e);
         }
@@ -49,11 +49,11 @@ class TestMockedAPIs {
 
     @Test
     void testListModels() {
-        OllamaAPI ollamaAPI = Mockito.mock(OllamaAPI.class);
+        Ollama ollama = Mockito.mock(Ollama.class);
         try {
-            when(ollamaAPI.listModels()).thenReturn(new ArrayList<>());
-            ollamaAPI.listModels();
-            verify(ollamaAPI, times(1)).listModels();
+            when(ollama.listModels()).thenReturn(new ArrayList<>());
+            ollama.listModels();
+            verify(ollama, times(1)).listModels();
         } catch (OllamaException e) {
             throw new RuntimeException(e);
         }
@@ -61,7 +61,7 @@ class TestMockedAPIs {
 
     @Test
     void testCreateModel() {
-        OllamaAPI ollamaAPI = Mockito.mock(OllamaAPI.class);
+        Ollama ollama = Mockito.mock(Ollama.class);
         CustomModelRequest customModelRequest =
                 CustomModelRequest.builder()
                         .model("mario")
@@ -69,9 +69,9 @@ class TestMockedAPIs {
                         .system("You are Mario from Super Mario Bros.")
                         .build();
         try {
-            doNothing().when(ollamaAPI).createModel(customModelRequest);
-            ollamaAPI.createModel(customModelRequest);
-            verify(ollamaAPI, times(1)).createModel(customModelRequest);
+            doNothing().when(ollama).createModel(customModelRequest);
+            ollama.createModel(customModelRequest);
+            verify(ollama, times(1)).createModel(customModelRequest);
         } catch (OllamaException e) {
             throw new RuntimeException(e);
         }
@@ -79,12 +79,12 @@ class TestMockedAPIs {
 
     @Test
     void testDeleteModel() {
-        OllamaAPI ollamaAPI = Mockito.mock(OllamaAPI.class);
+        Ollama ollama = Mockito.mock(Ollama.class);
         String model = "llama2";
         try {
-            doNothing().when(ollamaAPI).deleteModel(model, true);
-            ollamaAPI.deleteModel(model, true);
-            verify(ollamaAPI, times(1)).deleteModel(model, true);
+            doNothing().when(ollama).deleteModel(model, true);
+            ollama.deleteModel(model, true);
+            verify(ollama, times(1)).deleteModel(model, true);
         } catch (OllamaException e) {
             throw new RuntimeException(e);
         }
@@ -92,12 +92,12 @@ class TestMockedAPIs {
 
     @Test
     void testGetModelDetails() {
-        OllamaAPI ollamaAPI = Mockito.mock(OllamaAPI.class);
+        Ollama ollama = Mockito.mock(Ollama.class);
         String model = "llama2";
         try {
-            when(ollamaAPI.getModelDetails(model)).thenReturn(new ModelDetail());
-            ollamaAPI.getModelDetails(model);
-            verify(ollamaAPI, times(1)).getModelDetails(model);
+            when(ollama.getModelDetails(model)).thenReturn(new ModelDetail());
+            ollama.getModelDetails(model);
+            verify(ollama, times(1)).getModelDetails(model);
         } catch (OllamaException e) {
             throw new RuntimeException(e);
         }
@@ -105,16 +105,16 @@ class TestMockedAPIs {
 
     @Test
     void testGenerateEmbeddings() {
-        OllamaAPI ollamaAPI = Mockito.mock(OllamaAPI.class);
+        Ollama ollama = Mockito.mock(Ollama.class);
         String model = "llama2";
         String prompt = "some prompt text";
         try {
             OllamaEmbedRequest m = new OllamaEmbedRequest();
             m.setModel(model);
             m.setInput(List.of(prompt));
-            when(ollamaAPI.embed(m)).thenReturn(new OllamaEmbedResult());
-            ollamaAPI.embed(m);
-            verify(ollamaAPI, times(1)).embed(m);
+            when(ollama.embed(m)).thenReturn(new OllamaEmbedResult());
+            ollama.embed(m);
+            verify(ollama, times(1)).embed(m);
         } catch (OllamaException e) {
             throw new RuntimeException(e);
         }
@@ -122,14 +122,14 @@ class TestMockedAPIs {
 
     @Test
     void testEmbed() {
-        OllamaAPI ollamaAPI = Mockito.mock(OllamaAPI.class);
+        Ollama ollama = Mockito.mock(Ollama.class);
         String model = "llama2";
         List<String> inputs = List.of("some prompt text");
         try {
             OllamaEmbedRequest m = new OllamaEmbedRequest(model, inputs);
-            when(ollamaAPI.embed(m)).thenReturn(new OllamaEmbedResult());
-            ollamaAPI.embed(m);
-            verify(ollamaAPI, times(1)).embed(m);
+            when(ollama.embed(m)).thenReturn(new OllamaEmbedResult());
+            ollama.embed(m);
+            verify(ollama, times(1)).embed(m);
         } catch (OllamaException e) {
             throw new RuntimeException(e);
         }
@@ -137,14 +137,14 @@ class TestMockedAPIs {
 
     @Test
     void testEmbedWithEmbedRequestModel() {
-        OllamaAPI ollamaAPI = Mockito.mock(OllamaAPI.class);
+        Ollama ollama = Mockito.mock(Ollama.class);
         String model = "llama2";
         List<String> inputs = List.of("some prompt text");
         try {
-            when(ollamaAPI.embed(new OllamaEmbedRequest(model, inputs)))
+            when(ollama.embed(new OllamaEmbedRequest(model, inputs)))
                     .thenReturn(new OllamaEmbedResult());
-            ollamaAPI.embed(new OllamaEmbedRequest(model, inputs));
-            verify(ollamaAPI, times(1)).embed(new OllamaEmbedRequest(model, inputs));
+            ollama.embed(new OllamaEmbedRequest(model, inputs));
+            verify(ollama, times(1)).embed(new OllamaEmbedRequest(model, inputs));
         } catch (OllamaException e) {
             throw new RuntimeException(e);
         }
@@ -152,7 +152,7 @@ class TestMockedAPIs {
 
     @Test
     void testAsk() {
-        OllamaAPI ollamaAPI = Mockito.mock(OllamaAPI.class);
+        Ollama ollama = Mockito.mock(Ollama.class);
         String model = "llama2";
         String prompt = "some prompt text";
         OllamaGenerateStreamObserver observer = new OllamaGenerateStreamObserver(null, null);
@@ -165,10 +165,9 @@ class TestMockedAPIs {
                             .withThink(false)
                             .withStreaming(false)
                             .build();
-            when(ollamaAPI.generate(request, observer))
-                    .thenReturn(new OllamaResult("", "", 0, 200));
-            ollamaAPI.generate(request, observer);
-            verify(ollamaAPI, times(1)).generate(request, observer);
+            when(ollama.generate(request, observer)).thenReturn(new OllamaResult("", "", 0, 200));
+            ollama.generate(request, observer);
+            verify(ollama, times(1)).generate(request, observer);
         } catch (OllamaException e) {
             throw new RuntimeException(e);
         }
@@ -176,7 +175,7 @@ class TestMockedAPIs {
 
     @Test
     void testAskWithImageFiles() {
-        OllamaAPI ollamaAPI = Mockito.mock(OllamaAPI.class);
+        Ollama ollama = Mockito.mock(Ollama.class);
         String model = "llama2";
         String prompt = "some prompt text";
         try {
@@ -192,9 +191,9 @@ class TestMockedAPIs {
                             .withFormat(null)
                             .build();
             OllamaGenerateStreamObserver handler = null;
-            when(ollamaAPI.generate(request, handler)).thenReturn(new OllamaResult("", "", 0, 200));
-            ollamaAPI.generate(request, handler);
-            verify(ollamaAPI, times(1)).generate(request, handler);
+            when(ollama.generate(request, handler)).thenReturn(new OllamaResult("", "", 0, 200));
+            ollama.generate(request, handler);
+            verify(ollama, times(1)).generate(request, handler);
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
@@ -202,7 +201,7 @@ class TestMockedAPIs {
 
     @Test
     void testAskWithImageURLs() {
-        OllamaAPI ollamaAPI = Mockito.mock(OllamaAPI.class);
+        Ollama ollama = Mockito.mock(Ollama.class);
         String model = "llama2";
         String prompt = "some prompt text";
         try {
@@ -218,9 +217,9 @@ class TestMockedAPIs {
                             .withFormat(null)
                             .build();
             OllamaGenerateStreamObserver handler = null;
-            when(ollamaAPI.generate(request, handler)).thenReturn(new OllamaResult("", "", 0, 200));
-            ollamaAPI.generate(request, handler);
-            verify(ollamaAPI, times(1)).generate(request, handler);
+            when(ollama.generate(request, handler)).thenReturn(new OllamaResult("", "", 0, 200));
+            ollama.generate(request, handler);
+            verify(ollama, times(1)).generate(request, handler);
         } catch (OllamaException e) {
             throw new RuntimeException(e);
         } catch (IOException e) {
@@ -230,56 +229,55 @@ class TestMockedAPIs {
 
     @Test
     void testAskAsync() throws OllamaException {
-        OllamaAPI ollamaAPI = Mockito.mock(OllamaAPI.class);
+        Ollama ollama = Mockito.mock(Ollama.class);
         String model = "llama2";
         String prompt = "some prompt text";
-        when(ollamaAPI.generateAsync(model, prompt, false, false))
+        when(ollama.generateAsync(model, prompt, false, false))
                 .thenReturn(new OllamaAsyncResultStreamer(null, null, 3));
-        ollamaAPI.generateAsync(model, prompt, false, false);
-        verify(ollamaAPI, times(1)).generateAsync(model, prompt, false, false);
+        ollama.generateAsync(model, prompt, false, false);
+        verify(ollama, times(1)).generateAsync(model, prompt, false, false);
     }
 
     @Test
     void testAddCustomRole() {
-        OllamaAPI ollamaAPI = mock(OllamaAPI.class);
+        Ollama ollama = mock(Ollama.class);
         String roleName = "custom-role";
         OllamaChatMessageRole expectedRole = OllamaChatMessageRole.newCustomRole(roleName);
-        when(ollamaAPI.addCustomRole(roleName)).thenReturn(expectedRole);
-        OllamaChatMessageRole customRole = ollamaAPI.addCustomRole(roleName);
+        when(ollama.addCustomRole(roleName)).thenReturn(expectedRole);
+        OllamaChatMessageRole customRole = ollama.addCustomRole(roleName);
         assertEquals(expectedRole, customRole);
-        verify(ollamaAPI, times(1)).addCustomRole(roleName);
+        verify(ollama, times(1)).addCustomRole(roleName);
     }
 
     @Test
     void testListRoles() {
-        OllamaAPI ollamaAPI = Mockito.mock(OllamaAPI.class);
+        Ollama ollama = Mockito.mock(Ollama.class);
         OllamaChatMessageRole role1 = OllamaChatMessageRole.newCustomRole("role1");
         OllamaChatMessageRole role2 = OllamaChatMessageRole.newCustomRole("role2");
         List<OllamaChatMessageRole> expectedRoles = List.of(role1, role2);
-        when(ollamaAPI.listRoles()).thenReturn(expectedRoles);
-        List<OllamaChatMessageRole> actualRoles = ollamaAPI.listRoles();
+        when(ollama.listRoles()).thenReturn(expectedRoles);
+        List<OllamaChatMessageRole> actualRoles = ollama.listRoles();
         assertEquals(expectedRoles, actualRoles);
-        verify(ollamaAPI, times(1)).listRoles();
+        verify(ollama, times(1)).listRoles();
     }
 
     @Test
     void testGetRoleNotFound() {
-        OllamaAPI ollamaAPI = mock(OllamaAPI.class);
+        Ollama ollama = mock(Ollama.class);
         String roleName = "non-existing-role";
         try {
-            when(ollamaAPI.getRole(roleName))
-                    .thenThrow(new RoleNotFoundException("Role not found"));
+            when(ollama.getRole(roleName)).thenThrow(new RoleNotFoundException("Role not found"));
         } catch (RoleNotFoundException exception) {
             throw new RuntimeException("Failed to run test: testGetRoleNotFound");
         }
         try {
-            ollamaAPI.getRole(roleName);
+            ollama.getRole(roleName);
             fail("Expected RoleNotFoundException not thrown");
         } catch (RoleNotFoundException exception) {
             assertEquals("Role not found", exception.getMessage());
         }
         try {
-            verify(ollamaAPI, times(1)).getRole(roleName);
+            verify(ollama, times(1)).getRole(roleName);
         } catch (RoleNotFoundException exception) {
             throw new RuntimeException("Failed to run test: testGetRoleNotFound");
         }
@@ -287,18 +285,18 @@ class TestMockedAPIs {
 
     @Test
     void testGetRoleFound() {
-        OllamaAPI ollamaAPI = mock(OllamaAPI.class);
+        Ollama ollama = mock(Ollama.class);
         String roleName = "existing-role";
         OllamaChatMessageRole expectedRole = OllamaChatMessageRole.newCustomRole(roleName);
         try {
-            when(ollamaAPI.getRole(roleName)).thenReturn(expectedRole);
+            when(ollama.getRole(roleName)).thenReturn(expectedRole);
         } catch (RoleNotFoundException exception) {
             throw new RuntimeException("Failed to run test: testGetRoleFound");
         }
         try {
-            OllamaChatMessageRole actualRole = ollamaAPI.getRole(roleName);
+            OllamaChatMessageRole actualRole = ollama.getRole(roleName);
             assertEquals(expectedRole, actualRole);
-            verify(ollamaAPI, times(1)).getRole(roleName);
+            verify(ollama, times(1)).getRole(roleName);
         } catch (RoleNotFoundException exception) {
             throw new RuntimeException("Failed to run test: testGetRoleFound");
         }

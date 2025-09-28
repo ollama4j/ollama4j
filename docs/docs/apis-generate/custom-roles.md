@@ -16,6 +16,7 @@ _Base roles are `SYSTEM`, `USER`, `ASSISTANT`, `TOOL`._
 #### Add new role
 
 ```java
+import io.github.ollama4j.Ollama;
 import io.github.ollama4j.OllamaAPI;
 import io.github.ollama4j.models.chat.OllamaChatMessageRole;
 
@@ -23,9 +24,9 @@ public class Main {
 
     public static void main(String[] args) {
         String host = "http://localhost:11434/";
-        OllamaAPI ollamaAPI = new OllamaAPI(host);
+        Ollama ollama = new Ollama(host);
 
-        OllamaChatMessageRole customRole = ollamaAPI.addCustomRole("custom-role");
+        OllamaChatMessageRole customRole = ollama.addCustomRole("custom-role");
     }
 }
 ```
@@ -33,16 +34,16 @@ public class Main {
 #### List roles
 
 ```java
-import io.github.ollama4j.OllamaAPI;
+import io.github.ollama4j.Ollama;
 import io.github.ollama4j.models.chat.OllamaChatMessageRole;
 
 public class Main {
 
     public static void main(String[] args) {
         String host = "http://localhost:11434/";
-        OllamaAPI ollamaAPI = new OllamaAPI(host);
+        Ollama ollama = new Ollama(host);
 
-        List<OllamaChatMessageRole> roles = ollamaAPI.listRoles();
+        List<OllamaChatMessageRole> roles = ollama.listRoles();
     }
 }
 ```
@@ -50,6 +51,7 @@ public class Main {
 #### Get role
 
 ```java
+import io.github.ollama4j.Ollama;
 import io.github.ollama4j.OllamaAPI;
 import io.github.ollama4j.models.chat.OllamaChatMessageRole;
 
@@ -57,9 +59,9 @@ public class Main {
 
     public static void main(String[] args) {
         String host = "http://localhost:11434/";
-        OllamaAPI ollamaAPI = new OllamaAPI(host);
+        Ollama ollama = new Ollama(host);
 
-        List<OllamaChatMessageRole> roles = ollamaAPI.getRole("custom-role");
+        List<OllamaChatMessageRole> roles = ollama.getRole("custom-role");
     }
 }
 ```

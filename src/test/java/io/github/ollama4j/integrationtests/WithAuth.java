@@ -10,7 +10,7 @@ package io.github.ollama4j.integrationtests;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-import io.github.ollama4j.OllamaAPI;
+import io.github.ollama4j.Ollama;
 import io.github.ollama4j.exceptions.OllamaException;
 import io.github.ollama4j.models.generate.OllamaGenerateRequest;
 import io.github.ollama4j.models.generate.OllamaGenerateRequestBuilder;
@@ -62,7 +62,7 @@ public class WithAuth {
 
     private static OllamaContainer ollama;
     private static GenericContainer<?> nginx;
-    private static OllamaAPI api;
+    private static Ollama api;
 
     @BeforeAll
     static void setUp() {
@@ -74,7 +74,7 @@ public class WithAuth {
 
         LOG.info("Using Testcontainer Ollama host...");
 
-        api = new OllamaAPI("http://" + nginx.getHost() + ":" + nginx.getMappedPort(NGINX_PORT));
+        api = new Ollama("http://" + nginx.getHost() + ":" + nginx.getMappedPort(NGINX_PORT));
         api.setRequestTimeoutSeconds(120);
         api.setNumberOfRetriesForModelPull(3);
 
