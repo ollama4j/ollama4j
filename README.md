@@ -41,16 +41,15 @@ _Find more details on the **[website](https://ollama4j.github.io/ollama4j/)**._
 
 ## Table of Contents
 
-- [Table of Contents](#table-of-contents)
 - [Capabilities](#capabilities)
 - [How does it work?](#how-does-it-work)
 - [Requirements](#requirements)
-- [Installation](#installation)
+- [Usage](#usage)
     - [For Maven](#for-maven)
         - [Using Maven Central](#using-maven-central)
         - [Using GitHub's Maven Package Repository](#using-githubs-maven-package-repository)
     - [For Gradle](#for-gradle)
-        - [API Spec](#api-spec)
+- [API Spec](#api-spec)
 - [Examples](#examples)
 - [Development](#development)
     - [Setup dev environment](#setup-dev-environment)
@@ -112,7 +111,7 @@ _Find more details on the **[website](https://ollama4j.github.io/ollama4j/)**._
   </a>
 </p>
 
-## Installation
+## Usage
 
 > [!NOTE]
 > We are now publishing the artifacts to both Maven Central and GitHub package repositories.
@@ -221,7 +220,7 @@ dependencies {
 
 [lib-shield]: https://img.shields.io/badge/ollama4j-get_latest_version-blue.svg?style=just-the-message&labelColor=gray
 
-#### API Spec
+### API Spec
 
 > [!TIP]
 > Find the full API specifications on the [website](https://ollama4j.github.io/ollama4j/).
