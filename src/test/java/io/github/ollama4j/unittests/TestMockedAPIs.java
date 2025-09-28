@@ -13,7 +13,7 @@ import static org.junit.jupiter.api.Assertions.fail;
 import static org.mockito.Mockito.*;
 
 import io.github.ollama4j.OllamaAPI;
-import io.github.ollama4j.exceptions.OllamaBaseException;
+import io.github.ollama4j.exceptions.OllamaException;
 import io.github.ollama4j.exceptions.RoleNotFoundException;
 import io.github.ollama4j.models.chat.OllamaChatMessageRole;
 import io.github.ollama4j.models.embed.OllamaEmbedRequestModel;
@@ -42,7 +42,7 @@ class TestMockedAPIs {
             doNothing().when(ollamaAPI).pullModel(model);
             ollamaAPI.pullModel(model);
             verify(ollamaAPI, times(1)).pullModel(model);
-        } catch (OllamaBaseException e) {
+        } catch (OllamaException e) {
             throw new RuntimeException(e);
         }
     }
@@ -54,7 +54,7 @@ class TestMockedAPIs {
             when(ollamaAPI.listModels()).thenReturn(new ArrayList<>());
             ollamaAPI.listModels();
             verify(ollamaAPI, times(1)).listModels();
-        } catch (OllamaBaseException e) {
+        } catch (OllamaException e) {
             throw new RuntimeException(e);
         }
     }
@@ -72,7 +72,7 @@ class TestMockedAPIs {
             doNothing().when(ollamaAPI).createModel(customModelRequest);
             ollamaAPI.createModel(customModelRequest);
             verify(ollamaAPI, times(1)).createModel(customModelRequest);
-        } catch (OllamaBaseException e) {
+        } catch (OllamaException e) {
             throw new RuntimeException(e);
         }
     }
@@ -85,7 +85,7 @@ class TestMockedAPIs {
             doNothing().when(ollamaAPI).deleteModel(model, true);
             ollamaAPI.deleteModel(model, true);
             verify(ollamaAPI, times(1)).deleteModel(model, true);
-        } catch (OllamaBaseException e) {
+        } catch (OllamaException e) {
             throw new RuntimeException(e);
         }
     }
@@ -112,7 +112,7 @@ class TestMockedAPIs {
             when(ollamaAPI.getModelDetails(model)).thenReturn(new ModelDetail());
             ollamaAPI.getModelDetails(model);
             verify(ollamaAPI, times(1)).getModelDetails(model);
-        } catch (OllamaBaseException e) {
+        } catch (OllamaException e) {
             throw new RuntimeException(e);
         }
     }
@@ -129,7 +129,7 @@ class TestMockedAPIs {
             when(ollamaAPI.embed(m)).thenReturn(new OllamaEmbedResponseModel());
             ollamaAPI.embed(m);
             verify(ollamaAPI, times(1)).embed(m);
-        } catch (OllamaBaseException e) {
+        } catch (OllamaException e) {
             throw new RuntimeException(e);
         }
     }
@@ -144,7 +144,7 @@ class TestMockedAPIs {
             when(ollamaAPI.embed(m)).thenReturn(new OllamaEmbedResponseModel());
             ollamaAPI.embed(m);
             verify(ollamaAPI, times(1)).embed(m);
-        } catch (OllamaBaseException e) {
+        } catch (OllamaException e) {
             throw new RuntimeException(e);
         }
     }
@@ -159,7 +159,7 @@ class TestMockedAPIs {
                     .thenReturn(new OllamaEmbedResponseModel());
             ollamaAPI.embed(new OllamaEmbedRequestModel(model, inputs));
             verify(ollamaAPI, times(1)).embed(new OllamaEmbedRequestModel(model, inputs));
-        } catch (OllamaBaseException e) {
+        } catch (OllamaException e) {
             throw new RuntimeException(e);
         }
     }
@@ -184,7 +184,7 @@ class TestMockedAPIs {
                     .thenReturn(new OllamaResult("", "", 0, 200));
             ollamaAPI.generate(request, observer);
             verify(ollamaAPI, times(1)).generate(request, observer);
-        } catch (OllamaBaseException e) {
+        } catch (OllamaException e) {
             throw new RuntimeException(e);
         }
     }
@@ -236,7 +236,7 @@ class TestMockedAPIs {
             when(ollamaAPI.generate(request, handler)).thenReturn(new OllamaResult("", "", 0, 200));
             ollamaAPI.generate(request, handler);
             verify(ollamaAPI, times(1)).generate(request, handler);
-        } catch (OllamaBaseException e) {
+        } catch (OllamaException e) {
             throw new RuntimeException(e);
         } catch (IOException e) {
             throw new RuntimeException(e);
@@ -244,7 +244,7 @@ class TestMockedAPIs {
     }
 
     @Test
-    void testAskAsync() throws OllamaBaseException {
+    void testAskAsync() throws OllamaException {
         OllamaAPI ollamaAPI = Mockito.mock(OllamaAPI.class);
         String model = "llama2";
         String prompt = "some prompt text";

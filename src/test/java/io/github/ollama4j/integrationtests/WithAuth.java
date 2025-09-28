@@ -11,7 +11,7 @@ package io.github.ollama4j.integrationtests;
 import static org.junit.jupiter.api.Assertions.*;
 
 import io.github.ollama4j.OllamaAPI;
-import io.github.ollama4j.exceptions.OllamaBaseException;
+import io.github.ollama4j.exceptions.OllamaException;
 import io.github.ollama4j.models.generate.OllamaGenerateRequest;
 import io.github.ollama4j.models.generate.OllamaGenerateRequestBuilder;
 import io.github.ollama4j.models.generate.OllamaGenerateStreamObserver;
@@ -181,7 +181,7 @@ public class WithAuth {
     @Test
     @Order(2)
     void testAskModelWithStructuredOutput()
-            throws OllamaBaseException, IOException, InterruptedException, URISyntaxException {
+            throws OllamaException, IOException, InterruptedException, URISyntaxException {
         api.setBearerAuth(BEARER_AUTH_TOKEN);
         String model = GENERAL_PURPOSE_MODEL;
         api.pullModel(model);

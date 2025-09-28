@@ -12,10 +12,7 @@ This API corresponds to the [PS](https://github.com/ollama/ollama/blob/main/docs
 package io.github.ollama4j.localtests;
 
 import io.github.ollama4j.OllamaAPI;
-import io.github.ollama4j.exceptions.OllamaBaseException;
 import io.github.ollama4j.models.ps.ModelsProcessResponse;
-
-import java.io.IOException;
 
 public class Main {
     public static void main(String[] args) {

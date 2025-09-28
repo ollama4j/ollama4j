@@ -9,7 +9,7 @@
 package io.github.ollama4j.models.request;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import io.github.ollama4j.exceptions.OllamaBaseException;
+import io.github.ollama4j.exceptions.OllamaException;
 import io.github.ollama4j.models.generate.OllamaGenerateResponseModel;
 import io.github.ollama4j.models.generate.OllamaGenerateStreamObserver;
 import io.github.ollama4j.models.generate.OllamaGenerateTokenHandler;
@@ -67,7 +67,7 @@ public class OllamaGenerateEndpointCaller extends OllamaEndpointCaller {
             OllamaRequestBody body,
             OllamaGenerateTokenHandler thinkingStreamHandler,
             OllamaGenerateTokenHandler responseStreamHandler)
-            throws OllamaBaseException, IOException, InterruptedException {
+            throws OllamaException, IOException, InterruptedException {
         responseStreamObserver =
                 new OllamaGenerateStreamObserver(thinkingStreamHandler, responseStreamHandler);
         return callSync(body);
@@ -79,13 +79,13 @@ public class OllamaGenerateEndpointCaller extends OllamaEndpointCaller {
      *
      * @param body POST body payload
      * @return result answer given by the assistant
-     * @throws OllamaBaseException any response code than 200 has been returned
+     * @throws OllamaException any response code than 200 has been returned
      * @throws IOException in case the responseStream can not be read
      * @throws InterruptedException in case the server is not reachable or network issues happen
      */
     @SuppressWarnings("DuplicatedCode")
     public OllamaResult callSync(OllamaRequestBody body)
-            throws OllamaBaseException, IOException, InterruptedException {
+            throws OllamaException, IOException, InterruptedException {
         long startTime = System.currentTimeMillis();
         HttpClient httpClient = HttpClient.newHttpClient();
         URI uri = URI.create(getHost() + endpoint);
@@ -127,7 +127,7 @@ public class OllamaGenerateEndpointCaller extends OllamaEndpointCaller {
         if (statusCode != 200) {
             LOG.error("Status code: {}", statusCode);
             LOG.error("Response: {}", responseBuffer);
-            throw new OllamaBaseException(responseBuffer.toString());
+            throw new OllamaException(responseBuffer.toString());
         } else {
             long endTime = System.currentTimeMillis();
             OllamaResult ollamaResult =

@@ -11,7 +11,7 @@ package io.github.ollama4j.integrationtests;
 import static org.junit.jupiter.api.Assertions.*;
 
 import io.github.ollama4j.OllamaAPI;
-import io.github.ollama4j.exceptions.OllamaBaseException;
+import io.github.ollama4j.exceptions.OllamaException;
 import io.github.ollama4j.impl.ConsoleOutputChatTokenHandler;
 import io.github.ollama4j.impl.ConsoleOutputGenerateTokenHandler;
 import io.github.ollama4j.models.chat.*;
@@ -144,7 +144,7 @@ class OllamaAPIIntegrationTest {
     @Order(1)
     void shouldThrowConnectExceptionForWrongEndpoint() {
         OllamaAPI ollamaAPI = new OllamaAPI("http://wrong-host:11434");
-        assertThrows(OllamaBaseException.class, ollamaAPI::listModels);
+        assertThrows(OllamaException.class, ollamaAPI::listModels);
     }
 
     /**
@@ -155,7 +155,7 @@ class OllamaAPIIntegrationTest {
      */
     @Test
     @Order(1)
-    void shouldReturnVersionFromVersionAPI() throws OllamaBaseException {
+    void shouldReturnVersionFromVersionAPI() throws OllamaException {
         String version = api.getVersion();
         assertNotNull(version);
     }
@@ -167,7 +167,7 @@ class OllamaAPIIntegrationTest {
      */
     @Test
     @Order(1)
-    void shouldPingSuccessfully() throws OllamaBaseException {
+    void shouldPingSuccessfully() throws OllamaException {
         boolean pingResponse = api.ping();
         assertTrue(pingResponse, "Ping should return true");
     }
@@ -179,7 +179,7 @@ class OllamaAPIIntegrationTest {
      */
     @Test
     @Order(2)
-    void shouldListModels() throws OllamaBaseException {
+    void shouldListModels() throws OllamaException {
         List<Model> models = api.listModels();
         assertNotNull(models, "Models should not be null");
         assertTrue(models.size() >= 0, "Models list can be empty or contain elements");
@@ -200,7 +200,7 @@ class OllamaAPIIntegrationTest {
      */
     @Test
     @Order(3)
-    void shouldPullModelAndListModels() throws OllamaBaseException {
+    void shouldPullModelAndListModels() throws OllamaException {
         api.pullModel(EMBEDDING_MODEL);
         List<Model> models = api.listModels();
         assertNotNull(models, "Models should not be null");
@@ -215,7 +215,7 @@ class OllamaAPIIntegrationTest {
      */
     @Test
     @Order(4)
-    void shouldGetModelDetails() throws OllamaBaseException {
+    void shouldGetModelDetails() throws OllamaException {
         api.pullModel(EMBEDDING_MODEL);
         ModelDetail modelDetails = api.getModelDetails(EMBEDDING_MODEL);
         assertNotNull(modelDetails);
@@ -247,7 +247,7 @@ class OllamaAPIIntegrationTest {
      */
     @Test
     @Order(6)
-    void shouldGenerateWithStructuredOutput() throws OllamaBaseException {
+    void shouldGenerateWithStructuredOutput() throws OllamaException {
         api.pullModel(TOOLS_MODEL);
 
         String prompt =
@@ -294,7 +294,7 @@ class OllamaAPIIntegrationTest {
      */
     @Test
     @Order(6)
-    void shouldGenerateWithDefaultOptions() throws OllamaBaseException {
+    void shouldGenerateWithDefaultOptions() throws OllamaException {
         api.pullModel(GENERAL_PURPOSE_MODEL);
         boolean raw = false;
         boolean thinking = false;
@@ -323,7 +323,7 @@ class OllamaAPIIntegrationTest {
      */
     @Test
     @Order(7)
-    void shouldGenerateWithDefaultOptionsStreamed() throws OllamaBaseException {
+    void shouldGenerateWithDefaultOptionsStreamed() throws OllamaException {
         api.pullModel(GENERAL_PURPOSE_MODEL);
         boolean raw = false;
         OllamaGenerateRequest request =
@@ -355,7 +355,7 @@ class OllamaAPIIntegrationTest {
      */
     @Test
     @Order(8)
-    void shouldGenerateWithCustomOptions() throws OllamaBaseException {
+    void shouldGenerateWithCustomOptions() throws OllamaException {
         api.pullModel(GENERAL_PURPOSE_MODEL);
 
         OllamaChatRequestBuilder builder =
@@ -386,7 +386,7 @@ class OllamaAPIIntegrationTest {
      */
     @Test
     @Order(9)
-    void shouldChatWithSystemPrompt() throws OllamaBaseException {
+    void shouldChatWithSystemPrompt() throws OllamaException {
         api.pullModel(GENERAL_PURPOSE_MODEL);
 
         String expectedResponse = "Bhai";
@@ -479,7 +479,7 @@ class OllamaAPIIntegrationTest {
      */
     @Test
     @Order(11)
-    void shouldChatWithExplicitTool() throws OllamaBaseException {
+    void shouldChatWithExplicitTool() throws OllamaException {
         String theToolModel = TOOLS_MODEL;
         api.pullModel(theToolModel);
         OllamaChatRequestBuilder builder =
@@ -532,7 +532,7 @@ class OllamaAPIIntegrationTest {
      */
     @Test
     @Order(13)
-    void shouldChatWithExplicitToolAndUseTools() throws OllamaBaseException {
+    void shouldChatWithExplicitToolAndUseTools() throws OllamaException {
         String theToolModel = TOOLS_MODEL;
         api.pullModel(theToolModel);
         OllamaChatRequestBuilder builder =
@@ -576,7 +576,7 @@ class OllamaAPIIntegrationTest {
      */
     @Test
     @Order(14)
-    void shouldChatWithToolsAndStream() throws OllamaBaseException {
+    void shouldChatWithToolsAndStream() throws OllamaException {
         String theToolModel = TOOLS_MODEL;
         api.pullModel(theToolModel);
 
@@ -631,7 +631,7 @@ class OllamaAPIIntegrationTest {
      */
     @Test
     @Order(12)
-    void shouldChatWithAnnotatedToolSingleParam() throws OllamaBaseException {
+    void shouldChatWithAnnotatedToolSingleParam() throws OllamaException {
         String theToolModel = TOOLS_MODEL;
         api.pullModel(theToolModel);
         OllamaChatRequestBuilder builder =
@@ -678,7 +678,7 @@ class OllamaAPIIntegrationTest {
      */
     @Test
     @Order(13)
-    void shouldChatWithAnnotatedToolMultipleParams() throws OllamaBaseException {
+    void shouldChatWithAnnotatedToolMultipleParams() throws OllamaException {
         String theToolModel = TOOLS_MODEL;
         api.pullModel(theToolModel);
         OllamaChatRequestBuilder builder =
@@ -710,7 +710,7 @@ class OllamaAPIIntegrationTest {
      */
     @Test
     @Order(15)
-    void shouldChatWithStream() throws OllamaBaseException {
+    void shouldChatWithStream() throws OllamaException {
         api.deregisterTools();
         api.pullModel(GENERAL_PURPOSE_MODEL);
         OllamaChatRequestBuilder builder =
@@ -738,7 +738,7 @@ class OllamaAPIIntegrationTest {
      */
     @Test
     @Order(15)
-    void shouldChatWithThinkingAndStream() throws OllamaBaseException {
+    void shouldChatWithThinkingAndStream() throws OllamaException {
         api.pullModel(THINKING_TOOL_MODEL_2);
         OllamaChatRequestBuilder builder =
                 OllamaChatRequestBuilder.builder().withModel(THINKING_TOOL_MODEL_2);
@@ -767,8 +767,7 @@ class OllamaAPIIntegrationTest {
      */
     @Test
     @Order(10)
-    void shouldChatWithImageFromURL()
-            throws OllamaBaseException, IOException, InterruptedException {
+    void shouldChatWithImageFromURL() throws OllamaException, IOException, InterruptedException {
         api.pullModel(VISION_MODEL);
 
         OllamaChatRequestBuilder builder =
@@ -795,7 +794,7 @@ class OllamaAPIIntegrationTest {
      */
     @Test
     @Order(10)
-    void shouldChatWithImageFromFileAndHistory() throws OllamaBaseException {
+    void shouldChatWithImageFromFileAndHistory() throws OllamaException {
         api.pullModel(VISION_MODEL);
         OllamaChatRequestBuilder builder =
                 OllamaChatRequestBuilder.builder().withModel(VISION_MODEL);
@@ -857,7 +856,7 @@ class OllamaAPIIntegrationTest {
      */
     @Test
     @Order(18)
-    void shouldGenerateWithImageFiles() throws OllamaBaseException {
+    void shouldGenerateWithImageFiles() throws OllamaException {
         api.pullModel(VISION_MODEL);
         try {
             OllamaGenerateRequest request =
@@ -876,7 +875,7 @@ class OllamaAPIIntegrationTest {
             assertNotNull(result);
             assertNotNull(result.getResponse());
             assertFalse(result.getResponse().isEmpty());
-        } catch (OllamaBaseException e) {
+        } catch (OllamaException e) {
             fail(e);
         } catch (IOException e) {
             throw new RuntimeException(e);
@@ -891,7 +890,7 @@ class OllamaAPIIntegrationTest {
      */
     @Test
     @Order(20)
-    void shouldGenerateWithImageFilesAndResponseStreamed() throws OllamaBaseException, IOException {
+    void shouldGenerateWithImageFilesAndResponseStreamed() throws OllamaException, IOException {
         api.pullModel(VISION_MODEL);
         OllamaGenerateRequest request =
                 OllamaGenerateRequestBuilder.builder()
@@ -922,7 +921,7 @@ class OllamaAPIIntegrationTest {
      */
     @Test
     @Order(20)
-    void shouldGenerateWithThinking() throws OllamaBaseException {
+    void shouldGenerateWithThinking() throws OllamaException {
         api.pullModel(THINKING_TOOL_MODEL);
 
         boolean raw = false;
@@ -954,7 +953,7 @@ class OllamaAPIIntegrationTest {
      */
     @Test
     @Order(20)
-    void shouldGenerateWithThinkingAndStreamHandler() throws OllamaBaseException {
+    void shouldGenerateWithThinkingAndStreamHandler() throws OllamaException {
         api.pullModel(THINKING_TOOL_MODEL);
         boolean raw = false;
         OllamaGenerateRequest request =
@@ -990,7 +989,7 @@ class OllamaAPIIntegrationTest {
      */
     @Test
     @Order(21)
-    void shouldGenerateWithRawMode() throws OllamaBaseException {
+    void shouldGenerateWithRawMode() throws OllamaException {
         api.pullModel(GENERAL_PURPOSE_MODEL);
         api.unloadModel(GENERAL_PURPOSE_MODEL);
         boolean raw = true;
@@ -1020,7 +1019,7 @@ class OllamaAPIIntegrationTest {
      */
     @Test
     @Order(22)
-    void shouldGenerateWithRawModeAndStreaming() throws OllamaBaseException {
+    void shouldGenerateWithRawModeAndStreaming() throws OllamaException {
         api.pullModel(GENERAL_PURPOSE_MODEL);
         boolean raw = true;
         OllamaGenerateRequest request =
@@ -1082,7 +1081,7 @@ class OllamaAPIIntegrationTest {
      */
     @Test
     @Order(24)
-    void shouldGenerateWithAllParametersEnabled() throws OllamaBaseException {
+    void shouldGenerateWithAllParametersEnabled() throws OllamaException {
         api.pullModel(THINKING_TOOL_MODEL);
         // Settinng raw here instructs to keep the response raw. Even if the model generates
         // 'thinking' tokens, they will not be received as separate tokens and will be mised with
@@ -1102,8 +1101,8 @@ class OllamaAPIIntegrationTest {
                         .build();
         OllamaGenerateStreamObserver handler =
                 new OllamaGenerateStreamObserver(
-                        thinkingToken -> LOG.info("THINKING: {}", thinkingToken),
-                        responseToken -> LOG.info("RESPONSE: {}", responseToken));
+                        thinkingToken -> LOG.info("Thinking token: {}", thinkingToken),
+                        responseToken -> LOG.info("Response token: {}", responseToken));
         OllamaResult result = api.generate(request, handler);
         assertNotNull(result);
         assertNotNull(result.getResponse());
@@ -1118,7 +1117,7 @@ class OllamaAPIIntegrationTest {
      */
     @Test
     @Order(25)
-    void shouldGenerateWithComplexStructuredOutput() throws OllamaBaseException {
+    void shouldGenerateWithComplexStructuredOutput() throws OllamaException {
         api.pullModel(TOOLS_MODEL);
 
         String prompt =
@@ -1178,7 +1177,7 @@ class OllamaAPIIntegrationTest {
      */
     @Test
     @Order(26)
-    void shouldChatWithThinkingNoStream() throws OllamaBaseException {
+    void shouldChatWithThinkingNoStream() throws OllamaException {
         api.pullModel(THINKING_TOOL_MODEL);
         OllamaChatRequestBuilder builder =
                 OllamaChatRequestBuilder.builder().withModel(THINKING_TOOL_MODEL);
@@ -1207,7 +1206,7 @@ class OllamaAPIIntegrationTest {
      */
     @Test
     @Order(27)
-    void shouldChatWithCustomOptionsAndStreaming() throws OllamaBaseException {
+    void shouldChatWithCustomOptionsAndStreaming() throws OllamaException {
         api.pullModel(GENERAL_PURPOSE_MODEL);
 
         OllamaChatRequestBuilder builder =
@@ -1240,7 +1239,7 @@ class OllamaAPIIntegrationTest {
      */
     @Test
     @Order(28)
-    void shouldChatWithToolsThinkingAndStreaming() throws OllamaBaseException {
+    void shouldChatWithToolsThinkingAndStreaming() throws OllamaException {
         api.pullModel(THINKING_TOOL_MODEL_2);
 
         api.registerTool(EmployeeFinderToolSpec.getSpecification());
@@ -1272,7 +1271,7 @@ class OllamaAPIIntegrationTest {
      */
     @Test
     @Order(31)
-    void shouldChatWithMultipleImages() throws OllamaBaseException {
+    void shouldChatWithMultipleImages() throws OllamaException {
         api.pullModel(VISION_MODEL);
 
         List<OllamaChatToolCalls> tools = Collections.emptyList();
@@ -1318,7 +1317,7 @@ class OllamaAPIIntegrationTest {
                         .build();
         OllamaGenerateStreamObserver handler = new OllamaGenerateStreamObserver(null, null);
         assertThrows(
-                OllamaBaseException.class,
+                OllamaException.class,
                 () -> {
                     api.generate(request, handler);
                 });
@@ -1331,7 +1330,7 @@ class OllamaAPIIntegrationTest {
      */
     @Test
     @Order(33)
-    void shouldHandleEmptyMessage() throws OllamaBaseException {
+    void shouldHandleEmptyMessage() throws OllamaException {
         api.pullModel(GENERAL_PURPOSE_MODEL);
 
         List<OllamaChatToolCalls> tools = Collections.emptyList();
@@ -1356,7 +1355,7 @@ class OllamaAPIIntegrationTest {
      */
     @Test
     @Order(34)
-    void shouldGenerateWithExtremeParameters() throws OllamaBaseException {
+    void shouldGenerateWithExtremeParameters() throws OllamaException {
         api.pullModel(GENERAL_PURPOSE_MODEL);
         OllamaGenerateRequest request =
                 OllamaGenerateRequestBuilder.builder()
@@ -1409,7 +1408,7 @@ class OllamaAPIIntegrationTest {
      */
     @Test
     @Order(36)
-    void shouldChatWithKeepAlive() throws OllamaBaseException {
+    void shouldChatWithKeepAlive() throws OllamaException {
         api.pullModel(GENERAL_PURPOSE_MODEL);
 
         OllamaChatRequestBuilder builder =
@@ -1434,7 +1433,7 @@ class OllamaAPIIntegrationTest {
      */
     @Test
     @Order(37)
-    void shouldGenerateWithAdvancedOptions() throws OllamaBaseException {
+    void shouldGenerateWithAdvancedOptions() throws OllamaException {
         api.pullModel(GENERAL_PURPOSE_MODEL);
         OllamaGenerateRequest request =
                 OllamaGenerateRequestBuilder.builder()
@@ -1468,7 +1467,7 @@ class OllamaAPIIntegrationTest {
      */
     @Test
     @Order(38)
-    void shouldHandleConcurrentChatRequests() throws OllamaBaseException, InterruptedException {
+    void shouldHandleConcurrentChatRequests() throws OllamaException, InterruptedException {
         api.pullModel(GENERAL_PURPOSE_MODEL);
 
         int numThreads = 3;
@@ -1570,8 +1569,13 @@ class EmployeeFinderToolSpec {
                                 .build())
                 .toolFunction(
                         arguments -> {
-                            String employeeName = arguments.get("employee-name").toString();
                             String address = null;
+                            String employeeName = null;
+                            try {
+                                employeeName = arguments.get("employee-name").toString();
+                            } catch (Exception e) {
+                                employeeName = "Mr. LLoyd Llama";
+                            }
                             try {
                                 address = arguments.get("employee-address").toString();
                             } catch (Exception e) {

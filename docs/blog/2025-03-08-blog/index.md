@@ -337,7 +337,7 @@ import com.couchbase.client.java.Scope;
 import com.couchbase.client.java.json.JsonObject;
 import com.couchbase.client.java.query.QueryResult;
 import io.github.ollama4j.OllamaAPI;
-import io.github.ollama4j.exceptions.OllamaBaseException;
+import io.github.ollama4j.exceptions.OllamaException;
 import io.github.ollama4j.exceptions.ToolInvocationException;
 import io.github.ollama4j.tools.OllamaToolsResult;
 import io.github.ollama4j.tools.ToolFunction;
@@ -356,7 +356,7 @@ import java.util.Map;
 
 public class CouchbaseToolCallingExample {
 
-    public static void main(String[] args) throws IOException, ToolInvocationException, OllamaBaseException, InterruptedException {
+    public static void main(String[] args) throws IOException, ToolInvocationException, OllamaException, InterruptedException {
         String connectionString = Utilities.getFromEnvVar("CB_CLUSTER_URL");
         String username = Utilities.getFromEnvVar("CB_CLUSTER_USERNAME");
         String password = Utilities.getFromEnvVar("CB_CLUSTER_PASSWORD");

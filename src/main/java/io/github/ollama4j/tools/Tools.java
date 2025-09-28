@@ -31,7 +31,7 @@ public class Tools {
         @JsonProperty("function")
         private ToolSpec toolSpec;
 
-        private String type = "function";
+        @Builder.Default private String type = "function";
         @JsonIgnore private ToolFunction toolFunction;
     }
 

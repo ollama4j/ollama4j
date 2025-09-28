@@ -10,7 +10,7 @@ package io.github.ollama4j.models.request;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
-import io.github.ollama4j.exceptions.OllamaBaseException;
+import io.github.ollama4j.exceptions.OllamaException;
 import io.github.ollama4j.metrics.MetricsRecorder;
 import io.github.ollama4j.models.chat.*;
 import io.github.ollama4j.models.chat.OllamaChatTokenHandler;
@@ -82,13 +82,13 @@ public class OllamaChatEndpointCaller extends OllamaEndpointCaller {
     }
 
     public OllamaChatResult call(OllamaChatRequest body, OllamaChatTokenHandler tokenHandler)
-            throws OllamaBaseException, IOException, InterruptedException {
+            throws OllamaException, IOException, InterruptedException {
         this.tokenHandler = tokenHandler;
         return callSync(body);
     }
 
     public OllamaChatResult callSync(OllamaChatRequest body)
-            throws OllamaBaseException, IOException, InterruptedException {
+            throws OllamaException, IOException, InterruptedException {
         long startTime = System.currentTimeMillis();
         HttpClient httpClient = HttpClient.newHttpClient();
         URI uri = URI.create(getHost() + endpoint);
@@ -143,7 +143,7 @@ public class OllamaChatEndpointCaller extends OllamaEndpointCaller {
         if (statusCode != 200) {
             LOG.error("Status code: {}", statusCode);
             System.out.println(responseBuffer);
-            throw new OllamaBaseException(responseBuffer.toString());
+            throw new OllamaException(responseBuffer.toString());
         }
         if (wantedToolsForStream != null && ollamaChatResponseModel != null) {
             ollamaChatResponseModel.getMessage().setToolCalls(wantedToolsForStream);

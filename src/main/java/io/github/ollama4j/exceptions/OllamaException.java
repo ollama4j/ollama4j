@@ -8,13 +8,13 @@
 */
 package io.github.ollama4j.exceptions;
 
-public class OllamaBaseException extends Exception {
+public class OllamaException extends Exception {
 
-    public OllamaBaseException(String message) {
+    public OllamaException(String message) {
         super(message);
     }
 
-    public OllamaBaseException(String message, Exception exception) {
+    public OllamaException(String message, Exception exception) {
         super(message, exception);
     }
 }

@@ -9,7 +9,7 @@
 package io.github.ollama4j;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import io.github.ollama4j.exceptions.OllamaBaseException;
+import io.github.ollama4j.exceptions.OllamaException;
 import io.github.ollama4j.exceptions.RoleNotFoundException;
 import io.github.ollama4j.exceptions.ToolInvocationException;
 import io.github.ollama4j.metrics.MetricsRecorder;
@@ -150,9 +150,9 @@ public class OllamaAPI {
      * Checks the reachability of the Ollama server.
      *
      * @return true if the server is reachable, false otherwise
-     * @throws OllamaBaseException if the ping fails
+     * @throws OllamaException if the ping fails
      */
-    public boolean ping() throws OllamaBaseException {
+    public boolean ping() throws OllamaException {
         long startTime = System.currentTimeMillis();
         String url = "/api/tags";
         int statusCode = -1;
@@ -175,7 +175,7 @@ public class OllamaAPI {
             statusCode = response.statusCode();
             return statusCode == 200;
         } catch (Exception e) {
-            throw new OllamaBaseException("Ping failed", e);
+            throw new OllamaException("Ping failed", e);
         } finally {
             MetricsRecorder.record(
                     url, "", false, false, false, null, null, startTime, statusCode, out);
@@ -186,9 +186,9 @@ public class OllamaAPI {
      * Provides a list of running models and details about each model currently loaded into memory.
      *
      * @return ModelsProcessResponse containing details about the running models
-     * @throws OllamaBaseException if the response indicates an error status
+     * @throws OllamaException if the response indicates an error status
      */
-    public ModelsProcessResponse ps() throws OllamaBaseException {
+    public ModelsProcessResponse ps() throws OllamaException {
         long startTime = System.currentTimeMillis();
         String url = "/api/ps";
         int statusCode = -1;
@@ -208,7 +208,7 @@ public class OllamaAPI {
                                 .GET()
                                 .build();
             } catch (URISyntaxException e) {
-                throw new OllamaBaseException(e.getMessage(), e);
+                throw new OllamaException(e.getMessage(), e);
             }
             HttpResponse<String> response = null;
             response = httpClient.send(httpRequest, HttpResponse.BodyHandlers.ofString());
@@ -218,10 +218,10 @@ public class OllamaAPI {
                 return Utils.getObjectMapper()
                         .readValue(responseString, ModelsProcessResponse.class);
             } else {
-                throw new OllamaBaseException(statusCode + " - " + responseString);
+                throw new OllamaException(statusCode + " - " + responseString);
             }
         } catch (Exception e) {
-            throw new OllamaBaseException("ps failed", e);
+            throw new OllamaException("ps failed", e);
         } finally {
             MetricsRecorder.record(
                     url, "", false, false, false, null, null, startTime, statusCode, out);
@@ -232,9 +232,9 @@ public class OllamaAPI {
      * Lists available models from the Ollama server.
      *
      * @return a list of models available on the server
-     * @throws OllamaBaseException if the response indicates an error status
+     * @throws OllamaException if the response indicates an error status
      */
-    public List<Model> listModels() throws OllamaBaseException {
+    public List<Model> listModels() throws OllamaException {
         long startTime = System.currentTimeMillis();
         String url = "/api/tags";
         int statusCode = -1;
@@ -260,10 +260,10 @@ public class OllamaAPI {
                         .readValue(responseString, ListModelsResponse.class)
                         .getModels();
             } else {
-                throw new OllamaBaseException(statusCode + " - " + responseString);
+                throw new OllamaException(statusCode + " - " + responseString);
             }
         } catch (Exception e) {
-            throw new OllamaBaseException(e.getMessage(), e);
+            throw new OllamaException(e.getMessage(), e);
         } finally {
             MetricsRecorder.record(
                     url, "", false, false, false, null, null, startTime, statusCode, out);
@@ -309,9 +309,9 @@ public class OllamaAPI {
      * Internal method to pull a model from the Ollama server.
      *
      * @param modelName the name of the model to pull
-     * @throws OllamaBaseException if the pull fails
+     * @throws OllamaException if the pull fails
      */
-    private void doPullModel(String modelName) throws OllamaBaseException {
+    private void doPullModel(String modelName) throws OllamaException {
         long startTime = System.currentTimeMillis();
         String url = "/api/pull";
         int statusCode = -1;
@@ -348,13 +348,13 @@ public class OllamaAPI {
             }
             if (!success) {
                 LOG.error("Model pull failed or returned invalid status.");
-                throw new OllamaBaseException("Model pull failed or returned invalid status.");
+                throw new OllamaException("Model pull failed or returned invalid status.");
             }
             if (statusCode != 200) {
-                throw new OllamaBaseException(statusCode + " - " + responseString);
+                throw new OllamaException(statusCode + " - " + responseString);
             }
         } catch (Exception e) {
-            throw new OllamaBaseException(e.getMessage(), e);
+            throw new OllamaException(e.getMessage(), e);
         } finally {
             MetricsRecorder.record(
                     url, "", false, false, false, null, null, startTime, statusCode, out);
@@ -368,18 +368,18 @@ public class OllamaAPI {
      * @param modelPullResponse the response from the model pull
      * @param modelName the name of the model
      * @return true if the pull was successful, false otherwise
-     * @throws OllamaBaseException if the response contains an error
+     * @throws OllamaException if the response contains an error
      */
     @SuppressWarnings("RedundantIfStatement")
     private boolean processModelPullResponse(ModelPullResponse modelPullResponse, String modelName)
-            throws OllamaBaseException {
+            throws OllamaException {
         if (modelPullResponse == null) {
             LOG.error("Received null response for model pull.");
             return false;
         }
         String error = modelPullResponse.getError();
         if (error != null && !error.trim().isEmpty()) {
-            throw new OllamaBaseException("Model pull failed: " + error);
+            throw new OllamaException("Model pull failed: " + error);
         }
         String status = modelPullResponse.getStatus();
         if (status != null) {
@@ -395,9 +395,9 @@ public class OllamaAPI {
      * Gets the Ollama server version.
      *
      * @return the version string
-     * @throws OllamaBaseException if the request fails
+     * @throws OllamaException if the request fails
      */
-    public String getVersion() throws OllamaBaseException {
+    public String getVersion() throws OllamaException {
         String url = "/api/version";
         long startTime = System.currentTimeMillis();
         int statusCode = -1;
@@ -423,10 +423,10 @@ public class OllamaAPI {
                         .readValue(responseString, OllamaVersion.class)
                         .getVersion();
             } else {
-                throw new OllamaBaseException(statusCode + " - " + responseString);
+                throw new OllamaException(statusCode + " - " + responseString);
             }
         } catch (Exception e) {
-            throw new OllamaBaseException(e.getMessage(), e);
+            throw new OllamaException(e.getMessage(), e);
         } finally {
             MetricsRecorder.record(
                     url, "", false, false, false, null, null, startTime, statusCode, out);
@@ -439,9 +439,9 @@ public class OllamaAPI {
      * in the format "name:tag" to pull the corresponding model.
      *
      * @param modelName the name/tag of the model to be pulled. Ex: llama3:latest
-     * @throws OllamaBaseException if the response indicates an error status
+     * @throws OllamaException if the response indicates an error status
      */
-    public void pullModel(String modelName) throws OllamaBaseException {
+    public void pullModel(String modelName) throws OllamaException {
         try {
             if (numberOfRetriesForModelPull == 0) {
                 this.doPullModel(modelName);
@@ -453,7 +453,7 @@ public class OllamaAPI {
                 try {
                     this.doPullModel(modelName);
                     return;
-                } catch (OllamaBaseException e) {
+                } catch (OllamaException e) {
                     handlePullRetry(
                             modelName,
                             numberOfRetries,
@@ -462,14 +462,14 @@ public class OllamaAPI {
                     numberOfRetries++;
                 }
             }
-            throw new OllamaBaseException(
+            throw new OllamaException(
                     "Failed to pull model "
                             + modelName
                             + " after "
                             + numberOfRetriesForModelPull
                             + " retries");
         } catch (Exception e) {
-            throw new OllamaBaseException(e.getMessage(), e);
+            throw new OllamaException(e.getMessage(), e);
         }
     }
 
@@ -478,9 +478,9 @@ public class OllamaAPI {
      *
      * @param modelName the model name
      * @return the model details
-     * @throws OllamaBaseException if the response indicates an error status
+     * @throws OllamaException if the response indicates an error status
      */
-    public ModelDetail getModelDetails(String modelName) throws OllamaBaseException {
+    public ModelDetail getModelDetails(String modelName) throws OllamaException {
         long startTime = System.currentTimeMillis();
         String url = "/api/show";
         int statusCode = -1;
@@ -505,10 +505,10 @@ public class OllamaAPI {
             if (statusCode == 200) {
                 return Utils.getObjectMapper().readValue(responseBody, ModelDetail.class);
             } else {
-                throw new OllamaBaseException(statusCode + " - " + responseBody);
+                throw new OllamaException(statusCode + " - " + responseBody);
             }
         } catch (Exception e) {
-            throw new OllamaBaseException(e.getMessage(), e);
+            throw new OllamaException(e.getMessage(), e);
         } finally {
             MetricsRecorder.record(
                     url, "", false, false, false, null, null, startTime, statusCode, out);
@@ -520,9 +520,9 @@ public class OllamaAPI {
      * <a href="https://github.com/ollama/ollama/blob/main/docs/api.md#create-a-model">here</a>.
      *
      * @param customModelRequest custom model spec
-     * @throws OllamaBaseException if the response indicates an error status
+     * @throws OllamaException if the response indicates an error status
      */
-    public void createModel(CustomModelRequest customModelRequest) throws OllamaBaseException {
+    public void createModel(CustomModelRequest customModelRequest) throws OllamaException {
         long startTime = System.currentTimeMillis();
         String url = "/api/create";
         int statusCode = -1;
@@ -549,7 +549,7 @@ public class OllamaAPI {
                 String errorBody =
                         new String(response.body().readAllBytes(), StandardCharsets.UTF_8);
                 out = errorBody;
-                throw new OllamaBaseException(statusCode + " - " + errorBody);
+                throw new OllamaException(statusCode + " - " + errorBody);
             }
             try (BufferedReader reader =
                     new BufferedReader(
@@ -563,13 +563,13 @@ public class OllamaAPI {
                     LOG.debug(res.getStatus());
                     if (res.getError() != null) {
                         out = res.getError();
-                        throw new OllamaBaseException(res.getError());
+                        throw new OllamaException(res.getError());
                     }
                 }
                 out = lines;
             }
         } catch (Exception e) {
-            throw new OllamaBaseException(e.getMessage(), e);
+            throw new OllamaException(e.getMessage(), e);
         } finally {
             MetricsRecorder.record(
                     url, "", false, false, false, null, null, startTime, statusCode, out);
@@ -581,10 +581,9 @@ public class OllamaAPI {
      *
      * @param modelName the name of the model to be deleted
      * @param ignoreIfNotPresent ignore errors if the specified model is not present on the Ollama server
-     * @throws OllamaBaseException if the response indicates an error status
+     * @throws OllamaException if the response indicates an error status
      */
-    public void deleteModel(String modelName, boolean ignoreIfNotPresent)
-            throws OllamaBaseException {
+    public void deleteModel(String modelName, boolean ignoreIfNotPresent) throws OllamaException {
         long startTime = System.currentTimeMillis();
         String url = "/api/delete";
         int statusCode = -1;
@@ -616,10 +615,10 @@ public class OllamaAPI {
                 return;
             }
             if (statusCode != 200) {
-                throw new OllamaBaseException(statusCode + " - " + responseBody);
+                throw new OllamaException(statusCode + " - " + responseBody);
             }
         } catch (Exception e) {
-            throw new OllamaBaseException(statusCode + " - " + out, e);
+            throw new OllamaException(statusCode + " - " + out, e);
         } finally {
             MetricsRecorder.record(
                     url, "", false, false, false, null, null, startTime, statusCode, out);
@@ -633,9 +632,9 @@ public class OllamaAPI {
      * unloaded from memory.
      *
      * @param modelName the name of the model to unload
-     * @throws OllamaBaseException if the response indicates an error status
+     * @throws OllamaException if the response indicates an error status
      */
-    public void unloadModel(String modelName) throws OllamaBaseException {
+    public void unloadModel(String modelName) throws OllamaException {
         long startTime = System.currentTimeMillis();
         String url = "/api/generate";
         int statusCode = -1;
@@ -673,11 +672,11 @@ public class OllamaAPI {
             }
             if (statusCode != 200) {
                 LOG.debug("Unload response: {} - {}", statusCode, responseBody);
-                throw new OllamaBaseException(statusCode + " - " + responseBody);
+                throw new OllamaException(statusCode + " - " + responseBody);
             }
         } catch (Exception e) {
             LOG.debug("Unload failed: {} - {}", statusCode, out);
-            throw new OllamaBaseException(statusCode + " - " + out, e);
+            throw new OllamaException(statusCode + " - " + out, e);
         } finally {
             MetricsRecorder.record(
                     url, "", false, false, false, null, null, startTime, statusCode, out);
@@ -689,10 +688,10 @@ public class OllamaAPI {
      *
      * @param modelRequest request for '/api/embed' endpoint
      * @return embeddings
-     * @throws OllamaBaseException if the response indicates an error status
+     * @throws OllamaException if the response indicates an error status
      */
     public OllamaEmbedResponseModel embed(OllamaEmbedRequestModel modelRequest)
-            throws OllamaBaseException {
+            throws OllamaException {
         long startTime = System.currentTimeMillis();
         String url = "/api/embed";
         int statusCode = -1;
@@ -715,10 +714,10 @@ public class OllamaAPI {
                 return Utils.getObjectMapper()
                         .readValue(responseBody, OllamaEmbedResponseModel.class);
             } else {
-                throw new OllamaBaseException(statusCode + " - " + responseBody);
+                throw new OllamaException(statusCode + " - " + responseBody);
             }
         } catch (Exception e) {
-            throw new OllamaBaseException(e.getMessage(), e);
+            throw new OllamaException(e.getMessage(), e);
         } finally {
             MetricsRecorder.record(
                     url, "", false, false, false, null, null, startTime, statusCode, out);
@@ -732,11 +731,11 @@ public class OllamaAPI {
      * @param request the generation request
      * @param streamObserver the stream observer for streaming responses, or null for synchronous
      * @return the result of the generation
-     * @throws OllamaBaseException if the request fails
+     * @throws OllamaException if the request fails
      */
     public OllamaResult generate(
             OllamaGenerateRequest request, OllamaGenerateStreamObserver streamObserver)
-            throws OllamaBaseException {
+            throws OllamaException {
         try {
             if (request.isUseTools()) {
                 return generateWithToolsInternal(request, streamObserver);
@@ -755,14 +754,14 @@ public class OllamaAPI {
             }
             return generateSyncForOllamaRequestModel(request, null, null);
         } catch (Exception e) {
-            throw new OllamaBaseException(e.getMessage(), e);
+            throw new OllamaException(e.getMessage(), e);
         }
     }
 
     // (No javadoc for private helper, as is standard)
     private OllamaResult generateWithToolsInternal(
             OllamaGenerateRequest request, OllamaGenerateStreamObserver streamObserver)
-            throws OllamaBaseException {
+            throws OllamaException {
         ArrayList<OllamaChatMessage> msgs = new ArrayList<>();
         OllamaChatRequest chatRequest = new OllamaChatRequest();
         chatRequest.setModel(request.getModel());
@@ -799,10 +798,10 @@ public class OllamaAPI {
      * @param raw whether to use raw mode
      * @param think whether to use "think" mode
      * @return an OllamaAsyncResultStreamer for streaming results
-     * @throws OllamaBaseException if the request fails
+     * @throws OllamaException if the request fails
      */
     public OllamaAsyncResultStreamer generateAsync(
-            String model, String prompt, boolean raw, boolean think) throws OllamaBaseException {
+            String model, String prompt, boolean raw, boolean think) throws OllamaException {
         long startTime = System.currentTimeMillis();
         String url = "/api/generate";
         int statusCode = -1;
@@ -819,7 +818,7 @@ public class OllamaAPI {
             statusCode = ollamaAsyncResultStreamer.getHttpStatusCode();
             return ollamaAsyncResultStreamer;
         } catch (Exception e) {
-            throw new OllamaBaseException(e.getMessage(), e);
+            throw new OllamaException(e.getMessage(), e);
         } finally {
             MetricsRecorder.record(
                     url, model, raw, think, true, null, null, startTime, statusCode, null);
@@ -836,10 +835,10 @@ public class OllamaAPI {
      * @param tokenHandler callback handler to handle the last token from stream (caution: the
      *     previous tokens from stream will not be concatenated)
      * @return {@link OllamaChatResult}
-     * @throws OllamaBaseException if the response indicates an error status
+     * @throws OllamaException if the response indicates an error status
      */
     public OllamaChatResult chat(OllamaChatRequest request, OllamaChatTokenHandler tokenHandler)
-            throws OllamaBaseException {
+            throws OllamaException {
         try {
             OllamaChatEndpointCaller requestCaller =
                     new OllamaChatEndpointCaller(host, auth, requestTimeoutSeconds);
@@ -909,7 +908,7 @@ public class OllamaAPI {
             }
             return result;
         } catch (Exception e) {
-            throw new OllamaBaseException(e.getMessage(), e);
+            throw new OllamaException(e.getMessage(), e);
         }
     }
 
@@ -947,17 +946,17 @@ public class OllamaAPI {
      * providers. This method scans the caller's class for the {@link OllamaToolService} annotation
      * and recursively registers annotated tools from all the providers specified in the annotation.
      *
-     * @throws OllamaBaseException if the caller's class is not annotated with {@link
+     * @throws OllamaException if the caller's class is not annotated with {@link
      *     OllamaToolService} or if reflection-based instantiation or invocation fails
      */
-    public void registerAnnotatedTools() throws OllamaBaseException {
+    public void registerAnnotatedTools() throws OllamaException {
         try {
             Class<?> callerClass = null;
             try {
                 callerClass =
                         Class.forName(Thread.currentThread().getStackTrace()[2].getClassName());
             } catch (ClassNotFoundException e) {
-                throw new OllamaBaseException(e.getMessage(), e);
+                throw new OllamaException(e.getMessage(), e);
             }
 
             OllamaToolService ollamaToolServiceAnnotation =
@@ -975,7 +974,7 @@ public class OllamaAPI {
                 | NoSuchMethodException
                 | IllegalAccessException
                 | InvocationTargetException e) {
-            throw new OllamaBaseException(e.getMessage());
+            throw new OllamaException(e.getMessage());
         }
     }
 
@@ -1100,13 +1099,13 @@ public class OllamaAPI {
      * @param thinkingStreamHandler the stream handler for "thinking" tokens, or null if not used
      * @param responseStreamHandler the stream handler to process streaming responses, or null for non-streaming requests
      * @return the result of the Ollama API request
-     * @throws OllamaBaseException if the request fails due to an issue with the Ollama API
+     * @throws OllamaException if the request fails due to an issue with the Ollama API
      */
     private OllamaResult generateSyncForOllamaRequestModel(
             OllamaGenerateRequest ollamaRequestModel,
             OllamaGenerateTokenHandler thinkingStreamHandler,
             OllamaGenerateTokenHandler responseStreamHandler)
-            throws OllamaBaseException {
+            throws OllamaException {
         long startTime = System.currentTimeMillis();
         int statusCode = -1;
         Object out = null;
@@ -1126,7 +1125,7 @@ public class OllamaAPI {
             out = result;
             return result;
         } catch (Exception e) {
-            throw new OllamaBaseException(e.getMessage(), e);
+            throw new OllamaException(e.getMessage(), e);
         } finally {
             MetricsRecorder.record(
                     OllamaGenerateEndpointCaller.endpoint,

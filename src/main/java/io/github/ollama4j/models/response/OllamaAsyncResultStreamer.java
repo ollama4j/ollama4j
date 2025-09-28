@@ -8,7 +8,7 @@
 */
 package io.github.ollama4j.models.response;
 
-import io.github.ollama4j.exceptions.OllamaBaseException;
+import io.github.ollama4j.exceptions.OllamaException;
 import io.github.ollama4j.models.generate.OllamaGenerateRequest;
 import io.github.ollama4j.models.generate.OllamaGenerateResponseModel;
 import io.github.ollama4j.utils.Constants;
@@ -146,9 +146,9 @@ public class OllamaAsyncResultStreamer extends Thread {
                 }
             }
             if (statusCode != 200) {
-                throw new OllamaBaseException(this.completeResponse);
+                throw new OllamaException(this.completeResponse);
             }
-        } catch (IOException | InterruptedException | OllamaBaseException e) {
+        } catch (IOException | InterruptedException | OllamaException e) {
             this.succeeded = false;
             this.completeResponse = "[FAILED] " + e.getMessage();
         }
