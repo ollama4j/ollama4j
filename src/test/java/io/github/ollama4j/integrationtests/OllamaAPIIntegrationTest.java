@@ -16,7 +16,7 @@ import io.github.ollama4j.impl.ConsoleOutputChatTokenHandler;
 import io.github.ollama4j.impl.ConsoleOutputGenerateTokenHandler;
 import io.github.ollama4j.models.chat.*;
 import io.github.ollama4j.models.embed.OllamaEmbedRequest;
-import io.github.ollama4j.models.embed.OllamaEmbedResponse;
+import io.github.ollama4j.models.embed.OllamaEmbedResult;
 import io.github.ollama4j.models.generate.OllamaGenerateRequest;
 import io.github.ollama4j.models.generate.OllamaGenerateRequestBuilder;
 import io.github.ollama4j.models.generate.OllamaGenerateStreamObserver;
@@ -234,7 +234,7 @@ class OllamaAPIIntegrationTest {
         OllamaEmbedRequest m = new OllamaEmbedRequest();
         m.setModel(EMBEDDING_MODEL);
         m.setInput(Arrays.asList("Why is the sky blue?", "Why is the grass green?"));
-        OllamaEmbedResponse embeddings = api.embed(m);
+        OllamaEmbedResult embeddings = api.embed(m);
         assertNotNull(embeddings, "Embeddings should not be null");
         assertFalse(embeddings.getEmbeddings().isEmpty(), "Embeddings should not be empty");
     }
@@ -1333,7 +1333,7 @@ class OllamaAPIIntegrationTest {
         requestModel.setInput(
                 Collections.singletonList("This is a single test sentence for embedding."));
 
-        OllamaEmbedResponse embeddings = api.embed(requestModel);
+        OllamaEmbedResult embeddings = api.embed(requestModel);
 
         assertNotNull(embeddings);
         assertFalse(embeddings.getEmbeddings().isEmpty());

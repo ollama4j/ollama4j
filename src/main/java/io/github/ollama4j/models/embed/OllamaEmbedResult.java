@@ -14,7 +14,7 @@ import lombok.Data;
 
 @SuppressWarnings("unused")
 @Data
-public class OllamaEmbedResponse {
+public class OllamaEmbedResult {
     @JsonProperty("model")
     private String model;
 

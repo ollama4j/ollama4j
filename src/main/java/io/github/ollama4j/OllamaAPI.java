@@ -16,11 +16,11 @@ import io.github.ollama4j.metrics.MetricsRecorder;
 import io.github.ollama4j.models.chat.*;
 import io.github.ollama4j.models.chat.OllamaChatTokenHandler;
 import io.github.ollama4j.models.embed.OllamaEmbedRequest;
-import io.github.ollama4j.models.embed.OllamaEmbedResponse;
+import io.github.ollama4j.models.embed.OllamaEmbedResult;
 import io.github.ollama4j.models.generate.OllamaGenerateRequest;
 import io.github.ollama4j.models.generate.OllamaGenerateStreamObserver;
 import io.github.ollama4j.models.generate.OllamaGenerateTokenHandler;
-import io.github.ollama4j.models.ps.ModelProcessesResponse;
+import io.github.ollama4j.models.ps.ModelProcessesResult;
 import io.github.ollama4j.models.request.*;
 import io.github.ollama4j.models.response.*;
 import io.github.ollama4j.tools.*;
@@ -186,10 +186,10 @@ public class OllamaAPI {
     /**
      * Provides a list of running models and details about each model currently loaded into memory.
      *
-     * @return ModelsProcessResponse containing details about the running models
+     * @return ModelsProcessResult containing details about the running models
      * @throws OllamaException if the response indicates an error status
      */
-    public ModelProcessesResponse ps() throws OllamaException {
+    public ModelProcessesResult ps() throws OllamaException {
         long startTime = System.currentTimeMillis();
         String url = "/api/ps";
         int statusCode = -1;
@@ -217,7 +217,7 @@ public class OllamaAPI {
             String responseString = response.body();
             if (statusCode == 200) {
                 return Utils.getObjectMapper()
-                        .readValue(responseString, ModelProcessesResponse.class);
+                        .readValue(responseString, ModelProcessesResult.class);
             } else {
                 throw new OllamaException(statusCode + " - " + responseString);
             }
@@ -719,7 +719,7 @@ public class OllamaAPI {
      * @return embeddings
      * @throws OllamaException if the response indicates an error status
      */
-    public OllamaEmbedResponse embed(OllamaEmbedRequest modelRequest) throws OllamaException {
+    public OllamaEmbedResult embed(OllamaEmbedRequest modelRequest) throws OllamaException {
         long startTime = System.currentTimeMillis();
         String url = "/api/embed";
         int statusCode = -1;
@@ -739,7 +739,7 @@ public class OllamaAPI {
             statusCode = response.statusCode();
             String responseBody = response.body();
             if (statusCode == 200) {
-                return Utils.getObjectMapper().readValue(responseBody, OllamaEmbedResponse.class);
+                return Utils.getObjectMapper().readValue(responseBody, OllamaEmbedResult.class);
             } else {
                 throw new OllamaException(statusCode + " - " + responseBody);
             }
