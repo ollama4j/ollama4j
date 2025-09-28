@@ -16,8 +16,8 @@ import io.github.ollama4j.OllamaAPI;
 import io.github.ollama4j.exceptions.OllamaException;
 import io.github.ollama4j.exceptions.RoleNotFoundException;
 import io.github.ollama4j.models.chat.OllamaChatMessageRole;
-import io.github.ollama4j.models.embed.OllamaEmbedRequestModel;
-import io.github.ollama4j.models.embed.OllamaEmbedResponseModel;
+import io.github.ollama4j.models.embed.OllamaEmbedRequest;
+import io.github.ollama4j.models.embed.OllamaEmbedResponse;
 import io.github.ollama4j.models.generate.OllamaGenerateRequest;
 import io.github.ollama4j.models.generate.OllamaGenerateRequestBuilder;
 import io.github.ollama4j.models.generate.OllamaGenerateStreamObserver;
@@ -109,10 +109,10 @@ class TestMockedAPIs {
         String model = "llama2";
         String prompt = "some prompt text";
         try {
-            OllamaEmbedRequestModel m = new OllamaEmbedRequestModel();
+            OllamaEmbedRequest m = new OllamaEmbedRequest();
             m.setModel(model);
             m.setInput(List.of(prompt));
-            when(ollamaAPI.embed(m)).thenReturn(new OllamaEmbedResponseModel());
+            when(ollamaAPI.embed(m)).thenReturn(new OllamaEmbedResponse());
             ollamaAPI.embed(m);
             verify(ollamaAPI, times(1)).embed(m);
         } catch (OllamaException e) {
@@ -126,8 +126,8 @@ class TestMockedAPIs {
         String model = "llama2";
         List<String> inputs = List.of("some prompt text");
         try {
-            OllamaEmbedRequestModel m = new OllamaEmbedRequestModel(model, inputs);
-            when(ollamaAPI.embed(m)).thenReturn(new OllamaEmbedResponseModel());
+            OllamaEmbedRequest m = new OllamaEmbedRequest(model, inputs);
+            when(ollamaAPI.embed(m)).thenReturn(new OllamaEmbedResponse());
             ollamaAPI.embed(m);
             verify(ollamaAPI, times(1)).embed(m);
         } catch (OllamaException e) {
@@ -141,10 +141,10 @@ class TestMockedAPIs {
         String model = "llama2";
         List<String> inputs = List.of("some prompt text");
         try {
-            when(ollamaAPI.embed(new OllamaEmbedRequestModel(model, inputs)))
-                    .thenReturn(new OllamaEmbedResponseModel());
-            ollamaAPI.embed(new OllamaEmbedRequestModel(model, inputs));
-            verify(ollamaAPI, times(1)).embed(new OllamaEmbedRequestModel(model, inputs));
+            when(ollamaAPI.embed(new OllamaEmbedRequest(model, inputs)))
+                    .thenReturn(new OllamaEmbedResponse());
+            ollamaAPI.embed(new OllamaEmbedRequest(model, inputs));
+            verify(ollamaAPI, times(1)).embed(new OllamaEmbedRequest(model, inputs));
         } catch (OllamaException e) {
             throw new RuntimeException(e);
         }

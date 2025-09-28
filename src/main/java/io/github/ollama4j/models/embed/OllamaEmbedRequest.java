@@ -20,7 +20,7 @@ import lombok.*;
 @Data
 @RequiredArgsConstructor
 @NoArgsConstructor
-public class OllamaEmbedRequestModel {
+public class OllamaEmbedRequest {
     @NonNull private String model;
 
     @NonNull private List<String> input;

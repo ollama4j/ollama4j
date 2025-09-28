@@ -15,12 +15,12 @@ import io.github.ollama4j.exceptions.ToolInvocationException;
 import io.github.ollama4j.metrics.MetricsRecorder;
 import io.github.ollama4j.models.chat.*;
 import io.github.ollama4j.models.chat.OllamaChatTokenHandler;
-import io.github.ollama4j.models.embed.OllamaEmbedRequestModel;
-import io.github.ollama4j.models.embed.OllamaEmbedResponseModel;
+import io.github.ollama4j.models.embed.OllamaEmbedRequest;
+import io.github.ollama4j.models.embed.OllamaEmbedResponse;
 import io.github.ollama4j.models.generate.OllamaGenerateRequest;
 import io.github.ollama4j.models.generate.OllamaGenerateStreamObserver;
 import io.github.ollama4j.models.generate.OllamaGenerateTokenHandler;
-import io.github.ollama4j.models.ps.ModelsProcessResponse;
+import io.github.ollama4j.models.ps.ModelProcessesResponse;
 import io.github.ollama4j.models.request.*;
 import io.github.ollama4j.models.response.*;
 import io.github.ollama4j.tools.*;
@@ -189,7 +189,7 @@ public class OllamaAPI {
      * @return ModelsProcessResponse containing details about the running models
      * @throws OllamaException if the response indicates an error status
      */
-    public ModelsProcessResponse ps() throws OllamaException {
+    public ModelProcessesResponse ps() throws OllamaException {
         long startTime = System.currentTimeMillis();
         String url = "/api/ps";
         int statusCode = -1;
@@ -217,7 +217,7 @@ public class OllamaAPI {
             String responseString = response.body();
             if (statusCode == 200) {
                 return Utils.getObjectMapper()
-                        .readValue(responseString, ModelsProcessResponse.class);
+                        .readValue(responseString, ModelProcessesResponse.class);
             } else {
                 throw new OllamaException(statusCode + " - " + responseString);
             }
@@ -713,14 +713,13 @@ public class OllamaAPI {
     }
 
     /**
-     * Generate embeddings using a {@link OllamaEmbedRequestModel}.
+     * Generate embeddings using a {@link OllamaEmbedRequest}.
      *
      * @param modelRequest request for '/api/embed' endpoint
      * @return embeddings
      * @throws OllamaException if the response indicates an error status
      */
-    public OllamaEmbedResponseModel embed(OllamaEmbedRequestModel modelRequest)
-            throws OllamaException {
+    public OllamaEmbedResponse embed(OllamaEmbedRequest modelRequest) throws OllamaException {
         long startTime = System.currentTimeMillis();
         String url = "/api/embed";
         int statusCode = -1;
@@ -740,8 +739,7 @@ public class OllamaAPI {
             statusCode = response.statusCode();
             String responseBody = response.body();
             if (statusCode == 200) {
-                return Utils.getObjectMapper()
-                        .readValue(responseBody, OllamaEmbedResponseModel.class);
+                return Utils.getObjectMapper().readValue(responseBody, OllamaEmbedResponse.class);
             } else {
                 throw new OllamaException(statusCode + " - " + responseBody);
             }

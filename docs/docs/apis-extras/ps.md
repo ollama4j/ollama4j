@@ -12,14 +12,14 @@ This API corresponds to the [PS](https://github.com/ollama/ollama/blob/main/docs
 package io.github.ollama4j.localtests;
 
 import io.github.ollama4j.OllamaAPI;
-import io.github.ollama4j.models.ps.ModelsProcessResponse;
+import io.github.ollama4j.models.ps.ModelProcessesResponse;
 
 public class Main {
     public static void main(String[] args) {
 
         OllamaAPI ollamaAPI = new OllamaAPI("http://localhost:11434");
 
-        ModelsProcessResponse response = ollamaAPI.ps();
+        ModelProcessesResponse response = ollamaAPI.ps();
 
         System.out.println(response);
     }

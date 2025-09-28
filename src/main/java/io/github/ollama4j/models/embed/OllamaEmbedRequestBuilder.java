@@ -16,10 +16,10 @@ import java.util.List;
  */
 public class OllamaEmbedRequestBuilder {
 
-    private final OllamaEmbedRequestModel request;
+    private final OllamaEmbedRequest request;
 
     private OllamaEmbedRequestBuilder(String model, List<String> input) {
-        this.request = new OllamaEmbedRequestModel(model, input);
+        this.request = new OllamaEmbedRequest(model, input);
     }
 
     public static OllamaEmbedRequestBuilder getInstance(String model, String... input) {
@@ -41,7 +41,7 @@ public class OllamaEmbedRequestBuilder {
         return this;
     }
 
-    public OllamaEmbedRequestModel build() {
+    public OllamaEmbedRequest build() {
         return this.request;
     }
 }

@@ -15,8 +15,8 @@ import io.github.ollama4j.exceptions.OllamaException;
 import io.github.ollama4j.impl.ConsoleOutputChatTokenHandler;
 import io.github.ollama4j.impl.ConsoleOutputGenerateTokenHandler;
 import io.github.ollama4j.models.chat.*;
-import io.github.ollama4j.models.embed.OllamaEmbedRequestModel;
-import io.github.ollama4j.models.embed.OllamaEmbedResponseModel;
+import io.github.ollama4j.models.embed.OllamaEmbedRequest;
+import io.github.ollama4j.models.embed.OllamaEmbedResponse;
 import io.github.ollama4j.models.generate.OllamaGenerateRequest;
 import io.github.ollama4j.models.generate.OllamaGenerateRequestBuilder;
 import io.github.ollama4j.models.generate.OllamaGenerateStreamObserver;
@@ -231,10 +231,10 @@ class OllamaAPIIntegrationTest {
     @Order(5)
     void shouldReturnEmbeddings() throws Exception {
         api.pullModel(EMBEDDING_MODEL);
-        OllamaEmbedRequestModel m = new OllamaEmbedRequestModel();
+        OllamaEmbedRequest m = new OllamaEmbedRequest();
         m.setModel(EMBEDDING_MODEL);
         m.setInput(Arrays.asList("Why is the sky blue?", "Why is the grass green?"));
-        OllamaEmbedResponseModel embeddings = api.embed(m);
+        OllamaEmbedResponse embeddings = api.embed(m);
         assertNotNull(embeddings, "Embeddings should not be null");
         assertFalse(embeddings.getEmbeddings().isEmpty(), "Embeddings should not be empty");
     }
@@ -1328,12 +1328,12 @@ class OllamaAPIIntegrationTest {
     void shouldReturnEmbeddingsForSingleInput() throws Exception {
         api.pullModel(EMBEDDING_MODEL);
 
-        OllamaEmbedRequestModel requestModel = new OllamaEmbedRequestModel();
+        OllamaEmbedRequest requestModel = new OllamaEmbedRequest();
         requestModel.setModel(EMBEDDING_MODEL);
         requestModel.setInput(
                 Collections.singletonList("This is a single test sentence for embedding."));
 
-        OllamaEmbedResponseModel embeddings = api.embed(requestModel);
+        OllamaEmbedResponse embeddings = api.embed(requestModel);
 
         assertNotNull(embeddings);
         assertFalse(embeddings.getEmbeddings().isEmpty());

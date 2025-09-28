@@ -38,6 +38,16 @@ doxygen:
 	@echo "\033[0;34mGenerating documentation with Doxygen...\033[0m"
 	@doxygen Doxyfile
 
+javadoc:
+	@echo "\033[0;34mGenerating Javadocs into '$(javadocfolder)'...\033[0m"
+	@mvn clean javadoc:javadoc
+	@if [ -f "target/reports/apidocs/index.html" ]; then \
+		echo "\033[0;32mJavadocs generated in target/reports/apidocs/index.html\033[0m"; \
+	else \
+		echo "\033[0;31mFailed to generate Javadocs in target/reports/apidocs\033[0m"; \
+		exit 1; \
+	fi
+
 list-releases:
 	@echo "\033[0;34mListing latest releases...\033[0m"
 	@curl 'https://central.sonatype.com/api/internal/browse/component/versions?sortField=normalizedVersion&sortDirection=desc&page=0&size=20&filter=namespace%3Aio.github.ollama4j%2Cname%3Aollama4j' \

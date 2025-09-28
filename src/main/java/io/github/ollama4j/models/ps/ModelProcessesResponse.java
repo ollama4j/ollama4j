@@ -17,7 +17,7 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class ModelsProcessResponse {
+public class ModelProcessesResponse {
     @JsonProperty("models")
     private List<ModelProcess> models;
 
