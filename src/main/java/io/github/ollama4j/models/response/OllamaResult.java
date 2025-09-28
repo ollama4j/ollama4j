@@ -1,21 +1,30 @@
+/*
+ * Ollama4j - Java library for interacting with Ollama server.
+ * Copyright (c) 2025 Amith Koujalgi and contributors.
+ *
+ * Licensed under the MIT License (the "License");
+ * you may not use this file except in compliance with the License.
+ *
+*/
 package io.github.ollama4j.models.response;
+
+import static io.github.ollama4j.utils.Utils.getObjectMapper;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
-import lombok.Data;
-import lombok.Getter;
-
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
-import static io.github.ollama4j.utils.Utils.getObjectMapper;
+import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 
 /**
  * The type Ollama result.
  */
 @Getter
+@Setter
 @SuppressWarnings("unused")
 @Data
 @JsonIgnoreProperties(ignoreUnknown = true)
@@ -24,14 +33,17 @@ public class OllamaResult {
      * Get the completion/response text
      */
     private final String response;
+
     /**
      * Get the thinking text (if available)
      */
     private final String thinking;
+
     /**
      * Get the response status code.
      */
     private int httpStatusCode;
+
     /**
      * Get the response time in milliseconds.
      */
@@ -75,7 +87,9 @@ public class OllamaResult {
             responseMap.put("promptEvalDuration", this.promptEvalDuration);
             responseMap.put("evalCount", this.evalCount);
             responseMap.put("evalDuration", this.evalDuration);
-            return getObjectMapper().writerWithDefaultPrettyPrinter().writeValueAsString(responseMap);
+            return getObjectMapper()
+                    .writerWithDefaultPrettyPrinter()
+                    .writeValueAsString(responseMap);
         } catch (JsonProcessingException e) {
             throw new RuntimeException(e);
         }
@@ -95,17 +109,16 @@ public class OllamaResult {
 
         try {
             // Check if the response is a valid JSON
-            if ((!responseStr.trim().startsWith("{") && !responseStr.trim().startsWith("[")) ||
-                    (!responseStr.trim().endsWith("}") && !responseStr.trim().endsWith("]"))) {
+            if ((!responseStr.trim().startsWith("{") && !responseStr.trim().startsWith("["))
+                    || (!responseStr.trim().endsWith("}") && !responseStr.trim().endsWith("]"))) {
                 throw new IllegalArgumentException("Response is not a valid JSON object");
             }
 
-            Map<String, Object> response = getObjectMapper().readValue(responseStr,
-                    new TypeReference<Map<String, Object>>() {
-                    });
-            return response;
+            return getObjectMapper()
+                    .readValue(responseStr, new TypeReference<Map<String, Object>>() {});
         } catch (JsonProcessingException e) {
-            throw new IllegalArgumentException("Failed to parse response as JSON: " + e.getMessage(), e);
+            throw new IllegalArgumentException(
+                    "Failed to parse response as JSON: " + e.getMessage(), e);
         }
     }
 
@@ -126,13 +139,14 @@ public class OllamaResult {
 
         try {
             // Check if the response is a valid JSON
-            if ((!responseStr.trim().startsWith("{") && !responseStr.trim().startsWith("[")) ||
-                    (!responseStr.trim().endsWith("}") && !responseStr.trim().endsWith("]"))) {
+            if ((!responseStr.trim().startsWith("{") && !responseStr.trim().startsWith("["))
+                    || (!responseStr.trim().endsWith("}") && !responseStr.trim().endsWith("]"))) {
                 throw new IllegalArgumentException("Response is not a valid JSON object");
             }
             return getObjectMapper().readValue(responseStr, clazz);
         } catch (JsonProcessingException e) {
-            throw new IllegalArgumentException("Failed to parse response as JSON: " + e.getMessage(), e);
+            throw new IllegalArgumentException(
+                    "Failed to parse response as JSON: " + e.getMessage(), e);
         }
     }
 }

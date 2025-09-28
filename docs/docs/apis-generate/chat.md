@@ -16,7 +16,7 @@ information using the history of already asked questions and the respective answ
 
 You will get a response similar to:
 
-::::tip[LLM Response]
+:::tip[LLM Response]
 
 > First answer: The capital of France is Paris.
 >
@@ -47,7 +47,7 @@ You will get a response similar to:
   "tool_calls" : null
 }]
 ```
-::::
+:::
 
 ### Create a conversation where the answer is streamed
 
@@ -75,9 +75,9 @@ You will get a response similar to:
 
 You will get a response as:
 
-::::tip[LLM Response]
+:::tip[LLM Response]
 Shhh!
-::::
+:::
 
 
 ## Create a conversation about an image (requires a vision model)
@@ -91,7 +91,7 @@ Let's use this image:
 
 You will get a response similar to:
 
-::::tip[LLM Response]
+:::tip[LLM Response]
 **First Answer:** The image shows a dog sitting on the bow of a boat that is docked in calm water. The boat has two
 levels, with the lower level containing seating and what appears to be an engine cover. The dog seems relaxed and
 comfortable on the boat, looking out over the water. The background suggests it might be late afternoon or early
@@ -101,4 +101,4 @@ evening, given the warm lighting and the low position of the sun in the sky.
 appears to be medium-sized with a short coat and a brown coloration, which might suggest that it is a **_Golden Retriever_**
 or a similar breed. Without more details like ear shape and tail length, it's not possible to identify the exact breed
 confidently.
-::::
+:::

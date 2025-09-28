@@ -1,8 +1,8 @@
 ---
-sidebar_position: 2
+sidebar_position: 3
 ---
 
-# Set Basic Authentication
+# Basic Auth
 
 This API lets you set the basic authentication for the Ollama client. This would help in scenarios where
 Ollama server would be setup behind a gateway/reverse proxy with basic auth.

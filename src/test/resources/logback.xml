@@ -2,14 +2,22 @@
 <configuration>
     <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
         <encoder>
-            <pattern>%d{HH:mm:ss.SSS} [%thread] %-5level %logger{36} %msg%n</pattern>
+            <pattern>%d{HH:mm:ss.SSS} [%thread] %-5level %logger %msg%n</pattern>
         </encoder>
     </appender>
 
-    <root level="info">
+    <root level="debug">
         <appender-ref ref="STDOUT"/>
     </root>
 
+    <!-- Suppress logs from com.github.dockerjava package -->
+    <logger name="com.github.dockerjava" level="INFO"/>
+
+    <!-- Suppress logs from org.testcontainers package -->
+    <logger name="org.testcontainers" level="INFO"/>
+
+
+    <!-- Keep other loggers at WARN level -->
     <logger name="org.apache" level="WARN"/>
     <logger name="httpclient" level="WARN"/>
 </configuration>

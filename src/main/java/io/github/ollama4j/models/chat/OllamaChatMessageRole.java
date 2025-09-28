@@ -1,11 +1,18 @@
+/*
+ * Ollama4j - Java library for interacting with Ollama server.
+ * Copyright (c) 2025 Amith Koujalgi and contributors.
+ *
+ * Licensed under the MIT License (the "License");
+ * you may not use this file except in compliance with the License.
+ *
+*/
 package io.github.ollama4j.models.chat;
 
 import com.fasterxml.jackson.annotation.JsonValue;
 import io.github.ollama4j.exceptions.RoleNotFoundException;
-import lombok.Getter;
-
 import java.util.ArrayList;
 import java.util.List;
+import lombok.Getter;
 
 /**
  * Defines the possible Chat Message roles.
@@ -19,8 +26,7 @@ public class OllamaChatMessageRole {
     public static final OllamaChatMessageRole ASSISTANT = new OllamaChatMessageRole("assistant");
     public static final OllamaChatMessageRole TOOL = new OllamaChatMessageRole("tool");
 
-    @JsonValue
-    private final String roleName;
+    @JsonValue private final String roleName;
 
     private OllamaChatMessageRole(String roleName) {
         this.roleName = roleName;
@@ -28,8 +34,6 @@ public class OllamaChatMessageRole {
     }
 
     public static OllamaChatMessageRole newCustomRole(String roleName) {
-//        OllamaChatMessageRole customRole = new OllamaChatMessageRole(roleName);
-//        roles.add(customRole);
         return new OllamaChatMessageRole(roleName);
     }
 

@@ -1,7 +1,8 @@
 <div align="center">
   <img src='https://raw.githubusercontent.com/ollama4j/ollama4j/65a9d526150da8fcd98e2af6a164f055572bf722/ollama4j.jpeg' width='100' alt="ollama4j-icon">
 
-  ### Ollama4j
+### Ollama4j
+
 </div>
 
 <div align="center">
@@ -40,15 +41,52 @@ _Find more details on the **[website](https://ollama4j.github.io/ollama4j/)**._
 
 ## Table of Contents
 
+- [Capabilities](#capabilities)
 - [How does it work?](#how-does-it-work)
 - [Requirements](#requirements)
-- [Installation](#installation)
-- [API Spec](https://ollama4j.github.io/ollama4j/category/apis---model-management)
+- [Usage](#usage)
+    - [For Maven](#for-maven)
+        - [Using Maven Central](#using-maven-central)
+        - [Using GitHub's Maven Package Repository](#using-githubs-maven-package-repository)
+    - [For Gradle](#for-gradle)
+- [API Spec](#api-spec)
 - [Examples](#examples)
-- [Javadoc](https://ollama4j.github.io/ollama4j/apidocs/)
 - [Development](#development)
-- [Contributions](#get-involved)
-- [References](#references)
+    - [Setup dev environment](#setup-dev-environment)
+    - [Build](#build)
+    - [Run unit tests](#run-unit-tests)
+    - [Run integration tests](#run-integration-tests)
+    - [Releases](#releases)
+- [Get Involved](#get-involved)
+- [Who's using Ollama4j?](#whos-using-ollama4j)
+- [Growth](#growth)
+    - [References](#references)
+    - [Credits](#credits)
+    - [Appreciate the work?](#appreciate-the-work)
+
+## Capabilities
+
+- **Text generation**: Single-turn `generate` with optional streaming and advanced options
+- **Chat**: Multi-turn chat with conversation history and roles
+- **Tool/function calling**: Built-in tool invocation via annotations and tool specs
+- **Reasoning/thinking modes**: Generate and chat with “thinking” outputs where supported
+- **Image inputs (multimodal)**: Generate with images as inputs where models support vision
+- **Embeddings**: Create vector embeddings for text
+- **Async generation**: Fire-and-forget style generation APIs
+- **Custom roles**: Define and use custom chat roles
+- **Model management**: List, pull, create, delete, and get model details
+- **Connectivity utilities**: Server `ping` and process status (`ps`)
+- **Authentication**: Basic auth and bearer token support
+- **Options builder**: Type-safe builder for model parameters and request options
+- **Timeouts**: Configure connect/read/write timeouts
+- **Logging**: Built-in logging hooks for requests and responses
+- **Metrics & Monitoring** 🆕: Built-in Prometheus metrics export for real-time monitoring of requests, model usage, and
+  performance. *(Beta feature – feedback/contributions welcome!)* -
+  Checkout [ollama4j-examples](https://github.com/ollama4j/ollama4j-examples) repository for details.
+
+<div align="center">
+  <img src='metrics.png' width='100%' alt="ollama4j-icon">
+</div>
 
 ## How does it work?
 
@@ -73,7 +111,7 @@ _Find more details on the **[website](https://ollama4j.github.io/ollama4j/)**._
   </a>
 </p>
 
-## Installation
+## Usage
 
 > [!NOTE]
 > We are now publishing the artifacts to both Maven Central and GitHub package repositories.
@@ -182,7 +220,7 @@ dependencies {
 
 [lib-shield]: https://img.shields.io/badge/ollama4j-get_latest_version-blue.svg?style=just-the-message&labelColor=gray
 
-#### API Spec
+### API Spec
 
 > [!TIP]
 > Find the full API specifications on the [website](https://ollama4j.github.io/ollama4j/).

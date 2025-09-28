@@ -1,11 +1,19 @@
+/*
+ * Ollama4j - Java library for interacting with Ollama server.
+ * Copyright (c) 2025 Amith Koujalgi and contributors.
+ *
+ * Licensed under the MIT License (the "License");
+ * you may not use this file except in compliance with the License.
+ *
+*/
 package io.github.ollama4j.unittests.jackson;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.fail;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.github.ollama4j.utils.Utils;
-
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.fail;
 
 public abstract class AbstractSerializationTest<T> {
 
@@ -29,8 +37,7 @@ public abstract class AbstractSerializationTest<T> {
         }
     }
 
-    protected void assertEqualsAfterUnmarshalling(T unmarshalledObject,
-                                                  T req) {
+    protected void assertEqualsAfterUnmarshalling(T unmarshalledObject, T req) {
         assertEquals(req, unmarshalledObject);
     }
 }

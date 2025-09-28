@@ -1,21 +1,29 @@
+/*
+ * Ollama4j - Java library for interacting with Ollama server.
+ * Copyright (c) 2025 Amith Koujalgi and contributors.
+ *
+ * Licensed under the MIT License (the "License");
+ * you may not use this file except in compliance with the License.
+ *
+*/
 package io.github.ollama4j.models.ps;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import java.util.List;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-
-import java.util.List;
 
 @Data
 @NoArgsConstructor
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class ModelsProcessResponse {
+public class ModelProcessesResult {
     @JsonProperty("models")
     private List<ModelProcess> models;
 
     @Data
     @NoArgsConstructor
+    @JsonIgnoreProperties(ignoreUnknown = true)
     public static class ModelProcess {
         @JsonProperty("name")
         private String name;
@@ -33,7 +41,7 @@ public class ModelsProcessResponse {
         private ModelDetails details;
 
         @JsonProperty("expires_at")
-        private String expiresAt; // Consider using LocalDateTime if you need to process date/time
+        private String expiresAt;
 
         @JsonProperty("size_vram")
         private long sizeVram;

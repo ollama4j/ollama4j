@@ -1,5 +1,5 @@
 ---
-sidebar_position: 4
+sidebar_position: 5
 ---
 
 # PS
@@ -12,17 +12,14 @@ This API corresponds to the [PS](https://github.com/ollama/ollama/blob/main/docs
 package io.github.ollama4j.localtests;
 
 import io.github.ollama4j.OllamaAPI;
-import io.github.ollama4j.exceptions.OllamaBaseException;
-import io.github.ollama4j.models.ps.ModelsProcessResponse;
-
-import java.io.IOException;
+import io.github.ollama4j.models.ps.ModelProcessesResult;
 
 public class Main {
     public static void main(String[] args) {
 
         OllamaAPI ollamaAPI = new OllamaAPI("http://localhost:11434");
 
-        ModelsProcessResponse response = ollamaAPI.ps();
+        ModelProcessesResult response = ollamaAPI.ps();
 
         System.out.println(response);
     }

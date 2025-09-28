@@ -1,3 +1,11 @@
+/*
+ * Ollama4j - Java library for interacting with Ollama server.
+ * Copyright (c) 2025 Amith Koujalgi and contributors.
+ *
+ * Licensed under the MIT License (the "License");
+ * you may not use this file except in compliance with the License.
+ *
+*/
 package io.github.ollama4j.utils;
 
 /**
@@ -18,52 +26,54 @@ package io.github.ollama4j.utils;
  */
 public class PromptBuilder {
 
-  private final StringBuilder prompt;
+    private final StringBuilder prompt;
 
-  /** Constructs a new {@code PromptBuilder} with an empty prompt. */
-  public PromptBuilder() {
-    this.prompt = new StringBuilder();
-  }
+    /**
+     * Constructs a new {@code PromptBuilder} with an empty prompt.
+     */
+    public PromptBuilder() {
+        this.prompt = new StringBuilder();
+    }
 
-  /**
-   * Appends the specified text to the prompt.
-   *
-   * @param text the text to be added to the prompt
-   * @return a reference to this {@code PromptBuilder} instance for method chaining
-   */
-  public PromptBuilder add(String text) {
-    prompt.append(text);
-    return this;
-  }
+    /**
+     * Appends the specified text to the prompt.
+     *
+     * @param text the text to be added to the prompt
+     * @return a reference to this {@code PromptBuilder} instance for method chaining
+     */
+    public PromptBuilder add(String text) {
+        prompt.append(text);
+        return this;
+    }
 
-  /**
-   * Appends the specified text followed by a newline character to the prompt.
-   *
-   * @param text the text to be added as a line to the prompt
-   * @return a reference to this {@code PromptBuilder} instance for method chaining
-   */
-  public PromptBuilder addLine(String text) {
-    prompt.append(text).append("\n");
-    return this;
-  }
+    /**
+     * Appends the specified text followed by a newline character to the prompt.
+     *
+     * @param text the text to be added as a line to the prompt
+     * @return a reference to this {@code PromptBuilder} instance for method chaining
+     */
+    public PromptBuilder addLine(String text) {
+        prompt.append(text).append("\n");
+        return this;
+    }
 
-  /**
-   * Appends a separator line to the prompt. The separator is a newline followed by a line of
-   * dashes.
-   *
-   * @return a reference to this {@code PromptBuilder} instance for method chaining
-   */
-  public PromptBuilder addSeparator() {
-    prompt.append("\n--------------------------------------------------\n");
-    return this;
-  }
+    /**
+     * Appends a separator line to the prompt. The separator is a newline followed by a line of
+     * dashes.
+     *
+     * @return a reference to this {@code PromptBuilder} instance for method chaining
+     */
+    public PromptBuilder addSeparator() {
+        prompt.append("\n--------------------------------------------------\n");
+        return this;
+    }
 
-  /**
-   * Builds and returns the final prompt as a string.
-   *
-   * @return the final prompt as a string
-   */
-  public String build() {
-    return prompt.toString();
-  }
+    /**
+     * Builds and returns the final prompt as a string.
+     *
+     * @return the final prompt as a string
+     */
+    public String build() {
+        return prompt.toString();
+    }
 }

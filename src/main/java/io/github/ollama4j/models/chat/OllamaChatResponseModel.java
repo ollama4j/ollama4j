@@ -1,18 +1,25 @@
+/*
+ * Ollama4j - Java library for interacting with Ollama server.
+ * Copyright (c) 2025 Amith Koujalgi and contributors.
+ *
+ * Licensed under the MIT License (the "License");
+ * you may not use this file except in compliance with the License.
+ *
+*/
 package io.github.ollama4j.models.chat;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import java.util.List;
 import lombok.Data;
 
-import java.util.List;
-
 @Data
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class OllamaChatResponseModel {
     private String model;
     private @JsonProperty("created_at") String createdAt;
     private @JsonProperty("done_reason") String doneReason;
-    private OllamaChatMessage message;
     private boolean done;
-    private String error;
     private List<Integer> context;
     private @JsonProperty("total_duration") Long totalDuration;
     private @JsonProperty("load_duration") Long loadDuration;
@@ -20,4 +27,6 @@ public class OllamaChatResponseModel {
     private @JsonProperty("eval_duration") Long evalDuration;
     private @JsonProperty("prompt_eval_count") Integer promptEvalCount;
     private @JsonProperty("eval_count") Integer evalCount;
+    private String error;
+    private OllamaChatMessage message;
 }

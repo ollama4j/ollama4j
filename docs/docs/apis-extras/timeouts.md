@@ -2,7 +2,9 @@
 sidebar_position: 2
 ---
 
-# Set Request Timeout
+# Timeouts
+
+### Set Request Timeout
 
 This API lets you set the request timeout for the Ollama client.
 

@@ -1,8 +1,8 @@
 ---
-sidebar_position: 2
+sidebar_position: 4
 ---
 
-# Set Bearer Authentication
+# Bearer Auth
 
 This API lets you set the bearer authentication for the Ollama client. This would help in scenarios where
 Ollama server would be setup behind a gateway/reverse proxy with bearer auth.

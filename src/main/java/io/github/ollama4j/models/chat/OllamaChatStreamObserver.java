@@ -1,15 +1,24 @@
+/*
+ * Ollama4j - Java library for interacting with Ollama server.
+ * Copyright (c) 2025 Amith Koujalgi and contributors.
+ *
+ * Licensed under the MIT License (the "License");
+ * you may not use this file except in compliance with the License.
+ *
+*/
 package io.github.ollama4j.models.chat;
 
-import io.github.ollama4j.models.generate.OllamaStreamHandler;
-import io.github.ollama4j.models.generate.OllamaTokenHandler;
-import lombok.RequiredArgsConstructor;
+import io.github.ollama4j.models.generate.OllamaGenerateTokenHandler;
+import lombok.AllArgsConstructor;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
-@RequiredArgsConstructor
-public class OllamaChatStreamObserver implements OllamaTokenHandler {
-    private final OllamaStreamHandler thinkingStreamHandler;
-    private final OllamaStreamHandler responseStreamHandler;
-
-    private String message = "";
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
+public class OllamaChatStreamObserver implements OllamaChatTokenHandler {
+    private OllamaGenerateTokenHandler thinkingStreamHandler;
+    private OllamaGenerateTokenHandler responseStreamHandler;
 
     @Override
     public void accept(OllamaChatResponseModel token) {
@@ -18,34 +27,15 @@ public class OllamaChatStreamObserver implements OllamaTokenHandler {
         }
 
         String thinking = token.getMessage().getThinking();
-        String content = token.getMessage().getContent();
+        String response = token.getMessage().getResponse();
 
         boolean hasThinking = thinking != null && !thinking.isEmpty();
-        boolean hasContent = !content.isEmpty();
+        boolean hasResponse = response != null && !response.isEmpty();
 
-//        if (hasThinking && !hasContent) {
-////            message += thinking;
-//            message = thinking;
-//        } else {
-////            message += content;
-//            message = content;
-//        }
-//
-//        responseStreamHandler.accept(message);
-
-
-        if (!hasContent && hasThinking && thinkingStreamHandler != null) {
-            // message = message + thinking;
-
-            // use only new tokens received, instead of appending the tokens to the previous
-            // ones and sending the full string again
+        if (!hasResponse && hasThinking && thinkingStreamHandler != null) {
             thinkingStreamHandler.accept(thinking);
-        } else if (hasContent && responseStreamHandler != null) {
-            // message = message + response;
-
-            // use only new tokens received, instead of appending the tokens to the previous
-            // ones and sending the full string again
-            responseStreamHandler.accept(content);
+        } else if (hasResponse) {
+            responseStreamHandler.accept(response);
         }
     }
 }
