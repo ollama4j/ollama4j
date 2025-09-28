@@ -109,7 +109,6 @@ public class OllamaAPI {
      */
     public OllamaAPI() {
         this.host = "http://localhost:11434";
-        //        initializeMetrics();
     }
 
     /**
@@ -124,7 +123,6 @@ public class OllamaAPI {
             this.host = host;
         }
         LOG.info("Ollama4j client initialized. Connected to Ollama server at: {}", this.host);
-        //        initializeMetrics();
     }
 
     /**
@@ -174,6 +172,9 @@ public class OllamaAPI {
             response = httpClient.send(httpRequest, HttpResponse.BodyHandlers.ofString());
             statusCode = response.statusCode();
             return statusCode == 200;
+        } catch (InterruptedException ie) {
+            Thread.currentThread().interrupt();
+            throw new OllamaException("Ping interrupted", ie);
         } catch (Exception e) {
             throw new OllamaException("Ping failed", e);
         } finally {
@@ -220,6 +221,9 @@ public class OllamaAPI {
             } else {
                 throw new OllamaException(statusCode + " - " + responseString);
             }
+        } catch (InterruptedException ie) {
+            Thread.currentThread().interrupt();
+            throw new OllamaException("ps interrupted", ie);
         } catch (Exception e) {
             throw new OllamaException("ps failed", e);
         } finally {
@@ -262,6 +266,9 @@ public class OllamaAPI {
             } else {
                 throw new OllamaException(statusCode + " - " + responseString);
             }
+        } catch (InterruptedException ie) {
+            Thread.currentThread().interrupt();
+            throw new OllamaException("listModels interrupted", ie);
         } catch (Exception e) {
             throw new OllamaException(e.getMessage(), e);
         } finally {
@@ -353,6 +360,9 @@ public class OllamaAPI {
             if (statusCode != 200) {
                 throw new OllamaException(statusCode + " - " + responseString);
             }
+        } catch (InterruptedException ie) {
+            Thread.currentThread().interrupt();
+            throw new OllamaException("Thread was interrupted during model pull.", ie);
         } catch (Exception e) {
             throw new OllamaException(e.getMessage(), e);
         } finally {
@@ -425,6 +435,9 @@ public class OllamaAPI {
             } else {
                 throw new OllamaException(statusCode + " - " + responseString);
             }
+        } catch (InterruptedException ie) {
+            Thread.currentThread().interrupt();
+            throw new OllamaException("Thread was interrupted", ie);
         } catch (Exception e) {
             throw new OllamaException(e.getMessage(), e);
         } finally {
@@ -468,6 +481,9 @@ public class OllamaAPI {
                             + " after "
                             + numberOfRetriesForModelPull
                             + " retries");
+        } catch (InterruptedException ie) {
+            Thread.currentThread().interrupt();
+            throw new OllamaException("Thread was interrupted", ie);
         } catch (Exception e) {
             throw new OllamaException(e.getMessage(), e);
         }
@@ -507,6 +523,9 @@ public class OllamaAPI {
             } else {
                 throw new OllamaException(statusCode + " - " + responseBody);
             }
+        } catch (InterruptedException ie) {
+            Thread.currentThread().interrupt();
+            throw new OllamaException("Thread was interrupted", ie);
         } catch (Exception e) {
             throw new OllamaException(e.getMessage(), e);
         } finally {
@@ -555,7 +574,7 @@ public class OllamaAPI {
                     new BufferedReader(
                             new InputStreamReader(response.body(), StandardCharsets.UTF_8))) {
                 String line;
-                StringBuffer lines = new StringBuffer();
+                StringBuilder lines = new StringBuilder();
                 while ((line = reader.readLine()) != null) {
                     ModelPullResponse res =
                             Utils.getObjectMapper().readValue(line, ModelPullResponse.class);
@@ -568,6 +587,9 @@ public class OllamaAPI {
                 }
                 out = lines;
             }
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+            throw new OllamaException("Thread was interrupted", e);
         } catch (Exception e) {
             throw new OllamaException(e.getMessage(), e);
         } finally {
@@ -617,6 +639,9 @@ public class OllamaAPI {
             if (statusCode != 200) {
                 throw new OllamaException(statusCode + " - " + responseBody);
             }
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+            throw new OllamaException("Thread was interrupted", e);
         } catch (Exception e) {
             throw new OllamaException(statusCode + " - " + out, e);
         } finally {
@@ -674,6 +699,10 @@ public class OllamaAPI {
                 LOG.debug("Unload response: {} - {}", statusCode, responseBody);
                 throw new OllamaException(statusCode + " - " + responseBody);
             }
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+            LOG.debug("Unload interrupted: {} - {}", statusCode, out);
+            throw new OllamaException(statusCode + " - " + out, e);
         } catch (Exception e) {
             LOG.debug("Unload failed: {} - {}", statusCode, out);
             throw new OllamaException(statusCode + " - " + out, e);
@@ -716,6 +745,9 @@ public class OllamaAPI {
             } else {
                 throw new OllamaException(statusCode + " - " + responseBody);
             }
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+            throw new OllamaException("Thread was interrupted", e);
         } catch (Exception e) {
             throw new OllamaException(e.getMessage(), e);
         } finally {
@@ -848,7 +880,6 @@ public class OllamaAPI {
             if (request.isUseTools()) {
                 // add all registered tools to request
                 request.setTools(toolRegistry.getRegisteredTools());
-                System.out.println("Use tools is set.");
             }
 
             if (tokenHandler != null) {
@@ -907,6 +938,9 @@ public class OllamaAPI {
                 toolCallTries++;
             }
             return result;
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+            throw new OllamaException("Thread was interrupted", e);
         } catch (Exception e) {
             throw new OllamaException(e.getMessage(), e);
         }
@@ -1124,6 +1158,9 @@ public class OllamaAPI {
             statusCode = result.getHttpStatusCode();
             out = result;
             return result;
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+            throw new OllamaException("Thread was interrupted", e);
         } catch (Exception e) {
             throw new OllamaException(e.getMessage(), e);
         } finally {

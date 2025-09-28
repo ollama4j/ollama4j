@@ -336,7 +336,6 @@ class OllamaAPIIntegrationTest {
                         .withThink(false)
                         .withOptions(new OptionsBuilder().build())
                         .build();
-        OllamaGenerateStreamObserver handler = null;
         OllamaResult result =
                 api.generate(
                         request,
@@ -821,33 +820,6 @@ class OllamaAPIIntegrationTest {
         assertNotNull(chatResult.getResponseModel());
     }
 
-    //    /**
-    //     * Tests generateWithImages using an image URL as input.
-    //     *
-    //     * <p>Scenario: Calls generateWithImages with a vision model and an image URL,expecting a
-    //     * non-empty response. Usage: generateWithImages, image from URL, no streaming.
-    //     */
-    //    @Test
-    //    @Order(17)
-    //    void shouldGenerateWithImageURLs()
-    //            throws OllamaBaseException   {
-    //        api.pullModel(VISION_MODEL);
-    //
-    //        OllamaResult result =
-    //                api.generateWithImages(
-    //                        VISION_MODEL,
-    //                        "What is in this image?",
-    //                        List.of(
-    //
-    // "https://i.pinimg.com/736x/f9/4e/cb/f94ecba040696a3a20b484d2e15159ec.jpg"),
-    //                        new OptionsBuilder().build(),
-    //                        null,
-    //                        null);
-    //        assertNotNull(result);
-    //        assertNotNull(result.getResponse());
-    //        assertFalse(result.getResponse().isEmpty());
-    //    }
-
     /**
      * Tests generateWithImages using an image file as input.
      *
@@ -1040,38 +1012,6 @@ class OllamaAPIIntegrationTest {
         assertNotNull(result.getResponse());
         assertFalse(result.getResponse().isEmpty());
     }
-
-    //    /**
-    //     * Tests generate with raw=true and thinking enabled.
-    //     *
-    //     * <p>Scenario: Calls generate with raw=true and think=true combination. Usage: generate,
-    //     * raw=true, thinking enabled, no streaming.
-    //     */
-    //    @Test
-    //    @Order(23)
-    //    void shouldGenerateWithRawModeAndThinking()
-    //            throws OllamaBaseException
-    // {
-    //        api.pullModel(THINKING_TOOL_MODEL_2);
-    //        api.unloadModel(THINKING_TOOL_MODEL_2);
-    //        boolean raw =
-    //                true; // if true no formatting will be applied to the prompt. You may choose
-    // to use
-    //        // the raw parameter if you are specifying a full templated prompt in your
-    //        // request to the API
-    //        boolean thinking = true;
-    //        OllamaResult result =
-    //                api.generate(
-    //                        THINKING_TOOL_MODEL_2,
-    //                        "Validate: 1+1=2",
-    //                        raw,
-    //                        thinking,
-    //                        new OptionsBuilder().build(),
-    //                        new OllamaGenerateStreamObserver(null, null));
-    //        assertNotNull(result);
-    //        assertNotNull(result.getResponse());
-    //        assertNotNull(result.getThinking());
-    //    }
 
     /**
      * Tests generate with all parameters enabled: raw=true, thinking=true, and streaming.

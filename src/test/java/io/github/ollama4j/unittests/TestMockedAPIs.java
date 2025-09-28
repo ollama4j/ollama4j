@@ -90,20 +90,6 @@ class TestMockedAPIs {
         }
     }
 
-    //    @Test
-    //    void testRegisteredTools() {
-    //        OllamaAPI ollamaAPI = Mockito.mock(OllamaAPI.class);
-    //        doNothing().when(ollamaAPI).registerTools(Collections.emptyList());
-    //        ollamaAPI.registerTools(Collections.emptyList());
-    //        verify(ollamaAPI, times(1)).registerTools(Collections.emptyList());
-    //
-    //        List<Tools.ToolSpecification> toolSpecifications = new ArrayList<>();
-    //        toolSpecifications.add(getSampleToolSpecification());
-    //        doNothing().when(ollamaAPI).registerTools(toolSpecifications);
-    //        ollamaAPI.registerTools(toolSpecifications);
-    //        verify(ollamaAPI, times(1)).registerTools(toolSpecifications);
-    //    }
-
     @Test
     void testGetModelDetails() {
         OllamaAPI ollamaAPI = Mockito.mock(OllamaAPI.class);
@@ -169,7 +155,6 @@ class TestMockedAPIs {
         OllamaAPI ollamaAPI = Mockito.mock(OllamaAPI.class);
         String model = "llama2";
         String prompt = "some prompt text";
-        OptionsBuilder optionsBuilder = new OptionsBuilder();
         OllamaGenerateStreamObserver observer = new OllamaGenerateStreamObserver(null, null);
         try {
             OllamaGenerateRequest request =
@@ -318,64 +303,4 @@ class TestMockedAPIs {
             throw new RuntimeException("Failed to run test: testGetRoleFound");
         }
     }
-
-    //    private static Tools.ToolSpecification getSampleToolSpecification() {
-    //        return Tools.ToolSpecification.builder()
-    //                .functionName("current-weather")
-    //                .functionDescription("Get current weather")
-    //                .toolFunction(
-    //                        new ToolFunction() {
-    //                            @Override
-    //                            public Object apply(Map<String, Object> arguments) {
-    //                                String location = arguments.get("city").toString();
-    //                                return "Currently " + location + "'s weather is beautiful.";
-    //                            }
-    //                        })
-    //                .toolPrompt(
-    //                        Tools.PromptFuncDefinition.builder()
-    //                                .type("prompt")
-    //                                .function(
-    //                                        Tools.PromptFuncDefinition.PromptFuncSpec.builder()
-    //                                                .name("get-location-weather-info")
-    //                                                .description("Get location details")
-    //                                                .parameters(
-    //                                                        Tools.PromptFuncDefinition.Parameters
-    //                                                                .builder()
-    //                                                                .type("object")
-    //                                                                .properties(
-    //                                                                        Map.of(
-    //                                                                                "city",
-    //                                                                                Tools
-    //
-    // .PromptFuncDefinition
-    //
-    // .Property
-    //
-    // .builder()
-    //                                                                                        .type(
-    //
-    //  "string")
-    //
-    // .description(
-    //
-    //  "The city,"
-    //
-    //      + " e.g."
-    //
-    //      + " New Delhi,"
-    //
-    //      + " India")
-    //
-    // .required(
-    //
-    //  true)
-    //
-    // .build()))
-    //
-    // .required(java.util.List.of("city"))
-    //                                                                .build())
-    //                                                .build())
-    //                                .build())
-    //                .build();
-    //    }
 }

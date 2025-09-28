@@ -37,29 +37,4 @@ class TestOllamaChatRequestBuilder {
         assertNotNull(afterReset.getMessages());
         assertEquals(0, afterReset.getMessages().size());
     }
-
-    //    @Test
-    //    void testImageUrlFailuresThrowExceptionAndBuilderRemainsUsable() {
-    //        OllamaChatRequestBuilder builder = OllamaChatRequestBuilder.builder().withModel("m");
-    //        String invalidUrl = "ht!tp:/bad_url"; // clearly invalid URL format
-    //
-    //        // Exception should be thrown for invalid URL
-    //        assertThrows(
-    //                Exception.class,
-    //                () -> {
-    //                    builder.withMessage(
-    //                            OllamaChatMessageRole.USER, "hi", Collections.emptyList(),
-    // invalidUrl);
-    //                });
-    //
-    //        OllamaChatRequest req =
-    //                builder.withMessage(OllamaChatMessageRole.USER, "hello",
-    // Collections.emptyList())
-    //                        .build();
-    //
-    //        assertNotNull(req.getMessages());
-    //        assert (!req.getMessages().isEmpty());
-    //        OllamaChatMessage msg = req.getMessages().get(0);
-    //        assertNotNull(msg.getResponse());
-    //    }
 }

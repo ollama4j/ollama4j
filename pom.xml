@@ -276,14 +276,6 @@
             <version>2.0.17</version>
         </dependency>
 
-<!--        &lt;!&ndash; Logger impl - Logback Classic (SLF4J binding) - Disabled on JAR build &ndash;&gt;-->
-<!--        <dependency>-->
-<!--            <groupId>ch.qos.logback</groupId>-->
-<!--            <artifactId>logback-classic</artifactId>-->
-<!--            <version>1.4.12</version>-->
-<!--            <scope>test</scope>-->
-<!--        </dependency>-->
-
         <dependency>
             <groupId>org.junit.jupiter</groupId>
             <artifactId>junit-jupiter-api</artifactId>

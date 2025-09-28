@@ -136,19 +136,25 @@ public class OllamaAsyncResultStreamer extends Thread {
                     try {
                         reader.close();
                     } catch (IOException e) {
+                        /* do nothing */
                     }
                 }
                 if (responseBodyStream != null) {
                     try {
                         responseBodyStream.close();
                     } catch (IOException e) {
+                        /* do nothing */
                     }
                 }
             }
             if (statusCode != 200) {
                 throw new OllamaException(this.completeResponse);
             }
-        } catch (IOException | InterruptedException | OllamaException e) {
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+            this.succeeded = false;
+            this.completeResponse = "[FAILED] " + e.getMessage();
+        } catch (IOException | OllamaException e) {
             this.succeeded = false;
             this.completeResponse = "[FAILED] " + e.getMessage();
         }
