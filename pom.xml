@@ -19,7 +19,7 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <maven-surefire-plugin.version>3.0.0-M5</maven-surefire-plugin.version>
         <maven-failsafe-plugin.version>3.5.4</maven-failsafe-plugin.version>
-        <lombok.version>1.18.38</lombok.version>
+        <lombok.version>1.18.40</lombok.version>
     </properties>
 
     <developers>
