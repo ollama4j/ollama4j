@@ -17,7 +17,6 @@ _Base roles are `SYSTEM`, `USER`, `ASSISTANT`, `TOOL`._
 
 ```java
 import io.github.ollama4j.Ollama;
-import io.github.ollama4j.OllamaAPI;
 import io.github.ollama4j.models.chat.OllamaChatMessageRole;
 
 public class Main {
@@ -52,7 +51,6 @@ public class Main {
 
 ```java
 import io.github.ollama4j.Ollama;
-import io.github.ollama4j.OllamaAPI;
 import io.github.ollama4j.models.chat.OllamaChatMessageRole;
 
 public class Main {

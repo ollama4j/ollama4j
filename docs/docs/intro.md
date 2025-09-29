@@ -113,9 +113,8 @@ Create a new Java class in your project and add this code.
 
 ```java
 import io.github.ollama4j.Ollama;
-import io.github.ollama4j.OllamaAPI;
 
-public class OllamaAPITest {
+public class OllamaTest {
 
     public static void main(String[] args) {
         Ollama ollama = new Ollama();
@@ -132,9 +131,8 @@ Specify a different Ollama host that you want to connect to.
 
 ```java
 import io.github.ollama4j.Ollama;
-import io.github.ollama4j.OllamaAPI;
 
-public class OllamaAPITest {
+public class OllamaTest {
 
     public static void main(String[] args) {
         String host = "http://localhost:11434/";

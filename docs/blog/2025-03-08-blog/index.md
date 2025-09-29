@@ -337,7 +337,6 @@ import com.couchbase.client.java.Scope;
 import com.couchbase.client.java.json.JsonObject;
 import com.couchbase.client.java.query.QueryResult;
 import io.github.ollama4j.Ollama;
-import io.github.ollama4j.OllamaAPI;
 import io.github.ollama4j.exceptions.OllamaException;
 import io.github.ollama4j.exceptions.ToolInvocationException;
 import io.github.ollama4j.tools.OllamaToolsResult;

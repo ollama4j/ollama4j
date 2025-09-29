@@ -65,7 +65,7 @@ public class Main {
 
         String host = "http://localhost:11434/";
 
-        OllamaAPI ollama = new OllamaAPI(host);
+        Ollama ollama = new Ollama(host);
 
         Options options =
                 new OptionsBuilder()
@@ -74,6 +74,15 @@ public class Main {
                         .setNumGpu(2)
                         .setTemperature(1.5f)
                         .build();
+
+        OllamaResult result =
+                ollama.generate(
+                        OllamaGenerateRequestBuilder.builder()
+                                .withModel(model)
+                                .withPrompt("Who are you?")
+                                .withOptions(options)
+                                .build(),
+                        null);
     }
 }
 ```

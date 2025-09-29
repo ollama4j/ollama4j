@@ -8,7 +8,6 @@ This API lets you check the reachability of Ollama server.
 
 ```java
 import io.github.ollama4j.Ollama;
-import io.github.ollama4j.OllamaAPI;
 
 public class Main {
 

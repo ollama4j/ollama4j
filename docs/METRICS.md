@@ -18,7 +18,6 @@ The metrics integration provides the following metrics:
 
 ```java
 import io.github.ollama4j.Ollama;
-import io.github.ollama4j.OllamaAPI;
 
 // Create API instance with metrics enabled
 Ollama ollama = new Ollama();

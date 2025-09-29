@@ -16,7 +16,7 @@ experience.
 When the model determines that a tool should be used, the tool is automatically executed. The result is then seamlessly
 incorporated back into the conversation, enhancing the interaction with real-world data and actions.
 
-The following example demonstrates usage of a simple tool, registered with the `OllamaAPI`, and then used within a chat
+The following example demonstrates usage of a simple tool, registered with the `Ollama`, and then used within a chat
 session. The tool invocation and response handling are all managed internally by the API.
 
 <CodeEmbed src="https://raw.githubusercontent.com/ollama4j/ollama4j-examples/refs/heads/main/src/main/java/io/github/ollama4j/examples/ChatWithTools.java"/>
@@ -33,7 +33,7 @@ This tool calling can also be done using the streaming API.
 
 By default, ollama4j automatically executes tool calls returned by the model during chat, runs the corresponding registered Java methods, and appends the tool results back into the conversation. For some applications, you may want to intercept tool calls and decide yourself when and how to execute them (for example, to queue them, to show a confirmation UI to the user, to run them in a sandbox, or to perform multi‑step orchestration).
 
-To enable this behavior, set the useTools flag to true on your OllamaAPI instance. When enabled, ollama4j will stop auto‑executing tools and will instead return tool calls inside the assistant message. You can then inspect the tool calls and execute them manually.
+To enable this behavior, set the useTools flag to true on your Ollama instance. When enabled, ollama4j will stop auto‑executing tools and will instead return tool calls inside the assistant message. You can then inspect the tool calls and execute them manually.
 
 
 Notes:
@@ -57,10 +57,10 @@ To use a method as a tool within a chat call, follow these steps:
         * `java.lang.Boolean`
         * `java.math.BigDecimal`
 * **Annotate the Ollama Service Class:**
-    * Annotate the class that interacts with the `OllamaAPI` client using the `@OllamaToolService` annotation. Reference
+    * Annotate the class that interacts with the `Ollama` client using the `@OllamaToolService` annotation. Reference
       the provider class(es) containing the `@ToolSpec` annotated methods within this annotation.
 * **Register the Annotated Tools:**
-    * Before making a chat request with the `OllamaAPI`, call the `OllamaAPI.registerAnnotatedTools()` method. This
+    * Before making a chat request with the `Ollama`, call the `Ollama.registerAnnotatedTools()` method. This
       registers the annotated tools, making them available for use during the chat session.
 
 Let's try an example. Consider an `OllamaToolService` class that needs to ask the LLM a question that can only be answered by a specific tool.

@@ -58,9 +58,9 @@ class OllamaIntegrationTest {
     private static final String TOOLS_MODEL = "mistral:7b";
 
     /**
-     * Initializes the OllamaAPI instance for integration tests.
+     * Initializes the Ollama instance for integration tests.
      *
-     * <p>This method sets up the OllamaAPI client, either using an external Ollama host (if
+     * <p>This method sets up the Ollama client, either using an external Ollama host (if
      * environment variables are set) or by starting a Testcontainers-based Ollama instance. It also
      * configures request timeout and model pull retry settings.
      */
