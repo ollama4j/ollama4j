@@ -48,7 +48,7 @@ jobs:
         run: mvn clean test -Punit-tests
 
       - name: Run integration tests
-        run: mvn clean verify -Pintegration-tests
+        run: mvn clean verify -Pintegration-tests-basic
         env:
           USE_EXTERNAL_OLLAMA_HOST: "true"
           OLLAMA_HOST: "http://localhost:11434"

@@ -22,7 +22,6 @@ import io.github.ollama4j.utils.OptionsBuilder;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.net.URISyntaxException;
 import java.time.Duration;
 import java.util.Collections;
 import java.util.HashMap;
@@ -174,14 +173,12 @@ public class WithAuth {
             // (e.g., OllamaBaseException or IOException)
             // Optionally, you can assert the type/message of the exception if needed
             // For now, we treat any exception as a pass for this negative test
-            return;
         }
     }
 
     @Test
     @Order(2)
-    void testAskModelWithStructuredOutput()
-            throws OllamaException, IOException, InterruptedException, URISyntaxException {
+    void testAskModelWithStructuredOutput() throws OllamaException, IOException {
         api.setBearerAuth(BEARER_AUTH_TOKEN);
         String model = GENERAL_PURPOSE_MODEL;
         api.pullModel(model);
