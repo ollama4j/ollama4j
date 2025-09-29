@@ -8,7 +8,7 @@ This is designed for prompt engineering. It allows you to easily build the promp
 inferences.
 
 ```java
-import io.github.ollama4j.OllamaAPI;
+import io.github.ollama4j.Ollama;
 import io.github.ollama4j.models.response.OllamaResult;
 import io.github.ollama4j.types.OllamaModelType;
 import io.github.ollama4j.utils.OptionsBuilder;
@@ -18,8 +18,8 @@ public class Main {
     public static void main(String[] args) throws Exception {
 
         String host = "http://localhost:11434/";
-        OllamaAPI ollamaAPI = new OllamaAPI(host);
-        ollamaAPI.setRequestTimeoutSeconds(10);
+        Ollama ollama = new Ollama(host);
+        ollama.setRequestTimeoutSeconds(10);
 
         String model = OllamaModelType.PHI;
 
@@ -43,7 +43,7 @@ public class Main {
                         .add("How do I read a file in Go and print its contents to stdout?");
 
         boolean raw = false;
-        OllamaResult response = ollamaAPI.generate(model, promptBuilder.build(), raw, new OptionsBuilder().build());
+        OllamaResult response = ollama.generate(model, promptBuilder.build(), raw, new OptionsBuilder().build());
         System.out.println(response.getResponse());
     }
 }

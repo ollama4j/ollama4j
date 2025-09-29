@@ -17,11 +17,13 @@ The metrics integration provides the following metrics:
 ### 1. Enable Metrics Collection
 
 ```java
-import io.github.ollama4j.OllamaAPI;
+import io.github.ollama4j.Ollama;
 
 // Create API instance with metrics enabled
-OllamaAPI ollamaAPI = new OllamaAPI();
-ollamaAPI.setMetricsEnabled(true);
+Ollama ollama = new Ollama();
+ollamaAPI.
+
+setMetricsEnabled(true);
 ```
 
 ### 2. Start Metrics Server
@@ -38,11 +40,11 @@ System.out.println("Metrics available at: http://localhost:8080/metrics");
 
 ```java
 // All API calls are automatically instrumented
-boolean isReachable = ollamaAPI.ping();
+boolean isReachable = ollama.ping();
 
 Map<String, Object> format = new HashMap<>();
 format.put("type", "json");
-OllamaResult result = ollamaAPI.generateWithFormat(
+OllamaResult result = ollama.generateWithFormat(
     "llama2",
     "Generate a JSON object",
     format
@@ -100,13 +102,13 @@ ollama_tokens_generated_total{model_name="llama2"} 150.0
 ### Enable/Disable Metrics
 
 ```java
-OllamaAPI ollamaAPI = new OllamaAPI();
+OllamaAPI ollama = new OllamaAPI();
 
 // Enable metrics collection
-ollamaAPI.setMetricsEnabled(true);
+ollama.setMetricsEnabled(true);
 
 // Disable metrics collection (default)
-ollamaAPI.setMetricsEnabled(false);
+ollama.setMetricsEnabled(false);
 ```
 
 ### Custom Metrics Server
@@ -149,14 +151,14 @@ You can create Grafana dashboards using the metrics. Some useful queries:
 
 - Metrics collection adds minimal overhead (~1-2% in most cases)
 - Metrics are collected asynchronously and don't block API calls
-- You can disable metrics in production if needed: `ollamaAPI.setMetricsEnabled(false)`
+- You can disable metrics in production if needed: `ollama.setMetricsEnabled(false)`
 - The metrics server uses minimal resources
 
 ## Troubleshooting
 
 ### Metrics Not Appearing
 
-1. Ensure metrics are enabled: `ollamaAPI.setMetricsEnabled(true)`
+1. Ensure metrics are enabled: `ollama.setMetricsEnabled(true)`
 2. Check that the metrics server is running: `http://localhost:8080/metrics`
 3. Verify API calls are being made (metrics only appear after API usage)
 

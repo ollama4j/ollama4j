@@ -10,7 +10,7 @@ package io.github.ollama4j.integrationtests;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-import io.github.ollama4j.OllamaAPI;
+import io.github.ollama4j.Ollama;
 import io.github.ollama4j.exceptions.OllamaException;
 import io.github.ollama4j.models.generate.OllamaGenerateRequest;
 import io.github.ollama4j.models.generate.OllamaGenerateRequestBuilder;
@@ -22,7 +22,6 @@ import io.github.ollama4j.utils.OptionsBuilder;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.net.URISyntaxException;
 import java.time.Duration;
 import java.util.Collections;
 import java.util.HashMap;
@@ -62,7 +61,7 @@ public class WithAuth {
 
     private static OllamaContainer ollama;
     private static GenericContainer<?> nginx;
-    private static OllamaAPI api;
+    private static Ollama api;
 
     @BeforeAll
     static void setUp() {
@@ -74,7 +73,7 @@ public class WithAuth {
 
         LOG.info("Using Testcontainer Ollama host...");
 
-        api = new OllamaAPI("http://" + nginx.getHost() + ":" + nginx.getMappedPort(NGINX_PORT));
+        api = new Ollama("http://" + nginx.getHost() + ":" + nginx.getMappedPort(NGINX_PORT));
         api.setRequestTimeoutSeconds(120);
         api.setNumberOfRetriesForModelPull(3);
 
@@ -88,7 +87,7 @@ public class WithAuth {
                         + "→ Proxy URL: {}",
                 ollamaUrl,
                 nginxUrl);
-        LOG.info("OllamaAPI initialized with bearer auth token: {}", BEARER_AUTH_TOKEN);
+        LOG.info("Ollama initialized with bearer auth token: {}", BEARER_AUTH_TOKEN);
     }
 
     private static OllamaContainer createOllamaContainer() {
@@ -155,9 +154,9 @@ public class WithAuth {
         try {
             assertTrue(
                     api.ping(),
-                    "Expected OllamaAPI to successfully ping through NGINX with valid auth token.");
+                    "Expected Ollama to successfully ping through NGINX with valid auth token.");
         } catch (Exception e) {
-            fail("Exception occurred while pinging OllamaAPI through NGINX: " + e.getMessage(), e);
+            fail("Exception occurred while pinging Ollama through NGINX: " + e.getMessage(), e);
         }
     }
 
@@ -168,20 +167,18 @@ public class WithAuth {
         try {
             assertFalse(
                     api.ping(),
-                    "Expected OllamaAPI ping to fail through NGINX with an invalid auth token.");
+                    "Expected Ollama ping to fail through NGINX with an invalid auth token.");
         } catch (Exception e) {
             // If an exception is thrown, that's also an expected failure for a wrong token
             // (e.g., OllamaBaseException or IOException)
             // Optionally, you can assert the type/message of the exception if needed
             // For now, we treat any exception as a pass for this negative test
-            return;
         }
     }
 
     @Test
     @Order(2)
-    void testAskModelWithStructuredOutput()
-            throws OllamaException, IOException, InterruptedException, URISyntaxException {
+    void testAskModelWithStructuredOutput() throws OllamaException, IOException {
         api.setBearerAuth(BEARER_AUTH_TOKEN);
         String model = GENERAL_PURPOSE_MODEL;
         api.pullModel(model);

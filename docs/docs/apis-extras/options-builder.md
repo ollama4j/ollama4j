@@ -36,7 +36,7 @@ from [javadoc](https://ollama4j.github.io/ollama4j/apidocs/io/github/ollama4j/ol
 ## Build an empty `Options` object
 
 ```java
-import io.github.ollama4j.OllamaAPI;
+import io.github.ollama4j.Ollama;
 import io.github.ollama4j.utils.Options;
 import io.github.ollama4j.utils.OptionsBuilder;
 
@@ -46,7 +46,7 @@ public class Main {
 
         String host = "http://localhost:11434/";
 
-        OllamaAPI ollamaAPI = new OllamaAPI(host);
+        Ollama ollama = new Ollama(host);
 
         Options options = new OptionsBuilder().build();
     }
@@ -65,7 +65,7 @@ public class Main {
 
         String host = "http://localhost:11434/";
 
-        OllamaAPI ollamaAPI = new OllamaAPI(host);
+        Ollama ollama = new Ollama(host);
 
         Options options =
                 new OptionsBuilder()
@@ -74,6 +74,15 @@ public class Main {
                         .setNumGpu(2)
                         .setTemperature(1.5f)
                         .build();
+
+        OllamaResult result =
+                ollama.generate(
+                        OllamaGenerateRequestBuilder.builder()
+                                .withModel(model)
+                                .withPrompt("Who are you?")
+                                .withOptions(options)
+                                .build(),
+                        null);
     }
 }
 ```

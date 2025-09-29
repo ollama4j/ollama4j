@@ -9,17 +9,17 @@ sidebar_position: 2
 This API lets you set the request timeout for the Ollama client.
 
 ```java
-import io.github.ollama4j.OllamaAPI;
+import io.github.ollama4j.Ollama;
 
 public class Main {
 
-  public static void main(String[] args) {
+    public static void main(String[] args) {
 
-    String host = "http://localhost:11434/";
+        String host = "http://localhost:11434/";
 
-    OllamaAPI ollamaAPI = new OllamaAPI(host);
+        Ollama ollama = new Ollama(host);
 
-    ollamaAPI.setRequestTimeoutSeconds(10);
-  }
+        ollama.setRequestTimeoutSeconds(10);
+    }
 }
 ```

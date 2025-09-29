@@ -26,12 +26,16 @@ unit-tests: apply-formatting
 	@echo "\033[0;34mRunning unit tests...\033[0m"
 	@mvn clean test -Punit-tests
 
-integration-tests: apply-formatting
-	@echo "\033[0;34mRunning integration tests (local)...\033[0m"
+integration-tests-all: apply-formatting
+	@echo "\033[0;34mRunning integration tests (local - all)...\033[0m"
 	@export USE_EXTERNAL_OLLAMA_HOST=false && mvn clean verify -Pintegration-tests
 
+integration-tests-basic: apply-formatting
+	@echo "\033[0;34mRunning integration tests (local - basic)...\033[0m"
+	@export USE_EXTERNAL_OLLAMA_HOST=false && mvn clean verify -Pintegration-tests -Dit.test=WithAuth
+
 integration-tests-remote: apply-formatting
-	@echo "\033[0;34mRunning integration tests (remote)...\033[0m"
+	@echo "\033[0;34mRunning integration tests (remote - all)...\033[0m"
 	@export USE_EXTERNAL_OLLAMA_HOST=true && export OLLAMA_HOST=http://192.168.29.229:11434 && mvn clean verify -Pintegration-tests -Dgpg.skip=true
 
 doxygen:

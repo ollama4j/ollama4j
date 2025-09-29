@@ -10,7 +10,7 @@ package io.github.ollama4j.integrationtests;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-import io.github.ollama4j.OllamaAPI;
+import io.github.ollama4j.Ollama;
 import io.github.ollama4j.exceptions.OllamaException;
 import io.github.ollama4j.impl.ConsoleOutputChatTokenHandler;
 import io.github.ollama4j.impl.ConsoleOutputGenerateTokenHandler;
@@ -44,11 +44,11 @@ import org.testcontainers.ollama.OllamaContainer;
 @OllamaToolService(providers = {AnnotatedTool.class})
 @TestMethodOrder(OrderAnnotation.class)
 @SuppressWarnings({"HttpUrlsUsage", "SpellCheckingInspection", "FieldCanBeLocal", "ConstantValue"})
-class OllamaAPIIntegrationTest {
-    private static final Logger LOG = LoggerFactory.getLogger(OllamaAPIIntegrationTest.class);
+class OllamaIntegrationTest {
+    private static final Logger LOG = LoggerFactory.getLogger(OllamaIntegrationTest.class);
 
     private static OllamaContainer ollama;
-    private static OllamaAPI api;
+    private static Ollama api;
 
     private static final String EMBEDDING_MODEL = "all-minilm";
     private static final String VISION_MODEL = "moondream:1.8b";
@@ -58,9 +58,9 @@ class OllamaAPIIntegrationTest {
     private static final String TOOLS_MODEL = "mistral:7b";
 
     /**
-     * Initializes the OllamaAPI instance for integration tests.
+     * Initializes the Ollama instance for integration tests.
      *
-     * <p>This method sets up the OllamaAPI client, either using an external Ollama host (if
+     * <p>This method sets up the Ollama client, either using an external Ollama host (if
      * environment variables are set) or by starting a Testcontainers-based Ollama instance. It also
      * configures request timeout and model pull retry settings.
      */
@@ -81,7 +81,7 @@ class OllamaAPIIntegrationTest {
                 Properties props = new Properties();
                 try {
                     props.load(
-                            OllamaAPIIntegrationTest.class
+                            OllamaIntegrationTest.class
                                     .getClassLoader()
                                     .getResourceAsStream("test-config.properties"));
                 } catch (Exception e) {
@@ -103,7 +103,7 @@ class OllamaAPIIntegrationTest {
 
             if (useExternalOllamaHost) {
                 LOG.info("Using external Ollama host: {}", ollamaHost);
-                api = new OllamaAPI(ollamaHost);
+                api = new Ollama(ollamaHost);
             } else {
                 throw new RuntimeException(
                         "USE_EXTERNAL_OLLAMA_HOST is not set so, we will be using Testcontainers"
@@ -124,7 +124,7 @@ class OllamaAPIIntegrationTest {
             ollama.start();
             LOG.info("Using Testcontainer Ollama host...");
             api =
-                    new OllamaAPI(
+                    new Ollama(
                             "http://"
                                     + ollama.getHost()
                                     + ":"
@@ -143,8 +143,8 @@ class OllamaAPIIntegrationTest {
     @Test
     @Order(1)
     void shouldThrowConnectExceptionForWrongEndpoint() {
-        OllamaAPI ollamaAPI = new OllamaAPI("http://wrong-host:11434");
-        assertThrows(OllamaException.class, ollamaAPI::listModels);
+        Ollama ollama = new Ollama("http://wrong-host:11434");
+        assertThrows(OllamaException.class, ollama::listModels);
     }
 
     /**
@@ -778,7 +778,7 @@ class OllamaAPIIntegrationTest {
                                 Collections.emptyList(),
                                 "https://t3.ftcdn.net/jpg/02/96/63/80/360_F_296638053_0gUVA4WVBKceGsIr7LNqRWSnkusi07dq.jpg")
                         .build();
-        api.registerAnnotatedTools(new OllamaAPIIntegrationTest());
+        api.registerAnnotatedTools(new OllamaIntegrationTest());
 
         OllamaChatResult chatResult = api.chat(requestModel, null);
         assertNotNull(chatResult);

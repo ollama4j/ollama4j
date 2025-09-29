@@ -112,14 +112,14 @@ or use other suitable implementations.
 Create a new Java class in your project and add this code.
 
 ```java
-import io.github.ollama4j.OllamaAPI;
+import io.github.ollama4j.Ollama;
 
-public class OllamaAPITest {
+public class OllamaTest {
 
     public static void main(String[] args) {
-        OllamaAPI ollamaAPI = new OllamaAPI();
+        Ollama ollama = new Ollama();
 
-        boolean isOllamaServerReachable = ollamaAPI.ping();
+        boolean isOllamaServerReachable = ollama.ping();
 
         System.out.println("Is Ollama server running: " + isOllamaServerReachable);
     }
@@ -130,16 +130,16 @@ This uses the default Ollama host as `http://localhost:11434`.
 Specify a different Ollama host that you want to connect to.
 
 ```java
-import io.github.ollama4j.OllamaAPI;
+import io.github.ollama4j.Ollama;
 
-public class OllamaAPITest {
+public class OllamaTest {
 
     public static void main(String[] args) {
         String host = "http://localhost:11434/";
 
-        OllamaAPI ollamaAPI = new OllamaAPI(host);
+        Ollama ollama = new Ollama(host);
 
-        boolean isOllamaServerReachable = ollamaAPI.ping();
+        boolean isOllamaServerReachable = ollama.ping();
 
         System.out.println("Is Ollama server running: " + isOllamaServerReachable);
     }
