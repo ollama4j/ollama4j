@@ -45,10 +45,10 @@ jobs:
           settings-path: ${{ github.workspace }}
 
       - name: Run unit tests
-        run: mvn clean test -Punit-tests
+        run: make unit-tests
 
       - name: Run integration tests
-        run: mvn clean verify -Pintegration-tests-basic
+        run: make integration-tests-basic
         env:
           USE_EXTERNAL_OLLAMA_HOST: "true"
           OLLAMA_HOST: "http://localhost:11434"
