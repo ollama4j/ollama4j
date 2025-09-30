@@ -55,7 +55,7 @@ metrics via `/metrics` endpoint:
 </dependency>
 ```
 
-Here is a sample code snippet demonstrating how to retrieve and print metrics:
+Here is a sample code snippet demonstrating how to retrieve and print metrics on Grafana:
 
 <CodeEmbed src="https://raw.githubusercontent.com/ollama4j/ollama4j-examples/refs/heads/main/src/main/java/io/github/ollama4j/examples/MetricsExample.java" />
 
@@ -64,8 +64,27 @@ at: http://localhost:8080/metrics
 
 ## Integrating with Monitoring Tools
 
-To integrate Ollama4j metrics with external monitoring systems, you can export the metrics endpoint and configure your
-monitoring tool to scrape or collect the data. Refer to the [integration guide](../integration/monitoring.md) for
-detailed instructions.
+### Grafana
 
-For more information on customizing and extending metrics, see the [API documentation](../api/metrics.md).
+Use the following sample `docker-compose` file to host a basic Grafana container.
+
+<CodeEmbed src="https://raw.githubusercontent.com/ollama4j/ollama4j-examples/refs/heads/main/docker/docker-compose.yml" />
+
+And run:
+
+```shell
+docker-compose -f path/to/your/docker-compose.yml up
+```
+
+This starts Granfana at http://localhost:3000
+
+
+[//]: # (To integrate Ollama4j metrics with external monitoring systems, you can export the metrics endpoint and configure your)
+
+[//]: # (monitoring tool to scrape or collect the data. Refer to the [integration guide]&#40;../integration/monitoring.md&#41; for)
+
+[//]: # (detailed instructions.)
+
+[//]: # ()
+
+[//]: # (For more information on customizing and extending metrics, see the [API documentation]&#40;../api/metrics.md&#41;.)
