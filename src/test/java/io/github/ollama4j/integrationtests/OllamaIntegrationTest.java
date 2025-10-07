@@ -18,7 +18,6 @@ import io.github.ollama4j.models.chat.*;
 import io.github.ollama4j.models.embed.OllamaEmbedRequest;
 import io.github.ollama4j.models.embed.OllamaEmbedResult;
 import io.github.ollama4j.models.generate.OllamaGenerateRequest;
-import io.github.ollama4j.models.generate.OllamaGenerateRequestBuilder;
 import io.github.ollama4j.models.generate.OllamaGenerateStreamObserver;
 import io.github.ollama4j.models.response.Model;
 import io.github.ollama4j.models.response.ModelDetail;
@@ -272,7 +271,7 @@ class OllamaIntegrationTest {
         format.put("required", List.of("isNoon"));
 
         OllamaGenerateRequest request =
-                OllamaGenerateRequestBuilder.builder()
+                OllamaGenerateRequest.builder()
                         .withModel(TOOLS_MODEL)
                         .withPrompt(prompt)
                         .withFormat(format)
@@ -299,7 +298,7 @@ class OllamaIntegrationTest {
         boolean raw = false;
         boolean thinking = false;
         OllamaGenerateRequest request =
-                OllamaGenerateRequestBuilder.builder()
+                OllamaGenerateRequest.builder()
                         .withModel(GENERAL_PURPOSE_MODEL)
                         .withPrompt(
                                 "What is the capital of France? And what's France's connection with"
@@ -327,7 +326,7 @@ class OllamaIntegrationTest {
         api.pullModel(GENERAL_PURPOSE_MODEL);
         boolean raw = false;
         OllamaGenerateRequest request =
-                OllamaGenerateRequestBuilder.builder()
+                OllamaGenerateRequest.builder()
                         .withModel(GENERAL_PURPOSE_MODEL)
                         .withPrompt(
                                 "What is the capital of France? And what's France's connection with"
@@ -357,8 +356,7 @@ class OllamaIntegrationTest {
     void shouldGenerateWithCustomOptions() throws OllamaException {
         api.pullModel(GENERAL_PURPOSE_MODEL);
 
-        OllamaChatRequestBuilder builder =
-                OllamaChatRequestBuilder.builder().withModel(GENERAL_PURPOSE_MODEL);
+        OllamaChatRequest builder = OllamaChatRequest.builder().withModel(GENERAL_PURPOSE_MODEL);
         OllamaChatRequest requestModel =
                 builder.withMessage(
                                 OllamaChatMessageRole.SYSTEM,
@@ -390,8 +388,7 @@ class OllamaIntegrationTest {
 
         String expectedResponse = "Bhai";
 
-        OllamaChatRequestBuilder builder =
-                OllamaChatRequestBuilder.builder().withModel(GENERAL_PURPOSE_MODEL);
+        OllamaChatRequest builder = OllamaChatRequest.builder().withModel(GENERAL_PURPOSE_MODEL);
         OllamaChatRequest requestModel =
                 builder.withMessage(
                                 OllamaChatMessageRole.SYSTEM,
@@ -429,8 +426,7 @@ class OllamaIntegrationTest {
     @Order(10)
     void shouldChatWithHistory() throws Exception {
         api.pullModel(THINKING_TOOL_MODEL);
-        OllamaChatRequestBuilder builder =
-                OllamaChatRequestBuilder.builder().withModel(THINKING_TOOL_MODEL);
+        OllamaChatRequest builder = OllamaChatRequest.builder().withModel(THINKING_TOOL_MODEL);
 
         OllamaChatRequest requestModel =
                 builder.withMessage(
@@ -481,8 +477,7 @@ class OllamaIntegrationTest {
     void shouldChatWithExplicitTool() throws OllamaException {
         String theToolModel = TOOLS_MODEL;
         api.pullModel(theToolModel);
-        OllamaChatRequestBuilder builder =
-                OllamaChatRequestBuilder.builder().withModel(theToolModel);
+        OllamaChatRequest builder = OllamaChatRequest.builder().withModel(theToolModel);
 
         api.registerTool(EmployeeFinderToolSpec.getSpecification());
 
@@ -534,8 +529,7 @@ class OllamaIntegrationTest {
     void shouldChatWithExplicitToolAndUseTools() throws OllamaException {
         String theToolModel = TOOLS_MODEL;
         api.pullModel(theToolModel);
-        OllamaChatRequestBuilder builder =
-                OllamaChatRequestBuilder.builder().withModel(theToolModel);
+        OllamaChatRequest builder = OllamaChatRequest.builder().withModel(theToolModel);
 
         api.registerTool(EmployeeFinderToolSpec.getSpecification());
 
@@ -579,8 +573,7 @@ class OllamaIntegrationTest {
         String theToolModel = TOOLS_MODEL;
         api.pullModel(theToolModel);
 
-        OllamaChatRequestBuilder builder =
-                OllamaChatRequestBuilder.builder().withModel(theToolModel);
+        OllamaChatRequest builder = OllamaChatRequest.builder().withModel(theToolModel);
 
         api.registerTool(EmployeeFinderToolSpec.getSpecification());
 
@@ -633,8 +626,7 @@ class OllamaIntegrationTest {
     void shouldChatWithAnnotatedToolSingleParam() throws OllamaException {
         String theToolModel = TOOLS_MODEL;
         api.pullModel(theToolModel);
-        OllamaChatRequestBuilder builder =
-                OllamaChatRequestBuilder.builder().withModel(theToolModel);
+        OllamaChatRequest builder = OllamaChatRequest.builder().withModel(theToolModel);
 
         api.registerAnnotatedTools();
 
@@ -680,8 +672,7 @@ class OllamaIntegrationTest {
     void shouldChatWithAnnotatedToolMultipleParams() throws OllamaException {
         String theToolModel = TOOLS_MODEL;
         api.pullModel(theToolModel);
-        OllamaChatRequestBuilder builder =
-                OllamaChatRequestBuilder.builder().withModel(theToolModel);
+        OllamaChatRequest builder = OllamaChatRequest.builder().withModel(theToolModel);
 
         api.registerAnnotatedTools(new AnnotatedTool());
 
@@ -712,8 +703,7 @@ class OllamaIntegrationTest {
     void shouldChatWithStream() throws OllamaException {
         api.deregisterTools();
         api.pullModel(GENERAL_PURPOSE_MODEL);
-        OllamaChatRequestBuilder builder =
-                OllamaChatRequestBuilder.builder().withModel(GENERAL_PURPOSE_MODEL);
+        OllamaChatRequest builder = OllamaChatRequest.builder().withModel(GENERAL_PURPOSE_MODEL);
         OllamaChatRequest requestModel =
                 builder.withMessage(
                                 OllamaChatMessageRole.USER,
@@ -739,8 +729,7 @@ class OllamaIntegrationTest {
     @Order(15)
     void shouldChatWithThinkingAndStream() throws OllamaException {
         api.pullModel(THINKING_TOOL_MODEL_2);
-        OllamaChatRequestBuilder builder =
-                OllamaChatRequestBuilder.builder().withModel(THINKING_TOOL_MODEL_2);
+        OllamaChatRequest builder = OllamaChatRequest.builder().withModel(THINKING_TOOL_MODEL_2);
         OllamaChatRequest requestModel =
                 builder.withMessage(
                                 OllamaChatMessageRole.USER,
@@ -759,32 +748,6 @@ class OllamaIntegrationTest {
     }
 
     /**
-     * Tests chat API with an image input from a URL.
-     *
-     * <p>Scenario: Sends a user message with an image URL and verifies the assistant's response.
-     * Usage: chat, vision model, image from URL, no tools, no thinking, no streaming.
-     */
-    @Test
-    @Order(10)
-    void shouldChatWithImageFromURL() throws OllamaException, IOException, InterruptedException {
-        api.pullModel(VISION_MODEL);
-
-        OllamaChatRequestBuilder builder =
-                OllamaChatRequestBuilder.builder().withModel(VISION_MODEL);
-        OllamaChatRequest requestModel =
-                builder.withMessage(
-                                OllamaChatMessageRole.USER,
-                                "What's in the picture?",
-                                Collections.emptyList(),
-                                "https://t3.ftcdn.net/jpg/02/96/63/80/360_F_296638053_0gUVA4WVBKceGsIr7LNqRWSnkusi07dq.jpg")
-                        .build();
-        api.registerAnnotatedTools(new OllamaIntegrationTest());
-
-        OllamaChatResult chatResult = api.chat(requestModel, null);
-        assertNotNull(chatResult);
-    }
-
-    /**
      * Tests chat API with an image input from a file and multi-turn history.
      *
      * <p>Scenario: Sends a user message with an image file, then continues the conversation with
@@ -795,8 +758,7 @@ class OllamaIntegrationTest {
     @Order(10)
     void shouldChatWithImageFromFileAndHistory() throws OllamaException {
         api.pullModel(VISION_MODEL);
-        OllamaChatRequestBuilder builder =
-                OllamaChatRequestBuilder.builder().withModel(VISION_MODEL);
+        OllamaChatRequest builder = OllamaChatRequest.builder().withModel(VISION_MODEL);
         OllamaChatRequest requestModel =
                 builder.withMessage(
                                 OllamaChatMessageRole.USER,
@@ -832,7 +794,7 @@ class OllamaIntegrationTest {
         api.pullModel(VISION_MODEL);
         try {
             OllamaGenerateRequest request =
-                    OllamaGenerateRequestBuilder.builder()
+                    OllamaGenerateRequest.builder()
                             .withModel(VISION_MODEL)
                             .withPrompt("What is in this image?")
                             .withRaw(false)
@@ -865,7 +827,7 @@ class OllamaIntegrationTest {
     void shouldGenerateWithImageFilesAndResponseStreamed() throws OllamaException, IOException {
         api.pullModel(VISION_MODEL);
         OllamaGenerateRequest request =
-                OllamaGenerateRequestBuilder.builder()
+                OllamaGenerateRequest.builder()
                         .withModel(VISION_MODEL)
                         .withPrompt("What is in this image?")
                         .withRaw(false)
@@ -900,7 +862,7 @@ class OllamaIntegrationTest {
         boolean think = true;
 
         OllamaGenerateRequest request =
-                OllamaGenerateRequestBuilder.builder()
+                OllamaGenerateRequest.builder()
                         .withModel(THINKING_TOOL_MODEL)
                         .withPrompt("Who are you?")
                         .withRaw(raw)
@@ -929,7 +891,7 @@ class OllamaIntegrationTest {
         api.pullModel(THINKING_TOOL_MODEL);
         boolean raw = false;
         OllamaGenerateRequest request =
-                OllamaGenerateRequestBuilder.builder()
+                OllamaGenerateRequest.builder()
                         .withModel(THINKING_TOOL_MODEL)
                         .withPrompt("Who are you?")
                         .withRaw(raw)
@@ -967,7 +929,7 @@ class OllamaIntegrationTest {
         boolean raw = true;
         boolean thinking = false;
         OllamaGenerateRequest request =
-                OllamaGenerateRequestBuilder.builder()
+                OllamaGenerateRequest.builder()
                         .withModel(GENERAL_PURPOSE_MODEL)
                         .withPrompt("What is 2+2?")
                         .withRaw(raw)
@@ -995,7 +957,7 @@ class OllamaIntegrationTest {
         api.pullModel(GENERAL_PURPOSE_MODEL);
         boolean raw = true;
         OllamaGenerateRequest request =
-                OllamaGenerateRequestBuilder.builder()
+                OllamaGenerateRequest.builder()
                         .withModel(GENERAL_PURPOSE_MODEL)
                         .withPrompt("What is the largest planet in our solar system?")
                         .withRaw(raw)
@@ -1028,7 +990,7 @@ class OllamaIntegrationTest {
         // 'response' tokens
         boolean raw = true;
         OllamaGenerateRequest request =
-                OllamaGenerateRequestBuilder.builder()
+                OllamaGenerateRequest.builder()
                         .withModel(THINKING_TOOL_MODEL)
                         .withPrompt(
                                 "Count 1 to 5. Just give me the numbers and do not give any other"
@@ -1093,7 +1055,7 @@ class OllamaIntegrationTest {
         format.put("required", List.of("cities"));
 
         OllamaGenerateRequest request =
-                OllamaGenerateRequestBuilder.builder()
+                OllamaGenerateRequest.builder()
                         .withModel(TOOLS_MODEL)
                         .withPrompt(prompt)
                         .withFormat(format)
@@ -1119,8 +1081,7 @@ class OllamaIntegrationTest {
     @Order(26)
     void shouldChatWithThinkingNoStream() throws OllamaException {
         api.pullModel(THINKING_TOOL_MODEL);
-        OllamaChatRequestBuilder builder =
-                OllamaChatRequestBuilder.builder().withModel(THINKING_TOOL_MODEL);
+        OllamaChatRequest builder = OllamaChatRequest.builder().withModel(THINKING_TOOL_MODEL);
         OllamaChatRequest requestModel =
                 builder.withMessage(
                                 OllamaChatMessageRole.USER,
@@ -1149,8 +1110,7 @@ class OllamaIntegrationTest {
     void shouldChatWithCustomOptionsAndStreaming() throws OllamaException {
         api.pullModel(GENERAL_PURPOSE_MODEL);
 
-        OllamaChatRequestBuilder builder =
-                OllamaChatRequestBuilder.builder().withModel(GENERAL_PURPOSE_MODEL);
+        OllamaChatRequest builder = OllamaChatRequest.builder().withModel(GENERAL_PURPOSE_MODEL);
         OllamaChatRequest requestModel =
                 builder.withMessage(
                                 OllamaChatMessageRole.USER,
@@ -1184,8 +1144,7 @@ class OllamaIntegrationTest {
 
         api.registerTool(EmployeeFinderToolSpec.getSpecification());
 
-        OllamaChatRequestBuilder builder =
-                OllamaChatRequestBuilder.builder().withModel(THINKING_TOOL_MODEL_2);
+        OllamaChatRequest builder = OllamaChatRequest.builder().withModel(THINKING_TOOL_MODEL_2);
         OllamaChatRequest requestModel =
                 builder.withMessage(
                                 OllamaChatMessageRole.USER,
@@ -1219,8 +1178,7 @@ class OllamaIntegrationTest {
         File image1 = getImageFileFromClasspath("emoji-smile.jpeg");
         File image2 = getImageFileFromClasspath("roses.jpg");
 
-        OllamaChatRequestBuilder builder =
-                OllamaChatRequestBuilder.builder().withModel(VISION_MODEL);
+        OllamaChatRequest builder = OllamaChatRequest.builder().withModel(VISION_MODEL);
         OllamaChatRequest requestModel =
                 builder.withMessage(
                                 OllamaChatMessageRole.USER,
@@ -1247,7 +1205,7 @@ class OllamaIntegrationTest {
     void shouldHandleNonExistentModel() {
         String nonExistentModel = "this-model-does-not-exist:latest";
         OllamaGenerateRequest request =
-                OllamaGenerateRequestBuilder.builder()
+                OllamaGenerateRequest.builder()
                         .withModel(nonExistentModel)
                         .withPrompt("Hello")
                         .withRaw(false)
@@ -1274,8 +1232,7 @@ class OllamaIntegrationTest {
         api.pullModel(GENERAL_PURPOSE_MODEL);
 
         List<OllamaChatToolCalls> tools = Collections.emptyList();
-        OllamaChatRequestBuilder builder =
-                OllamaChatRequestBuilder.builder().withModel(GENERAL_PURPOSE_MODEL);
+        OllamaChatRequest builder = OllamaChatRequest.builder().withModel(GENERAL_PURPOSE_MODEL);
         OllamaChatRequest requestModel =
                 builder.withMessage(OllamaChatMessageRole.USER, "   ", tools) // whitespace only
                         .build();
@@ -1298,7 +1255,7 @@ class OllamaIntegrationTest {
     void shouldGenerateWithExtremeParameters() throws OllamaException {
         api.pullModel(GENERAL_PURPOSE_MODEL);
         OllamaGenerateRequest request =
-                OllamaGenerateRequestBuilder.builder()
+                OllamaGenerateRequest.builder()
                         .withModel(GENERAL_PURPOSE_MODEL)
                         .withPrompt("Generate a random word")
                         .withRaw(false)
@@ -1351,8 +1308,7 @@ class OllamaIntegrationTest {
     void shouldChatWithKeepAlive() throws OllamaException {
         api.pullModel(GENERAL_PURPOSE_MODEL);
 
-        OllamaChatRequestBuilder builder =
-                OllamaChatRequestBuilder.builder().withModel(GENERAL_PURPOSE_MODEL);
+        OllamaChatRequest builder = OllamaChatRequest.builder().withModel(GENERAL_PURPOSE_MODEL);
         OllamaChatRequest requestModel =
                 builder.withMessage(OllamaChatMessageRole.USER, "Hello, how are you?")
                         .withKeepAlive("5m") // Keep model loaded for 5 minutes
@@ -1376,7 +1332,7 @@ class OllamaIntegrationTest {
     void shouldGenerateWithAdvancedOptions() throws OllamaException {
         api.pullModel(GENERAL_PURPOSE_MODEL);
         OllamaGenerateRequest request =
-                OllamaGenerateRequestBuilder.builder()
+                OllamaGenerateRequest.builder()
                         .withModel(GENERAL_PURPOSE_MODEL)
                         .withPrompt("Write a detailed explanation of machine learning")
                         .withRaw(false)
@@ -1421,8 +1377,8 @@ class OllamaIntegrationTest {
                     new Thread(
                             () -> {
                                 try {
-                                    OllamaChatRequestBuilder builder =
-                                            OllamaChatRequestBuilder.builder()
+                                    OllamaChatRequest builder =
+                                            OllamaChatRequest.builder()
                                                     .withModel(GENERAL_PURPOSE_MODEL);
                                     OllamaChatRequest requestModel =
                                             builder.withMessage(

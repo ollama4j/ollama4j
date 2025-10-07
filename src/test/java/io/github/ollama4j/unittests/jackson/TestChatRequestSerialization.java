@@ -13,7 +13,6 @@ import static org.junit.jupiter.api.Assertions.assertThrowsExactly;
 
 import io.github.ollama4j.models.chat.OllamaChatMessageRole;
 import io.github.ollama4j.models.chat.OllamaChatRequest;
-import io.github.ollama4j.models.chat.OllamaChatRequestBuilder;
 import io.github.ollama4j.utils.OptionsBuilder;
 import java.io.File;
 import java.util.Collections;
@@ -24,11 +23,11 @@ import org.junit.jupiter.api.Test;
 
 public class TestChatRequestSerialization extends AbstractSerializationTest<OllamaChatRequest> {
 
-    private OllamaChatRequestBuilder builder;
+    private OllamaChatRequest builder;
 
     @BeforeEach
     public void init() {
-        builder = OllamaChatRequestBuilder.builder().withModel("DummyModel");
+        builder = OllamaChatRequest.builder().withModel("DummyModel");
     }
 
     @Test

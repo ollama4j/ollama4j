@@ -19,7 +19,6 @@ import io.github.ollama4j.models.chat.OllamaChatMessageRole;
 import io.github.ollama4j.models.embed.OllamaEmbedRequest;
 import io.github.ollama4j.models.embed.OllamaEmbedResult;
 import io.github.ollama4j.models.generate.OllamaGenerateRequest;
-import io.github.ollama4j.models.generate.OllamaGenerateRequestBuilder;
 import io.github.ollama4j.models.generate.OllamaGenerateStreamObserver;
 import io.github.ollama4j.models.request.CustomModelRequest;
 import io.github.ollama4j.models.response.ModelDetail;
@@ -158,7 +157,7 @@ class TestMockedAPIs {
         OllamaGenerateStreamObserver observer = new OllamaGenerateStreamObserver(null, null);
         try {
             OllamaGenerateRequest request =
-                    OllamaGenerateRequestBuilder.builder()
+                    OllamaGenerateRequest.builder()
                             .withModel(model)
                             .withPrompt(prompt)
                             .withRaw(false)
@@ -180,7 +179,7 @@ class TestMockedAPIs {
         String prompt = "some prompt text";
         try {
             OllamaGenerateRequest request =
-                    OllamaGenerateRequestBuilder.builder()
+                    OllamaGenerateRequest.builder()
                             .withModel(model)
                             .withPrompt(prompt)
                             .withRaw(false)
@@ -206,7 +205,7 @@ class TestMockedAPIs {
         String prompt = "some prompt text";
         try {
             OllamaGenerateRequest request =
-                    OllamaGenerateRequestBuilder.builder()
+                    OllamaGenerateRequest.builder()
                             .withModel(model)
                             .withPrompt(prompt)
                             .withRaw(false)

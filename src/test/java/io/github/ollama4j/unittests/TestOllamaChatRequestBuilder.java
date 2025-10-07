@@ -12,15 +12,14 @@ import static org.junit.jupiter.api.Assertions.*;
 
 import io.github.ollama4j.models.chat.OllamaChatMessageRole;
 import io.github.ollama4j.models.chat.OllamaChatRequest;
-import io.github.ollama4j.models.chat.OllamaChatRequestBuilder;
 import org.junit.jupiter.api.Test;
 
 class TestOllamaChatRequestBuilder {
 
     @Test
     void testResetClearsMessagesButKeepsModelAndThink() {
-        OllamaChatRequestBuilder builder =
-                OllamaChatRequestBuilder.builder()
+        OllamaChatRequest builder =
+                OllamaChatRequest.builder()
                         .withModel("my-model")
                         .withThinking(true)
                         .withMessage(OllamaChatMessageRole.USER, "first");

@@ -11,7 +11,6 @@ package io.github.ollama4j.unittests.jackson;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import io.github.ollama4j.models.generate.OllamaGenerateRequest;
-import io.github.ollama4j.models.generate.OllamaGenerateRequestBuilder;
 import io.github.ollama4j.utils.OptionsBuilder;
 import org.json.JSONObject;
 import org.junit.jupiter.api.BeforeEach;
@@ -19,16 +18,17 @@ import org.junit.jupiter.api.Test;
 
 class TestGenerateRequestSerialization extends AbstractSerializationTest<OllamaGenerateRequest> {
 
-    private OllamaGenerateRequestBuilder builder;
+    private OllamaGenerateRequest builder;
 
     @BeforeEach
     public void init() {
-        builder = OllamaGenerateRequestBuilder.builder().withModel("Dummy Model");
+        builder = OllamaGenerateRequest.builder().withModel("Dummy Model");
     }
 
     @Test
     public void testRequestOnlyMandatoryFields() {
-        OllamaGenerateRequest req = builder.withPrompt("Some prompt").build();
+        OllamaGenerateRequest req =
+                builder.withPrompt("Some prompt").withModel("Dummy Model").build();
 
         String jsonRequest = serialize(req);
         assertEqualsAfterUnmarshalling(deserialize(jsonRequest, OllamaGenerateRequest.class), req);
@@ -38,7 +38,10 @@ class TestGenerateRequestSerialization extends AbstractSerializationTest<OllamaG
     public void testRequestWithOptions() {
         OptionsBuilder b = new OptionsBuilder();
         OllamaGenerateRequest req =
-                builder.withPrompt("Some prompt").withOptions(b.setMirostat(1).build()).build();
+                builder.withPrompt("Some prompt")
+                        .withOptions(b.setMirostat(1).build())
+                        .withModel("Dummy Model")
+                        .build();
 
         String jsonRequest = serialize(req);
         OllamaGenerateRequest deserializeRequest =
@@ -49,7 +52,11 @@ class TestGenerateRequestSerialization extends AbstractSerializationTest<OllamaG
 
     @Test
     public void testWithJsonFormat() {
-        OllamaGenerateRequest req = builder.withPrompt("Some prompt").withGetJsonResponse().build();
+        OllamaGenerateRequest req =
+                builder.withPrompt("Some prompt")
+                        .withGetJsonResponse()
+                        .withModel("Dummy Model")
+                        .build();
 
         String jsonRequest = serialize(req);
         System.out.printf(jsonRequest);

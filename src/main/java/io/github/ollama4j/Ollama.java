@@ -70,10 +70,14 @@ public class Ollama {
      */
     @Setter private long requestTimeoutSeconds = 10;
 
-    /** The read timeout in seconds for image URLs. */
+    /**
+     * The read timeout in seconds for image URLs.
+     */
     @Setter private int imageURLReadTimeoutSeconds = 10;
 
-    /** The connect timeout in seconds for image URLs. */
+    /**
+     * The connect timeout in seconds for image URLs.
+     */
     @Setter private int imageURLConnectTimeoutSeconds = 10;
 
     /**
@@ -280,9 +284,9 @@ public class Ollama {
     /**
      * Handles retry backoff for pullModel.
      *
-     * @param modelName the name of the model being pulled
-     * @param currentRetry the current retry attempt (zero-based)
-     * @param maxRetries the maximum number of retries allowed
+     * @param modelName       the name of the model being pulled
+     * @param currentRetry    the current retry attempt (zero-based)
+     * @param maxRetries      the maximum number of retries allowed
      * @param baseDelayMillis the base delay in milliseconds for exponential backoff
      * @throws InterruptedException if the thread is interrupted during sleep
      */
@@ -376,7 +380,7 @@ public class Ollama {
      * Returns true if the response indicates a successful pull.
      *
      * @param modelPullResponse the response from the model pull
-     * @param modelName the name of the model
+     * @param modelName         the name of the model
      * @return true if the pull was successful, false otherwise
      * @throws OllamaException if the response contains an error
      */
@@ -601,7 +605,7 @@ public class Ollama {
     /**
      * Deletes a model from the Ollama server.
      *
-     * @param modelName the name of the model to be deleted
+     * @param modelName          the name of the model to be deleted
      * @param ignoreIfNotPresent ignore errors if the specified model is not present on the Ollama server
      * @throws OllamaException if the response indicates an error status
      */
@@ -758,7 +762,7 @@ public class Ollama {
      * Generates a response from a model using the specified parameters and stream observer.
      * If {@code streamObserver} is provided, streaming is enabled; otherwise, a synchronous call is made.
      *
-     * @param request the generation request
+     * @param request        the generation request
      * @param streamObserver the stream observer for streaming responses, or null for synchronous
      * @return the result of the generation
      * @throws OllamaException if the request fails
@@ -823,10 +827,10 @@ public class Ollama {
     /**
      * Generates a response from a model asynchronously, returning a streamer for results.
      *
-     * @param model the model name
+     * @param model  the model name
      * @param prompt the prompt to send
-     * @param raw whether to use raw mode
-     * @param think whether to use "think" mode
+     * @param raw    whether to use raw mode
+     * @param think  whether to use "think" mode
      * @return an OllamaAsyncResultStreamer for streaming results
      * @throws OllamaException if the request fails
      */
@@ -861,9 +865,9 @@ public class Ollama {
      *
      * <p>Note: the OllamaChatRequestModel#getStream() property is not implemented.
      *
-     * @param request request object to be sent to the server
+     * @param request      request object to be sent to the server
      * @param tokenHandler callback handler to handle the last token from stream (caution: the
-     *     previous tokens from stream will not be concatenated)
+     *                     previous tokens from stream will not be concatenated)
      * @return {@link OllamaChatResult}
      * @throws OllamaException if the response indicates an error status
      */
@@ -958,10 +962,14 @@ public class Ollama {
      * Registers multiple tools in the tool registry.
      *
      * @param tools a list of {@link Tools.Tool} objects to register. Each tool contains its
-     *     specification and function.
+     *              specification and function.
      */
     public void registerTools(List<Tools.Tool> tools) {
         toolRegistry.addTools(tools);
+    }
+
+    public List<Tools.Tool> getRegisteredTools() {
+        return toolRegistry.getRegisteredTools();
     }
 
     /**
@@ -979,7 +987,7 @@ public class Ollama {
      * and recursively registers annotated tools from all the providers specified in the annotation.
      *
      * @throws OllamaException if the caller's class is not annotated with {@link
-     *     OllamaToolService} or if reflection-based instantiation or invocation fails
+     *                         OllamaToolService} or if reflection-based instantiation or invocation fails
      */
     public void registerAnnotatedTools() throws OllamaException {
         try {
@@ -1127,7 +1135,7 @@ public class Ollama {
      * This method synchronously calls the Ollama API. If a stream handler is provided,
      * the request will be streamed; otherwise, a regular synchronous request will be made.
      *
-     * @param ollamaRequestModel the request model containing necessary parameters for the Ollama API request
+     * @param ollamaRequestModel    the request model containing necessary parameters for the Ollama API request
      * @param thinkingStreamHandler the stream handler for "thinking" tokens, or null if not used
      * @param responseStreamHandler the stream handler to process streaming responses, or null for non-streaming requests
      * @return the result of the Ollama API request
