@@ -16,6 +16,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * Example usage of the Agent API with some dummy tool functions.
+ */
 public class SampleAgent {
     public static void main(String[] args) throws OllamaException {
         Ollama ollama = new Ollama("http://192.168.29.224:11434");
@@ -31,8 +34,8 @@ public class SampleAgent {
                                 Tools.ToolSpec.builder()
                                         .name("weather-tool")
                                         .description(
-                                                "Gets current weather for a given location and a"
-                                                        + " given day")
+                                                "Gets the current weather for a given location and"
+                                                        + " day.")
                                         .parameters(
                                                 Tools.Parameters.of(
                                                         Map.of(
@@ -40,10 +43,10 @@ public class SampleAgent {
                                                                 Tools.Property.builder()
                                                                         .type("string")
                                                                         .description(
-                                                                                "The location to"
-                                                                                        + " get the"
-                                                                                        + " weather"
-                                                                                        + " for.")
+                                                                                "The location for"
+                                                                                    + " which to"
+                                                                                    + " get the"
+                                                                                    + " weather.")
                                                                         .required(true)
                                                                         .build(),
                                                                 "day",
@@ -51,9 +54,10 @@ public class SampleAgent {
                                                                         .type("string")
                                                                         .description(
                                                                                 "The day of the"
-                                                                                    + " week to get"
-                                                                                    + " the weather"
-                                                                                    + " for.")
+                                                                                    + " week for"
+                                                                                    + " which to"
+                                                                                    + " get the"
+                                                                                    + " weather.")
                                                                         .required(true)
                                                                         .build())))
                                         .build())
@@ -68,7 +72,7 @@ public class SampleAgent {
                                         .name("calculator-tool")
                                         .description(
                                                 "Performs a simple arithmetic operation between two"
-                                                        + " numbers")
+                                                        + " numbers.")
                                         .parameters(
                                                 Tools.Parameters.of(
                                                         Map.of(
@@ -76,20 +80,22 @@ public class SampleAgent {
                                                                 Tools.Property.builder()
                                                                         .type("string")
                                                                         .description(
-                                                                                "Arithmetic"
+                                                                                "The arithmetic"
                                                                                     + " operation"
-                                                                                    + " to perform:"
+                                                                                    + " to perform."
+                                                                                    + " One of:"
                                                                                     + " add,"
                                                                                     + " subtract,"
                                                                                     + " multiply,"
-                                                                                    + " divide")
+                                                                                    + " divide.")
                                                                         .required(true)
                                                                         .build(),
                                                                 "a",
                                                                 Tools.Property.builder()
                                                                         .type("number")
                                                                         .description(
-                                                                                "The first operand")
+                                                                                "The first"
+                                                                                    + " operand.")
                                                                         .required(true)
                                                                         .build(),
                                                                 "b",
@@ -97,7 +103,7 @@ public class SampleAgent {
                                                                         .type("number")
                                                                         .description(
                                                                                 "The second"
-                                                                                    + " operand")
+                                                                                    + " operand.")
                                                                         .required(true)
                                                                         .build())))
                                         .build())
@@ -111,8 +117,8 @@ public class SampleAgent {
                                 Tools.ToolSpec.builder()
                                         .name("hotel-booking-tool")
                                         .description(
-                                                "Helps with booking a hotel room in a specified"
-                                                    + " city for given dates and number of guests.")
+                                                "Books a hotel room in a specified city for given"
+                                                        + " dates and number of guests.")
                                         .parameters(
                                                 Tools.Parameters.of(
                                                         Map.of(
@@ -120,31 +126,36 @@ public class SampleAgent {
                                                                 Tools.Property.builder()
                                                                         .type("string")
                                                                         .description(
-                                                                                "The city where you"
-                                                                                    + " want to"
-                                                                                    + " book the"
-                                                                                    + " hotel.")
+                                                                                "The city where the"
+                                                                                    + " hotel will"
+                                                                                    + " be booked.")
                                                                         .required(true)
                                                                         .build(),
                                                                 "checkin_date",
                                                                 Tools.Property.builder()
                                                                         .type("string")
                                                                         .description(
-                                                                                "Check-in date.")
+                                                                                "Check-in date"
+                                                                                    + " (e.g."
+                                                                                    + " 2025-08-10).")
                                                                         .required(true)
                                                                         .build(),
                                                                 "checkout_date",
                                                                 Tools.Property.builder()
                                                                         .type("string")
                                                                         .description(
-                                                                                "Check-out date.")
+                                                                                "Check-out date"
+                                                                                    + " (e.g."
+                                                                                    + " 2025-08-12).")
                                                                         .required(true)
                                                                         .build(),
                                                                 "guests",
                                                                 Tools.Property.builder()
                                                                         .type("number")
                                                                         .description(
-                                                                                "Number of guests.")
+                                                                                "Number of guests"
+                                                                                    + " for the"
+                                                                                    + " booking.")
                                                                         .required(true)
                                                                         .build())))
                                         .build())
@@ -156,18 +167,22 @@ public class SampleAgent {
     }
 }
 
-/** ToolFunction implementation for diff checking. */
+/**
+ * ToolFunction implementation that returns a dummy weekly weather forecast.
+ */
 class WeatherToolFunction implements ToolFunction {
     @Override
     public Object apply(Map<String, Object> arguments) {
         String response =
-                "Monday: pleasant, Tuesday: Sunny, Wednesday: Windy, Thursday: Cloudy, Friday:"
+                "Monday: Pleasant, Tuesday: Sunny, Wednesday: Windy, Thursday: Cloudy, Friday:"
                         + " Rainy, Saturday: Heavy rains, Sunday: Clear";
         return response;
     }
 }
 
-/** ToolFunction implementation for simple calculations. */
+/**
+ * ToolFunction implementation for basic arithmetic calculations.
+ */
 class CalculatorToolFunction implements ToolFunction {
     @Override
     public Object apply(Map<String, Object> arguments) {
@@ -198,7 +213,9 @@ class CalculatorToolFunction implements ToolFunction {
     }
 }
 
-/** ToolFunction implementation for a dummy hotel booking agent. */
+/**
+ * ToolFunction implementation simulating a hotel booking.
+ */
 class HotelBookingToolFunction implements ToolFunction {
     @Override
     public Object apply(Map<String, Object> arguments) {
