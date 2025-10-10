@@ -136,18 +136,21 @@ public class OllamaGenerateEndpointCaller extends OllamaEndpointCaller {
                             thinkingBuffer.toString(),
                             endTime - startTime,
                             statusCode);
-            ollamaResult.setModel(ollamaGenerateResponseModel.getModel());
-            ollamaResult.setCreatedAt(ollamaGenerateResponseModel.getCreatedAt());
-            ollamaResult.setDone(ollamaGenerateResponseModel.isDone());
-            ollamaResult.setDoneReason(ollamaGenerateResponseModel.getDoneReason());
-            ollamaResult.setContext(ollamaGenerateResponseModel.getContext());
-            ollamaResult.setTotalDuration(ollamaGenerateResponseModel.getTotalDuration());
-            ollamaResult.setLoadDuration(ollamaGenerateResponseModel.getLoadDuration());
-            ollamaResult.setPromptEvalCount(ollamaGenerateResponseModel.getPromptEvalCount());
-            ollamaResult.setPromptEvalDuration(ollamaGenerateResponseModel.getPromptEvalDuration());
-            ollamaResult.setEvalCount(ollamaGenerateResponseModel.getEvalCount());
-            ollamaResult.setEvalDuration(ollamaGenerateResponseModel.getEvalDuration());
-
+            if (ollamaGenerateResponseModel != null) {
+                ollamaResult.setModel(ollamaGenerateResponseModel.getModel());
+                ollamaResult.setCreatedAt(ollamaGenerateResponseModel.getCreatedAt());
+                ollamaResult.setDone(ollamaGenerateResponseModel.isDone());
+                ollamaResult.setDoneReason(ollamaGenerateResponseModel.getDoneReason());
+                ollamaResult.setContext(ollamaGenerateResponseModel.getContext());
+                ollamaResult.setTotalDuration(ollamaGenerateResponseModel.getTotalDuration());
+                ollamaResult.setLoadDuration(ollamaGenerateResponseModel.getLoadDuration());
+                ollamaResult.setPromptEvalCount(ollamaGenerateResponseModel.getPromptEvalCount());
+                ollamaResult.setPromptEvalDuration(
+                        ollamaGenerateResponseModel.getPromptEvalDuration());
+                ollamaResult.setEvalCount(ollamaGenerateResponseModel.getEvalCount());
+                ollamaResult.setEvalDuration(ollamaGenerateResponseModel.getEvalDuration());
+            }
+            LOG.debug("Model plain response: {}", ollamaGenerateResponseModel);
             LOG.debug("Model response: {}", ollamaResult);
             return ollamaResult;
         }

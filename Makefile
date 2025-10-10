@@ -1,3 +1,7 @@
+# Default target
+.PHONY: all
+all: dev build
+
 dev:
 	@echo "Setting up dev environment..."
 	@command -v pre-commit >/dev/null 2>&1 || { echo "Error: pre-commit is not installed. Please install it first."; exit 1; }
@@ -43,7 +47,7 @@ doxygen:
 	@doxygen Doxyfile
 
 javadoc:
-	@echo "\033[0;34mGenerating Javadocs into '$(javadocfolder)'...\033[0m"
+	@echo "\033[0;34mGenerating Javadocs...\033[0m"
 	@mvn clean javadoc:javadoc
 	@if [ -f "target/reports/apidocs/index.html" ]; then \
 		echo "\033[0;32mJavadocs generated in target/reports/apidocs/index.html\033[0m"; \
