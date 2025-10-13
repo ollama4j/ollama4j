@@ -8,181 +8,218 @@
 */
 package io.github.ollama4j.agent;
 
-import io.github.ollama4j.Ollama;
 import io.github.ollama4j.exceptions.OllamaException;
 import io.github.ollama4j.tools.ToolFunction;
-import io.github.ollama4j.tools.Tools;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Map;
 
-/**
- * Example usage of the Agent API with some dummy tool functions.
- */
+/** Example usage of the Agent API with some dummy tool functions. */
 public class SampleAgent {
     public static void main(String[] args) throws OllamaException {
-        Ollama ollama = new Ollama("http://192.168.29.224:11434");
-        ollama.setRequestTimeoutSeconds(120);
-        String model = "mistral:7b";
-        ollama.pullModel(model);
-
-        List<Tools.Tool> tools = new ArrayList<>();
-        // Weather tool
-        tools.add(
-                Tools.Tool.builder()
-                        .toolSpec(
-                                Tools.ToolSpec.builder()
-                                        .name("weather-tool")
-                                        .description(
-                                                "Gets the current weather for a given location and"
-                                                        + " day.")
-                                        .parameters(
-                                                Tools.Parameters.of(
-                                                        Map.of(
-                                                                "location",
-                                                                Tools.Property.builder()
-                                                                        .type("string")
-                                                                        .description(
-                                                                                "The location for"
-                                                                                    + " which to"
-                                                                                    + " get the"
-                                                                                    + " weather.")
-                                                                        .required(true)
-                                                                        .build(),
-                                                                "day",
-                                                                Tools.Property.builder()
-                                                                        .type("string")
-                                                                        .description(
-                                                                                "The day of the"
-                                                                                    + " week for"
-                                                                                    + " which to"
-                                                                                    + " get the"
-                                                                                    + " weather.")
-                                                                        .required(true)
-                                                                        .build())))
-                                        .build())
-                        .toolFunction(new WeatherToolFunction())
-                        .build());
-
-        // Calculator tool
-        tools.add(
-                Tools.Tool.builder()
-                        .toolSpec(
-                                Tools.ToolSpec.builder()
-                                        .name("calculator-tool")
-                                        .description(
-                                                "Performs a simple arithmetic operation between two"
-                                                        + " numbers.")
-                                        .parameters(
-                                                Tools.Parameters.of(
-                                                        Map.of(
-                                                                "operation",
-                                                                Tools.Property.builder()
-                                                                        .type("string")
-                                                                        .description(
-                                                                                "The arithmetic"
-                                                                                    + " operation"
-                                                                                    + " to perform."
-                                                                                    + " One of:"
-                                                                                    + " add,"
-                                                                                    + " subtract,"
-                                                                                    + " multiply,"
-                                                                                    + " divide.")
-                                                                        .required(true)
-                                                                        .build(),
-                                                                "a",
-                                                                Tools.Property.builder()
-                                                                        .type("number")
-                                                                        .description(
-                                                                                "The first"
-                                                                                    + " operand.")
-                                                                        .required(true)
-                                                                        .build(),
-                                                                "b",
-                                                                Tools.Property.builder()
-                                                                        .type("number")
-                                                                        .description(
-                                                                                "The second"
-                                                                                    + " operand.")
-                                                                        .required(true)
-                                                                        .build())))
-                                        .build())
-                        .toolFunction(new CalculatorToolFunction())
-                        .build());
-
-        // Hotel Booking tool (dummy)
-        tools.add(
-                Tools.Tool.builder()
-                        .toolSpec(
-                                Tools.ToolSpec.builder()
-                                        .name("hotel-booking-tool")
-                                        .description(
-                                                "Books a hotel room in a specified city for given"
-                                                        + " dates and number of guests.")
-                                        .parameters(
-                                                Tools.Parameters.of(
-                                                        Map.of(
-                                                                "city",
-                                                                Tools.Property.builder()
-                                                                        .type("string")
-                                                                        .description(
-                                                                                "The city where the"
-                                                                                    + " hotel will"
-                                                                                    + " be booked.")
-                                                                        .required(true)
-                                                                        .build(),
-                                                                "checkin_date",
-                                                                Tools.Property.builder()
-                                                                        .type("string")
-                                                                        .description(
-                                                                                "Check-in date"
-                                                                                    + " (e.g."
-                                                                                    + " 2025-08-10).")
-                                                                        .required(true)
-                                                                        .build(),
-                                                                "checkout_date",
-                                                                Tools.Property.builder()
-                                                                        .type("string")
-                                                                        .description(
-                                                                                "Check-out date"
-                                                                                    + " (e.g."
-                                                                                    + " 2025-08-12).")
-                                                                        .required(true)
-                                                                        .build(),
-                                                                "guests",
-                                                                Tools.Property.builder()
-                                                                        .type("number")
-                                                                        .description(
-                                                                                "Number of guests"
-                                                                                    + " for the"
-                                                                                    + " booking.")
-                                                                        .required(true)
-                                                                        .build())))
-                                        .build())
-                        .toolFunction(new HotelBookingToolFunction())
-                        .build());
-
-        Agent agent = new Agent("Nimma Mirta", ollama, model, tools);
+        //        Ollama ollama = new Ollama("http://192.168.29.224:11434");
+        //        ollama.setRequestTimeoutSeconds(120);
+        //        String model = "mistral:7b";
+        //        ollama.pullModel(model);
+        //        List<Tools.Tool> tools = new ArrayList<>();
+        //        // Weather tool
+        //        tools.add(
+        //                Tools.Tool.builder()
+        //                        .toolSpec(
+        //                                Tools.ToolSpec.builder()
+        //                                        .name("weather-tool")
+        //                                        .description(
+        //                                                "Gets the current weather for a given
+        // location and"
+        //                                                        + " day.")
+        //                                        .parameters(
+        //                                                Tools.Parameters.of(
+        //                                                        Map.of(
+        //                                                                "location",
+        //                                                                Tools.Property.builder()
+        //                                                                        .type("string")
+        //                                                                        .description(
+        //                                                                                "The
+        // location for"
+        //                                                                                    + "
+        // which to"
+        //                                                                                    + "
+        // get the"
+        //                                                                                    + "
+        // weather.")
+        //                                                                        .required(true)
+        //                                                                        .build(),
+        //                                                                "day",
+        //                                                                Tools.Property.builder()
+        //                                                                        .type("string")
+        //                                                                        .description(
+        //                                                                                "The day
+        // of the"
+        //                                                                                    + "
+        // week for"
+        //                                                                                    + "
+        // which to"
+        //                                                                                    + "
+        // get the"
+        //                                                                                    + "
+        // weather.")
+        //                                                                        .required(true)
+        //                                                                        .build())))
+        //                                        .build())
+        //                        .toolFunction(new WeatherToolFunction())
+        //                        .build());
+        //
+        //        // Calculator tool
+        //        tools.add(
+        //                Tools.Tool.builder()
+        //                        .toolSpec(
+        //                                Tools.ToolSpec.builder()
+        //                                        .name("calculator-tool")
+        //                                        .description(
+        //                                                "Performs a simple arithmetic operation
+        // between two"
+        //                                                        + " numbers.")
+        //                                        .parameters(
+        //                                                Tools.Parameters.of(
+        //                                                        Map.of(
+        //                                                                "operation",
+        //                                                                Tools.Property.builder()
+        //                                                                        .type("string")
+        //                                                                        .description(
+        //                                                                                "The
+        // arithmetic"
+        //                                                                                    + "
+        // operation"
+        //                                                                                    + " to
+        // perform."
+        //                                                                                    + "
+        // One of:"
+        //                                                                                    + "
+        // add,"
+        //                                                                                    + "
+        // subtract,"
+        //                                                                                    + "
+        // multiply,"
+        //                                                                                    + "
+        // divide.")
+        //                                                                        .required(true)
+        //                                                                        .build(),
+        //                                                                "a",
+        //                                                                Tools.Property.builder()
+        //                                                                        .type("number")
+        //                                                                        .description(
+        //                                                                                "The
+        // first"
+        //                                                                                    + "
+        // operand.")
+        //                                                                        .required(true)
+        //                                                                        .build(),
+        //                                                                "b",
+        //                                                                Tools.Property.builder()
+        //                                                                        .type("number")
+        //                                                                        .description(
+        //                                                                                "The
+        // second"
+        //                                                                                    + "
+        // operand.")
+        //                                                                        .required(true)
+        //                                                                        .build())))
+        //                                        .build())
+        //                        .toolFunction(new CalculatorToolFunction())
+        //                        .build());
+        //
+        //        // Hotel Booking tool (dummy)
+        //        tools.add(
+        //                Tools.Tool.builder()
+        //                        .toolSpec(
+        //                                Tools.ToolSpec.builder()
+        //                                        .name("hotel-booking-tool")
+        //                                        .description(
+        //                                                "Books a hotel room in a specified city
+        // for given"
+        //                                                        + " dates and number of guests.")
+        //                                        .parameters(
+        //                                                Tools.Parameters.of(
+        //                                                        Map.of(
+        //                                                                "city",
+        //                                                                Tools.Property.builder()
+        //                                                                        .type("string")
+        //                                                                        .description(
+        //                                                                                "The city
+        // where the"
+        //                                                                                    + "
+        // hotel will"
+        //                                                                                    + " be
+        // booked.")
+        //                                                                        .required(true)
+        //                                                                        .build(),
+        //                                                                "checkin_date",
+        //                                                                Tools.Property.builder()
+        //                                                                        .type("string")
+        //                                                                        .description(
+        //                                                                                "Hotel
+        // check-in date"
+        //                                                                                    + "
+        // (e.g."
+        //                                                                                    + "
+        // 2025-08-10).")
+        //                                                                        .required(true)
+        //                                                                        .build(),
+        //                                                                "checkout_date",
+        //                                                                Tools.Property.builder()
+        //                                                                        .type("string")
+        //                                                                        .description(
+        //
+        // "HotelCheck-out date"
+        //                                                                                    + "
+        // (e.g."
+        //                                                                                    + "
+        // 2025-08-12).")
+        //                                                                        .required(true)
+        //                                                                        .build(),
+        //                                                                "guests",
+        //                                                                Tools.Property.builder()
+        //                                                                        .type("number")
+        //                                                                        .description(
+        //                                                                                "Number of
+        // guests"
+        //                                                                                    + "
+        // for the"
+        //                                                                                    + "
+        // booking.")
+        //                                                                        .required(true)
+        //                                                                        .build())))
+        //                                        .build())
+        //                        .toolFunction(new HotelBookingToolFunction())
+        //                        .build());
+        //
+        //        Map<String, ToolFunction> functionMap = Map.of(
+        //                "weather-tool", new WeatherToolFunction(),
+        //                "calculator-tool", new CalculatorToolFunction()
+        //        );
+        //        List<Tools.Tool> tools =
+        // Tools.fromYAMLFile("/Users/amithkoujalgi/Downloads/tools.yaml", functionMap);
+        //        Agent agent = new Agent("Nimma Mirta", ollama, model, tools);
+        Agent agent = Agent.fromYaml("agent.yaml");
         agent.runInteractive();
     }
 }
 
-/**
- * ToolFunction implementation that returns a dummy weekly weather forecast.
- */
+/** ToolFunction implementation that returns a dummy weekly weather forecast. */
 class WeatherToolFunction implements ToolFunction {
     @Override
     public Object apply(Map<String, Object> arguments) {
         String response =
-                "Monday: Pleasant, Tuesday: Sunny, Wednesday: Windy, Thursday: Cloudy, Friday:"
-                        + " Rainy, Saturday: Heavy rains, Sunday: Clear";
+                "Monday: Pleasant."
+                        + "Tuesday: Sunny."
+                        + "Wednesday: Windy."
+                        + "Thursday: Cloudy."
+                        + "Friday: Rainy."
+                        + "Saturday: Heavy rains."
+                        + "Sunday: Clear.";
         return response;
     }
 }
 
-/**
- * ToolFunction implementation for basic arithmetic calculations.
- */
+/** ToolFunction implementation for basic arithmetic calculations. */
 class CalculatorToolFunction implements ToolFunction {
     @Override
     public Object apply(Map<String, Object> arguments) {
@@ -213,9 +250,7 @@ class CalculatorToolFunction implements ToolFunction {
     }
 }
 
-/**
- * ToolFunction implementation simulating a hotel booking.
- */
+/** ToolFunction implementation simulating a hotel booking. */
 class HotelBookingToolFunction implements ToolFunction {
     @Override
     public Object apply(Map<String, Object> arguments) {
