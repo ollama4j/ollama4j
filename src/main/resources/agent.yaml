@@ -1,6 +1,7 @@
 name: Nimma Mitra
 host: http://192.168.29.224:11434
 model: mistral:7b
+requestTimeoutSeconds: 120
 customPrompt: >
   Only use tools and do not use your creativity.
   Do not ever tell me to call the tool or how to use the tool or command myself.

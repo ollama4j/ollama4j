@@ -87,9 +87,11 @@ public class Agent {
                 t.setToolSpec(ts);
                 agentTools.add(t);
             }
+            Ollama ollama = new Ollama(agentSpec.getHost());
+            ollama.setRequestTimeoutSeconds(120);
             return new Agent(
                     agentSpec.getName(),
-                    new Ollama(agentSpec.getHost()),
+                    ollama,
                     agentSpec.getModel(),
                     agentSpec.getCustomPrompt(),
                     agentTools);
@@ -114,27 +116,6 @@ public class Agent {
         }
         if (chatHistory.isEmpty()) {
             chatHistory.add(
-                    //                    new OllamaChatMessage(
-                    //                            OllamaChatMessageRole.SYSTEM,
-                    //                            "You are a helpful assistant named "
-                    //                                    + name
-                    //                                    + ". You only perform tasks using tools
-                    // available for you. You"
-                    //                                    + " respond very precisely and you don't
-                    // overthink or be too"
-                    //                                    + " creative. Do not ever reveal the tool
-                    // specification in"
-                    //                                    + " terms of code or JSON or in a way that
-                    // a software engineer"
-                    //                                    + " sees it. Just be careful with your
-                    // responses and respond"
-                    //                                    + " like a human. Note that you only
-                    // execute tools provided to"
-                    //                                    + " you. Following are the tools that you
-                    // have access to and"
-                    //                                    + " you can perform right actions using
-                    // right tools."
-                    //                                    + availableToolsDescription));
                     new OllamaChatMessage(
                             OllamaChatMessageRole.SYSTEM,
                             "You are a helpful assistant named "
@@ -167,7 +148,7 @@ public class Agent {
     public void runInteractive() throws OllamaException {
         Scanner sc = new Scanner(System.in);
         while (true) {
-            System.out.print("\nYou: ");
+            System.out.print("\n[You]: ");
             String input = sc.nextLine();
             if ("exit".equalsIgnoreCase(input)) break;
             String response = this.think(input);
@@ -179,10 +160,10 @@ public class Agent {
         private String name;
         private String description;
         private List<AgentToolSpec> tools;
-        private Tools.Parameters parameters;
         private String host;
         private String model;
         private String customPrompt;
+        private int requestTimeoutSeconds;
     }
 
     @Data
@@ -191,5 +172,13 @@ public class Agent {
     private static class AgentToolSpec extends Tools.ToolSpec {
         private String toolFunctionFQCN = null;
         private ToolFunction toolFunctionInstance = null;
+    }
+
+    @Data
+    public class AgentToolParameter {
+        private String type;
+        private String description;
+        private boolean required;
+        private List<String> _enum; // `enum` is a reserved keyword, so use _enum or similar
     }
 }
