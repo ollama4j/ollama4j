@@ -265,6 +265,7 @@ public class Agent {
     @Data
     @Setter
     @Getter
+    @EqualsAndHashCode(callSuper = false)
     private static class AgentToolSpec extends Tools.ToolSpec {
         /** Fully qualified class name of the tool's {@link ToolFunction} implementation */
         private String toolFunctionFQCN = null;

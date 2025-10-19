@@ -66,11 +66,11 @@ To use a method as a tool within a chat call, follow these steps:
 Let's try an example. Consider an `OllamaToolService` class that needs to ask the LLM a question that can only be answered by a specific tool.
 This tool is implemented within a `GlobalConstantGenerator` class. Following is the code that exposes an annotated method as a tool:
 
-<CodeEmbed src="https://raw.githubusercontent.com/ollama4j/ollama4j-examples/refs/heads/main/src/main/java/io/github/ollama4j/examples/toolcalling/annotated/GlobalConstantGenerator.java"/>
+<CodeEmbed src="https://raw.githubusercontent.com/ollama4j/ollama4j-examples/refs/heads/main/src/main/java/io/github/ollama4j/examples/tools/annotated/GlobalConstantGenerator.java"/>
 
 The annotated method can then be used as a tool in the chat session:
 
-<CodeEmbed src="https://raw.githubusercontent.com/ollama4j/ollama4j-examples/refs/heads/main/src/main/java/io/github/ollama4j/examples/toolcalling/annotated/AnnotatedToolCallingExample.java"/>
+<CodeEmbed src="https://raw.githubusercontent.com/ollama4j/ollama4j-examples/refs/heads/main/src/main/java/io/github/ollama4j/examples/AnnotatedToolCallingExample.java"/>
 
 Running the above would produce a response similar to:
 

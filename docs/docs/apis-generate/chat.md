@@ -63,7 +63,7 @@ You will get a response similar to:
 
 ### Using a simple Console Output Stream Handler
 
-<CodeEmbed src="https://raw.githubusercontent.com/ollama4j/ollama4j-examples/refs/heads/main/src/main/java/io/github/ollama4j/examples/ConsoleOutputStreamHandlerExample.java" />
+<CodeEmbed src="https://raw.githubusercontent.com/ollama4j/ollama4j-examples/refs/heads/main/src/main/java/io/github/ollama4j/examples/ChatWithConsoleHandlerExample.java" />
 
 ### With a Stream Handler to receive the tokens as they are generated
 
