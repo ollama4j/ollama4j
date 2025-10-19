@@ -32,8 +32,8 @@ import lombok.*;
  * <h2>Usage</h2>
  *
  * <ul>
- *   <li>Instantiate an Agent via {@link #fromYaml(String)} for YAML-based configuration.
- *   <li>Handle conversation turns via {@link #think(String)}.
+ *   <li>Instantiate an Agent via {@link #load(String)} for YAML-based configuration.
+ *   <li>Handle conversation turns via {@link #interact(String)}.
  *   <li>Use {@link #runInteractive()} for an interactive console-based session.
  * </ul>
  */

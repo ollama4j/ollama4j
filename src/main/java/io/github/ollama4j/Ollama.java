@@ -862,7 +862,7 @@ public class Ollama {
 
     /**
      * Sends a chat request to a model using an {@link OllamaChatRequest} and sets up streaming response.
-     * This can be constructed using an {@link OllamaChatRequestBuilder}.
+     * This can be constructed using an {@link OllamaChatRequest#builder()}.
      *
      * <p>Note: the OllamaChatRequestModel#getStream() property is not implemented.
      *
