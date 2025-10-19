@@ -11,8 +11,10 @@ package io.github.ollama4j.tools;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
@@ -21,8 +23,6 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import tools.jackson.core.type.TypeReference;
-import tools.jackson.dataformat.yaml.YAMLMapper;
 
 public class Tools {
     private Tools() {}
@@ -150,7 +150,7 @@ public class Tools {
 
     public static List<Tool> fromYAMLFile(String filePath, Map<String, ToolFunction> functionMap) {
         try {
-            YAMLMapper mapper = new YAMLMapper();
+            ObjectMapper mapper = new ObjectMapper(new YAMLFactory());
             List<Map<String, Object>> rawTools =
                     mapper.readValue(new File(filePath), new TypeReference<>() {});
             List<Tool> tools = new ArrayList<>();
