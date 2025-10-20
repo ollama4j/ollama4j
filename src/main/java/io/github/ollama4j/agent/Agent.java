@@ -33,7 +33,7 @@ import lombok.*;
  *
  * <ul>
  *   <li>Instantiate an Agent via {@link #load(String)} for YAML-based configuration.
- *   <li>Handle conversation turns via {@link #interact(String)}.
+ *   <li>Handle conversation turns via {@link #interact(String, OllamaChatStreamObserver)}.
  *   <li>Use {@link #runInteractive()} for an interactive console-based session.
  * </ul>
  */
