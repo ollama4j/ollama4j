@@ -19,11 +19,11 @@ You can use this feature to receive both the thinking and the response as separa
 You will get a response similar to:
 
 :::tip[Thinking Tokens]
-User asks "Who are you?" It's a request for identity. As ChatGPT, we should explain that I'm an AI developed by OpenAI, etc. Provide friendly explanation.
+USER ASKS "WHO ARE YOU?" IT'S A REQUEST FOR IDENTITY. AS CHATGPT, WE SHOULD EXPLAIN THAT I'M AN AI DEVELOPED BY OPENAI, ETC. PROVIDE FRIENDLY EXPLANATION.
 :::
 
 :::tip[Response Tokens]
-I’m ChatGPT, a large language model created by OpenAI. I’m designed to understand and generate natural‑language text, so I can answer questions, help with writing, explain concepts, brainstorm ideas, and chat about almost any topic. I don’t have a personal life or consciousness—I’m a tool that processes input and produces responses based on patterns in the data I was trained on. If you have any questions about how I work or what I can do, feel free to ask!
+i’m chatgpt, a large language model created by openai. i’m designed to understand and generate natural‑language text, so i can answer questions, help with writing, explain concepts, brainstorm ideas, and chat about almost any topic. i don’t have a personal life or consciousness—i’m a tool that processes input and produces responses based on patterns in the data i was trained on. if you have any questions about how i work or what i can do, feel free to ask!
 :::
 
 ### Generate response and receive the thinking and response tokens streamed
@@ -34,7 +34,7 @@ You will get a response similar to:
 
 :::tip[Thinking Tokens]
 <TypewriterTextarea
-textContent={`User asks "Who are you?" It's a request for identity. As ChatGPT, we should explain that I'm an AI developed by OpenAI, etc. Provide friendly explanation.`}
+textContent={`USER ASKS "WHO ARE YOU?" WE SHOULD EXPLAIN THAT I'M AN AI BY OPENAI, ETC.`}
 typingSpeed={10}
 pauseBetweenSentences={1200}
 height="auto"
@@ -45,7 +45,7 @@ style={{ whiteSpace: 'pre-line' }}
 
 :::tip[Response Tokens]
 <TypewriterTextarea
-textContent={`I’m ChatGPT, a large language model created by OpenAI. I’m designed to understand and generate natural‑language text, so I can answer questions, help with writing, explain concepts, brainstorm ideas, and chat about almost any topic. I don’t have a personal life or consciousness—I’m a tool that processes input and produces responses based on patterns in the data I was trained on. If you have any questions about how I work or what I can do, feel free to ask!`}
+textContent={`i’m chatgpt, a large language model created by openai.`}
 typingSpeed={10}
 pauseBetweenSentences={1200}
 height="auto"

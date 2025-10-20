@@ -15,13 +15,13 @@ This API lets you create a custom model on the Ollama server.
 You would see these logs while the custom model is being created:
 
 ```
-{"status":"using existing layer sha256:fad2a06e4cc705c2fa8bec5477ddb00dc0c859ac184c34dcc5586663774161ca"}
-{"status":"using existing layer sha256:41c2cf8c272f6fb0080a97cd9d9bd7d4604072b80a0b10e7d65ca26ef5000c0c"}
-{"status":"using existing layer sha256:1da0581fd4ce92dcf5a66b1da737cf215d8dcf25aa1b98b44443aaf7173155f5"}
-{"status":"creating new layer sha256:941b69ca7dc2a85c053c38d9e8029c9df6224e545060954fa97587f87c044a64"}
-{"status":"using existing layer sha256:f02dd72bb2423204352eabc5637b44d79d17f109fdb510a7c51455892aa2d216"}
-{"status":"writing manifest"}
-{"status":"success"}
+using existing layer sha256:fad2a06e4cc705c2fa8bec5477ddb00dc0c859ac184c34dcc5586663774161ca
+using existing layer sha256:41c2cf8c272f6fb0080a97cd9d9bd7d4604072b80a0b10e7d65ca26ef5000c0c
+using existing layer sha256:1da0581fd4ce92dcf5a66b1da737cf215d8dcf25aa1b98b44443aaf7173155f5
+creating new layer sha256:941b69ca7dc2a85c053c38d9e8029c9df6224e545060954fa97587f87c044a64
+using existing layer sha256:f02dd72bb2423204352eabc5637b44d79d17f109fdb510a7c51455892aa2d216
+writing manifest
+success
 ```
 Once created, you can see it when you use [list models](./list-models) API.
 
