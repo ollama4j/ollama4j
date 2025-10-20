@@ -49,7 +49,7 @@ YAML makes it effortless to configure and tweak your agent’s powers and behavi
 
 ## Implement Tool Functions
 
-Your agent calls out to Java classes (Tool Functions). Put these implementations on your classpath, register them in YAML, and your agent.
+Your agent calls out to Java classes (Tool Functions). Put these implementations on your classpath, register them in YAML.
 
 <CodeEmbed src="https://raw.githubusercontent.com/ollama4j/ollama4j-examples/refs/heads/main/src/main/java/io/github/ollama4j/examples/tools/toolfunctions/CalculatorToolFunction.java"/>
 
