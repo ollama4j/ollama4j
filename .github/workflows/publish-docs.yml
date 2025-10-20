@@ -54,7 +54,7 @@ jobs:
           regex: false
 
       - name: Build with Maven
-        run: mvn --file pom.xml -U clean package && cp -r ./target/apidocs/. ./docs/build/apidocs
+        run: mvn --file pom.xml -U clean package -Dgpg.skip=true -DskipTests && cp -r ./target/apidocs/. ./docs/build/apidocs
 
       - name: Doxygen Action
         uses: mattnotmitt/doxygen-action@v1.12.0

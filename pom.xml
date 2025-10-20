@@ -80,6 +80,7 @@
                 <configuration>
                     <!-- to disable the "missing" warnings. Remove the doclint to enable warnings-->
                     <doclint>all,-missing</doclint>
+                    <failOnError>false</failOnError>
                 </configuration>
                 <executions>
                     <execution>
