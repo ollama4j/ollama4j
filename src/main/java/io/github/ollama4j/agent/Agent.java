@@ -38,32 +38,44 @@ import lombok.*;
  * </ul>
  */
 public class Agent {
-    /** The agent's display name */
+    /**
+     * The agent's display name
+     */
     private final String name;
 
-    /** List of supported tools for this agent */
+    /**
+     * List of supported tools for this agent
+     */
     private final List<Tools.Tool> tools;
 
-    /** Ollama client instance for communication with the API */
+    /**
+     * Ollama client instance for communication with the API
+     */
     private final Ollama ollamaClient;
 
-    /** The model name used for chat completions */
+    /**
+     * The model name used for chat completions
+     */
     private final String model;
 
-    /** Persists chat message history across rounds */
+    /**
+     * Persists chat message history across rounds
+     */
     private final List<OllamaChatMessage> chatHistory;
 
-    /** Optional custom system prompt for the agent */
+    /**
+     * Optional custom system prompt for the agent
+     */
     private final String customPrompt;
 
     /**
      * Constructs a new Agent.
      *
-     * @param name The agent's given name.
+     * @param name         The agent's given name.
      * @param ollamaClient The Ollama API client instance to use.
-     * @param model The model name to use for chat completion.
+     * @param model        The model name to use for chat completion.
      * @param customPrompt A custom prompt to prepend to all conversations (may be null).
-     * @param tools List of available tools for function calling.
+     * @param tools        List of available tools for function calling.
      */
     public Agent(
             String name,
@@ -162,7 +174,8 @@ public class Agent {
      * @return The model's response as a string.
      * @throws OllamaException If there is a problem with the Ollama API.
      */
-    public String interact(String userInput) throws OllamaException {
+    public String interact(String userInput, OllamaChatStreamObserver chatTokenHandler)
+            throws OllamaException {
         // Build a concise and readable description of available tools
         String availableToolsDescription =
                 tools.isEmpty()
@@ -202,11 +215,6 @@ public class Agent {
                         .withModel(model)
                         .withMessages(chatHistory)
                         .build();
-
-        OllamaChatStreamObserver chatTokenHandler =
-                new OllamaChatStreamObserver(
-                        new ConsoleOutputGenerateTokenHandler(),
-                        new ConsoleOutputGenerateTokenHandler());
         OllamaChatResult response = ollamaClient.chat(request, chatTokenHandler);
 
         // Update chat history for continuity
@@ -230,7 +238,11 @@ public class Agent {
             System.out.print("\n[You]: ");
             String input = sc.nextLine();
             if ("exit".equalsIgnoreCase(input)) break;
-            this.interact(input);
+            this.interact(
+                    input,
+                    new OllamaChatStreamObserver(
+                            new ConsoleOutputGenerateTokenHandler(),
+                            new ConsoleOutputGenerateTokenHandler()));
         }
     }
 
@@ -267,23 +279,35 @@ public class Agent {
     @Getter
     @EqualsAndHashCode(callSuper = false)
     private static class AgentToolSpec extends Tools.ToolSpec {
-        /** Fully qualified class name of the tool's {@link ToolFunction} implementation */
+        /**
+         * Fully qualified class name of the tool's {@link ToolFunction} implementation
+         */
         private String toolFunctionFQCN = null;
 
-        /** Instance of the {@link ToolFunction} to invoke */
+        /**
+         * Instance of the {@link ToolFunction} to invoke
+         */
         private ToolFunction toolFunctionInstance = null;
     }
 
-    /** Bean for describing a tool function parameter for use in agent YAML definitions. */
+    /**
+     * Bean for describing a tool function parameter for use in agent YAML definitions.
+     */
     @Data
     public class AgentToolParameter {
-        /** The parameter's type (e.g., string, number, etc.) */
+        /**
+         * The parameter's type (e.g., string, number, etc.)
+         */
         private String type;
 
-        /** Description of the parameter */
+        /**
+         * Description of the parameter
+         */
         private String description;
 
-        /** Whether this parameter is required */
+        /**
+         * Whether this parameter is required
+         */
         private boolean required;
 
         /**
