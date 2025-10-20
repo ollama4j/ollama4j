@@ -805,6 +805,7 @@ public class Ollama {
         chatRequest.setMessages(msgs);
         msgs.add(ocm);
         OllamaChatTokenHandler hdlr = null;
+        chatRequest.setUseTools(true);
         chatRequest.setTools(request.getTools());
         if (streamObserver != null) {
             chatRequest.setStream(true);
@@ -861,7 +862,7 @@ public class Ollama {
 
     /**
      * Sends a chat request to a model using an {@link OllamaChatRequest} and sets up streaming response.
-     * This can be constructed using an {@link OllamaChatRequestBuilder}.
+     * This can be constructed using an {@link OllamaChatRequest#builder()}.
      *
      * <p>Note: the OllamaChatRequestModel#getStream() property is not implemented.
      *
@@ -881,7 +882,7 @@ public class Ollama {
             // only add tools if tools flag is set
             if (request.isUseTools()) {
                 // add all registered tools to request
-                request.setTools(toolRegistry.getRegisteredTools());
+                request.getTools().addAll(toolRegistry.getRegisteredTools());
             }
 
             if (tokenHandler != null) {

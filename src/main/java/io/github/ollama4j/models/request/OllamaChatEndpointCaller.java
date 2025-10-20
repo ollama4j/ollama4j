@@ -141,7 +141,6 @@ public class OllamaChatEndpointCaller extends OllamaEndpointCaller {
                 responseBuffer);
         if (statusCode != 200) {
             LOG.error("Status code: {}", statusCode);
-            System.out.println(responseBuffer);
             throw new OllamaException(responseBuffer.toString());
         }
         if (wantedToolsForStream != null && ollamaChatResponseModel != null) {

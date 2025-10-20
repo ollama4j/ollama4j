@@ -11,7 +11,11 @@ package io.github.ollama4j.tools;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -115,5 +119,54 @@ public class Tools {
         private List<String> enumValues;
 
         @JsonIgnore private boolean required;
+    }
+
+    public static List<Tool> fromJSONFile(String filePath, Map<String, ToolFunction> functionMap) {
+        try {
+            ObjectMapper mapper = new ObjectMapper();
+            List<Map<String, Object>> rawTools =
+                    mapper.readValue(
+                            new File(filePath),
+                            new com.fasterxml.jackson.core.type.TypeReference<>() {});
+
+            List<Tool> tools = new ArrayList<>();
+
+            for (Map<String, Object> rawTool : rawTools) {
+                String json = mapper.writeValueAsString(rawTool);
+                Tool tool = mapper.readValue(json, Tool.class);
+                String toolName = tool.getToolSpec().getName();
+                for (Map.Entry<String, ToolFunction> toolFunctionEntry : functionMap.entrySet()) {
+                    if (toolFunctionEntry.getKey().equals(toolName)) {
+                        tool.setToolFunction(toolFunctionEntry.getValue());
+                    }
+                }
+                tools.add(tool);
+            }
+            return tools;
+        } catch (Exception e) {
+            throw new RuntimeException("Failed to load tools from file: " + filePath, e);
+        }
+    }
+
+    public static List<Tool> fromYAMLFile(String filePath, Map<String, ToolFunction> functionMap) {
+        try {
+            ObjectMapper mapper = new ObjectMapper(new YAMLFactory());
+            List<Map<String, Object>> rawTools =
+                    mapper.readValue(new File(filePath), new TypeReference<>() {});
+            List<Tool> tools = new ArrayList<>();
+            for (Map<String, Object> rawTool : rawTools) {
+                String yaml = mapper.writeValueAsString(rawTool);
+                Tool tool = mapper.readValue(yaml, Tool.class);
+                String toolName = tool.getToolSpec().getName();
+                ToolFunction function = functionMap.get(toolName);
+                if (function != null) {
+                    tool.setToolFunction(function);
+                }
+                tools.add(tool);
+            }
+            return tools;
+        } catch (Exception e) {
+            throw new RuntimeException("Failed to load tools from YAML file: " + filePath, e);
+        }
     }
 }
