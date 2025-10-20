@@ -47,7 +47,17 @@ YAML makes it effortless to configure and tweak your agent’s powers and behavi
 
 ---
 
-## Instantiating and Running Agents in Java
+## Implement Tool Functions
+
+Your agent calls out to Java classes (Tool Functions). Put these implementations on your classpath, register them in YAML, and your agent.
+
+<CodeEmbed src="https://raw.githubusercontent.com/ollama4j/ollama4j-examples/refs/heads/main/src/main/java/io/github/ollama4j/examples/tools/toolfunctions/CalculatorToolFunction.java"/>
+
+<CodeEmbed src="https://raw.githubusercontent.com/ollama4j/ollama4j-examples/refs/heads/main/src/main/java/io/github/ollama4j/examples/tools/toolfunctions/HotelBookingToolFunction.java"/>
+
+---
+
+## Instantiating and Running Agents
 
 Once your agent is described in YAML, bringing it to life in Java takes only a couple of lines:
 
