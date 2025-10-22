@@ -5,6 +5,7 @@ title: Agents
 ---
 
 import CodeEmbed from '@site/src/components/CodeEmbed';
+import TypewriterTextarea from '@site/src/components/TypewriterTextarea';
 
 # Agents
 
@@ -63,8 +64,26 @@ Once your agent is described in YAML, bringing it to life in Java takes only a c
 
 <CodeEmbed src="https://raw.githubusercontent.com/ollama4j/ollama4j-examples/refs/heads/main/src/main/java/io/github/ollama4j/examples/AgentExample.java"/>
 
-- **No boilerplate.** Just load and start chatting or calling tools.
-- The API takes care of wiring up LLMs, tool invocation, and instruction handling.
+The API takes care of wiring up LLMs, tool invocation, and instruction handling.
 
-Ready to build your own AI-powered assistant? Just write your YAML, implement the tool logic in Java, and go!
+Here's a sample interaction:
 
+<TypewriterTextarea
+textContent='[You]: Book a hotel in Mysuru for two guests, from July 20th to July 22nd.
+Alright, I have booked the hotel! Room number 10 booked for 2 guests in Mysuru from July 20th to July 22nd. Here is your booking ID: HB-123'
+typingSpeed={30}
+pauseBetweenSentences={1200}
+height='110px'
+width='100%'
+/>
+
+Here's another one:
+
+<TypewriterTextarea
+textContent='[You]: I would like to add 201932 with 233245.
+Sure, I have added 201932 to 233245 and here is the sum: 435177.'
+typingSpeed={30}
+pauseBetweenSentences={1200}
+height='90px'
+width='100%'
+/>
