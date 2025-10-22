@@ -52,7 +52,7 @@ YAML makes it effortless to configure and tweak your agent’s powers and behavi
 
 Your agent calls out to Java classes (Tool Functions). Put these implementations on your classpath, register them in YAML.
 
-<CodeEmbed src="https://raw.githubusercontent.com/ollama4j/ollama4j-examples/refs/heads/main/src/main/java/io/github/ollama4j/examples/tools/toolfunctions/CalculatorToolFunction.java"/>
+<CodeEmbed src="https://raw.githubusercontent.com/ollama4j/ollama4j-examples/refs/heads/main/src/main/java/io/github/ollama4j/examples/tools/toolfunctions/HotelBookingLookupToolFunction.java"/>
 
 <CodeEmbed src="https://raw.githubusercontent.com/ollama4j/ollama4j-examples/refs/heads/main/src/main/java/io/github/ollama4j/examples/tools/toolfunctions/HotelBookingToolFunction.java"/>
 
@@ -80,8 +80,8 @@ width='100%'
 Here's another one:
 
 <TypewriterTextarea
-textContent='[You]: I would like to add 201932 with 233245.
-Sure, I have added 201932 to 233245 and here is the sum: 435177.'
+textContent='[You]: Give me details of booking ID - HB-123.
+I found a booking for HB-123. Looks like the hotel is booked for 2 guests. Enjoy your stay!'
 typingSpeed={30}
 pauseBetweenSentences={1200}
 height='90px'
