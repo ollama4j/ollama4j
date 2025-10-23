@@ -1,7 +1,7 @@
 ---
 sidebar_position: 6
 
-title: Metrics
+title: Metrics 🆕
 ---
 
 import CodeEmbed from '@site/src/components/CodeEmbed';

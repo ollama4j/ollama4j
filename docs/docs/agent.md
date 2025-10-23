@@ -1,7 +1,7 @@
 ---
 sidebar_position: 4
 
-title: Agents
+title: Agents 🆕
 ---
 
 import CodeEmbed from '@site/src/components/CodeEmbed';
