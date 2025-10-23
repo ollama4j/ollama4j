@@ -17,7 +17,7 @@
         "@docsearch/js": "^4.1.0",
         "@docusaurus/core": "^3.9.2",
         "@docusaurus/plugin-google-gtag": "^3.9.2",
-        "@docusaurus/preset-classic": "^3.9.1",
+        "@docusaurus/preset-classic": "^3.9.2",
         "@docusaurus/theme-mermaid": "^3.9.1",
         "@iconify/react": "^6.0.2",
         "@mdx-js/react": "^3.1.1",
