@@ -8,6 +8,8 @@ on:
     paths:
       - 'src/**'
       - 'pom.xml'
+  # Allows you to run this workflow manually from the Actions tab
+  workflow_dispatch:
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
