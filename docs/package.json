@@ -15,8 +15,8 @@
     },
     "dependencies": {
         "@docsearch/js": "^4.1.0",
-        "@docusaurus/core": "^3.9.0",
-        "@docusaurus/plugin-google-gtag": "^3.9.1",
+        "@docusaurus/core": "^3.9.2",
+        "@docusaurus/plugin-google-gtag": "^3.9.2",
         "@docusaurus/preset-classic": "^3.9.1",
         "@docusaurus/theme-mermaid": "^3.9.1",
         "@iconify/react": "^6.0.2",
@@ -30,7 +30,7 @@
         "react-image-gallery": "^1.4.0"
     },
     "devDependencies": {
-        "@docusaurus/module-type-aliases": "^3.9.1",
+        "@docusaurus/module-type-aliases": "^3.9.2",
         "@docusaurus/types": "^3.4.0"
     },
     "browserslist": {
