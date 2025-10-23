@@ -137,6 +137,7 @@ public class Agent {
             }
             Ollama ollama = new Ollama(agentSpec.getHost());
             ollama.setRequestTimeoutSeconds(120);
+            ollama.pullModel(agentSpec.getModel());
             return new Agent(
                     agentSpec.getName(),
                     ollama,
