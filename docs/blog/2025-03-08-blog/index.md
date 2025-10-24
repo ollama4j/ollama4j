@@ -209,7 +209,6 @@ To download/pull the model into your Ollama server, run the following command in
 
 ```shell
 ollama pull mistral
-
 ```
 
 You can list the models available on your model server by running the following command in your terminal.
