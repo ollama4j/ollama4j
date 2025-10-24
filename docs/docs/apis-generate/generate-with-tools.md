@@ -31,7 +31,19 @@ You could do that with ease with the `function calling` capabilities of the mode
 
 ### Create Tools/Functions
 
-We can create static functions as our tools.
+There are two ways to create and register your tools:
+
+1. **Define static or regular methods and register them explicitly as tools.**
+   You can create standalone functions (static or instance methods) and manually associate them with your tool specifications.
+
+2. **Use annotation-based tool discovery for automatic registration.**
+   By annotating your tool methods, you can leverage `registerAnnotatedTools()` to automatically scan your classpath, find all annotated tool functions, and register them without extra boilerplate.
+
+Learn more about annotation-based tool registration [here](/apis-generate/chat-with-tools#annotation-based-tool-registration).
+
+Choose the approach that best fits your project—manual for precise control, or annotation-based for easier scaling.
+
+Let's start by exploring the first approach: manually defining and registering your tools/functions.
 
 This function takes the arguments `location` and `fuelType` and performs an operation with these arguments and returns
 fuel price value.
