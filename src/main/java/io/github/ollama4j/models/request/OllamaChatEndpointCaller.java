@@ -44,12 +44,15 @@ public class OllamaChatEndpointCaller extends OllamaEndpointCaller {
 
     /**
      * Parses streamed Response line from ollama chat. Using {@link
-     * com.fasterxml.jackson.databind.ObjectMapper#readValue(String, TypeReference)} should throw
+     * com.fasterxml.jackson.databind.ObjectMapper#readValue(String, TypeReference)}
+     * should throw
      * {@link IllegalArgumentException} in case of null line or {@link
-     * com.fasterxml.jackson.core.JsonParseException} in case the JSON Object cannot be parsed to a
-     * {@link OllamaChatResponseModel}. Thus, the ResponseModel should never be null.
+     * com.fasterxml.jackson.core.JsonParseException} in case the JSON Object cannot
+     * be parsed to a
+     * {@link OllamaChatResponseModel}. Thus, the ResponseModel should never be
+     * null.
      *
-     * @param line streamed line of ollama stream response
+     * @param line           streamed line of ollama stream response
      * @param responseBuffer Stringbuffer to add latest response message part to
      * @return TRUE, if ollama-Response has 'done' state
      */
@@ -59,9 +62,11 @@ public class OllamaChatEndpointCaller extends OllamaEndpointCaller {
         try {
             OllamaChatResponseModel ollamaResponseModel =
                     Utils.getObjectMapper().readValue(line, OllamaChatResponseModel.class);
-            // It seems that under heavy load Ollama responds with an empty chat message part in the
+            // It seems that under heavy load Ollama responds with an empty chat message
+            // part in the
             // streamed response.
-            // Thus, we null check the message and hope that the next streamed response has some
+            // Thus, we null check the message and hope that the next streamed response has
+            // some
             // message content again.
             OllamaChatMessage message = ollamaResponseModel.getMessage();
             if (message != null) {
@@ -118,7 +123,9 @@ public class OllamaChatEndpointCaller extends OllamaEndpointCaller {
                         parseResponseAndAddToBuffer(line, responseBuffer, thinkingBuffer);
                 ollamaChatResponseModel =
                         Utils.getObjectMapper().readValue(line, OllamaChatResponseModel.class);
-                if (body.stream && ollamaChatResponseModel.getMessage().getToolCalls() != null) {
+                if (body.stream
+                        && ollamaChatResponseModel.getMessage() != null
+                        && ollamaChatResponseModel.getMessage().getToolCalls() != null) {
                     wantedToolsForStream = ollamaChatResponseModel.getMessage().getToolCalls();
                 }
                 if (finished && body.stream) {
@@ -153,7 +160,8 @@ public class OllamaChatEndpointCaller extends OllamaEndpointCaller {
     }
 
     /**
-     * Handles error status codes and appends error messages to the response buffer. Returns true if
+     * Handles error status codes and appends error messages to the response buffer.
+     * Returns true if
      * an error was handled, false otherwise.
      */
     private boolean handleErrorStatus(int statusCode, String line, StringBuilder responseBuffer)
