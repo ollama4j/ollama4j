@@ -804,9 +804,21 @@ public class Ollama {
         ocm.setResponse(request.getPrompt());
         chatRequest.setMessages(msgs);
         msgs.add(ocm);
+
+        // Merge request's tools and globally registered tools into a new list to avoid mutating the
+        // original request
+        List<Tools.Tool> allTools = new ArrayList<>();
+        if (request.getTools() != null) {
+            allTools.addAll(request.getTools());
+        }
+        List<Tools.Tool> registeredTools = this.getRegisteredTools();
+        if (registeredTools != null) {
+            allTools.addAll(registeredTools);
+        }
+
         OllamaChatTokenHandler hdlr = null;
         chatRequest.setUseTools(true);
-        chatRequest.setTools(request.getTools());
+        chatRequest.setTools(allTools);
         if (streamObserver != null) {
             chatRequest.setStream(true);
             if (streamObserver.getResponseStreamHandler() != null) {
