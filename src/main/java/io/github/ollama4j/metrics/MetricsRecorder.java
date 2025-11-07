@@ -9,6 +9,7 @@
 package io.github.ollama4j.metrics;
 
 import com.google.common.base.Throwables;
+import io.github.ollama4j.models.request.ThinkMode;
 import io.prometheus.client.Counter;
 import io.prometheus.client.Histogram;
 import java.util.Map;
@@ -57,7 +58,7 @@ public class MetricsRecorder {
             String endpoint,
             String model,
             boolean raw,
-            boolean thinking,
+            ThinkMode thinkMode,
             boolean streaming,
             Map<String, Object> options,
             Object format,
@@ -83,7 +84,7 @@ public class MetricsRecorder {
                         safe(model),
                         String.valueOf(raw),
                         String.valueOf(streaming),
-                        String.valueOf(thinking),
+                        String.valueOf(thinkMode),
                         httpStatus,
                         safe(mapToString(options)),
                         safe(formatString))
@@ -97,7 +98,7 @@ public class MetricsRecorder {
                         safe(model),
                         String.valueOf(raw),
                         String.valueOf(streaming),
-                        String.valueOf(thinking),
+                        String.valueOf(thinkMode),
                         httpStatus,
                         safe(mapToString(options)),
                         safe(formatString))

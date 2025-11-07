@@ -12,6 +12,7 @@ import static org.junit.jupiter.api.Assertions.*;
 
 import io.github.ollama4j.models.chat.OllamaChatMessageRole;
 import io.github.ollama4j.models.chat.OllamaChatRequest;
+import io.github.ollama4j.models.request.ThinkMode;
 import org.junit.jupiter.api.Test;
 
 class TestOllamaChatRequestBuilder {
@@ -21,18 +22,18 @@ class TestOllamaChatRequestBuilder {
         OllamaChatRequest builder =
                 OllamaChatRequest.builder()
                         .withModel("my-model")
-                        .withThinking(true)
+                        .withThinking(ThinkMode.ENABLED)
                         .withMessage(OllamaChatMessageRole.USER, "first");
 
         OllamaChatRequest beforeReset = builder.build();
         assertEquals("my-model", beforeReset.getModel());
-        assertTrue(beforeReset.isThink());
+        assertEquals(ThinkMode.ENABLED, beforeReset.getThink());
         assertEquals(1, beforeReset.getMessages().size());
 
         builder.reset();
         OllamaChatRequest afterReset = builder.build();
         assertEquals("my-model", afterReset.getModel());
-        assertTrue(afterReset.isThink());
+        assertEquals(ThinkMode.ENABLED, afterReset.getThink());
         assertNotNull(afterReset.getMessages());
         assertEquals(0, afterReset.getMessages().size());
     }

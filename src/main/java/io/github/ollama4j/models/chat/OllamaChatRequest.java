@@ -9,6 +9,8 @@
 package io.github.ollama4j.models.chat;
 
 import io.github.ollama4j.models.request.OllamaCommonRequest;
+import io.github.ollama4j.models.request.ThinkMode;
+import io.github.ollama4j.models.request.ThinkModeSerializer;
 import io.github.ollama4j.tools.Tools;
 import io.github.ollama4j.utils.OllamaRequestBody;
 import io.github.ollama4j.utils.Options;
@@ -23,37 +25,34 @@ import lombok.Setter;
  * Defines a Request to use against the ollama /api/chat endpoint.
  *
  * @see <a href=
- *      "https://github.com/ollama/ollama/blob/main/docs/api.md#generate-a-chat-completion">Generate
- *      Chat Completion</a>
+ *     "https://github.com/ollama/ollama/blob/main/docs/api.md#generate-a-chat-completion">Generate
+ *     Chat Completion</a>
  */
 @Getter
 @Setter
 public class OllamaChatRequest extends OllamaCommonRequest implements OllamaRequestBody {
 
-    private List<OllamaChatMessage> messages = Collections.emptyList();
+    private List<OllamaChatMessage> messages = new ArrayList<>();
 
-    private List<Tools.Tool> tools;
+    private List<Tools.Tool> tools = new ArrayList<>();
 
-    private boolean think;
+    @com.fasterxml.jackson.databind.annotation.JsonSerialize(using = ThinkModeSerializer.class)
+    private ThinkMode think;
 
     /**
      * Controls whether tools are automatically executed.
      *
-     * <p>
-     * If set to {@code true} (the default), tools will be automatically
-     * used/applied by the
-     * library. If set to {@code false}, tool calls will be returned to the client
-     * for manual
+     * <p>If set to {@code true} (the default), tools will be automatically used/applied by the
+     * library. If set to {@code false}, tool calls will be returned to the client for manual
      * handling.
      *
-     * <p>
-     * Disabling this should be an explicit operation.
+     * <p>Disabling this should be an explicit operation.
      */
     private boolean useTools = true;
 
     public OllamaChatRequest() {}
 
-    public OllamaChatRequest(String model, boolean think, List<OllamaChatMessage> messages) {
+    public OllamaChatRequest(String model, ThinkMode think, List<OllamaChatMessage> messages) {
         this.model = model;
         this.messages = messages;
         this.think = think;
@@ -81,7 +80,7 @@ public class OllamaChatRequest extends OllamaCommonRequest implements OllamaRequ
     }
 
     public OllamaChatRequest withMessage(OllamaChatMessageRole role, String content) {
-        return withMessage(role, content, Collections.emptyList());
+        return withMessage(role, content, new ArrayList<>());
     }
 
     public OllamaChatRequest withMessage(
@@ -149,7 +148,7 @@ public class OllamaChatRequest extends OllamaCommonRequest implements OllamaRequ
         return this;
     }
 
-    public OllamaChatRequest withThinking(boolean think) {
+    public OllamaChatRequest withThinking(ThinkMode think) {
         this.setThink(think);
         return this;
     }

@@ -14,6 +14,7 @@ import io.github.ollama4j.Ollama;
 import io.github.ollama4j.exceptions.OllamaException;
 import io.github.ollama4j.models.generate.OllamaGenerateRequest;
 import io.github.ollama4j.models.generate.OllamaGenerateStreamObserver;
+import io.github.ollama4j.models.request.ThinkMode;
 import io.github.ollama4j.models.response.OllamaResult;
 import io.github.ollama4j.samples.AnnotatedTool;
 import io.github.ollama4j.tools.annotations.OllamaToolService;
@@ -22,7 +23,7 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.time.Duration;
-import java.util.Collections;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -208,9 +209,9 @@ public class WithAuth {
                         .withModel(model)
                         .withPrompt(prompt)
                         .withRaw(false)
-                        .withThink(false)
+                        .withThink(ThinkMode.DISABLED)
                         .withStreaming(false)
-                        .withImages(Collections.emptyList())
+                        .withImages(new ArrayList<>())
                         .withOptions(new OptionsBuilder().build())
                         .withFormat(format)
                         .build();
