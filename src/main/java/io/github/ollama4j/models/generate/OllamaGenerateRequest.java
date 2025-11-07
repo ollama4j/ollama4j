@@ -9,6 +9,8 @@
 package io.github.ollama4j.models.generate;
 
 import io.github.ollama4j.models.request.OllamaCommonRequest;
+import io.github.ollama4j.models.request.ThinkMode;
+import io.github.ollama4j.models.request.ThinkModeSerializer;
 import io.github.ollama4j.tools.Tools;
 import io.github.ollama4j.utils.OllamaRequestBody;
 import io.github.ollama4j.utils.Options;
@@ -31,7 +33,10 @@ public class OllamaGenerateRequest extends OllamaCommonRequest implements Ollama
     private String system;
     private String context;
     private boolean raw;
-    private boolean think;
+
+    @com.fasterxml.jackson.databind.annotation.JsonSerialize(using = ThinkModeSerializer.class)
+    private ThinkMode think;
+
     private boolean useTools;
     private List<Tools.Tool> tools;
 
@@ -99,7 +104,7 @@ public class OllamaGenerateRequest extends OllamaCommonRequest implements Ollama
         return this;
     }
 
-    public OllamaGenerateRequest withThink(boolean think) {
+    public OllamaGenerateRequest withThink(ThinkMode think) {
         this.setThink(think);
         return this;
     }

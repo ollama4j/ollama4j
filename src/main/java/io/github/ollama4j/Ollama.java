@@ -183,7 +183,16 @@ public class Ollama {
             throw new OllamaException("Ping failed", e);
         } finally {
             MetricsRecorder.record(
-                    url, "", false, false, false, null, null, startTime, statusCode, out);
+                    url,
+                    "",
+                    false,
+                    ThinkMode.DISABLED,
+                    false,
+                    null,
+                    null,
+                    startTime,
+                    statusCode,
+                    out);
         }
     }
 
@@ -232,7 +241,16 @@ public class Ollama {
             throw new OllamaException("ps failed", e);
         } finally {
             MetricsRecorder.record(
-                    url, "", false, false, false, null, null, startTime, statusCode, out);
+                    url,
+                    "",
+                    false,
+                    ThinkMode.DISABLED,
+                    false,
+                    null,
+                    null,
+                    startTime,
+                    statusCode,
+                    out);
         }
     }
 
@@ -277,7 +295,16 @@ public class Ollama {
             throw new OllamaException(e.getMessage(), e);
         } finally {
             MetricsRecorder.record(
-                    url, "", false, false, false, null, null, startTime, statusCode, out);
+                    url,
+                    "",
+                    false,
+                    ThinkMode.DISABLED,
+                    false,
+                    null,
+                    null,
+                    startTime,
+                    statusCode,
+                    out);
         }
     }
 
@@ -371,7 +398,16 @@ public class Ollama {
             throw new OllamaException(e.getMessage(), e);
         } finally {
             MetricsRecorder.record(
-                    url, "", false, false, false, null, null, startTime, statusCode, out);
+                    url,
+                    "",
+                    false,
+                    ThinkMode.DISABLED,
+                    false,
+                    null,
+                    null,
+                    startTime,
+                    statusCode,
+                    out);
         }
     }
 
@@ -446,7 +482,16 @@ public class Ollama {
             throw new OllamaException(e.getMessage(), e);
         } finally {
             MetricsRecorder.record(
-                    url, "", false, false, false, null, null, startTime, statusCode, out);
+                    url,
+                    "",
+                    false,
+                    ThinkMode.DISABLED,
+                    false,
+                    null,
+                    null,
+                    startTime,
+                    statusCode,
+                    out);
         }
     }
 
@@ -534,7 +579,16 @@ public class Ollama {
             throw new OllamaException(e.getMessage(), e);
         } finally {
             MetricsRecorder.record(
-                    url, "", false, false, false, null, null, startTime, statusCode, out);
+                    url,
+                    "",
+                    false,
+                    ThinkMode.DISABLED,
+                    false,
+                    null,
+                    null,
+                    startTime,
+                    statusCode,
+                    out);
         }
     }
 
@@ -598,7 +652,16 @@ public class Ollama {
             throw new OllamaException(e.getMessage(), e);
         } finally {
             MetricsRecorder.record(
-                    url, "", false, false, false, null, null, startTime, statusCode, out);
+                    url,
+                    "",
+                    false,
+                    ThinkMode.DISABLED,
+                    false,
+                    null,
+                    null,
+                    startTime,
+                    statusCode,
+                    out);
         }
     }
 
@@ -650,7 +713,16 @@ public class Ollama {
             throw new OllamaException(statusCode + " - " + out, e);
         } finally {
             MetricsRecorder.record(
-                    url, "", false, false, false, null, null, startTime, statusCode, out);
+                    url,
+                    "",
+                    false,
+                    ThinkMode.DISABLED,
+                    false,
+                    null,
+                    null,
+                    startTime,
+                    statusCode,
+                    out);
         }
     }
 
@@ -712,7 +784,16 @@ public class Ollama {
             throw new OllamaException(statusCode + " - " + out, e);
         } finally {
             MetricsRecorder.record(
-                    url, "", false, false, false, null, null, startTime, statusCode, out);
+                    url,
+                    "",
+                    false,
+                    ThinkMode.DISABLED,
+                    false,
+                    null,
+                    null,
+                    startTime,
+                    statusCode,
+                    out);
         }
     }
 
@@ -754,7 +835,16 @@ public class Ollama {
             throw new OllamaException(e.getMessage(), e);
         } finally {
             MetricsRecorder.record(
-                    url, "", false, false, false, null, null, startTime, statusCode, out);
+                    url,
+                    "",
+                    false,
+                    ThinkMode.DISABLED,
+                    false,
+                    null,
+                    null,
+                    startTime,
+                    statusCode,
+                    out);
         }
     }
 
@@ -776,7 +866,7 @@ public class Ollama {
             }
 
             if (streamObserver != null) {
-                if (request.isThink()) {
+                if (!request.getThink().equals(ThinkMode.DISABLED)) {
                     return generateSyncForOllamaRequestModel(
                             request,
                             streamObserver.getThinkingStreamHandler(),
@@ -848,7 +938,7 @@ public class Ollama {
      * @throws OllamaException if the request fails
      */
     public OllamaAsyncResultStreamer generateAsync(
-            String model, String prompt, boolean raw, boolean think) throws OllamaException {
+            String model, String prompt, boolean raw, ThinkMode think) throws OllamaException {
         long startTime = System.currentTimeMillis();
         String url = "/api/generate";
         int statusCode = -1;
@@ -1187,7 +1277,7 @@ public class Ollama {
                     OllamaGenerateEndpointCaller.endpoint,
                     ollamaRequestModel.getModel(),
                     ollamaRequestModel.isRaw(),
-                    ollamaRequestModel.isThink(),
+                    ollamaRequestModel.getThink(),
                     ollamaRequestModel.isStream(),
                     ollamaRequestModel.getOptions(),
                     ollamaRequestModel.getFormat(),

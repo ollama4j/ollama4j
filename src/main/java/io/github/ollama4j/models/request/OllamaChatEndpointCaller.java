@@ -139,7 +139,7 @@ public class OllamaChatEndpointCaller extends OllamaEndpointCaller {
                 endpoint,
                 body.getModel(),
                 false,
-                body.isThink(),
+                body.getThink(),
                 body.isStream(),
                 body.getOptions(),
                 body.getFormat(),

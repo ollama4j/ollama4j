@@ -15,7 +15,7 @@ import io.github.ollama4j.models.chat.OllamaChatMessageRole;
 import io.github.ollama4j.models.chat.OllamaChatRequest;
 import io.github.ollama4j.utils.OptionsBuilder;
 import java.io.File;
-import java.util.Collections;
+import java.util.ArrayList;
 import java.util.List;
 import org.json.JSONObject;
 import org.junit.jupiter.api.BeforeEach;
@@ -54,7 +54,7 @@ public class TestChatRequestSerialization extends AbstractSerializationTest<Olla
                 builder.withMessage(
                                 OllamaChatMessageRole.USER,
                                 "Some prompt",
-                                Collections.emptyList(),
+                                new ArrayList<>(),
                                 List.of(new File("src/test/resources/dog-on-a-boat.jpg")))
                         .build();
         String jsonRequest = serialize(req);

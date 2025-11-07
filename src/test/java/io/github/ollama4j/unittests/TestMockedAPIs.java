@@ -21,13 +21,13 @@ import io.github.ollama4j.models.embed.OllamaEmbedResult;
 import io.github.ollama4j.models.generate.OllamaGenerateRequest;
 import io.github.ollama4j.models.generate.OllamaGenerateStreamObserver;
 import io.github.ollama4j.models.request.CustomModelRequest;
+import io.github.ollama4j.models.request.ThinkMode;
 import io.github.ollama4j.models.response.ModelDetail;
 import io.github.ollama4j.models.response.OllamaAsyncResultStreamer;
 import io.github.ollama4j.models.response.OllamaResult;
 import io.github.ollama4j.utils.OptionsBuilder;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
@@ -161,7 +161,7 @@ class TestMockedAPIs {
                             .withModel(model)
                             .withPrompt(prompt)
                             .withRaw(false)
-                            .withThink(false)
+                            .withThink(ThinkMode.DISABLED)
                             .withStreaming(false)
                             .build();
             when(ollama.generate(request, observer)).thenReturn(new OllamaResult("", "", 0, 200));
@@ -183,9 +183,9 @@ class TestMockedAPIs {
                             .withModel(model)
                             .withPrompt(prompt)
                             .withRaw(false)
-                            .withThink(false)
+                            .withThink(ThinkMode.DISABLED)
                             .withStreaming(false)
-                            .withImages(Collections.emptyList())
+                            .withImages(new ArrayList<>())
                             .withOptions(new OptionsBuilder().build())
                             .withFormat(null)
                             .build();
@@ -209,9 +209,9 @@ class TestMockedAPIs {
                             .withModel(model)
                             .withPrompt(prompt)
                             .withRaw(false)
-                            .withThink(false)
+                            .withThink(ThinkMode.DISABLED)
                             .withStreaming(false)
-                            .withImages(Collections.emptyList())
+                            .withImages(new ArrayList<>())
                             .withOptions(new OptionsBuilder().build())
                             .withFormat(null)
                             .build();
@@ -231,10 +231,10 @@ class TestMockedAPIs {
         Ollama ollama = Mockito.mock(Ollama.class);
         String model = "llama2";
         String prompt = "some prompt text";
-        when(ollama.generateAsync(model, prompt, false, false))
+        when(ollama.generateAsync(model, prompt, false, ThinkMode.DISABLED))
                 .thenReturn(new OllamaAsyncResultStreamer(null, null, 3));
-        ollama.generateAsync(model, prompt, false, false);
-        verify(ollama, times(1)).generateAsync(model, prompt, false, false);
+        ollama.generateAsync(model, prompt, false, ThinkMode.DISABLED);
+        verify(ollama, times(1)).generateAsync(model, prompt, false, ThinkMode.DISABLED);
     }
 
     @Test

@@ -27,7 +27,11 @@ public class ToolRegistry {
         try {
             getToolFunction(tool.getToolSpec().getName());
         } catch (ToolNotFoundException e) {
-            tools.add(tool);
+            try {
+                tools.add(tool);
+            } catch (UnsupportedOperationException ex) {
+                throw new UnsupportedOperationException("Cannot add tool to the registry.", ex);
+            }
         }
     }
 
