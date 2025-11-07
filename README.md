@@ -356,6 +356,18 @@ project.
   </a>
 </p>
 
+#### Articles & Mentions
+
+Ollama4j has been featured in a number of articles and community posts—huge thanks to everyone who helps spread the word!
+
+- **Running LLM locally using Java** — [Article by Stephan Janssen (LinkedIn)](https://www.linkedin.com/pulse/running-llm-locally-using-java-stephan-janssen-g4mue)
+- **Java library announcement** — [Post by Markus Klenke (LinkedIn)](https://www.linkedin.com/posts/markus-klenke-61041086_github-amithkoujalgiollama4j-java-library-activity-7166431630939639808-JyEH)
+- **Tame Your Llama: Run AI in Java** — [Forum post](https://javapro.io/2025/10/15/tame-your-llama-run-ai-in-java/) and [X (Twitter) announcement](https://x.com/JAVAPROmagazin/status/1978347624265646211)
+- **First Conversation with Deepseek Model** — [Post by Ghaffar Mallah (LinkedIn)](https://www.linkedin.com/posts/ghaffarmallah_ok-ai-i-finally-see-you-with-deepseek-hype-activity-7290019964533526529-G5cq)
+- **From Llamas to Lightsabers: AI in Java** — [Post by Lutske (LinkedIn)](https://www.linkedin.com/posts/lutske_utrechtjug-tameyourllama-java-activity-7386315122748706816-6A_j)
+- **LlamaFX Project** — [LinkedIn post by William Antônio Siqueira](https://www.linkedin.com/posts/william-ant%C3%B4nio-siqueira-968bba14_yesterday-i-started-a-pet-project-to-test-activity-7311293892551712768-hWcD)
+- **Exploring AI with Groovy™** — [LinkedIn post by Paul William King](https://www.linkedin.com/posts/paulwilliamking_embabel-groovylang-ollama4j-activity-7383995871564226561-ZHzt) and [Groovy blog](https://groovy.apache.org/blog/groovy-ai)
+
 ### Appreciate the work?
 
 <p align="center">
