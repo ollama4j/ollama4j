@@ -48,3 +48,71 @@ h2 > a {
 #bmc-wbtn + div{
     bottom:15px;
 }
+
+.the-banner {
+    background: linear-gradient(90deg, #e9c8d2 0%, #c4d9e6 100%) !important;
+    /* background: linear-gradient(90deg, #ffbfd6 0%, #b3cfe3 100%) !important; */
+
+}
+
+.hero__title {
+    background: linear-gradient(60deg, #375dff 40%, #ff5caa 60%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    color: transparent; 
+}
+
+.hero__subtitle {
+    color: #375dff !important;
+    display: none;
+}
+
+.hero__version {
+    color: rgba(0, 0, 0, 0.582) !important;
+    font-weight: bold;
+    border-radius: 0px;
+    padding: 5px;
+}   
+
+.feature-image {
+    max-width: 80px !important;
+    width: 100%;
+    height: auto;
+    object-fit: contain;
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.get-started {
+    position: relative;
+    z-index: 1;
+    background: linear-gradient(90deg, #87eaff, #ffd6ec);
+    color: #3c227d !important; /* Deep indigo for good contrast with pastel gradient */
+    border: none;
+    padding: 10px 20px;
+    border-radius: 5px;
+    font-size: 1.2rem;
+    font-weight: bold;
+    overflow: hidden;
+}
+.get-started::before {
+    content: '';
+    position: absolute;
+    z-index: -1;
+    top: -4px; left: -4px; right: -4px; bottom: -4px;
+    background: linear-gradient(270deg, #87eaff, #ffd6ec, #ff5caa, #87eaff, #ffd6ec);
+    background-size: 400% 400%;
+    border-radius: 8px;
+    animation: animated-gradient-border 3s linear infinite;
+}
+
+@keyframes animated-gradient-border {
+    0% {
+        background-position: 0% 50%;
+    }
+    100% {
+        background-position: 100% 50%;
+    }
+}

@@ -37,7 +37,7 @@ const LatestRelease = ({ showReleaseDate }) => {
                 <div>
                     {/* <h4 style={{ display: 'flex', justifyContent: 'center'}}>Latest Release</h4> */}
                     <div>
-                        <span style={{ fontWeight: 'bold'}}>Latest Version</span>: <a href={releaseInfo.html_url} target='_blank' rel="noopener noreferrer"><span style={{color: 'white', fontWeight: 'bold', backgroundColor:'#11bc11', borderRadius: '15px', padding: '5px'}}>{releaseInfo.name}</span></a>
+                        <span className="hero__version" style={{ fontWeight: 'bold'}}>Latest Version:</span> <a href={releaseInfo.html_url} target='_blank' rel="noopener noreferrer"><span style={{color: 'white', fontWeight: 'bold', backgroundColor:'#11bc11', borderRadius: '15px', padding: '5px'}}>{releaseInfo.name}</span></a>
                         {showReleaseDate && ` released on ${new Date(releaseInfo.published_at).toLocaleDateString(undefined, { year: 'numeric', month: 'long', day: 'numeric' })}`}
                     </div>
                     {/* <pre style={{ whiteSpace: 'pre-wrap' }}>

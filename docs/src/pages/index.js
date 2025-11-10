@@ -13,22 +13,25 @@ import TypewriterTextarea from '@site/src/components/TypewriterTextarea';
 function HomepageHeader() {
   const {siteConfig} = useDocusaurusContext();
   return (
-    <header className={clsx('hero hero--primary', styles.heroBanner)}>
+    <header
+      className={clsx('hero hero--primary the-banner', styles.heroBanner)}
+    >
       <div className="container">
         <Heading as="h1" className="hero__title">
           {siteConfig.title}
         </Heading>
         <img
-          src="img/logo.svg"
+          src="img/logo-new.jpeg"
           alt="Ollama4j Logo"
           className={styles.logo}
           style={{ maxWidth: '20vh' }}
         />
         <p className="hero__subtitle">{siteConfig.tagline}</p>
+
         <div style={{ marginTop: '2rem' }}>
           <TypewriterTextarea
             textContent='Hello there! I’m a handy little Java library that helps you talk to an Ollama server — nice and easy.'
-            typingSpeed={30}
+            typingSpeed={20}
             pauseBetweenSentences={1200}
             height='130px'
             width='100%'
@@ -36,7 +39,7 @@ function HomepageHeader() {
           />
         </div>
         <div className={styles.buttons} >
-          <Link className="button button--secondary button--lg" to="/intro" style={{ marginTop:'2rem' }}>
+          <Link className="button button--secondary button--lg get-started" to="/intro" style={{ marginTop:'2rem' }}>
             Get Started
           </Link>
         </div>

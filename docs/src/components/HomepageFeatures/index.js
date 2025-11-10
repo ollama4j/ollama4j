@@ -6,7 +6,7 @@ import Ollama4jUIImageCarousel from '@site/src/components/Ollama4jUIImageCarouse
 const FeatureList = [
   {
     title: 'Developer-Friendly',
-    Svg: require('@site/static/img/undraw_docusaurus_tree.svg').default,
+    Svg: require('@site/static/img/dev-friendly.png').default,
     description: (
       <>
         Provides clean and simple <code>APIs</code> for interacting with Ollama, including model management, chat functionalities, and authentication capability when Ollama is deployed behind proxy server.
@@ -15,7 +15,7 @@ const FeatureList = [
   },
   {
     title: 'Chat with Images',
-    Svg: require('@site/static/img/undraw_docusaurus_mountain.svg').default,
+    Svg: require('@site/static/img/chat-with-images.png').default,
     description: (
       <>
         Supports interactions with vision/image models, allowing you to build applications that can understand and respond to visual content.  Upload images directly into your chat sessions and receive intelligent, context-aware replies.
@@ -24,7 +24,7 @@ const FeatureList = [
   },
   {
     title: 'Tools Support',
-    Svg: require('@site/static/img/undraw_docusaurus_react.svg').default,
+    Svg: require('@site/static/img/chat-with-tools.png').default,
     description: (
       <>
         Supports tool/function calling with tool calling models such as mistral, llama3.x, qwen, etc. Empower your models to interact with external services and data sources, enabling more complex and dynamic AI workflows.
@@ -102,10 +102,16 @@ const UsageList = [
 ];
 
 function Feature({ Svg, title, description }) {
+  // Accept either a PNG path or the old Svg; here, Svg is actually a PNG path string if set as such.
+  const isPng = typeof Svg === "string" && Svg.endsWith(".png");
   return (
     <div className={clsx('col col--4')}>
       <div className="text--center">
-        <Svg className={styles.featureSvg} role="img" />
+        {isPng ? (
+          <img src={Svg} className={`${styles.featureSvg} feature-image`} alt={title} />
+        ) : (
+          <Svg className={styles.featureSvg} role="img" />
+        )}
       </div>
       <div className="text--center padding-horiz--md">
         <Heading as="h3">{title}</Heading>
@@ -149,7 +155,25 @@ export default function HomepageFeatures() {
           </div>
         </div>
       </section>
-      <hr />
+      <section className={styles.features} style={{ paddingTop: '2rem', paddingBottom: '2rem' }}>
+      <div className="container">
+        <div style={{ fontSize: '20px', fontWeight: 'bold', display: 'flex', flexDirection: 'column', alignItems: 'center', marginBottom: '1rem' }}>
+          Featured Talk: Ollama4j at JNation
+        </div>
+        <div style={{ display: 'flex', justifyContent: 'center' }}>
+          <iframe
+            width="720"
+            height="405"
+            src="https://www.youtube.com/embed/XvmGqpzepDM?start=966"
+            title="JNation Talk: Presented by Lutske de Leeuw"
+            frameBorder="0"
+            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+            allowFullScreen
+            style={{ maxWidth: '100%', borderRadius: '12px' }}
+          ></iframe>
+        </div>
+      </div>
+    </section>
       <section className={styles.features}>
         <div className="container">
           <div style={{ fontSize: '20px', fontWeight: 'bold', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
@@ -162,6 +186,7 @@ export default function HomepageFeatures() {
           </div>
         </div>
       </section>
+
       <section className={styles.features}>
         <div className="container">
           <Ollama4jUIImageCarousel></Ollama4jUIImageCarousel>

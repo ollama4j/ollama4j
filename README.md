@@ -96,7 +96,12 @@ _Find more details on the **[website](https://ollama4j.github.io/ollama4j/)**._
     o[Ollama Server]
     o4j -->|Communicates with| o;
     m[Models]
-    subgraph Ollama Deployment
+    p[Your Java Project]
+    subgraph Your Java Environment
+        direction TB
+        p -->|Uses| o4j
+    end
+    subgraph Ollama Setup
         direction TB
         o -->|Manages| m
     end
