@@ -18,5 +18,6 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class OllamaChatToolCalls {
 
+    private String id;
     private OllamaToolCallsFunction function;
 }
