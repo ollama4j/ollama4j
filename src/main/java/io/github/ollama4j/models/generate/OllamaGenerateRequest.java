@@ -29,6 +29,7 @@ import lombok.Setter;
 public class OllamaGenerateRequest extends OllamaCommonRequest implements OllamaRequestBody {
 
     private String prompt;
+    private String suffix;
     private List<String> images;
     private String system;
     private String context;
@@ -61,6 +62,11 @@ public class OllamaGenerateRequest extends OllamaCommonRequest implements Ollama
 
     public OllamaGenerateRequest withPrompt(String prompt) {
         this.setPrompt(prompt);
+        return this;
+    }
+
+    public OllamaGenerateRequest withSuffix(String suffix) {
+        this.setSuffix(suffix);
         return this;
     }
 
