@@ -26,6 +26,7 @@ public class ModelDetail {
     private String template;
     private String system;
     private ModelMeta details;
+    private String[] capabilities;
 
     @Override
     public String toString() {
