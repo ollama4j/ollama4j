@@ -66,4 +66,13 @@ class TestGenerateRequestSerialization extends AbstractSerializationTest<OllamaG
         String requestFormatProperty = jsonObject.getString("format");
         assertEquals("json", requestFormatProperty);
     }
+
+    @Test
+    public void testWithSuffix() {
+        OllamaGenerateRequest req =
+                builder.withPrompt("Some prompt").withSuffix("Some suffix").build();
+
+        String jsonRequest = serialize(req);
+        assertEqualsAfterUnmarshalling(deserialize(jsonRequest, OllamaGenerateRequest.class), req);
+    }
 }
