@@ -34,8 +34,8 @@ class TestOllama {
     @Test
     void setAuth() {
         Ollama ollama = new Ollama();
-        ollama.setBasicAuth("user", "pass");
-        ollama.setBearerAuth("token");
+        assertDoesNotThrow(() -> ollama.setBasicAuth("user", "pass"));
+        assertDoesNotThrow(() -> ollama.setBearerAuth("token"));
         // No getters for auth, but we verify no exception
     }
 
