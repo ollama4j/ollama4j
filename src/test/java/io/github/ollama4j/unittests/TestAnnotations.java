@@ -19,8 +19,9 @@ import org.junit.jupiter.api.Test;
 
 class TestAnnotations {
 
-    @OllamaToolService(providers = {SampleProvider.class})
-    static class SampleToolService {}
+    @OllamaToolService(providers = { SampleProvider.class })
+    static class SampleToolService {
+    }
 
     static class SampleProvider {
         @ToolSpec(name = "sum", desc = "adds two numbers")
@@ -35,7 +36,7 @@ class TestAnnotations {
     void testOllamaToolServiceProvidersPresent() throws Exception {
         OllamaToolService ann = SampleToolService.class.getAnnotation(OllamaToolService.class);
         assertNotNull(ann);
-        assertArrayEquals(new Class<?>[] {SampleProvider.class}, ann.providers());
+        assertArrayEquals(new Class<?>[] { SampleProvider.class }, ann.providers());
     }
 
     @Test

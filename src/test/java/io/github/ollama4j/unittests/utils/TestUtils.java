@@ -42,24 +42,7 @@ class TestUtils {
     }
 
     @Test
-    void testGetFileFromClasspath() {
-        // Assuming there is a file named "logback-test.xml" or similar in test
-        // resources.
-        // If not, we might need to create a dummy file in src/test/resources
-        // For now, let's try to load something that should exist or handle the
-        // exception if it doesn't.
-        // Actually, let's skip this for now or create a resource file.
-    }
-
-    @Test
     void testLoadImageBytesFromUrl() throws IOException, InterruptedException {
-        // This is hard to test without mocking the internal HttpClient creation in
-        // Utils.
-        // Since Utils creates HttpClient internally using HttpClient.newBuilder(),
-        // we can't easily mock it without refactoring Utils or using MockedStatic on
-        // HttpClient.
-        // However, HttpClient.newBuilder() is a static method.
-
         try (MockedStatic<HttpClient> mockedHttpClient = mockStatic(HttpClient.class)) {
             HttpClient.Builder mockBuilder = mock(HttpClient.Builder.class);
             HttpClient mockClient = mock(HttpClient.class);
