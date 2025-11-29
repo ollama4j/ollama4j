@@ -32,7 +32,7 @@ class TestOllama {
     }
 
     @Test
-    void setAuth() {
+    void testSetAuth() {
         Ollama ollama = new Ollama();
         assertDoesNotThrow(() -> ollama.setBasicAuth("user", "pass"));
         assertDoesNotThrow(() -> ollama.setBearerAuth("token"));
