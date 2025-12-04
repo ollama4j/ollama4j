@@ -27,7 +27,7 @@ const FeatureList = [
     Svg: require('@site/static/img/chat-with-tools.png').default,
     description: (
       <>
-        Supports tool/function calling with tool calling models such as mistral, llama3.x, qwen, etc. Empower your models to interact with external services and data sources, enabling more complex and dynamic AI workflows.
+        Supports tool/function calling (including MCP tools 🤩) with tool calling models such as mistral, llama3.x, qwen, etc. Empower your models to interact with external services and data sources, enabling more complex and dynamic AI workflows.
       </>
     ),
   },

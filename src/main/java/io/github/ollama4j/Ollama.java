@@ -8,13 +8,13 @@
 */
 package io.github.ollama4j;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.github.ollama4j.exceptions.OllamaException;
 import io.github.ollama4j.exceptions.RoleNotFoundException;
 import io.github.ollama4j.exceptions.ToolInvocationException;
 import io.github.ollama4j.metrics.MetricsRecorder;
 import io.github.ollama4j.models.chat.*;
-import io.github.ollama4j.models.chat.OllamaChatTokenHandler;
 import io.github.ollama4j.models.embed.OllamaEmbedRequest;
 import io.github.ollama4j.models.embed.OllamaEmbedResult;
 import io.github.ollama4j.models.generate.OllamaGenerateRequest;
@@ -29,6 +29,14 @@ import io.github.ollama4j.tools.annotations.ToolProperty;
 import io.github.ollama4j.tools.annotations.ToolSpec;
 import io.github.ollama4j.utils.Constants;
 import io.github.ollama4j.utils.Utils;
+import io.modelcontextprotocol.client.McpClient;
+import io.modelcontextprotocol.client.McpSyncClient;
+import io.modelcontextprotocol.client.transport.ServerParameters;
+import io.modelcontextprotocol.client.transport.StdioClientTransport;
+import io.modelcontextprotocol.json.McpJsonMapper;
+import io.modelcontextprotocol.spec.McpSchema.CallToolRequest;
+import io.modelcontextprotocol.spec.McpSchema.CallToolResult;
+import io.modelcontextprotocol.spec.McpSchema.ListToolsResult;
 import java.io.*;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -43,6 +51,9 @@ import java.nio.file.Files;
 import java.time.Duration;
 import java.util.*;
 import java.util.stream.Collectors;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -50,7 +61,8 @@ import org.slf4j.LoggerFactory;
 /**
  * The main API class for interacting with the Ollama server.
  *
- * <p>This class provides methods for model management, chat, embeddings, tool registration, and more.
+ * <p>This class provides methods for model management, chat, embeddings, tool registration, and
+ * more.
  */
 @SuppressWarnings({"DuplicatedCode", "resource", "SpellCheckingInspection"})
 public class Ollama {
@@ -64,37 +76,33 @@ public class Ollama {
 
     /**
      * The request timeout in seconds for API calls.
-     * <p>
-     * Default is 10 seconds. This value determines how long the client will wait for a response
+     *
+     * <p>Default is 10 seconds. This value determines how long the client will wait for a response
      * from the Ollama server before timing out.
      */
     @Setter private long requestTimeoutSeconds = 10;
 
-    /**
-     * The read timeout in seconds for image URLs.
-     */
+    /** The read timeout in seconds for image URLs. */
     @Setter private int imageURLReadTimeoutSeconds = 10;
 
-    /**
-     * The connect timeout in seconds for image URLs.
-     */
+    /** The connect timeout in seconds for image URLs. */
     @Setter private int imageURLConnectTimeoutSeconds = 10;
 
     /**
      * The maximum number of retries for tool calls during chat interactions.
-     * <p>
-     * This value controls how many times the API will attempt to call a tool in the event of a
+     *
+     * <p>This value controls how many times the API will attempt to call a tool in the event of a
      * failure. Default is 3.
      */
     @Setter private int maxChatToolCallRetries = 3;
 
     /**
      * The number of retries to attempt when pulling a model from the Ollama server.
-     * <p>
-     * If set to 0, no retries will be performed. If greater than 0, the API will retry pulling
-     * the model up to the specified number of times in case of failure.
-     * <p>
-     * Default is 0 (no retries).
+     *
+     * <p>If set to 0, no retries will be performed. If greater than 0, the API will retry pulling the
+     * model up to the specified number of times in case of failure.
+     *
+     * <p>Default is 0 (no retries).
      */
     @Setter
     @SuppressWarnings({"FieldMayBeFinal", "FieldCanBeLocal"})
@@ -102,15 +110,13 @@ public class Ollama {
 
     /**
      * Enable or disable Prometheus metrics collection.
-     * <p>
-     * When enabled, the API will collect and expose metrics for request counts, durations, model
+     *
+     * <p>When enabled, the API will collect and expose metrics for request counts, durations, model
      * usage, and other operational statistics. Default is false.
      */
     @Setter private boolean metricsEnabled = false;
 
-    /**
-     * Instantiates the Ollama API with the default Ollama host: {@code http://localhost:11434}
-     */
+    /** Instantiates the Ollama API with the default Ollama host: {@code http://localhost:11434} */
     public Ollama() {
         this.host = "http://localhost:11434";
     }
@@ -311,9 +317,9 @@ public class Ollama {
     /**
      * Handles retry backoff for pullModel.
      *
-     * @param modelName       the name of the model being pulled
-     * @param currentRetry    the current retry attempt (zero-based)
-     * @param maxRetries      the maximum number of retries allowed
+     * @param modelName the name of the model being pulled
+     * @param currentRetry the current retry attempt (zero-based)
+     * @param maxRetries the maximum number of retries allowed
      * @param baseDelayMillis the base delay in milliseconds for exponential backoff
      * @throws InterruptedException if the thread is interrupted during sleep
      */
@@ -412,11 +418,11 @@ public class Ollama {
     }
 
     /**
-     * Processes a single ModelPullResponse, handling errors and logging status.
-     * Returns true if the response indicates a successful pull.
+     * Processes a single ModelPullResponse, handling errors and logging status. Returns true if the
+     * response indicates a successful pull.
      *
      * @param modelPullResponse the response from the model pull
-     * @param modelName         the name of the model
+     * @param modelName the name of the model
      * @return true if the pull was successful, false otherwise
      * @throws OllamaException if the response contains an error
      */
@@ -496,9 +502,9 @@ public class Ollama {
     }
 
     /**
-     * Pulls a model using the specified Ollama library model tag.
-     * The model is identified by a name and a tag, which are combined into a single identifier
-     * in the format "name:tag" to pull the corresponding model.
+     * Pulls a model using the specified Ollama library model tag. The model is identified by a name
+     * and a tag, which are combined into a single identifier in the format "name:tag" to pull the
+     * corresponding model.
      *
      * @param modelName the name/tag of the model to be pulled. Ex: llama3:latest
      * @throws OllamaException if the response indicates an error status
@@ -593,8 +599,8 @@ public class Ollama {
     }
 
     /**
-     * Creates a custom model. Read more about custom model creation
-     * <a href="https://github.com/ollama/ollama/blob/main/docs/api.md#create-a-model">here</a>.
+     * Creates a custom model. Read more about custom model creation <a href=
+     * "https://github.com/ollama/ollama/blob/main/docs/api.md#create-a-model">here</a>.
      *
      * @param customModelRequest custom model spec
      * @throws OllamaException if the response indicates an error status
@@ -668,8 +674,9 @@ public class Ollama {
     /**
      * Deletes a model from the Ollama server.
      *
-     * @param modelName          the name of the model to be deleted
-     * @param ignoreIfNotPresent ignore errors if the specified model is not present on the Ollama server
+     * @param modelName the name of the model to be deleted
+     * @param ignoreIfNotPresent ignore errors if the specified model is not present on the Ollama
+     *     server
      * @throws OllamaException if the response indicates an error status
      */
     public void deleteModel(String modelName, boolean ignoreIfNotPresent) throws OllamaException {
@@ -728,8 +735,8 @@ public class Ollama {
 
     /**
      * Unloads a model from memory.
-     * <p>
-     * If an empty prompt is provided and the keep_alive parameter is set to 0, a model will be
+     *
+     * <p>If an empty prompt is provided and the keep_alive parameter is set to 0, a model will be
      * unloaded from memory.
      *
      * @param modelName the name of the model to unload
@@ -849,10 +856,10 @@ public class Ollama {
     }
 
     /**
-     * Generates a response from a model using the specified parameters and stream observer.
-     * If {@code streamObserver} is provided, streaming is enabled; otherwise, a synchronous call is made.
+     * Generates a response from a model using the specified parameters and stream observer. If {@code
+     * streamObserver} is provided, streaming is enabled; otherwise, a synchronous call is made.
      *
-     * @param request        the generation request
+     * @param request the generation request
      * @param streamObserver the stream observer for streaming responses, or null for synchronous
      * @return the result of the generation
      * @throws OllamaException if the request fails
@@ -895,7 +902,8 @@ public class Ollama {
         chatRequest.setMessages(msgs);
         msgs.add(ocm);
 
-        // Merge request's tools and globally registered tools into a new list to avoid mutating the
+        // Merge request's tools and globally registered tools into a new list to avoid
+        // mutating the
         // original request
         List<Tools.Tool> allTools = new ArrayList<>();
         if (request.getTools() != null) {
@@ -930,10 +938,10 @@ public class Ollama {
     /**
      * Generates a response from a model asynchronously, returning a streamer for results.
      *
-     * @param model  the model name
+     * @param model the model name
      * @param prompt the prompt to send
-     * @param raw    whether to use raw mode
-     * @param think  whether to use "think" mode
+     * @param raw whether to use raw mode
+     * @param think whether to use "think" mode
      * @return an OllamaAsyncResultStreamer for streaming results
      * @throws OllamaException if the request fails
      */
@@ -963,14 +971,14 @@ public class Ollama {
     }
 
     /**
-     * Sends a chat request to a model using an {@link OllamaChatRequest} and sets up streaming response.
-     * This can be constructed using an {@link OllamaChatRequest#builder()}.
+     * Sends a chat request to a model using an {@link OllamaChatRequest} and sets up streaming
+     * response. This can be constructed using an {@link OllamaChatRequest#builder()}.
      *
      * <p>Note: the OllamaChatRequestModel#getStream() property is not implemented.
      *
-     * @param request      request object to be sent to the server
+     * @param request request object to be sent to the server
      * @param tokenHandler callback handler to handle the last token from stream (caution: the
-     *                     previous tokens from stream will not be concatenated)
+     *     previous tokens from stream will not be concatenated)
      * @return {@link OllamaChatResult}
      * @throws OllamaException if the response indicates an error status
      */
@@ -997,6 +1005,7 @@ public class Ollama {
             // check if toolCallIsWanted
             List<OllamaChatToolCalls> toolCalls =
                     result.getResponseModel().getMessage().getToolCalls();
+
             int toolCallTries = 0;
             while (toolCalls != null
                     && !toolCalls.isEmpty()
@@ -1065,7 +1074,7 @@ public class Ollama {
      * Registers multiple tools in the tool registry.
      *
      * @param tools a list of {@link Tools.Tool} objects to register. Each tool contains its
-     *              specification and function.
+     *     specification and function.
      */
     public void registerTools(List<Tools.Tool> tools) {
         toolRegistry.addTools(tools);
@@ -1089,8 +1098,8 @@ public class Ollama {
      * providers. This method scans the caller's class for the {@link OllamaToolService} annotation
      * and recursively registers annotated tools from all the providers specified in the annotation.
      *
-     * @throws OllamaException if the caller's class is not annotated with {@link
-     *                         OllamaToolService} or if reflection-based instantiation or invocation fails
+     * @throws OllamaException if the caller's class is not annotated with {@link OllamaToolService}
+     *     or if reflection-based instantiation or invocation fails
      */
     public void registerAnnotatedTools() throws OllamaException {
         try {
@@ -1122,8 +1131,8 @@ public class Ollama {
     }
 
     /**
-     * Registers tools based on the annotations found on the methods of the provided object.
-     * This method scans the methods of the given object and registers tools using the {@link ToolSpec}
+     * Registers tools based on the annotations found on the methods of the provided object. This
+     * method scans the methods of the given object and registers tools using the {@link ToolSpec}
      * annotation and associated {@link ToolProperty} annotations. It constructs tool specifications
      * and stores them in a tool registry.
      *
@@ -1210,6 +1219,98 @@ public class Ollama {
         return OllamaChatMessageRole.getRole(roleName);
     }
 
+    public void loadMCPToolsFromJson(String mcpConfigJsonFilePath) throws IOException {
+        String jsonContent =
+                java.nio.file.Files.readString(java.nio.file.Paths.get(mcpConfigJsonFilePath));
+        MCPToolsConfig config =
+                McpJsonMapper.getDefault().readValue(jsonContent, MCPToolsConfig.class);
+
+        if (config.mcpServers != null && !config.mcpServers.isEmpty()) {
+            for (Map.Entry<String, MCPToolConfig> tool : config.mcpServers.entrySet()) {
+                ServerParameters.Builder serverParamsBuilder =
+                        ServerParameters.builder(tool.getValue().command);
+                if (tool.getValue().args != null && !tool.getValue().args.isEmpty()) {
+                    LOG.debug(
+                            "Runnable MCP Tool command: \n\n\t{} {}\n\n",
+                            tool.getValue().command,
+                            String.join(" ", tool.getValue().args));
+                    serverParamsBuilder.args(tool.getValue().args.toArray(new String[0]));
+                }
+                ServerParameters serverParameters = serverParamsBuilder.build();
+                StdioClientTransport transport =
+                        new StdioClientTransport(serverParameters, McpJsonMapper.getDefault());
+
+                int mcpToolRequestTimeoutSeconds = 30;
+                try {
+                    McpSyncClient client =
+                            McpClient.sync(transport)
+                                    .requestTimeout(
+                                            Duration.ofSeconds(mcpToolRequestTimeoutSeconds))
+                                    .build();
+                    client.initialize();
+
+                    ListToolsResult result = client.listTools();
+                    for (io.modelcontextprotocol.spec.McpSchema.Tool mcpTool : result.tools()) {
+                        Tools.Tool mcpToolAsOllama4jTool =
+                                createOllamaToolFromMCPTool(
+                                        tool.getKey(), mcpTool, serverParameters);
+                        toolRegistry.addTool(mcpToolAsOllama4jTool);
+                    }
+                    client.close();
+                } finally {
+                    transport.close();
+                }
+            }
+        }
+    }
+
+    /**
+     * Calls a specific MCP (Model Context Protocol) tool registered with the Ollama instance. This
+     * method locates the tool by its server name and tool name, then executes it with the provided
+     * arguments.
+     *
+     * @param mcpServerName The name of the MCP server where the tool is registered.
+     * @param toolName The name of the tool to be called.
+     * @param arguments A map of arguments to be passed to the tool.
+     * @return The result of the tool call, encapsulated in a {@link CallToolResult} object.
+     * @throws IllegalArgumentException If no MCP tool is found for the specified server name and tool
+     *     name.
+     */
+    private CallToolResult callMCPTool(
+            String mcpServerName, String toolName, Map<String, Object> arguments) {
+        for (Tools.Tool tool : getRegisteredTools()) {
+            if (tool.isMCPTool() && tool.getMcpServerName().equals(mcpServerName)) {
+                if (tool.getToolSpec().getName().equals(toolName)) {
+                    ServerParameters serverParameters = tool.getMcpServerParameters();
+                    StdioClientTransport stdioTransport =
+                            new StdioClientTransport(serverParameters, McpJsonMapper.getDefault());
+                    try {
+                        LOG.info(
+                                "Calling MCP Tool: '{}.{}' with arguments: {}",
+                                mcpServerName,
+                                toolName,
+                                arguments);
+                        try (McpSyncClient client =
+                                McpClient.sync(stdioTransport)
+                                        .requestTimeout(Duration.ofSeconds(requestTimeoutSeconds))
+                                        .build()) {
+                            client.initialize();
+                            CallToolRequest request = new CallToolRequest(toolName, arguments);
+                            return client.callTool(request);
+                        }
+                    } finally {
+                        stdioTransport.close();
+                    }
+                }
+            }
+        }
+        throw new IllegalArgumentException(
+                "No MCP tool found for server name: "
+                        + mcpServerName
+                        + " and tool name: "
+                        + toolName);
+    }
+
     // technical private methods //
 
     /**
@@ -1234,13 +1335,15 @@ public class Ollama {
     }
 
     /**
-     * Generates a request for the Ollama API and returns the result.
-     * This method synchronously calls the Ollama API. If a stream handler is provided,
-     * the request will be streamed; otherwise, a regular synchronous request will be made.
+     * Generates a request for the Ollama API and returns the result. This method synchronously calls
+     * the Ollama API. If a stream handler is provided, the request will be streamed; otherwise, a
+     * regular synchronous request will be made.
      *
-     * @param ollamaRequestModel    the request model containing necessary parameters for the Ollama API request
+     * @param ollamaRequestModel the request model containing necessary parameters for the Ollama API
+     *     request
      * @param thinkingStreamHandler the stream handler for "thinking" tokens, or null if not used
-     * @param responseStreamHandler the stream handler to process streaming responses, or null for non-streaming requests
+     * @param responseStreamHandler the stream handler to process streaming responses, or null for
+     *     non-streaming requests
      * @return the result of the Ollama API request
      * @throws OllamaException if the request fails due to an issue with the Ollama API
      */
@@ -1313,5 +1416,136 @@ public class Ollama {
      */
     private boolean isAuthSet() {
         return auth != null;
+    }
+
+    @Data
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class OllamaMCPTool {
+        private String mcpServerName;
+        private List<MCPToolInfo> toolInfos;
+        private StdioClientTransport transport;
+    }
+
+    @Data
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class MCPToolInfo {
+        private String toolName;
+        private String toolDescription;
+    }
+
+    public static class MCPToolConfig {
+        @JsonProperty("command")
+        public String command;
+
+        @JsonProperty("args")
+        public List<String> args;
+    }
+
+    public static class MCPToolsConfig {
+        @JsonProperty("mcpServers")
+        public Map<String, MCPToolConfig> mcpServers;
+    }
+
+    @Data
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class OllamaMCPToolMatchResponse {
+        @JsonProperty("mcpServerName")
+        public String mcpServerName;
+
+        @JsonProperty("toolName")
+        public String toolName;
+
+        @JsonProperty("arguments")
+        public Map<String, Object> arguments;
+    }
+
+    /**
+     * Creates an Ollama-compatible {@link Tools.Tool} object from an MCP tool definition. This
+     * involves parsing the MCP tool's input schema to define the tool's parameters and providing a
+     * function to call the MCP tool when executed.
+     *
+     * @param mcpServerName The name of the MCP server associated with this tool.
+     * @param mcpTool The MCP tool definition from which to create the Ollama tool.
+     * @param serverParameters The server parameters associated with the MCP server.
+     * @return A {@link Tools.Tool} object configured for Ollama, representing the MCP tool.
+     */
+    private Tools.Tool createOllamaToolFromMCPTool(
+            String mcpServerName,
+            io.modelcontextprotocol.spec.McpSchema.Tool mcpTool,
+            ServerParameters serverParameters) {
+        Map<String, Tools.Property> properties = new java.util.HashMap<>();
+        java.util.List<String> requiredList = new java.util.ArrayList<>();
+
+        if (mcpTool.inputSchema() != null && mcpTool.inputSchema().properties() != null) {
+            // Prepare set for fast required lookup (since original is List<String>)
+            java.util.Set<String> requiredSet = new java.util.HashSet<>();
+            if (mcpTool.inputSchema().required() != null) {
+                requiredSet.addAll(mcpTool.inputSchema().required());
+            }
+            for (Map.Entry<String, Object> entry : mcpTool.inputSchema().properties().entrySet()) {
+                String propName = entry.getKey();
+                Object propertyValue = entry.getValue();
+                Map<String, Object> propertyMap = null;
+
+                if (propertyValue instanceof Map) {
+                    propertyMap = (Map<String, Object>) propertyValue;
+                } else {
+                    // Defensive fallback, unexpected schema
+                    continue;
+                }
+
+                // Extract standard fields; fallback to empty/defaults
+                String type =
+                        propertyMap.get("type") != null ? propertyMap.get("type").toString() : null;
+
+                String description = null;
+                if (propertyMap.get("description") != null) {
+                    description = propertyMap.get("description").toString();
+                } else if (propertyMap.get("title") != null) {
+                    // Use 'title' as fallback for description if 'description' is missing
+                    description = propertyMap.get("title").toString();
+                }
+
+                // 'required' is determined from the parent 'required' list
+                boolean propRequired = requiredSet.contains(propName);
+
+                Tools.Property property =
+                        Tools.Property.builder()
+                                .type(type)
+                                .description(description)
+                                .required(propRequired)
+                                .build();
+
+                properties.put(propName, property);
+                if (propRequired) {
+                    requiredList.add(propName);
+                }
+            }
+        }
+
+        Tools.Parameters params = new Tools.Parameters();
+        params.setProperties(properties);
+        params.setRequired(requiredList);
+
+        return Tools.Tool.builder()
+                .toolSpec(
+                        Tools.ToolSpec.builder()
+                                .name(mcpTool.name())
+                                .description(mcpTool.description())
+                                .parameters(params)
+                                .build())
+                .toolFunction(
+                        arguments -> {
+                            CallToolResult result =
+                                    this.callMCPTool(mcpServerName, mcpTool.name(), arguments);
+                            return result.toString();
+                        })
+                .isMCPTool(true)
+                .mcpServerName(mcpServerName)
+                .mcpServerParameters(serverParameters)
+                .build();
     }
 }

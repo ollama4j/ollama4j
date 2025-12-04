@@ -42,3 +42,5 @@ release.properties
 !.idea/icon.svg
 
 src/main/java/io/github/ollama4j/localtests
+
+.cache.sqlite

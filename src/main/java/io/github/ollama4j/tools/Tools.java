@@ -15,6 +15,7 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
+import io.modelcontextprotocol.client.transport.ServerParameters;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
@@ -37,6 +38,10 @@ public class Tools {
 
         @Builder.Default private String type = "function";
         @JsonIgnore private ToolFunction toolFunction;
+
+        @JsonIgnore @Builder.Default private boolean isMCPTool = false;
+        @JsonIgnore private String mcpServerName;
+        @JsonIgnore private ServerParameters mcpServerParameters;
     }
 
     @Data
