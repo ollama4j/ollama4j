@@ -1242,22 +1242,24 @@ public class Ollama {
 
                 int mcpToolRequestTimeoutSeconds = 30;
                 try {
-                McpSyncClient client =
-                        McpClient.sync(transport)
-                                .requestTimeout(Duration.ofSeconds(mcpToolRequestTimeoutSeconds))
-                                .build();
-                client.initialize();
+                    McpSyncClient client =
+                            McpClient.sync(transport)
+                                    .requestTimeout(
+                                            Duration.ofSeconds(mcpToolRequestTimeoutSeconds))
+                                    .build();
+                    client.initialize();
 
-                ListToolsResult result = client.listTools();
-                for (io.modelcontextprotocol.spec.McpSchema.Tool mcpTool : result.tools()) {
-                    Tools.Tool mcpToolAsOllama4jTool =
-                            createOllamaToolFromMCPTool(tool.getKey(), mcpTool, serverParameters);
-                    toolRegistry.addTool(mcpToolAsOllama4jTool);
+                    ListToolsResult result = client.listTools();
+                    for (io.modelcontextprotocol.spec.McpSchema.Tool mcpTool : result.tools()) {
+                        Tools.Tool mcpToolAsOllama4jTool =
+                                createOllamaToolFromMCPTool(
+                                        tool.getKey(), mcpTool, serverParameters);
+                        toolRegistry.addTool(mcpToolAsOllama4jTool);
+                    }
+                    client.close();
+                } finally {
+                    transport.close();
                 }
-                client.close();
-               } finally {
-                transport.close();
-            }
             }
         }
     }
