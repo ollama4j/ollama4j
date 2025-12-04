@@ -1265,14 +1265,16 @@ public class Ollama {
     }
 
     /**
-     * Calls a specific MCP (Model Context Protocol) tool registered with the Ollama instance.
-     * This method locates the tool by its server name and tool name, then executes it with the provided arguments.
+     * Calls a specific MCP (Model Context Protocol) tool registered with the Ollama instance. This
+     * method locates the tool by its server name and tool name, then executes it with the provided
+     * arguments.
      *
      * @param mcpServerName The name of the MCP server where the tool is registered.
      * @param toolName The name of the tool to be called.
      * @param arguments A map of arguments to be passed to the tool.
      * @return The result of the tool call, encapsulated in a {@link CallToolResult} object.
-     * @throws IllegalArgumentException If no MCP tool is found for the specified server name and tool name.
+     * @throws IllegalArgumentException If no MCP tool is found for the specified server name and tool
+     *     name.
      */
     private CallToolResult callMCPTool(
             String mcpServerName, String toolName, Map<String, Object> arguments) {
@@ -1282,22 +1284,23 @@ public class Ollama {
                     ServerParameters serverParameters = tool.getMcpServerParameters();
                     StdioClientTransport stdioTransport =
                             new StdioClientTransport(serverParameters, McpJsonMapper.getDefault());
-                    LOG.info(
-                            "Calling MCP Tool: '"
-                                    + mcpServerName
-                                    + "."
-                                    + toolName
-                                    + "' with arguments: "
-                                    + arguments);
-                    McpSyncClient client =
-                            McpClient.sync(stdioTransport)
-                                    .requestTimeout(Duration.ofSeconds(requestTimeoutSeconds))
-                                    .build();
-                    client.initialize();
-                    CallToolRequest request = new CallToolRequest(toolName, arguments);
-                    CallToolResult result = client.callTool(request);
-                    client.close();
-                    return result;
+                    try {
+                        LOG.info(
+                                "Calling MCP Tool: '{}.{}' with arguments: {}",
+                                mcpServerName,
+                                toolName,
+                                arguments);
+                        try (McpSyncClient client =
+                                McpClient.sync(stdioTransport)
+                                        .requestTimeout(Duration.ofSeconds(requestTimeoutSeconds))
+                                        .build()) {
+                            client.initialize();
+                            CallToolRequest request = new CallToolRequest(toolName, arguments);
+                            return client.callTool(request);
+                        }
+                    } finally {
+                        stdioTransport.close();
+                    }
                 }
             }
         }
