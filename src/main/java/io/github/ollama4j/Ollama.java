@@ -15,11 +15,6 @@ import io.github.ollama4j.exceptions.RoleNotFoundException;
 import io.github.ollama4j.exceptions.ToolInvocationException;
 import io.github.ollama4j.metrics.MetricsRecorder;
 import io.github.ollama4j.models.chat.*;
-import io.github.ollama4j.models.chat.OllamaChatMessage;
-import io.github.ollama4j.models.chat.OllamaChatMessageRole;
-import io.github.ollama4j.models.chat.OllamaChatRequest;
-import io.github.ollama4j.models.chat.OllamaChatResult;
-import io.github.ollama4j.models.chat.OllamaChatTokenHandler;
 import io.github.ollama4j.models.embed.OllamaEmbedRequest;
 import io.github.ollama4j.models.embed.OllamaEmbedResult;
 import io.github.ollama4j.models.generate.OllamaGenerateRequest;
@@ -43,7 +38,6 @@ import io.modelcontextprotocol.spec.McpSchema.CallToolRequest;
 import io.modelcontextprotocol.spec.McpSchema.CallToolResult;
 import io.modelcontextprotocol.spec.McpSchema.ListToolsResult;
 import java.io.*;
-import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Parameter;
@@ -56,8 +50,6 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.time.Duration;
 import java.util.*;
-import java.util.List;
-import java.util.Map;
 import java.util.stream.Collectors;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -1228,8 +1220,6 @@ public class Ollama {
     }
 
     public void loadMCPToolsFromJson(String mcpConfigJsonFilePath) throws IOException {
-        // List<OllamaMCPTool> ollamaMCPTools = new java.util.ArrayList<>();
-
         String jsonContent =
                 java.nio.file.Files.readString(java.nio.file.Paths.get(mcpConfigJsonFilePath));
         MCPToolsConfig config =
@@ -1251,6 +1241,7 @@ public class Ollama {
                         new StdioClientTransport(serverParameters, McpJsonMapper.getDefault());
 
                 int mcpToolRequestTimeoutSeconds = 30;
+                try {
                 McpSyncClient client =
                         McpClient.sync(transport)
                                 .requestTimeout(Duration.ofSeconds(mcpToolRequestTimeoutSeconds))
@@ -1264,6 +1255,9 @@ public class Ollama {
                     toolRegistry.addTool(mcpToolAsOllama4jTool);
                 }
                 client.close();
+               } finally {
+                transport.close();
+            }
             }
         }
     }

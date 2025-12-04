@@ -38,7 +38,7 @@ python /path/to/weather_open_meteo.py
 
 That's it! The tool is now ready to run in your terminal. You should see it waiting for input, which means the MCP tool is fully operational. If you encounter any errors, please fix them and try running the tool again.
 
-### Define the  MCP tools JSON
+### Define the MCP tools JSON
 
 Use the following JSON format to define the MCP tools in a standard format that is widely used by tools such as Claude. Make sure to adjust the Python file path and the MCP tool file path.
 
