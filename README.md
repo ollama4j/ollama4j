@@ -69,6 +69,7 @@ _Find more details on the **[website](https://ollama4j.github.io/ollama4j/)**._
 - **Text generation**: Single-turn `generate` with optional streaming and advanced options
 - **Chat**: Multi-turn chat with conversation history and roles
 - **Tool/function calling**: Built-in tool invocation via annotations and tool specs
+- **MCP tool calling**: Call external tools via MCP protocol
 - **Reasoning/thinking modes**: Generate and chat with “thinking” outputs where supported
 - **Image inputs (multimodal)**: Generate with images as inputs where models support vision
 - **Embeddings**: Create vector embeddings for text
