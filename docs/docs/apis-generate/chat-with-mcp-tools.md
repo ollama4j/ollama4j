@@ -8,7 +8,7 @@ import CodeEmbed from '@site/src/components/CodeEmbed';
 
 :::note
 
-This is an experimental feature and is subject to change in order to improve the usage experience.
+This is an experimental feature and is subject to change in order to improve the usage experience. Contributions are welcome.
 
 :::
 
