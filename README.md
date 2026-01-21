@@ -347,7 +347,7 @@ If you like or are use this project, please give us a ⭐. It's a free way to sh
 
 ### References
 
-- [Ollama REST APIs](https://github.com/jmorganca/ollama/blob/main/docs/api.md)
+- [Ollama REST APIs](https://github.com/jmorganca/ollama/blob/main/docs/api.md) or (Ollama REST API Docs](https://docs.ollama.com/api/introduction)
 
 ### Credits
 
