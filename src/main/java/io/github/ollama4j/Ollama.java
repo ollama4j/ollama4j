@@ -934,13 +934,25 @@ public class Ollama {
             OllamaImageResult finalResult = null;
             while ((line = reader.readLine()) != null) {
                 if (line.trim().isEmpty()) continue;
-                LOG.debug("Image generation response: {}", line);
+
                 // Try to detect a "done": true final response to return as OllamaImageResult
                 try {
                     // Attempt to parse any response as an OllamaImageResult, keep latest
                     // "done":true one
                     OllamaImageResult result =
                             Utils.getObjectMapper().readValue(line, OllamaImageResult.class);
+                    if (result.getCompleted() != null && result.getTotal() != null) {
+                        int progressPercentage =
+                                (int) ((result.getCompleted() * 100f) / result.getTotal());
+                        LOG.debug(
+                                "["
+                                        + result.getCompleted()
+                                        + " of "
+                                        + result.getTotal()
+                                        + " steps complete] - "
+                                        + progressPercentage
+                                        + "%");
+                    }
                     if (result != null && result.isDone()) {
                         finalResult = result;
                         break; // Stream complete
@@ -960,7 +972,7 @@ public class Ollama {
         } finally {
             MetricsRecorder.record(
                     url,
-                    "",
+                    request.getModel(),
                     false,
                     ThinkMode.DISABLED,
                     false,
