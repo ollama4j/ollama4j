@@ -17,6 +17,7 @@ import io.github.ollama4j.metrics.MetricsRecorder;
 import io.github.ollama4j.models.chat.*;
 import io.github.ollama4j.models.embed.OllamaEmbedRequest;
 import io.github.ollama4j.models.embed.OllamaEmbedResult;
+import io.github.ollama4j.models.generate.OllamaGenerateImageRequest;
 import io.github.ollama4j.models.generate.OllamaGenerateRequest;
 import io.github.ollama4j.models.generate.OllamaGenerateStreamObserver;
 import io.github.ollama4j.models.generate.OllamaGenerateTokenHandler;
@@ -886,6 +887,88 @@ public class Ollama {
             return generateSyncForOllamaRequestModel(request, null, null);
         } catch (Exception e) {
             throw new OllamaException(e.getMessage(), e);
+        }
+    }
+
+    /**
+     * Generates an image using a {@link OllamaGenerateImageRequest}.
+     *
+     * <p>Note: Image generation is experimental and may change in future versions as mentioned
+     * in the <a href="https://github.com/ollama/ollama/blob/main/docs/api.md#image-generation-experimental">Ollama documentation</a>
+     *
+     * @param request the image generation request
+     * @return the image generation result
+     * @throws OllamaException if the request fails
+     */
+    public OllamaImageResult generateImage(OllamaGenerateImageRequest request)
+            throws OllamaException {
+        long startTime = System.currentTimeMillis();
+        String url = "/api/generate";
+        int statusCode = -1;
+        Object out = null;
+        try {
+            String jsonData = Utils.getObjectMapper().writeValueAsString(request);
+            HttpClient httpClient = HttpClient.newHttpClient();
+            HttpRequest httpRequest =
+                    HttpRequest.newBuilder(new URI(this.host + url))
+                            .header(
+                                    Constants.HttpConstants.HEADER_KEY_ACCEPT,
+                                    Constants.HttpConstants.APPLICATION_JSON)
+                            .header(
+                                    Constants.HttpConstants.HEADER_KEY_CONTENT_TYPE,
+                                    Constants.HttpConstants.APPLICATION_JSON)
+                            .POST(HttpRequest.BodyPublishers.ofString(jsonData))
+                            .build();
+
+            HttpResponse<InputStream> response =
+                    httpClient.send(httpRequest, HttpResponse.BodyHandlers.ofInputStream());
+            statusCode = response.statusCode();
+
+            if (statusCode != 200) {
+                throw new OllamaException(statusCode + " - " + response.body());
+            }
+
+            InputStream inputStream = response.body();
+            BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream));
+            String line;
+            OllamaImageResult finalResult = null;
+            while ((line = reader.readLine()) != null) {
+                if (line.trim().isEmpty()) continue;
+                LOG.debug("Image generation response: {}", line);
+                // Try to detect a "done": true final response to return as OllamaImageResult
+                try {
+                    // Attempt to parse any response as an OllamaImageResult, keep latest
+                    // "done":true one
+                    OllamaImageResult result =
+                            Utils.getObjectMapper().readValue(line, OllamaImageResult.class);
+                    if (result != null && result.isDone()) {
+                        finalResult = result;
+                        break; // Stream complete
+                    }
+                } catch (Exception ignore) {
+                    // May be an intermediate/status update, not full object, or parse error
+                }
+            }
+
+            if (finalResult != null) {
+                return finalResult;
+            } else {
+                throw new OllamaException("Did not receive a valid image result.");
+            }
+        } catch (Exception e) {
+            throw new OllamaException(e.getMessage(), e);
+        } finally {
+            MetricsRecorder.record(
+                    url,
+                    "",
+                    false,
+                    ThinkMode.DISABLED,
+                    false,
+                    null,
+                    null,
+                    startTime,
+                    statusCode,
+                    out);
         }
     }
 
