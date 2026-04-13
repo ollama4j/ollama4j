@@ -60,7 +60,7 @@ h2 > a {
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
-    color: transparent; 
+    color: transparent;
 }
 
 .hero__subtitle {
@@ -73,7 +73,7 @@ h2 > a {
     font-weight: bold;
     border-radius: 0px;
     padding: 5px;
-}   
+}
 
 .feature-image {
     max-width: 80px !important;
