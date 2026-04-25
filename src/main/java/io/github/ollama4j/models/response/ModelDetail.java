@@ -19,15 +19,18 @@ import java.util.Map;
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class ModelDetail {
     private String license;
-
     @JsonProperty("modelfile")
     private String modelFile;
-
     private String parameters;
     private String template;
     private String system;
     private ModelMeta details;
     private String[] capabilities;
+    /**
+     * Dynamic model metadata returned by the Ollama API.
+     * Values may be of type {@code String}, {@code Number}, {@code Boolean},
+     * or nested {@code Map}/{@code List}. Cast accordingly after retrieval.
+     */
     @JsonProperty("model_info")
     private Map<String, Object> modelInfo;
 
