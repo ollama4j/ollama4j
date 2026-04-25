@@ -28,6 +28,8 @@ public class ModelDetail {
     private String system;
     private ModelMeta details;
     private String[] capabilities;
+    @JsonProperty("model_info")
+    private Map<String, Object> modelInfo;
 
     @Override
     public String toString() {
