@@ -374,9 +374,9 @@ Ollama4j has been featured in a number of articles and community posts—huge th
 
 - **Running LLM locally using Java** — [Article by Stephan Janssen (LinkedIn)](https://www.linkedin.com/pulse/running-llm-locally-using-java-stephan-janssen-g4mue)
 - **Java library announcement** — [Post by Markus Klenke (LinkedIn)](https://www.linkedin.com/posts/markus-klenke-61041086_github-amithkoujalgiollama4j-java-library-activity-7166431630939639808-JyEH)
-- **Tame Your Llama: Run AI in Java**  
-  - 🎤 [JNation Talk: Presented by Lutske de Leeuw](https://youtu.be/XvmGqpzepDM?t=966)  
-  - 📝 [In-depth Forum Article](https://javapro.io/2025/10/15/tame-your-llama-run-ai-in-java/)  
+- **Tame Your Llama: Run AI in Java**
+  - 🎤 [JNation Talk: Presented by Lutske de Leeuw](https://youtu.be/XvmGqpzepDM?t=966)
+  - 📝 [In-depth Forum Article](https://javapro.io/2025/10/15/tame-your-llama-run-ai-in-java/)
   - 🐦 [Announcement on X (Twitter)](https://x.com/JAVAPROmagazin/status/1978347624265646211)
 - **First Conversation with Deepseek Model** — [Post by Ghaffar Mallah (LinkedIn)](https://www.linkedin.com/posts/ghaffarmallah_ok-ai-i-finally-see-you-with-deepseek-hype-activity-7290019964533526529-G5cq)
 - **From Llamas to Lightsabers: AI in Java** — [Post by Lutske (LinkedIn)](https://www.linkedin.com/posts/lutske_utrechtjug-tameyourllama-java-activity-7386315122748706816-6A_j)

@@ -18,6 +18,7 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -130,6 +131,11 @@ public class OllamaChatRequest extends OllamaCommonRequest implements OllamaRequ
 
     public OllamaChatRequest withGetJsonResponse() {
         this.setFormat("json");
+        return this;
+    }
+
+    public OllamaChatRequest withFormat(Map<String, Object> format) {
+        this.setFormat(format);
         return this;
     }
 

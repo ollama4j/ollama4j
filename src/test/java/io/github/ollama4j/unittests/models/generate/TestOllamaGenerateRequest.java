@@ -19,6 +19,7 @@ import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 
@@ -69,6 +70,14 @@ class TestOllamaGenerateRequest {
         assertEquals(ThinkMode.ENABLED, request.getThink());
         assertTrue(request.isUseTools());
         assertEquals("json", request.getFormat());
+    }
+
+    @Test
+    void testWithFormat() {
+        OllamaGenerateRequest request = new OllamaGenerateRequest();
+        Map<String, Object> format = Map.of("type", "object");
+        request.withFormat(format);
+        assertEquals(format, request.getFormat());
     }
 
     @Test
