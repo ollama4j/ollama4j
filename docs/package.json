@@ -15,7 +15,7 @@
     },
     "dependencies": {
         "@docsearch/js": "^4.4.0",
-        "@docusaurus/core": "^3.9.2",
+        "@docusaurus/core": "^3.10.0",
         "@docusaurus/plugin-content-docs": "^3.9.2",
         "@docusaurus/plugin-google-gtag": "^3.9.2",
         "@docusaurus/preset-classic": "^3.9.2",
