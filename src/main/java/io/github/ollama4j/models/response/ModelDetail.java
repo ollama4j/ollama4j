@@ -13,20 +13,26 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import io.github.ollama4j.utils.Utils;
 import lombok.Data;
+import java.util.Map;
 
 @Data
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class ModelDetail {
     private String license;
-
     @JsonProperty("modelfile")
     private String modelFile;
-
     private String parameters;
     private String template;
     private String system;
     private ModelMeta details;
     private String[] capabilities;
+    /**
+     * Dynamic model metadata returned by the Ollama API.
+     * Values may be of type {@code String}, {@code Number}, {@code Boolean},
+     * or nested {@code Map}/{@code List}. Cast accordingly after retrieval.
+     */
+    @JsonProperty("model_info")
+    private Map<String, Object> modelInfo;
 
     @Override
     public String toString() {
