@@ -25,6 +25,39 @@ success
 ```
 Once created, you can see it when you use [list models](./list-models) API.
 
+## Monitoring Progress
+
+You can monitor the progress of model creation by providing a `ModelPullListener`. This is useful for tracking the creation status or triggering actions when the model is ready.
+
+### Using a Global Listener
+
+You can set a global listener on the `Ollama` instance that will be notified of all pull and create operations.
+
+```java
+ollama.setModelPullListener((model, resp) -> {
+    System.out.println("Model: " + model + " Status: " + resp.getStatus());
+    if ("success".equalsIgnoreCase(resp.getStatus())) {
+        System.out.println("Model creation complete!");
+    }
+});
+```
+
+### Using a Local Listener
+
+Alternatively, you can provide a listener directly to the `createModel` method.
+
+```java
+CustomModelRequest request = CustomModelRequest.builder()
+        .withModel("mario")
+        .withFrom("llama3")
+        .withSystem("You are Mario from super mario bros, acting as an assistant.")
+        .build();
+
+ollama.createModel(request, (model, resp) -> {
+    System.out.println("Status of " + model + ": " + resp.getStatus());
+});
+```
+
 [Read more](https://github.com/ollama/ollama/blob/main/docs/api.md#create-a-model) about custom model creation and the parameters available for model creation.
 
 [//]: # ()

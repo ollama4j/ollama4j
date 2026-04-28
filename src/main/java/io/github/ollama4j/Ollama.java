@@ -117,6 +117,11 @@ public class Ollama {
      */
     @Setter private boolean metricsEnabled = false;
 
+    /**
+     * The listener for model pull/creation progress.
+     */
+    @Setter private ModelPullListener modelPullListener;
+
     /** Instantiates the Ollama API with the default Ollama host: {@code http://localhost:11434} */
     public Ollama() {
         this.host = "http://localhost:11434";
@@ -354,9 +359,10 @@ public class Ollama {
      * Internal method to pull a model from the Ollama server.
      *
      * @param modelName the name of the model to pull
+     * @param listener the listener for progress updates
      * @throws OllamaException if the pull fails
      */
-    private void doPullModel(String modelName) throws OllamaException {
+    private void doPullModel(String modelName, ModelPullListener listener) throws OllamaException {
         long startTime = System.currentTimeMillis();
         String url = "/api/pull";
         int statusCode = -1;
@@ -388,7 +394,9 @@ public class Ollama {
                 while ((line = reader.readLine()) != null) {
                     ModelPullResponse modelPullResponse =
                             Utils.getObjectMapper().readValue(line, ModelPullResponse.class);
-                    success = processModelPullResponse(modelPullResponse, modelName) || success;
+                    success =
+                            processModelPullResponse(modelPullResponse, modelName, listener)
+                                    || success;
                 }
             }
             if (!success) {
@@ -424,15 +432,23 @@ public class Ollama {
      *
      * @param modelPullResponse the response from the model pull
      * @param modelName the name of the model
+     * @param listener the listener for progress updates
      * @return true if the pull was successful, false otherwise
      * @throws OllamaException if the response contains an error
      */
     @SuppressWarnings("RedundantIfStatement")
-    private boolean processModelPullResponse(ModelPullResponse modelPullResponse, String modelName)
+    private boolean processModelPullResponse(
+            ModelPullResponse modelPullResponse, String modelName, ModelPullListener listener)
             throws OllamaException {
         if (modelPullResponse == null) {
             LOG.error("Received null response for model pull.");
             return false;
+        }
+        if (modelPullListener != null) {
+            modelPullListener.onStatusUpdate(modelName, modelPullResponse);
+        }
+        if (listener != null && listener != modelPullListener) {
+            listener.onStatusUpdate(modelName, modelPullResponse);
         }
         String error = modelPullResponse.getError();
         if (error != null && !error.trim().isEmpty()) {
@@ -511,16 +527,28 @@ public class Ollama {
      * @throws OllamaException if the response indicates an error status
      */
     public void pullModel(String modelName) throws OllamaException {
+        pullModel(modelName, null);
+    }
+
+    /**
+     * Pulls a model using the specified Ollama library model tag and notifies the listener of
+     * progress.
+     *
+     * @param modelName the name/tag of the model to be pulled. Ex: llama3:latest
+     * @param listener the listener for progress updates
+     * @throws OllamaException if the response indicates an error status
+     */
+    public void pullModel(String modelName, ModelPullListener listener) throws OllamaException {
         try {
             if (numberOfRetriesForModelPull == 0) {
-                this.doPullModel(modelName);
+                this.doPullModel(modelName, listener);
                 return;
             }
             int numberOfRetries = 0;
             long baseDelayMillis = 3000L; // 3 seconds base delay
             while (numberOfRetries < numberOfRetriesForModelPull) {
                 try {
-                    this.doPullModel(modelName);
+                    this.doPullModel(modelName, listener);
                     return;
                 } catch (OllamaException e) {
                     handlePullRetry(
@@ -607,6 +635,18 @@ public class Ollama {
      * @throws OllamaException if the response indicates an error status
      */
     public void createModel(CustomModelRequest customModelRequest) throws OllamaException {
+        createModel(customModelRequest, null);
+    }
+
+    /**
+     * Creates a custom model and notifies the listener of progress.
+     *
+     * @param customModelRequest custom model spec
+     * @param listener the listener for progress updates
+     * @throws OllamaException if the response indicates an error status
+     */
+    public void createModel(CustomModelRequest customModelRequest, ModelPullListener listener)
+            throws OllamaException {
         long startTime = System.currentTimeMillis();
         String url = "/api/create";
         int statusCode = -1;
@@ -645,6 +685,12 @@ public class Ollama {
                             Utils.getObjectMapper().readValue(line, ModelPullResponse.class);
                     lines.append(line);
                     LOG.debug(res.getStatus());
+                    if (modelPullListener != null) {
+                        modelPullListener.onStatusUpdate(customModelRequest.getModel(), res);
+                    }
+                    if (listener != null && listener != modelPullListener) {
+                        listener.onStatusUpdate(customModelRequest.getModel(), res);
+                    }
                     if (res.getError() != null) {
                         out = res.getError();
                         throw new OllamaException(res.getError());
