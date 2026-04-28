@@ -17,6 +17,7 @@ import io.github.ollama4j.metrics.MetricsRecorder;
 import io.github.ollama4j.models.chat.*;
 import io.github.ollama4j.models.embed.OllamaEmbedRequest;
 import io.github.ollama4j.models.embed.OllamaEmbedResult;
+import io.github.ollama4j.models.generate.OllamaGenerateImageRequest;
 import io.github.ollama4j.models.generate.OllamaGenerateRequest;
 import io.github.ollama4j.models.generate.OllamaGenerateStreamObserver;
 import io.github.ollama4j.models.generate.OllamaGenerateTokenHandler;
@@ -115,6 +116,11 @@ public class Ollama {
      * usage, and other operational statistics. Default is false.
      */
     @Setter private boolean metricsEnabled = false;
+
+    /**
+     * The listener for model pull/creation progress.
+     */
+    @Setter private ModelPullListener modelPullListener;
 
     /** Instantiates the Ollama API with the default Ollama host: {@code http://localhost:11434} */
     public Ollama() {
@@ -353,9 +359,10 @@ public class Ollama {
      * Internal method to pull a model from the Ollama server.
      *
      * @param modelName the name of the model to pull
+     * @param listener the listener for progress updates
      * @throws OllamaException if the pull fails
      */
-    private void doPullModel(String modelName) throws OllamaException {
+    private void doPullModel(String modelName, ModelPullListener listener) throws OllamaException {
         long startTime = System.currentTimeMillis();
         String url = "/api/pull";
         int statusCode = -1;
@@ -387,7 +394,9 @@ public class Ollama {
                 while ((line = reader.readLine()) != null) {
                     ModelPullResponse modelPullResponse =
                             Utils.getObjectMapper().readValue(line, ModelPullResponse.class);
-                    success = processModelPullResponse(modelPullResponse, modelName) || success;
+                    success =
+                            processModelPullResponse(modelPullResponse, modelName, listener)
+                                    || success;
                 }
             }
             if (!success) {
@@ -423,15 +432,23 @@ public class Ollama {
      *
      * @param modelPullResponse the response from the model pull
      * @param modelName the name of the model
+     * @param listener the listener for progress updates
      * @return true if the pull was successful, false otherwise
      * @throws OllamaException if the response contains an error
      */
     @SuppressWarnings("RedundantIfStatement")
-    private boolean processModelPullResponse(ModelPullResponse modelPullResponse, String modelName)
+    private boolean processModelPullResponse(
+            ModelPullResponse modelPullResponse, String modelName, ModelPullListener listener)
             throws OllamaException {
         if (modelPullResponse == null) {
             LOG.error("Received null response for model pull.");
             return false;
+        }
+        if (modelPullListener != null) {
+            modelPullListener.onStatusUpdate(modelName, modelPullResponse);
+        }
+        if (listener != null && listener != modelPullListener) {
+            listener.onStatusUpdate(modelName, modelPullResponse);
         }
         String error = modelPullResponse.getError();
         if (error != null && !error.trim().isEmpty()) {
@@ -510,16 +527,28 @@ public class Ollama {
      * @throws OllamaException if the response indicates an error status
      */
     public void pullModel(String modelName) throws OllamaException {
+        pullModel(modelName, null);
+    }
+
+    /**
+     * Pulls a model using the specified Ollama library model tag and notifies the listener of
+     * progress.
+     *
+     * @param modelName the name/tag of the model to be pulled. Ex: llama3:latest
+     * @param listener the listener for progress updates
+     * @throws OllamaException if the response indicates an error status
+     */
+    public void pullModel(String modelName, ModelPullListener listener) throws OllamaException {
         try {
             if (numberOfRetriesForModelPull == 0) {
-                this.doPullModel(modelName);
+                this.doPullModel(modelName, listener);
                 return;
             }
             int numberOfRetries = 0;
             long baseDelayMillis = 3000L; // 3 seconds base delay
             while (numberOfRetries < numberOfRetriesForModelPull) {
                 try {
-                    this.doPullModel(modelName);
+                    this.doPullModel(modelName, listener);
                     return;
                 } catch (OllamaException e) {
                     handlePullRetry(
@@ -606,6 +635,18 @@ public class Ollama {
      * @throws OllamaException if the response indicates an error status
      */
     public void createModel(CustomModelRequest customModelRequest) throws OllamaException {
+        createModel(customModelRequest, null);
+    }
+
+    /**
+     * Creates a custom model and notifies the listener of progress.
+     *
+     * @param customModelRequest custom model spec
+     * @param listener the listener for progress updates
+     * @throws OllamaException if the response indicates an error status
+     */
+    public void createModel(CustomModelRequest customModelRequest, ModelPullListener listener)
+            throws OllamaException {
         long startTime = System.currentTimeMillis();
         String url = "/api/create";
         int statusCode = -1;
@@ -644,6 +685,12 @@ public class Ollama {
                             Utils.getObjectMapper().readValue(line, ModelPullResponse.class);
                     lines.append(line);
                     LOG.debug(res.getStatus());
+                    if (modelPullListener != null) {
+                        modelPullListener.onStatusUpdate(customModelRequest.getModel(), res);
+                    }
+                    if (listener != null && listener != modelPullListener) {
+                        listener.onStatusUpdate(customModelRequest.getModel(), res);
+                    }
                     if (res.getError() != null) {
                         out = res.getError();
                         throw new OllamaException(res.getError());
@@ -886,6 +933,100 @@ public class Ollama {
             return generateSyncForOllamaRequestModel(request, null, null);
         } catch (Exception e) {
             throw new OllamaException(e.getMessage(), e);
+        }
+    }
+
+    /**
+     * Generates an image using a {@link OllamaGenerateImageRequest}.
+     *
+     * <p>Note: Image generation is experimental and may change in future versions as mentioned
+     * in the <a href="https://github.com/ollama/ollama/blob/main/docs/api.md#image-generation-experimental">Ollama documentation</a>
+     *
+     * @param request the image generation request
+     * @return the image generation result
+     * @throws OllamaException if the request fails
+     */
+    public OllamaImageResult generateImage(OllamaGenerateImageRequest request)
+            throws OllamaException {
+        long startTime = System.currentTimeMillis();
+        String url = "/api/generate";
+        int statusCode = -1;
+        Object out = null;
+        try {
+            String jsonData = Utils.getObjectMapper().writeValueAsString(request);
+            HttpClient httpClient = HttpClient.newHttpClient();
+            HttpRequest httpRequest =
+                    HttpRequest.newBuilder(new URI(this.host + url))
+                            .header(
+                                    Constants.HttpConstants.HEADER_KEY_ACCEPT,
+                                    Constants.HttpConstants.APPLICATION_JSON)
+                            .header(
+                                    Constants.HttpConstants.HEADER_KEY_CONTENT_TYPE,
+                                    Constants.HttpConstants.APPLICATION_JSON)
+                            .POST(HttpRequest.BodyPublishers.ofString(jsonData))
+                            .build();
+
+            HttpResponse<InputStream> response =
+                    httpClient.send(httpRequest, HttpResponse.BodyHandlers.ofInputStream());
+            statusCode = response.statusCode();
+
+            if (statusCode != 200) {
+                throw new OllamaException(statusCode + " - " + response.body());
+            }
+
+            InputStream inputStream = response.body();
+            BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream));
+            String line;
+            OllamaImageResult finalResult = null;
+            while ((line = reader.readLine()) != null) {
+                if (line.trim().isEmpty()) continue;
+
+                // Try to detect a "done": true final response to return as OllamaImageResult
+                try {
+                    // Attempt to parse any response as an OllamaImageResult, keep latest
+                    // "done":true one
+                    OllamaImageResult result =
+                            Utils.getObjectMapper().readValue(line, OllamaImageResult.class);
+                    if (result.getCompleted() != null && result.getTotal() != null) {
+                        int progressPercentage =
+                                (int) ((result.getCompleted() * 100f) / result.getTotal());
+                        LOG.debug(
+                                "["
+                                        + result.getCompleted()
+                                        + " of "
+                                        + result.getTotal()
+                                        + " steps complete] - "
+                                        + progressPercentage
+                                        + "%");
+                    }
+                    if (result != null && result.isDone()) {
+                        finalResult = result;
+                        break; // Stream complete
+                    }
+                } catch (Exception ignore) {
+                    // May be an intermediate/status update, not full object, or parse error
+                }
+            }
+
+            if (finalResult != null) {
+                return finalResult;
+            } else {
+                throw new OllamaException("Did not receive a valid image result.");
+            }
+        } catch (Exception e) {
+            throw new OllamaException(e.getMessage(), e);
+        } finally {
+            MetricsRecorder.record(
+                    url,
+                    request.getModel(),
+                    false,
+                    ThinkMode.DISABLED,
+                    false,
+                    null,
+                    null,
+                    startTime,
+                    statusCode,
+                    out);
         }
     }
 
