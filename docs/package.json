@@ -20,7 +20,7 @@
         "@docusaurus/plugin-google-gtag": "3.10.0",
         "@docusaurus/preset-classic": "3.10.0",
         "@docusaurus/theme-mermaid": "3.10.0",
-        "@iconify/react": "^4.1.1",
+        "@iconify/react": "^6.0.2",
         "@mdx-js/react": "^3.0.0",
         "clsx": "^2.1.1",
         "font-awesome": "^4.7.0",
