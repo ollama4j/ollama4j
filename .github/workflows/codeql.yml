@@ -22,7 +22,7 @@ jobs:
         language: [ 'java', 'javascript' ]
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
 
       - name: Set up JDK
         if: matrix.language == 'java'
