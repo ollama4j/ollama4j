@@ -328,9 +328,9 @@ If you like or are use this project, please give us a ⭐. It's a free way to sh
 ## Growth
 
 <p align="center">
-  <a href="https://star-history.com/#ollama4j/ollama4j&Date" target="_blank" rel="noopener noreferrer">
+  <a href="https://star-history.dera.page/#ollama4j/ollama4j&Date" target="_blank" rel="noopener noreferrer">
     <img
-      src="https://api.star-history.com/svg?repos=ollama4j/ollama4j&type=Date"
+      src="https://star-history.dera.page/svg?repos=ollama4j/ollama4j&type=Date"
       alt="Star History Chart"
     />
   </a>
