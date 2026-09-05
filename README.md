@@ -49,6 +49,7 @@ _Find more details on the **[website](https://ollama4j.github.io/ollama4j/)**._
         - [Using Maven Central](#using-maven-central)
         - [Using GitHub's Maven Package Repository](#using-githubs-maven-package-repository)
     - [For Gradle](#for-gradle)
+    - [Using with llmman](#using-with-llmman)
 - [API Spec](#api-spec)
 - [Examples](#examples)
 - [Development](#development)
@@ -226,6 +227,15 @@ dependencies {
 [lib]: https://central.sonatype.com/artifact/io.github.ollama4j/ollama4j
 
 [lib-shield]: https://img.shields.io/badge/ollama4j-get_latest_version-blue.svg?style=just-the-message&labelColor=gray
+
+### Using with llmman
+
+[llmman](https://github.com/llmmanorg/llmman) is a local model runner that serves the Ollama API (alongside OpenAI- and
+Anthropic-compatible ones) on port `17434`. Ollama4j works with it unchanged; just point the client at its host:
+
+```java
+Ollama ollama = new Ollama("http://localhost:17434");
+```
 
 ### API Spec
 
